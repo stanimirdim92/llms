@@ -1,0 +1,145 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "LLM Engineers Handbook"
+requires-python = ">=3.12"
+
+homepage = "https://github.com/stanimirdim92/llms"
+keywords = []
+readme = "README.md"
+packages = [
+    { include = "app" },
+]
+license = "Apache-2.0"
+dependencies = [
+    #    "python>=3.12,<4.0",
+    "python-dotenv>=1.0",
+    "langchain>=1",
+    "langchain-core>=1",
+    "langchain-community>=0.4",
+    "langchain-openai>=1",
+    "langchain-text-splitters>=1",
+    "langsmith>=0.4",
+    "langchain-google-community>=3.0",
+    "langgraph>=1",
+    #    poppler-utils  = "^0"
+    #    gunicorn = "^23"
+    #    aiomysql = "^0.2"
+    #    #pymupdf = "^1.26"
+    #    pillow = "^11"
+    #    beautifulsoup4 = "^4.14"
+    #    #qreader = "^3.14" # installs cuda, torch, ultralitics, etc., way to big
+    #    pyzbar= "^0"
+    #    tf-playwright-stealth = "^1.2"
+    #    playwright = "^1.55"
+    #    cachetools = "^6"
+    #    fastapi = "^0.118"
+    #    uvicorn = "^0.37"
+    #    sse-starlette = "^3"
+    #    sqlmodel = "^0.0.27"
+    #    googlemaps = "^4.10"
+    #    #celery = {extras = ["redis"], version = "^5.5"}
+    #    lxml = "^6"
+    #
+    #    cryptography = "^46"
+    #    "unstructured[pdf]>=0.18.15",
+    "ruff>=0.14.2",
+    "orjson>=3.11.4",
+    "uvloop>=0.22.1",
+    "pydantic>=2.12.3",
+    "redis[hiredis]>=7.0.1",
+    "gunicorn>=23.0.0",
+    "uvicorn>=0.38.0",
+    "fastapi[standard]>=0.120.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "app"
+module-root = ""
+
+[tool.ruff]
+target-version = "py313"
+line-length = 110
+indent-width = 4
+extend-exclude = [
+    ".ruff_cache",
+    ".env",
+    ".venv",
+    "**migrations/**",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "ASYNC", # https://docs.astral.sh/ruff/rules/#flake8-async-async
+    "E", # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "W", #https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "F", #https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "C",  # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "D",  # https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    "I", # https://docs.astral.sh/ruff/rules/#isort-i
+    "ISC", #https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
+    "TCH", #https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
+    "TID25", #https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "PIE", #https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+    "PT", #https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
+    "T20", #https://docs.astral.sh/ruff/rules/#flake8-print-t20
+    "UP",  # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "PL", #https://docs.astral.sh/ruff/rules/#pylint-pl
+    "RUF006", # Checks for asyncio dangling task https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "RUF015", # Checks for unnecessary iterable allocation for the first element
+    "RUF019", # Checks for unnecessary key check
+    "RUF100", # Unused noqa (auto-fixable)
+    "B007", # Checks for unused variables in the loop
+    "B019", # Use of functools.lru_cache or functools.cache on methods can lead to memory leaks
+    "B028", # No explicit stacklevel keyword argument found
+    "B004", # Checks for use of hasattr(x, "__call__") and replaces it with callable(x)
+]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D202",
+    "D203",
+    "D205",
+    "D206",
+    "D213",
+    "D407",
+    "D212",
+    "PT019",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 90
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Disallow all relative imports.
+ban-relative-imports = "all"
+# Ban certain modules from being imported at module level, instead requiring
+# that they're imported lazily (e.g., within a function definition).
+banned-module-level-imports = ["numpy", "pandas"]

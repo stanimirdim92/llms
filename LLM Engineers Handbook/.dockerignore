@@ -3,6 +3,7 @@
 *.pyo
 *.pyd
 *.db
+.venv
 .env.example
 node_modules
 build

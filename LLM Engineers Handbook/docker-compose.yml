@@ -1,0 +1,108 @@
+services:
+  app:
+    env_file: ".env"
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: smads_app
+    restart: unless-stopped
+    volumes:
+      - ./images:/usr/local/www/langchain/images
+      - ./app:/usr/local/www/langchain/app
+    ports:
+      - "127.0.0.1:${PORT}:${PORT}"
+    environment:
+        - PORT=${PORT}
+    networks:
+      - app-network
+    depends_on:
+      - redis
+    shm_size: "1gb"               # helpful for Chromium stability (/dev/shm)
+    ulimits:
+      nofile: 65536
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: ./Dockerfile
+    container_name: smads_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    volumes:
+      - ./images:/usr/local/www/langchain/images
+      - ./nginx/certs/:/etc/letsencrypt:ro
+      - ./nginx/www/:/var/www/certbot:ro
+    networks:
+      - app-network
+
+#  certbot:
+#    image: certbot/certbot
+#    container_name: smads_certbot
+#    command:
+#      - certonly certonly
+#      - -v
+#      - --agree-tos
+#      - --no-eff-email
+#      - --renew-by-default
+#      - --webroot
+#      - -w /var/www/certbot/
+#      - --email ${EMAIL_FROM_ADDRESS:-tech@smartico.one}
+#      - --text
+#      - --preferred-challenges http-01
+#      - --server https://acme-v02.api.letsencrypt.org/directory
+#      - -d api.ai.smartico.one
+#    volumes:
+#      - ./nginx/certs/:/etc/letsencrypt:rw
+#      - ./nginx/www/:/var/www/certbot:rw
+#    networks:
+#      - app-network
+
+#  queue:
+#    build:
+#      context: ./queue
+#      dockerfile: ./Dockerfile
+#    container_name: smads_queue
+#    restart: always
+#    volumes:
+#      - ./images:/usr/local/www/langchain/images
+#      - ./app:/usr/local/www/langchain/app
+#    networks:
+#        - app-network
+#    depends_on:
+#      - redis
+#      - app
+
+  redis:
+      build:
+        context: ./redis
+        dockerfile: ./Dockerfile
+      container_name: smads_redis
+      env_file: ".env"
+      restart: always
+      volumes:
+          - ./data/redis:/data
+      ports:
+        - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
+      networks:
+          - app-network
+      healthcheck:
+          test: [ "CMD", "redis-cli", "ping" ]
+          interval: 30s
+          timeout: 10s
+          retries: 5
+networks:
+    app-network:
+      driver: bridge
+
+# The renew command might now work. If so do this:
+# 0 Disabled firewall in cloud
+# 1. Edit nginx config and disabled the redirect from 80 to 443
+# 2. docker compose down && docker compose up --build -d
+# 3. docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d api.ai.smartico.one
+# 4. Enable redirect to 443
+# 5. docker compose down && docker compose up --build -d
+# 6. enable firewall
