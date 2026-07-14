@@ -1,0 +1,22 @@
+[project]
+name = "fastai-dl"
+version = "0.1.0"
+description = "FastAI"
+readme = "README.md"
+requires-python = ">=3.14"
+license = "Apache-2.0"
+packages = [
+    { include = "app" },
+]
+dependencies = [
+    "python-dotenv>=1.2.2",
+    "ruff>=0.15.12",
+    "ty>=0.0.34",
+]
+[build-system]
+requires = ["uv_build>=0.9.5,<0.15.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "app"
+module-root = ""

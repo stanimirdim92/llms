@@ -51,6 +51,7 @@ dependencies = [
     "gunicorn>=23.0.0",
     "uvicorn>=0.38.0",
     "fastapi[standard]>=0.120.1",
+    "ty>=0.0.31",
 ]
 
 [build-system]
@@ -60,86 +61,3 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"
 module-root = ""
-
-[tool.ruff]
-target-version = "py313"
-line-length = 110
-indent-width = 4
-extend-exclude = [
-    ".ruff_cache",
-    ".env",
-    ".venv",
-    "**migrations/**",
-]
-
-[tool.ruff.lint]
-extend-select = [
-    "ASYNC", # https://docs.astral.sh/ruff/rules/#flake8-async-async
-    "E", # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
-    "W", #https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
-    "F", #https://docs.astral.sh/ruff/rules/#pyflakes-f
-    "C",  # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
-    "D",  # https://docs.astral.sh/ruff/rules/#pydocstyle-d
-    "I", # https://docs.astral.sh/ruff/rules/#isort-i
-    "ISC", #https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
-    "TCH", #https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
-    "TID25", #https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
-    "PIE", #https://docs.astral.sh/ruff/rules/#flake8-pie-pie
-    "PT", #https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
-    "T20", #https://docs.astral.sh/ruff/rules/#flake8-print-t20
-    "UP",  # https://docs.astral.sh/ruff/rules/#pyupgrade-up
-    "PL", #https://docs.astral.sh/ruff/rules/#pylint-pl
-    "RUF006", # Checks for asyncio dangling task https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-    "RUF015", # Checks for unnecessary iterable allocation for the first element
-    "RUF019", # Checks for unnecessary key check
-    "RUF100", # Unused noqa (auto-fixable)
-    "B007", # Checks for unused variables in the loop
-    "B019", # Use of functools.lru_cache or functools.cache on methods can lead to memory leaks
-    "B028", # No explicit stacklevel keyword argument found
-    "B004", # Checks for use of hasattr(x, "__call__") and replaces it with callable(x)
-]
-ignore = [
-    "D100",
-    "D101",
-    "D102",
-    "D103",
-    "D104",
-    "D105",
-    "D106",
-    "D107",
-    "D202",
-    "D203",
-    "D205",
-    "D206",
-    "D213",
-    "D407",
-    "D212",
-    "PT019",
-]
-
-[tool.ruff.lint.isort]
-combine-as-imports = true
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.ruff.lint.flake8-pytest-style]
-fixture-parentheses = false
-mark-parentheses = false
-
-[tool.ruff.format]
-# Like Black, use double quotes for strings.
-quote-style = "double"
-
-# Like Black, indent with spaces, rather than tabs.
-indent-style = "space"
-line-ending = "auto"
-docstring-code-format = true
-docstring-code-line-length = 90
-
-[tool.ruff.lint.flake8-tidy-imports]
-# Disallow all relative imports.
-ban-relative-imports = "all"
-# Ban certain modules from being imported at module level, instead requiring
-# that they're imported lazily (e.g., within a function definition).
-banned-module-level-imports = ["numpy", "pandas"]

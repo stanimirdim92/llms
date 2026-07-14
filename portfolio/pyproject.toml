@@ -1,0 +1,93 @@
+[project]
+name = "documentio-ai"
+version = "0.0.1"
+description = "AI services for documentio.ai"
+authors = [
+    {name="Documentio AI", email="stanimirdim92@gmail.com"}
+]
+maintainers = [
+    {name="Stanimir Dimitrov", email="stanimirdim92@gmail.com"}
+]
+readme = "README.md"
+license = "Apache-2.0"
+
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    #    "joblib",
+    "aiocache[redis]",
+    "aiofiles",
+    "attrs>=26.1.0",
+    "python-dotenv>=1.2.2,<2.0.0",
+    "langchain>=1.2.0,<2.0.0",
+    "langchain-core>=1.2.23,<2.0.0",
+    "langchain-community>=0.4,<0.5.0",
+    "langchain-openai>=1.1,<2.0.0",
+    "langchain-text-splitters>=1.1,<2.0.0",
+    "langsmith>=0.7.6,<1.2.0",
+    "langgraph>=1.1,<2.0.0",
+    # unstructured with extra + python marker
+    #    "unstructured[pdf]>=0.22.0,<0.40.0; python_version >= '3.12' and python_version < '4.0'",
+    #    "pydantic>2",
+    #    "pydantic-extra-types>2.11",
+    "gunicorn[http2]>=25.0.0,<30.0.0",
+    "orjson>=3.11.0,<4.0.0",
+    "aiomysql>=0.3.2,<0.4.0",
+    "pillow>=12.1.1,<13.0.0",
+    "beautifulsoup4>=4.14,<5.0.0",
+    "pyzbar>=0.1.0,<1.0.0",
+    "tf-playwright-stealth>=1.2.0,<2.0.0",
+    "playwright>=1.55.0,<2.0.0",
+    "hiredis>=3.3.1,<4.0.0",
+    # redis with extra
+    "redis[hiredis]>=7.4.0,<8.0.0",
+    "cachetools>=7.0.0,<8.1.0",
+    "fastapi[standard]>=0.135.0,<0.150.0",
+    "uvicorn>=0.42.0,<0.50.0",
+    "sse-starlette>=3.3.3,<4.0.0",
+    "sqlmodel>=0.0.37,<0.0.50",
+    "googlemaps>=4.10.0,<5.0.0",
+    "uvloop>=0.22.1,<0.24.0",
+    "lxml>=6.0.2,<7.0.0",
+    "cssutils>=2.11.1,<3.0.0",
+    "cryptography>=46.0.5,<50.0.0",
+    "openai>=2.30,<3.0.0",
+    "openai-agents>=0.13.2,<0.20",
+    # html-to-markdown with extra
+    "html-to-markdown>=2.30,<3.0.0",
+    "ijson>=3.5.0,<4.0.0",
+    "brightdata-sdk>=2.3.0,<3.0.0",
+    "cairosvg>=2.9.0,<3.0.0",
+    "scikit-learn>=1.7.2,<2.0.0",
+    "numpy>=2.4,<3.0.0",
+    "pyahocorasick>=2.3.0,<3.0.0",
+    "poppler-utils>=0.1.0,<0.2.0",
+    #langchain-cli = "^0" # FOR LATER
+    #langchain-anthropic = "^1.2" # FOR LATER
+    #langchain-groq = "^1.1" # FOR LATER
+    #langchain-google-community = "^3.0"  # FOR LATER
+    #opencv-python  = "^4"
+    #celery = {extras = ["redis"], version = "^5.5"}
+    "pyrefly>=0.60.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "devtools",
+  "ruff",
+  "ty",
+  "memory-profiler>=0.61.0,<1",
+  "pytest>=9,<10",
+]
+
+
+[project.urls]
+homepage = "https://github.com/cs83/smartico-ai"
+repository = "https://github.com/cs83/smartico-ai"
+documentation = "https://github.com/cs83/smartico-ai"
+
+[build-system]
+requires = ["uv_build>=0.11.2,<0.12"]
+build-backend = "uv_build"
+[tool.uv.build-backend]
+module-name = "app"
+module-root = ""

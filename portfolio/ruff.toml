@@ -1,0 +1,98 @@
+target-version = "py314"
+line-length = 120
+indent-width = 4
+extend-exclude = [
+    ".ruff_cache",
+    ".env",
+    "*.pyi",
+    "site-packages",
+    "**migrations/**",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+]
+
+[lint]
+extend-select = [
+    "ANN",
+    "A",
+    "SIM",
+    "FAST",
+    "ASYNC",
+    "E",
+    "W",
+    "F",
+    "C",
+    "D",
+    "DOC",
+    "I",
+    "ISC",
+    "PD",
+    "NPY",
+    "TCH",
+    "TID25",
+    "PIE",
+    "PT",
+    "PTH",
+    "T20",
+    "UP",
+    "PL",
+    "RUF",
+    "B",
+]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D202",
+    "D203",
+    "D205",
+    "D206",
+    "D213",
+    "D407",
+    "D212",
+    "PT019",
+]
+
+[lint.isort]
+combine-as-imports = true
+known-third-party = ["fastapi", "pydantic", "starlette", "langchain"]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+
+[format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 90
+
+[lint.flake8-tidy-imports]
+# Disallow all relative imports.
+ban-relative-imports = "all"
+# Ban certain modules from being imported at module level, instead requiring
+# that they're imported lazily (e.g., within a function definition).
+banned-module-level-imports = ["numpy", "pandas"]

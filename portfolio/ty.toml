@@ -1,0 +1,11 @@
+[environment]
+root = ["."]
+python-version = "3.14"
+
+[rules]
+possibly-unresolved-reference = "warn"
+division-by-zero='warn'
+unresolved-import = "ignore"
+[terminal]
+# Error if ty emits any warning-level diagnostics.
+error-on-warning = true
