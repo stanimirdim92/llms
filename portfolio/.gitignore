@@ -6,6 +6,13 @@ deployment.xml
 *.pyc
 .env
 
+# AI Engineer Portfolio — generated data, never checked in
+data/chroma/
+data/raw_pdfs/
+data/processed/
+data/eval/results/
+data/incoming_queue.db
+
 
 ### Python template
 # Byte-compiled / optimized / DLL files

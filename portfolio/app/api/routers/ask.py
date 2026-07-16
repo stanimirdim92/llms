@@ -1,15 +1,21 @@
+from functools import lru_cache
+
 from fastapi import APIRouter
 
 from app.api.schemas import AskRequest, AskResponse, CitationResponse, RetrievedChunkResponse
 from app.generation.answer_service import AnswerService
 
 router = APIRouter()
-_service = AnswerService()
+
+
+@lru_cache
+def _service() -> AnswerService:
+    return AnswerService()
 
 
 @router.post("/ask", response_model=AskResponse)
 async def ask(request: AskRequest) -> AskResponse:
-    result = _service.answer(request.question)
+    result = _service().answer(request.question)
     return AskResponse(
         answer=result.text,
         citations=[
