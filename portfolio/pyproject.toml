@@ -62,12 +62,23 @@ dependencies = [
     "pyahocorasick>=2.3.0,<3.0.0",
     "poppler-utils>=0.1.0,<0.2.0",
     #langchain-cli = "^0" # FOR LATER
-    #langchain-anthropic = "^1.2" # FOR LATER
     #langchain-groq = "^1.1" # FOR LATER
     #langchain-google-community = "^3.0"  # FOR LATER
     #opencv-python  = "^4"
     #celery = {extras = ["redis"], version = "^5.5"}
     "pyrefly>=0.60.0",
+    # AI Engineer Portfolio (Iris.ai track) — RAG / eval / agent additions
+    "anthropic>=0.75,<1.0.0",
+    "langchain-anthropic>=1.1,<2.0.0",
+    "pydantic-settings>=2.7,<3.0.0",
+    "docling>=2.15,<3.0.0",
+    "pymupdf>=1.26,<2.0.0",
+    "chromadb>=1.0,<2.0.0",
+    "voyageai>=0.3,<1.0.0",
+    "cohere>=5.13,<6.0.0",
+    "arxiv>=2.1,<3.0.0",
+    "structlog>=25.1,<26.0.0",
+    "streamlit>=1.42,<2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -77,6 +88,9 @@ dev = [
   "ty",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9,<10",
+]
+local-reranker = [
+  "sentence-transformers>=3.3,<4.0.0",
 ]
 
 

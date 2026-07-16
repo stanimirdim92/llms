@@ -38,9 +38,9 @@ This document surveys how production agentic systems are actually architected (a
         └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Orchestrator** (`agent/graph.py`) — the workflow half of the system: deterministic control flow, unchanged from a plain LangGraph `StateGraph`. It owns the `interrupt()`/`SqliteSaver` HITL gate and is the *only* place the `commit` tool is reachable.
-- **Curator Agent** (`agent/subagents/curator.py`) — reasons over the new item against the existing KB (via `mcp_server` tools: `kb_query`, `contradiction_check`) and against `episodic_memory.py` (has something like this been decided before?), producing a confidence verdict + rationale.
-- **Evaluator Agent** (`agent/subagents/evaluator.py`) — the evaluator-optimizer pattern: an independent second pass that critiques the Curator's verdict rather than rubber-stamping it. Disagreement between the two forces escalation even if one side reports high confidence — this is the concrete mechanism that makes "human-in-the-loop" mean something more than "one model's confidence score."
+- **Orchestrator** (`app/agent/graph.py`) — the workflow half of the system: deterministic control flow, unchanged from a plain LangGraph `StateGraph`. It owns the `interrupt()`/`SqliteSaver` HITL gate and is the *only* place the `commit` tool is reachable.
+- **Curator Agent** (`app/agent/subagents/curator.py`) — reasons over the new item against the existing KB (via `mcp_server` tools: `kb_query`, `contradiction_check`) and against `episodic_memory.py` (has something like this been decided before?), producing a confidence verdict + rationale.
+- **Evaluator Agent** (`app/agent/subagents/evaluator.py`) — the evaluator-optimizer pattern: an independent second pass that critiques the Curator's verdict rather than rubber-stamping it. Disagreement between the two forces escalation even if one side reports high confidence — this is the concrete mechanism that makes "human-in-the-loop" mean something more than "one model's confidence score."
 
 **Why two subagents and not a swarm:** matches the ~70%-of-production orchestrator-worker pattern; keeps the system debuggable as a single traceable path through the Reasoning Trace UI; keeps cost bounded (2 extra LLM calls per curation decision, not N).
 
@@ -51,7 +51,7 @@ This document surveys how production agentic systems are actually architected (a
 |---|---|---|
 | Short-term | Current run's state | LangGraph `StateGraph` state, checkpointed via `SqliteSaver` |
 | Long-term | The knowledge base itself | Epic 1's Chroma collection (Epic 3 imports it directly — no second store) |
-| Episodic | Past human curation decisions + rationale | `agent/episodic_memory.py` (SQLite), consulted by the Curator so settled judgment calls aren't re-litigated every run |
+| Episodic | Past human curation decisions + rationale | `app/agent/episodic_memory.py` (sqlmodel), consulted by the Curator so settled judgment calls aren't re-litigated every run |
 
 **Defense-in-depth against prompt injection** (scraped web content is the untrusted-input surface here):
 1. Context isolation — scraped text is always passed as inert `document`-typed content, never concatenated into system/tool instructions.
