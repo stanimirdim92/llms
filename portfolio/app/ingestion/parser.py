@@ -1,14 +1,20 @@
 """Parse a document into a structured Docling representation, preserving tables and
 figure regions. Not PDF-only: Docling natively backs several formats (see
-`app.ingestion.formats.SUPPORTED_UPLOAD_FORMATS`), and `TableItem`/`PictureItem`/
-`HybridChunker` downstream are format-agnostic over the resulting `DoclingDocument`."""
+`app.ingestion.formats.SUPPORTED_UPLOAD_EXTENSIONS`), and `TableItem`/`PictureItem`/
+`HybridChunker` downstream are format-agnostic over the resulting `DoclingDocument`.
+"""
 
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from docling.datamodel.base_models import InputFormat
-from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc.document import DoclingDocument
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # Only PDF needs an explicit pipeline-options override: it's rendered from page rasters, so
 # figures must be explicitly requested (generate_picture_images=True). Other formats (DOCX,

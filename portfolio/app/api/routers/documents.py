@@ -1,5 +1,6 @@
 import uuid
 from functools import lru_cache
+from typing import Annotated
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
@@ -19,7 +20,10 @@ def _store() -> ChromaStore:
 
 
 @router.post("/documents", response_model=UploadResponse)
-async def upload_document(file: UploadFile = File(...), session_id: str | None = Form(None)) -> UploadResponse:
+async def upload_document(
+    file: Annotated[UploadFile, File()],
+    session_id: Annotated[str | None, Form()] = None,
+) -> UploadResponse:
     if not file.filename or not is_supported_upload(file.filename):
         raise HTTPException(
             status_code=400,

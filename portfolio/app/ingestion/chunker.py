@@ -1,12 +1,18 @@
 """Structure-aware chunking: prose via Docling's HybridChunker, tables and figures as atomic chunks."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from docling.chunking import HybridChunker
 from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from docling_core.types.doc.document import DoclingDocument, TableItem
 
 from app.config import get_settings
-from app.ingestion.figure_extractor import ExtractedFigure
 from app.ingestion.models import GLOBAL_SESSION, Chunk
+
+if TYPE_CHECKING:
+    from app.ingestion.figure_extractor import ExtractedFigure
 
 _EMBEDDING_TOKENIZER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -30,7 +36,9 @@ def chunk_document(
     settings = get_settings()
     chunks: list[Chunk] = []
 
-    tokenizer = HuggingFaceTokenizer.from_pretrained(model_name=_EMBEDDING_TOKENIZER_MODEL, max_tokens=settings.chunk_max_tokens)
+    tokenizer = HuggingFaceTokenizer.from_pretrained(
+        model_name=_EMBEDDING_TOKENIZER_MODEL, max_tokens=settings.chunk_max_tokens
+    )
     chunker = HybridChunker(tokenizer=tokenizer)
     text_chunk_index = 0
     for docling_chunk in chunker.chunk(document):

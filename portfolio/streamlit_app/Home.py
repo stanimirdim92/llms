@@ -1,5 +1,6 @@
 """Demo UI for the /ask RAG pipeline: upload your own documents, ask a question, get a
-cited answer grounded in the curated corpus plus anything you've uploaded this session."""
+cited answer grounded in the curated corpus plus anything you've uploaded this session.
+"""
 
 import uuid
 

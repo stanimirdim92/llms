@@ -5,12 +5,14 @@ Built on LangChain (ChatAnthropic) rather than the raw Anthropic SDK so it share
 framework Epic 3's LangGraph agent runs on.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from time import perf_counter
+from typing import TYPE_CHECKING
 
 import structlog
 from langchain_anthropic import ChatAnthropic
-from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import get_settings
@@ -18,7 +20,14 @@ from app.generation.prompts import SYSTEM_PROMPT
 from app.retrieval.reranker import rerank
 from app.retrieval.retriever import Retriever
 
+if TYPE_CHECKING:
+    from langchain_core.documents import Document
+
 log = structlog.get_logger(__name__)
+
+# AIMessage.content: a plain string, or a list of content blocks (each a dict mirroring
+# the raw Anthropic API shape when citations/structured output are involved).
+AnthropicContent = str | list[str | dict]
 
 
 @dataclass(frozen=True)
@@ -54,9 +63,10 @@ def _build_document_blocks(documents: list[Document]) -> list[dict]:
     ]
 
 
-def _extract_citations(content_blocks, documents: list[Document]) -> list[Citation]:
+def _extract_citations(content_blocks: AnthropicContent, documents: list[Document]) -> list[Citation]:
     """`content_blocks` is the AIMessage's `.content`, a list of blocks when citations
-    are enabled (each a dict mirroring the raw Anthropic API shape)."""
+    are enabled (each a dict mirroring the raw Anthropic API shape).
+    """
     citations: list[Citation] = []
     if isinstance(content_blocks, str):
         return citations
@@ -80,10 +90,12 @@ def _extract_citations(content_blocks, documents: list[Document]) -> list[Citati
     return citations
 
 
-def _extract_text(content_blocks) -> str:
+def _extract_text(content_blocks: AnthropicContent) -> str:
     if isinstance(content_blocks, str):
         return content_blocks
-    return "".join(block.get("text", "") for block in content_blocks if isinstance(block, dict) and block.get("type") == "text")
+    return "".join(
+        block.get("text", "") for block in content_blocks if isinstance(block, dict) and block.get("type") == "text"
+    )
 
 
 class AnswerService:
