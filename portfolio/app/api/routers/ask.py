@@ -26,13 +26,13 @@ async def ask(request: AskRequest) -> AskResponse:
         ],
         retrieved_chunks=[
             RetrievedChunkResponse(
-                chunk_id=c.chunk_id,
-                doc_id=c.doc_id,
-                chunk_type=c.chunk_type,
-                page_no=c.page_no,
-                section_path=c.section_path,
-                text=c.text,
+                chunk_id=doc.metadata.get("chunk_id", ""),
+                doc_id=doc.metadata.get("doc_id", ""),
+                chunk_type=doc.metadata.get("chunk_type", "text"),
+                page_no=doc.metadata.get("page_no"),
+                section_path=doc.metadata.get("section_path", ""),
+                text=doc.page_content,
             )
-            for c in result.retrieved_chunks
+            for doc in result.retrieved_chunks
         ],
     )

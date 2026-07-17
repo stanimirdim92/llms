@@ -1,45 +1,35 @@
-"""Rerank retrieved chunks. Backend is env-selectable so the system isn't hard-locked to a paid API."""
+"""Rerank retrieved chunks via LangChain's document-compressor interface. Backend is
+env-selectable so the system isn't hard-locked to a paid API."""
 
 from functools import lru_cache
 
-import cohere
+from langchain_core.documents import Document
 
 from app.config import get_settings
-from app.vectorstore.chroma_store import RetrievedChunk
 
 
 @lru_cache
-def _local_cross_encoder():
-    from sentence_transformers import CrossEncoder
+def _local_compressor():
+    from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+    from langchain.retrievers.document_compressors import CrossEncoderReranker
 
     settings = get_settings()
-    return CrossEncoder(settings.local_reranker_model)
+    model = HuggingFaceCrossEncoder(model_name=settings.local_reranker_model)
+    return CrossEncoderReranker(model=model, top_n=settings.rerank_top_n)
 
 
-def _rerank_cohere(query: str, chunks: list[RetrievedChunk], top_n: int) -> list[RetrievedChunk]:
+def _cohere_compressor():
+    from langchain_cohere import CohereRerank
+
     settings = get_settings()
-    client = cohere.ClientV2(api_key=settings.cohere_api_key)
-    response = client.rerank(
-        model=settings.cohere_rerank_model,
-        query=query,
-        documents=[c.text for c in chunks],
-        top_n=min(top_n, len(chunks)),
-    )
-    return [chunks[result.index] for result in response.results]
+    return CohereRerank(cohere_api_key=settings.cohere_api_key, model=settings.cohere_rerank_model, top_n=settings.rerank_top_n)
 
 
-def _rerank_local(query: str, chunks: list[RetrievedChunk], top_n: int) -> list[RetrievedChunk]:
-    model = _local_cross_encoder()
-    scores = model.predict([(query, c.text) for c in chunks])
-    ranked = sorted(zip(chunks, scores, strict=True), key=lambda pair: pair[1], reverse=True)
-    return [chunk for chunk, _score in ranked[:top_n]]
-
-
-def rerank(query: str, chunks: list[RetrievedChunk], top_n: int | None = None) -> list[RetrievedChunk]:
+def rerank(query: str, documents: list[Document], top_n: int | None = None) -> list[Document]:
     settings = get_settings()
-    n = top_n or settings.rerank_top_n
-    if not chunks:
+    if not documents:
         return []
-    if settings.reranker_backend == "local":
-        return _rerank_local(query, chunks, n)
-    return _rerank_cohere(query, chunks, n)
+    compressor = _local_compressor() if settings.reranker_backend == "local" else _cohere_compressor()
+    reranked = compressor.compress_documents(documents, query)
+    n = top_n or settings.rerank_top_n
+    return list(reranked)[:n]

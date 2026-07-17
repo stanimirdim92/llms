@@ -67,15 +67,18 @@ dependencies = [
     #opencv-python  = "^4"
     #celery = {extras = ["redis"], version = "^5.5"}
     "pyrefly>=0.60.0",
-    # AI Engineer Portfolio (Iris.ai track) — RAG / eval / agent additions
-    "anthropic>=0.75,<1.0.0",
+    # AI Engineer Portfolio (Iris.ai track) — RAG / eval / agent additions.
+    # Generation, embeddings, vector store, and reranking all go through LangChain's
+    # integration packages (not the raw provider SDKs) so Epic 1 is built on the same
+    # framework Epic 3's LangGraph agent runs on, per the original plan.
     "langchain-anthropic>=1.1,<2.0.0",
+    "langchain-voyageai>=0.2,<1.0.0",
+    "langchain-chroma>=1.1,<2.0.0",
+    "langchain-cohere>=1.2,<2.0.0",
+    "langgraph-checkpoint-sqlite>=2.1,<3.0.0",
     "pydantic-settings>=2.7,<3.0.0",
     "docling>=2.15,<3.0.0",
     "pymupdf>=1.26,<2.0.0",
-    "chromadb>=1.0,<2.0.0",
-    "voyageai>=0.3,<1.0.0",
-    "cohere>=5.13,<6.0.0",
     "arxiv>=2.1,<3.0.0",
     "structlog>=25.1,<26.0.0",
     "streamlit>=1.42,<2.0.0",
