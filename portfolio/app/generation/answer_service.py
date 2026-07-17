@@ -1,17 +1,22 @@
 """Retrieve -> rerank -> generate with forced citations. The Epic 1 answer path, deliberately a
-workflow (fixed pipeline), not an agent -- see ARCHITECTURE.md section 2."""
+workflow (fixed pipeline), not an agent -- see ARCHITECTURE.md section 2.
+
+Built on LangChain (ChatAnthropic) rather than the raw Anthropic SDK so it shares the same
+framework Epic 3's LangGraph agent runs on.
+"""
 
 from dataclasses import dataclass, field
 from time import perf_counter
 
 import structlog
-from anthropic import Anthropic
+from langchain_anthropic import ChatAnthropic
+from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import get_settings
 from app.generation.prompts import SYSTEM_PROMPT
 from app.retrieval.reranker import rerank
 from app.retrieval.retriever import Retriever
-from app.vectorstore.chroma_store import RetrievedChunk
 
 log = structlog.get_logger(__name__)
 
@@ -28,80 +33,88 @@ class Citation:
 class Answer:
     text: str
     citations: list[Citation]
-    retrieved_chunks: list[RetrievedChunk] = field(default_factory=list)
+    retrieved_chunks: list[Document] = field(default_factory=list)
 
 
-def _chunk_title(chunk: RetrievedChunk) -> str:
-    location = f"page {chunk.page_no}" if chunk.page_no is not None else "unknown page"
-    return f"{chunk.doc_id} ({chunk.chunk_type}, {location})"
+def _chunk_title(document: Document) -> str:
+    meta = document.metadata
+    location = f"page {meta.get('page_no')}" if meta.get("page_no") is not None else "unknown page"
+    return f"{meta.get('doc_id', 'unknown')} ({meta.get('chunk_type', 'text')}, {location})"
 
 
-def _build_document_blocks(chunks: list[RetrievedChunk]) -> list[dict]:
+def _build_document_blocks(documents: list[Document]) -> list[dict]:
     return [
         {
             "type": "document",
-            "source": {"type": "text", "media_type": "text/plain", "data": chunk.text},
-            "title": _chunk_title(chunk),
+            "source": {"type": "text", "media_type": "text/plain", "data": document.page_content},
+            "title": _chunk_title(document),
             "citations": {"enabled": True},
         }
-        for chunk in chunks
+        for document in documents
     ]
 
 
-def _extract_citations(content_blocks: list, chunks: list[RetrievedChunk]) -> list[Citation]:
+def _extract_citations(content_blocks, documents: list[Document]) -> list[Citation]:
+    """`content_blocks` is the AIMessage's `.content`, a list of blocks when citations
+    are enabled (each a dict mirroring the raw Anthropic API shape)."""
     citations: list[Citation] = []
+    if isinstance(content_blocks, str):
+        return citations
+
     for block in content_blocks:
-        for citation in getattr(block, "citations", None) or []:
-            doc_index = getattr(citation, "document_index", None)
-            if doc_index is None or doc_index >= len(chunks):
+        if not isinstance(block, dict):
+            continue
+        for citation in block.get("citations") or []:
+            doc_index = citation.get("document_index")
+            if doc_index is None or doc_index >= len(documents):
                 continue
-            source_chunk = chunks[doc_index]
+            source = documents[doc_index]
             citations.append(
                 Citation(
-                    quoted_text=getattr(citation, "cited_text", ""),
-                    chunk_id=source_chunk.chunk_id,
-                    doc_id=source_chunk.doc_id,
-                    page_no=source_chunk.page_no,
+                    quoted_text=citation.get("cited_text", ""),
+                    chunk_id=source.metadata.get("chunk_id", source.metadata.get("doc_id", "")),
+                    doc_id=source.metadata.get("doc_id", ""),
+                    page_no=source.metadata.get("page_no"),
                 )
             )
     return citations
+
+
+def _extract_text(content_blocks) -> str:
+    if isinstance(content_blocks, str):
+        return content_blocks
+    return "".join(block.get("text", "") for block in content_blocks if isinstance(block, dict) and block.get("type") == "text")
 
 
 class AnswerService:
     def __init__(self, retriever: Retriever | None = None) -> None:
         self._retriever = retriever or Retriever()
         settings = get_settings()
-        self._client = Anthropic(api_key=settings.anthropic_api_key)
-        self._model = settings.answer_model
+        self._llm = ChatAnthropic(model=settings.answer_model, api_key=settings.anthropic_api_key, max_tokens=1024)
 
     def answer(self, question: str) -> Answer:
         start = perf_counter()
         candidates = self._retriever.retrieve(question)
-        top_chunks = rerank(question, candidates)
+        top_documents = rerank(question, candidates)
 
-        response = self._client.messages.create(
-            model=self._model,
-            max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [*_build_document_blocks(top_chunks), {"type": "text", "text": question}],
-                }
-            ],
+        response = self._llm.invoke(
+            [
+                SystemMessage(content=SYSTEM_PROMPT),
+                HumanMessage(content=[*_build_document_blocks(top_documents), {"type": "text", "text": question}]),
+            ]
         )
 
-        text = "".join(block.text for block in response.content if block.type == "text")
-        citations = _extract_citations(response.content, top_chunks)
+        text = _extract_text(response.content)
+        citations = _extract_citations(response.content, top_documents)
         latency_ms = (perf_counter() - start) * 1000
 
         log.info(
             "answer_service.answered",
             question=question,
             retrieved=len(candidates),
-            reranked=len(top_chunks),
+            reranked=len(top_documents),
             citation_count=len(citations),
             latency_ms=round(latency_ms, 1),
         )
 
-        return Answer(text=text, citations=citations, retrieved_chunks=top_chunks)
+        return Answer(text=text, citations=citations, retrieved_chunks=top_documents)

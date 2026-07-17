@@ -32,10 +32,10 @@ if st.button("Ask", type="primary") and question:
         st.info("No citations were returned for this answer.")
 
     st.subheader("Retrieved chunks")
-    for chunk in result.retrieved_chunks:
-        with st.expander(f"[{chunk.chunk_type}] {chunk.doc_id} — {chunk.section_path or 'page ' + str(chunk.page_no)}"):
-            if chunk.chunk_type == "figure":
-                image_path = chunk.metadata.get("image_path") if hasattr(chunk, "metadata") else None
-                if image_path:
-                    st.image(image_path)
-            st.markdown(chunk.text)
+    for doc in result.retrieved_chunks:
+        meta = doc.metadata
+        section_or_page = meta.get("section_path") or f"page {meta.get('page_no')}"
+        with st.expander(f"[{meta.get('chunk_type', 'text')}] {meta.get('doc_id', '')} — {section_or_page}"):
+            if meta.get("chunk_type") == "figure" and meta.get("image_path"):
+                st.image(meta["image_path"])
+            st.markdown(doc.page_content)

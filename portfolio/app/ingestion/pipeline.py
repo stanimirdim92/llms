@@ -5,7 +5,6 @@ from pathlib import Path
 import structlog
 
 from app.config import get_settings
-from app.embeddings.voyage import embed_chunks
 from app.ingestion.chunker import chunk_document
 from app.ingestion.figure_extractor import extract_figures
 from app.ingestion.parser import load_parsed_document, parse_pdf, save_parsed_document
@@ -34,8 +33,7 @@ def ingest_document(doc_id: str, pdf_path: Path, store: ChromaStore) -> int:
     chunks = chunk_document(document, doc_id=doc_id, figures=figures)
     log.info("ingestion.chunked", doc_id=doc_id, count=len(chunks))
 
-    embedded = embed_chunks(chunks)
-    store.upsert(embedded)
-    log.info("ingestion.stored", doc_id=doc_id, count=len(embedded))
+    store.upsert(chunks)
+    log.info("ingestion.stored", doc_id=doc_id, count=len(chunks))
 
     return len(chunks)

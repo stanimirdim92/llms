@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import fitz  # PyMuPDF
-from anthropic import Anthropic
 from docling_core.types.doc.document import DoclingDocument, PictureItem
+from langchain_anthropic import ChatAnthropic
+from langchain_core.messages import HumanMessage
 
 from app.config import get_settings
 
@@ -40,25 +41,22 @@ def _crop_to_png(pdf_path: Path, page_no: int, bbox_pdf_coords: tuple[float, flo
 
 def _caption_with_claude(image_path: Path) -> str:
     settings = get_settings()
-    client = Anthropic(api_key=settings.anthropic_api_key)
+    llm = ChatAnthropic(model=settings.figure_caption_model, api_key=settings.anthropic_api_key, max_tokens=300)
     image_b64 = base64.standard_b64encode(image_path.read_bytes()).decode("utf-8")
-    response = client.messages.create(
-        model=settings.figure_caption_model,
-        max_tokens=300,
-        messages=[
+    message = HumanMessage(
+        content=[
             {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {"type": "base64", "media_type": "image/png", "data": image_b64},
-                    },
-                    {"type": "text", "text": _CAPTION_PROMPT},
-                ],
-            }
-        ],
+                "type": "image",
+                "source": {"type": "base64", "media_type": "image/png", "data": image_b64},
+            },
+            {"type": "text", "text": _CAPTION_PROMPT},
+        ]
     )
-    return "".join(block.text for block in response.content if block.type == "text").strip()
+    response = llm.invoke([message])
+    content = response.content
+    if isinstance(content, str):
+        return content.strip()
+    return "".join(block.get("text", "") for block in content if isinstance(block, dict) and block.get("type") == "text").strip()
 
 
 def extract_figures(document: DoclingDocument, pdf_path: Path, output_dir: Path) -> list[ExtractedFigure]:
