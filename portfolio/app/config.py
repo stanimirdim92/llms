@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     figure_caption_model: str = Field(default="claude-sonnet-5")
 
     voyage_api_key: str = Field(default="")
-    voyage_model: str = Field(default="voyage-3.5")
+    voyage_model: str = Field(default="voyage-4")
 
     reranker_backend: str = Field(default="voyage")  # "voyage" | "local"
     voyage_rerank_model: str = Field(default="rerank-2.5")

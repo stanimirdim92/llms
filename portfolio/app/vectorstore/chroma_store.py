@@ -54,4 +54,7 @@ class ChromaStore:
         return self._store.as_retriever(search_kwargs={"k": top_k})
 
     def count(self) -> int:
-        return self._store._collection.count()
+        # `Chroma` has no public count() method; `.get()` (public API) with only ids
+        # returned is the least-fragile way to size the collection without reaching
+        # into the underlying client's private `_collection` attribute.
+        return len(self._store.get(include=[])["ids"])

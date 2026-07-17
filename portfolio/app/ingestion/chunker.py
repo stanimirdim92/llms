@@ -1,11 +1,14 @@
 """Structure-aware chunking: prose via Docling's HybridChunker, tables and figures as atomic chunks."""
 
 from docling.chunking import HybridChunker
+from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from docling_core.types.doc.document import DoclingDocument, TableItem
 
 from app.config import get_settings
 from app.ingestion.figure_extractor import ExtractedFigure
 from app.ingestion.models import Chunk
+
+_EMBEDDING_TOKENIZER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 def _table_to_markdown(table: TableItem, document: DoclingDocument) -> str:
@@ -22,7 +25,8 @@ def chunk_document(document: DoclingDocument, doc_id: str, figures: list[Extract
     settings = get_settings()
     chunks: list[Chunk] = []
 
-    chunker = HybridChunker(max_tokens=settings.chunk_max_tokens)
+    tokenizer = HuggingFaceTokenizer.from_pretrained(model_name=_EMBEDDING_TOKENIZER_MODEL, max_tokens=settings.chunk_max_tokens)
+    chunker = HybridChunker(tokenizer=tokenizer)
     text_chunk_index = 0
     for docling_chunk in chunker.chunk(document):
         text = chunker.contextualize(chunk=docling_chunk)
@@ -51,7 +55,7 @@ def chunk_document(document: DoclingDocument, doc_id: str, figures: list[Extract
     ):
         page_no = item.prov[0].page_no if item.prov else None
         markdown = _table_to_markdown(item, document)
-        caption = item.caption_text(document) if hasattr(item, "caption_text") else ""
+        caption = item.caption_text(document)
         text = f"{caption}\n\n{markdown}".strip() if caption else markdown
         chunks.append(
             Chunk(
