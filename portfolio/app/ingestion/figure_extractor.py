@@ -1,10 +1,19 @@
-"""Crop figure regions from a PDF and caption them with Claude vision so they become searchable chunks."""
+"""Save figure images from a parsed document and caption them with Claude vision so they
+become searchable chunks.
+
+Docling itself renders each PictureItem's image during parsing (when
+`generate_picture_images=True`, set in `parser.py`) and exposes it via
+`PictureItem.get_image(document)` -- so this does NOT re-open/re-crop the original PDF
+with a second library. An earlier version of this file used PyMuPDF for that, which was
+both an unnecessary dependency and required manually flipping Docling's bbox coordinate
+origin to match PyMuPDF's, a needless source of bugs Docling already solves internally.
+"""
 
 import base64
+import io
 from dataclasses import dataclass
 from pathlib import Path
 
-import fitz  # PyMuPDF
 from docling_core.types.doc.document import DoclingDocument, PictureItem
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage
@@ -27,22 +36,15 @@ class ExtractedFigure:
     caption: str
 
 
-def _crop_to_png(pdf_path: Path, page_no: int, bbox_pdf_coords: tuple[float, float, float, float], out_path: Path) -> None:
-    doc = fitz.open(str(pdf_path))
-    try:
-        page = doc[page_no - 1]
-        rect = fitz.Rect(*bbox_pdf_coords)
-        pix = page.get_pixmap(clip=rect, dpi=200)
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        pix.save(str(out_path))
-    finally:
-        doc.close()
-
-
-def _caption_with_claude(image_path: Path) -> str:
+def _caption_with_claude(image_bytes: bytes) -> str:
     settings = get_settings()
-    llm = ChatAnthropic(model=settings.figure_caption_model, api_key=settings.anthropic_api_key, max_tokens=300)
-    image_b64 = base64.standard_b64encode(image_path.read_bytes()).decode("utf-8")
+    llm = ChatAnthropic(
+        model=settings.figure_caption_model,
+        api_key=settings.anthropic_api_key,
+        max_tokens=300,
+        thinking={"type": "disabled"},
+    )
+    image_b64 = base64.standard_b64encode(image_bytes).decode("utf-8")
     message = HumanMessage(
         content=[
             {
@@ -59,31 +61,26 @@ def _caption_with_claude(image_path: Path) -> str:
     return "".join(block.get("text", "") for block in content if isinstance(block, dict) and block.get("type") == "text").strip()
 
 
-def extract_figures(document: DoclingDocument, pdf_path: Path, output_dir: Path) -> list[ExtractedFigure]:
-    """Crop every picture region in `document` to a PNG and caption it with Claude vision."""
+def extract_figures(document: DoclingDocument, output_dir: Path) -> list[ExtractedFigure]:
+    """Save every picture region already rendered in `document` to a PNG and caption it."""
     figures: list[ExtractedFigure] = []
+    output_dir.mkdir(parents=True, exist_ok=True)
     picture_items = [item for item, _level in document.iterate_items() if isinstance(item, PictureItem)]
 
     for index, item in enumerate(picture_items):
-        provenance = item.prov[0] if item.prov else None
-        if provenance is None:
+        image = item.get_image(document)
+        if image is None:
             continue
-
-        page_no = provenance.page_no
-        bbox = provenance.bbox
-        page_size = document.pages[page_no].size
-        # Docling bboxes are bottom-left origin; PyMuPDF/fitz rects are top-left origin.
-        pdf_bbox = (
-            bbox.l,
-            page_size.height - bbox.t,
-            bbox.r,
-            page_size.height - bbox.b,
-        )
+        provenance = item.prov[0] if item.prov else None
+        page_no = provenance.page_no if provenance else 0
 
         figure_id = f"fig-{page_no:03d}-{index:02d}"
         image_path = output_dir / f"{figure_id}.png"
-        _crop_to_png(pdf_path, page_no, pdf_bbox, image_path)
-        caption = _caption_with_claude(image_path)
+        image.save(image_path, "PNG")
+
+        buffer = io.BytesIO()
+        image.save(buffer, "PNG")
+        caption = _caption_with_claude(buffer.getvalue())
         figures.append(ExtractedFigure(figure_id=figure_id, page_no=page_no, image_path=image_path, caption=caption))
 
     return figures

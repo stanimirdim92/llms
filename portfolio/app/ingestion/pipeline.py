@@ -27,7 +27,7 @@ def ingest_document(doc_id: str, pdf_path: Path, store: ChromaStore) -> int:
         save_parsed_document(document, processed_path)
 
     figure_dir = settings.processed_dir / doc_id / "figures"
-    figures = extract_figures(document, pdf_path, figure_dir)
+    figures = extract_figures(document, figure_dir)
     log.info("ingestion.figures_extracted", doc_id=doc_id, count=len(figures))
 
     chunks = chunk_document(document, doc_id=doc_id, figures=figures)

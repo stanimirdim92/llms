@@ -90,7 +90,12 @@ class AnswerService:
     def __init__(self, retriever: Retriever | None = None) -> None:
         self._retriever = retriever or Retriever()
         settings = get_settings()
-        self._llm = ChatAnthropic(model=settings.answer_model, api_key=settings.anthropic_api_key, max_tokens=1024)
+        self._llm = ChatAnthropic(
+            model=settings.answer_model,
+            api_key=settings.anthropic_api_key,
+            max_tokens=1024,
+            thinking={"type": "disabled"},
+        )
 
     def answer(self, question: str) -> Answer:
         start = perf_counter()
