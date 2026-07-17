@@ -18,18 +18,18 @@ def _local_compressor():
     return CrossEncoderReranker(model=model, top_n=settings.rerank_top_n)
 
 
-def _cohere_compressor():
-    from langchain_cohere import CohereRerank
+def _voyage_compressor():
+    from langchain_voyageai import VoyageAIRerank
 
     settings = get_settings()
-    return CohereRerank(cohere_api_key=settings.cohere_api_key, model=settings.cohere_rerank_model, top_n=settings.rerank_top_n)
+    return VoyageAIRerank(voyage_api_key=settings.voyage_api_key, model=settings.voyage_rerank_model, top_k=settings.rerank_top_n)
 
 
 def rerank(query: str, documents: list[Document], top_n: int | None = None) -> list[Document]:
     settings = get_settings()
     if not documents:
         return []
-    compressor = _local_compressor() if settings.reranker_backend == "local" else _cohere_compressor()
+    compressor = _local_compressor() if settings.reranker_backend == "local" else _voyage_compressor()
     reranked = compressor.compress_documents(documents, query)
     n = top_n or settings.rerank_top_n
     return list(reranked)[:n]

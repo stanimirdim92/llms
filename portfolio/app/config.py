@@ -18,9 +18,8 @@ class Settings(BaseSettings):
     voyage_api_key: str = Field(default="")
     voyage_model: str = Field(default="voyage-3.5")
 
-    cohere_api_key: str = Field(default="")
-    reranker_backend: str = Field(default="cohere")  # "cohere" | "local"
-    cohere_rerank_model: str = Field(default="rerank-v3.5")
+    reranker_backend: str = Field(default="voyage")  # "voyage" | "local"
+    voyage_rerank_model: str = Field(default="rerank-2.5")
     local_reranker_model: str = Field(default="BAAI/bge-reranker-v2-m3")
 
     chroma_path: Path = Field(default=DATA_DIR / "chroma")
