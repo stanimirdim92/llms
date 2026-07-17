@@ -6,7 +6,7 @@ from docling_core.types.doc.document import DoclingDocument, TableItem
 
 from app.config import get_settings
 from app.ingestion.figure_extractor import ExtractedFigure
-from app.ingestion.models import Chunk
+from app.ingestion.models import GLOBAL_SESSION, Chunk
 
 _EMBEDDING_TOKENIZER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -15,7 +15,12 @@ def _table_to_markdown(table: TableItem, document: DoclingDocument) -> str:
     return table.export_to_markdown(document)
 
 
-def chunk_document(document: DoclingDocument, doc_id: str, figures: list[ExtractedFigure]) -> list[Chunk]:
+def chunk_document(
+    document: DoclingDocument,
+    doc_id: str,
+    figures: list[ExtractedFigure],
+    session_id: str = GLOBAL_SESSION,
+) -> list[Chunk]:
     """Produce text, table, and figure chunks for one parsed document.
 
     Tables are always kept as a single atomic chunk (never split mid-row) and figures
@@ -46,6 +51,7 @@ def chunk_document(document: DoclingDocument, doc_id: str, figures: list[Extract
                 text=text,
                 page_no=page_no,
                 section_path=" > ".join(headings),
+                session_id=session_id,
             )
         )
         text_chunk_index += 1
@@ -65,6 +71,7 @@ def chunk_document(document: DoclingDocument, doc_id: str, figures: list[Extract
                 text=text,
                 page_no=page_no,
                 metadata={"markdown": markdown},
+                session_id=session_id,
             )
         )
 
@@ -77,6 +84,7 @@ def chunk_document(document: DoclingDocument, doc_id: str, figures: list[Extract
                 text=figure.caption,
                 page_no=figure.page_no,
                 metadata={"image_path": str(figure.image_path)},
+                session_id=session_id,
             )
         )
 

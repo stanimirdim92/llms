@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 
 from app.api.routers.ask import router as ask_router
+from app.api.routers.documents import router as documents_router
 
 app = FastAPI(
     title="AI Engineer Portfolio — Iris.ai Track",
@@ -21,6 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(ask_router)
+app.include_router(documents_router)
 
 
 @app.get("/")

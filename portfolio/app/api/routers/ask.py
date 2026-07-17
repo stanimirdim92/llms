@@ -15,7 +15,7 @@ def _service() -> AnswerService:
 
 @router.post("/ask", response_model=AskResponse)
 async def ask(request: AskRequest) -> AskResponse:
-    result = _service().answer(request.question)
+    result = _service().answer(request.question, session_id=request.session_id)
     return AskResponse(
         answer=result.text,
         citations=[

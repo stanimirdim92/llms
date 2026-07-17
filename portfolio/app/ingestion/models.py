@@ -10,6 +10,10 @@ from typing import Literal
 ChunkType = Literal["text", "table", "figure"]
 
 
+GLOBAL_SESSION = "global"
+"""Session tag for the curated corpus, always searchable regardless of who's asking."""
+
+
 @dataclass(frozen=True)
 class Chunk:
     chunk_id: str
@@ -19,3 +23,4 @@ class Chunk:
     page_no: int | None = None
     section_path: str = ""
     metadata: dict = field(default_factory=dict)
+    session_id: str = GLOBAL_SESSION

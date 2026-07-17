@@ -24,7 +24,7 @@ def main() -> None:
             print(f"missing PDF, run fetch_corpus.py first: {arxiv_id}")
             continue
 
-        count = ingest_document(doc_id=arxiv_id, pdf_path=pdf_path, store=store)
+        count = ingest_document(doc_id=arxiv_id, file_path=pdf_path, store=store)
         total_chunks += count
         print(f"ingested {arxiv_id}: {count} chunks")
 

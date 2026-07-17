@@ -8,7 +8,7 @@ from langchain_core.documents import Document
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
-from app.ingestion.models import Chunk
+from app.ingestion.models import GLOBAL_SESSION, Chunk
 
 
 def _chunk_metadata(chunk: Chunk) -> dict:
@@ -17,6 +17,7 @@ def _chunk_metadata(chunk: Chunk) -> dict:
         "doc_id": chunk.doc_id,
         "chunk_type": chunk.chunk_type,
         "section_path": chunk.section_path,
+        "session_id": chunk.session_id,
     }
     if chunk.page_no is not None:
         metadata["page_no"] = chunk.page_no
@@ -28,6 +29,19 @@ def _chunk_metadata(chunk: Chunk) -> dict:
 
 def _to_document(chunk: Chunk) -> Document:
     return Document(page_content=chunk.text, metadata=_chunk_metadata(chunk))
+
+
+def _build_filter(chunk_types: list[str] | None, session_id: str | None) -> dict | None:
+    """Always includes the global corpus; additionally includes `session_id`'s own
+    uploads if given. This is the only thing that makes uploaded documents searchable
+    only by the session that uploaded them -- see ARCHITECTURE.md."""
+    session_ids = [GLOBAL_SESSION] if not session_id or session_id == GLOBAL_SESSION else [GLOBAL_SESSION, session_id]
+    conditions = [{"session_id": {"$in": session_ids}}]
+    if chunk_types:
+        conditions.append({"chunk_type": {"$in": chunk_types}})
+    if len(conditions) == 1:
+        return conditions[0]
+    return {"$and": conditions}
 
 
 class ChromaStore:
@@ -46,8 +60,14 @@ class ChromaStore:
         documents = [_to_document(chunk) for chunk in chunks]
         self._store.add_documents(documents, ids=[chunk.chunk_id for chunk in chunks])
 
-    def query(self, query: str, top_k: int, chunk_types: list[str] | None = None) -> list[Document]:
-        where = {"chunk_type": {"$in": chunk_types}} if chunk_types else None
+    def query(
+        self,
+        query: str,
+        top_k: int,
+        chunk_types: list[str] | None = None,
+        session_id: str | None = None,
+    ) -> list[Document]:
+        where = _build_filter(chunk_types, session_id)
         return self._store.similarity_search(query, k=top_k, filter=where)
 
     def as_retriever(self, top_k: int):

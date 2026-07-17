@@ -97,9 +97,9 @@ class AnswerService:
             thinking={"type": "disabled"},
         )
 
-    def answer(self, question: str) -> Answer:
+    def answer(self, question: str, session_id: str | None = None) -> Answer:
         start = perf_counter()
-        candidates = self._retriever.retrieve(question)
+        candidates = self._retriever.retrieve(question, session_id=session_id)
         top_documents = rerank(question, candidates)
 
         response = self._llm.invoke(
@@ -116,6 +116,7 @@ class AnswerService:
         log.info(
             "answer_service.answered",
             question=question,
+            session_id=session_id,
             retrieved=len(candidates),
             reranked=len(top_documents),
             citation_count=len(citations),
