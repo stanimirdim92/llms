@@ -1,10 +1,16 @@
 """Vector search over the Chroma KB. Embedding of the query happens inside `Chroma` itself
-(via the `Embeddings` instance passed to `ChromaStore`), so this stays a thin wrapper."""
+(via the `Embeddings` instance passed to `ChromaStore`), so this stays a thin wrapper.
+"""
 
-from langchain_core.documents import Document
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from app.config import get_settings
 from app.vectorstore.chroma_store import ChromaStore
+
+if TYPE_CHECKING:
+    from langchain_core.documents import Document
 
 
 class Retriever:

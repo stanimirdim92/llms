@@ -1,6 +1,8 @@
 """Orchestrates parse -> figure-caption -> chunk -> embed -> store for one document."""
 
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import structlog
 
@@ -9,7 +11,11 @@ from app.ingestion.chunker import chunk_document
 from app.ingestion.figure_extractor import extract_figures
 from app.ingestion.models import GLOBAL_SESSION
 from app.ingestion.parser import load_parsed_document, parse_document, save_parsed_document
-from app.vectorstore.chroma_store import ChromaStore
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from app.vectorstore.chroma_store import ChromaStore
 
 log = structlog.get_logger(__name__)
 

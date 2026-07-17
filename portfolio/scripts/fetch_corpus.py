@@ -8,7 +8,7 @@ import arxiv
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.config import get_settings  # noqa: E402
+from app.config import get_settings
 
 
 def main() -> None:

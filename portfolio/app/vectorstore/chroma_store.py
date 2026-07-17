@@ -3,12 +3,19 @@
 Epic 3's agent imports this module directly rather than constructing a second store.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
 from app.ingestion.models import GLOBAL_SESSION, Chunk
+
+if TYPE_CHECKING:
+    from langchain_core.vectorstores.base import VectorStoreRetriever
 
 
 def _chunk_metadata(chunk: Chunk) -> dict:
@@ -34,7 +41,8 @@ def _to_document(chunk: Chunk) -> Document:
 def _build_filter(chunk_types: list[str] | None, session_id: str | None) -> dict | None:
     """Always includes the global corpus; additionally includes `session_id`'s own
     uploads if given. This is the only thing that makes uploaded documents searchable
-    only by the session that uploaded them -- see ARCHITECTURE.md."""
+    only by the session that uploaded them -- see ARCHITECTURE.md.
+    """
     session_ids = [GLOBAL_SESSION] if not session_id or session_id == GLOBAL_SESSION else [GLOBAL_SESSION, session_id]
     conditions = [{"session_id": {"$in": session_ids}}]
     if chunk_types:
@@ -70,7 +78,7 @@ class ChromaStore:
         where = _build_filter(chunk_types, session_id)
         return self._store.similarity_search(query, k=top_k, filter=where)
 
-    def as_retriever(self, top_k: int):
+    def as_retriever(self, top_k: int) -> VectorStoreRetriever:
         return self._store.as_retriever(search_kwargs={"k": top_k})
 
     def count(self) -> int:

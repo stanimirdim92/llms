@@ -73,6 +73,12 @@ ignore = [
 combine-as-imports = true
 known-third-party = ["fastapi", "pydantic", "starlette", "langchain"]
 
+[lint.per-file-ignores]
+# CLI scripts print by design; that's their whole output mechanism.
+"scripts/*.py" = ["T201"]
+# Test literals (expected counts, sample values) aren't "magic numbers" to name.
+"tests/**/*.py" = ["PLR2004"]
+
 [lint.pydocstyle]
 convention = "google"
 

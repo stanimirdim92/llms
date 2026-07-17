@@ -9,16 +9,21 @@ both an unnecessary dependency and required manually flipping Docling's bbox coo
 origin to match PyMuPDF's, a needless source of bugs Docling already solves internally.
 """
 
+from __future__ import annotations
+
 import base64
 import io
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from docling_core.types.doc.document import DoclingDocument, PictureItem
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage
 
 from app.config import get_settings
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _CAPTION_PROMPT = (
     "Describe this figure from a scientific paper in 2-4 sentences. "
@@ -58,7 +63,8 @@ def _caption_with_claude(image_bytes: bytes) -> str:
     content = response.content
     if isinstance(content, str):
         return content.strip()
-    return "".join(block.get("text", "") for block in content if isinstance(block, dict) and block.get("type") == "text").strip()
+    text_blocks = (block for block in content if isinstance(block, dict) and block.get("type") == "text")
+    return "".join(block.get("text", "") for block in text_blocks).strip()
 
 
 def extract_figures(document: DoclingDocument, output_dir: Path) -> list[ExtractedFigure]:

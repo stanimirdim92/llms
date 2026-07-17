@@ -1,0 +1,47 @@
+name: portfolio CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "portfolio/**"
+      - ".github/workflows/portfolio-ci.yml"
+  pull_request:
+    paths:
+      - "portfolio/**"
+      - ".github/workflows/portfolio-ci.yml"
+
+defaults:
+  run:
+    working-directory: portfolio
+
+jobs:
+  lint-type-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+          enable-cache: true
+          cache-dependency-glob: "portfolio/uv.lock"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Lint (ruff check)
+        run: uv run ruff check .
+
+      - name: Format check (ruff format)
+        run: uv run ruff format --check .
+
+      - name: Type check (ty)
+        run: uv run ty check .
+
+      - name: Import the full app (catches import-time errors ty/ruff can't)
+        run: uv run python -c "import app.api.main; import app.ingestion.pipeline; import app.retrieval.reranker"
+
+      - name: Unit tests
+        run: uv run pytest tests/unit -v

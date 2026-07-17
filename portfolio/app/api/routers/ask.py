@@ -19,9 +19,7 @@ async def ask(request: AskRequest) -> AskResponse:
     return AskResponse(
         answer=result.text,
         citations=[
-            CitationResponse(
-                quoted_text=c.quoted_text, chunk_id=c.chunk_id, doc_id=c.doc_id, page_no=c.page_no
-            )
+            CitationResponse(quoted_text=c.quoted_text, chunk_id=c.chunk_id, doc_id=c.doc_id, page_no=c.page_no)
             for c in result.citations
         ],
         retrieved_chunks=[
