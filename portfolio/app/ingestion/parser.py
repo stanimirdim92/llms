@@ -1,4 +1,7 @@
-"""Parse a PDF into a structured Docling document, preserving tables and figure regions."""
+"""Parse a document into a structured Docling representation, preserving tables and
+figure regions. Not PDF-only: Docling natively backs several formats (see
+`app.ingestion.formats.SUPPORTED_UPLOAD_FORMATS`), and `TableItem`/`PictureItem`/
+`HybridChunker` downstream are format-agnostic over the resulting `DoclingDocument`."""
 
 from pathlib import Path
 
@@ -7,16 +10,20 @@ from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling_core.types.doc.document import DoclingDocument
 
-_PIPELINE_OPTIONS = PdfPipelineOptions(generate_picture_images=True, images_scale=2.0)
+# Only PDF needs an explicit pipeline-options override: it's rendered from page rasters, so
+# figures must be explicitly requested (generate_picture_images=True). Other formats (DOCX,
+# PPTX, HTML, images, ...) carry their figures as embedded assets already and use Docling's
+# defaults, so they don't need (or support) this option the same way.
+_PDF_PIPELINE_OPTIONS = PdfPipelineOptions(generate_picture_images=True, images_scale=2.0)
 
 _converter = DocumentConverter(
-    format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=_PIPELINE_OPTIONS)}
+    format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=_PDF_PIPELINE_OPTIONS)}
 )
 
 
-def parse_pdf(pdf_path: Path) -> DoclingDocument:
-    """Convert a PDF into a Docling document with layout-aware text, tables, and figure regions."""
-    result = _converter.convert(str(pdf_path))
+def parse_document(file_path: Path) -> DoclingDocument:
+    """Convert a document into a Docling document with layout-aware text, tables, and figures."""
+    result = _converter.convert(str(file_path))
     return result.document
 
 

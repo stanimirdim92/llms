@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     manifest_path: Path = Field(default=DATA_DIR / "manifest.json")
     raw_pdf_dir: Path = Field(default=DATA_DIR / "raw_pdfs")
     processed_dir: Path = Field(default=DATA_DIR / "processed")
+    upload_dir: Path = Field(default=DATA_DIR / "uploads")
+    max_upload_size_mb: int = Field(default=20)
 
     retrieval_top_k: int = Field(default=20)
     rerank_top_n: int = Field(default=5)

@@ -35,6 +35,7 @@ The source `PLAN.md` leaves several implementation choices open (dataset, extrac
 | Answering LLM | **`langchain_anthropic.ChatAnthropic`** (Claude Sonnet 5), passing Anthropic's native **Citations API** content blocks (`citations: {enabled: true}` on `document` blocks) straight through `HumanMessage.content` + citation-forced system prompt | `ChatAnthropic` forwards Anthropic-specific content blocks largely unchanged, so the Citations API still works without dropping to the raw SDK |
 | Eval framework | **RAGAS** (new dependency): faithfulness, answer_relevancy, context_precision, context_recall, context_entity_recall | Purpose-built for RAG; maps directly onto "hallucination rate + retrieval precision" |
 | CI | **GitHub Actions** — first workflow in this repo | Repo is on GitHub, nothing to conflict with |
+| User document uploads | `POST /documents` (multipart) + a Streamlit `st.file_uploader`, accepting Docling's native non-PDF formats too (DOCX, PPTX, HTML, MD, XLSX, CSV, images) via `app/ingestion/formats.py`'s curated allowlist; every chunk carries a `session_id` metadata tag (`"global"` for the curated corpus, a real session id for uploads), and every query filters to `["global", <session_id>]` via Chroma's `$in` operator | Session-scoped rather than a shared KB: one user's upload never affects another user's answers, and a public demo isn't an open injection vector into a KB everyone shares. `doc_id` is a content hash of the uploaded bytes, so re-uploading the same file in the same session is an idempotent upsert, not a duplicate |
 | Epic 3 second data source | **Playwright** (already a dependency, with `tf-playwright-stealth` for anti-detection and `brightdata-sdk` for proxy rotation already present too) scraping USPTO Patent Public Search (JS-rendered + paginated) for the same battery/materials domain, plus the arXiv new-submissions listing as a cheap secondary feed; both land in a local SQLite `incoming_queue` | The scaffold already carries a real scraping stack (stealth + proxy SDK) — reuse it instead of plain Playwright for a stronger production-realism story |
 | Epic 3 HITL mechanism | **LangGraph `interrupt()`** (LangGraph is already a dependency) + `SqliteSaver` checkpointer, resumed via `Command(resume=...)`, surfaced in a Streamlit review page | Native LangGraph primitive, not a bolted-on queue |
 | Ingestion job execution | **Arq** (new dependency; Redis is already present via `redis[hiredis]`/`aiocache[redis]`) runs scraping + parsing + embedding as background jobs, not synchronous scripts | Scraping is slow and flaky; jobs need retry/backoff and mustn't block the API |
@@ -60,14 +61,14 @@ portfolio/
 ├── README.md (this file) / ARCHITECTURE.md / TECHNICAL_DECISIONS.md / EVAL_METHODOLOGY.md
 ├── pyproject.toml (extended in place), uv.lock, Dockerfile (rewrite for uv), docker-compose.yml, Makefile, .env.example
 ├── .github/workflows/{ci.yml, eval.yml}
-├── data/{manifest.json ✅, raw_pdfs/, processed/, chroma/, eval/{qa_dataset.jsonl, results/}, incoming_queue.db}
+├── data/{manifest.json ✅, raw_pdfs/, processed/, chroma/, uploads/<session_id>/ ✅, eval/{qa_dataset.jsonl, results/}, incoming_queue.db}
 ├── scripts/{fetch_corpus.py ✅, ingest.py ✅, build_eval_dataset.py, run_eval.py, poll_arxiv_feed.py}
 ├── app/                                                          # ✅ = implemented (Epic 1)
 │   ├── config.py ✅
-│   ├── ingestion/{models.py ✅, parser.py ✅, figure_extractor.py ✅, chunker.py ✅, pipeline.py ✅}
+│   ├── ingestion/{models.py ✅, formats.py ✅, uploads.py ✅, parser.py ✅, figure_extractor.py ✅, chunker.py ✅, pipeline.py ✅}
 │   ├── scraping/{playwright_client.py, uspto_scraper.py}        # Epic 3 — reuses tf-playwright-stealth + brightdata-sdk already in pyproject.toml
 │   ├── embeddings/voyage.py ✅
-│   ├── vectorstore/chroma_store.py ✅
+│   ├── vectorstore/chroma_store.py ✅                            # session-scoped filtering lives here too (_build_filter)
 │   ├── retrieval/{retriever.py ✅, reranker.py ✅}
 │   ├── generation/{prompts.py ✅, answer_service.py ✅}
 │   ├── observability/{logging.py, alerts.py}
@@ -78,7 +79,7 @@ portfolio/
 │   │   ├── nodes.py, cache.py, incoming_feed.py
 │   │   └── episodic_memory.py                                    # sqlmodel-backed log of past HITL decisions, consulted by Curator
 │   ├── worker/{arq_worker.py, tasks.py}                          # Arq background jobs: scrape → parse → embed
-│   ├── api/{main.py ✅, routers/{ask.py ✅, review.py, admin.py}, schemas.py ✅, middleware/{auth.py, rate_limit.py}}
+│   ├── api/{main.py ✅, routers/{ask.py ✅, documents.py ✅, review.py, admin.py}, schemas.py ✅, middleware/{auth.py, rate_limit.py}}
 │   └── eval/{ragas_runner.py, thresholds.py, agent_trace_assertions.py}
 ├── mcp_server/{server.py, tools.py}                              # exposes kb_query/contradiction_check/review_queue to subagents, least-privilege scoped
 ├── streamlit_app/{Home.py ✅, pages/{1_Review_Queue.py, 2_Reasoning_Trace.py, 3_Observability.py}}
@@ -87,7 +88,7 @@ portfolio/
 
 ## Build Sequence
 
-**Epic 1 — RAG Foundation** (in order): extend `pyproject.toml` with the new dependencies listed above → `fetch_corpus.py` builds the pinned manifest and downloads PDFs → `ingestion/parser.py` (Docling parse) → `ingestion/figure_extractor.py` (crop + Claude-vision caption) → `ingestion/chunker.py` (structure-aware, atomic tables, figure chunks) → `embeddings/voyage.py` + `vectorstore/chroma_store.py` + `ingestion/pipeline.py`/`scripts/ingest.py` to populate Chroma → `retrieval/retriever.py` + `retrieval/reranker.py` → `generation/prompts.py` + `generation/answer_service.py` (Citations API) → `api/routers/ask.py` (`POST /ask`) → `streamlit_app/Home.py` demo UI → manual spot-check: ~15 prose/table/figure questions, confirm every answer traces to a chunk/page.
+**Epic 1 — RAG Foundation** (in order): extend `pyproject.toml` with the new dependencies listed above → `fetch_corpus.py` builds the pinned manifest and downloads PDFs → `ingestion/parser.py` (Docling parse, any of its native formats — not PDF-only) → `ingestion/figure_extractor.py` (Docling-rendered figure images + Claude-vision caption) → `ingestion/chunker.py` (structure-aware, atomic tables, figure chunks, `session_id`-tagged) → `embeddings/voyage.py` + `vectorstore/chroma_store.py` + `ingestion/pipeline.py`/`scripts/ingest.py` to populate Chroma → `retrieval/retriever.py` + `retrieval/reranker.py` → `generation/prompts.py` + `generation/answer_service.py` (Citations API) → `api/routers/ask.py` (`POST /ask`, optional `session_id`) → `ingestion/formats.py` + `ingestion/uploads.py` + `api/routers/documents.py` (`POST /documents` upload endpoint) → `streamlit_app/Home.py` demo UI with a file uploader → manual spot-check: ~15 prose/table/figure questions against the corpus, plus upload a DOCX/HTML/image in one session and confirm it's answerable only in that session, not from a fresh one.
 
 **Epic 2 — Eval Framework** (only after `/ask` returns cited answers): author 50+ grounded Q&A pairs in `data/eval/qa_dataset.jsonl` → `eval/ragas_runner.py` → capture a deliberate "before" baseline (naive fixed-size chunking, no reranker) → `eval/thresholds.py` + `tests/eval/test_ragas_thresholds.py` as the CI gate → `.github/workflows/ci.yml` (lint+tests) and `.github/workflows/eval.yml` (RAGAS canary subset on PR, full suite on demand/nightly, blocks merge on regression) → capture "after" numbers with the real pipeline → write `EVAL_METHODOLOGY.md`.
 
@@ -100,9 +101,10 @@ portfolio/
 Implemented (Epic 1):
 - `portfolio/app/ingestion/chunker.py` — structure-aware chunking core (atomic tables/figures); `models.py` holds the dependency-free `Chunk` type it and everything downstream shares
 - `portfolio/app/generation/answer_service.py` — retrieve→rerank→cite→answer orchestration, and the observability hook point
-- `portfolio/app/vectorstore/chroma_store.py` — the single KB; Epic 3's agent must import this rather than build a new store
-- `portfolio/app/api/main.py` / `app/api/routers/ask.py` — the `POST /ask` endpoint
-- `portfolio/streamlit_app/Home.py` — the demo UI
+- `portfolio/app/vectorstore/chroma_store.py` — the single KB; Epic 3's agent must import this rather than build a new store; also owns `_build_filter`, the session-scoping boundary between the shared corpus and per-session uploads
+- `portfolio/app/ingestion/uploads.py` / `app/ingestion/formats.py` — the content-hash `doc_id` and format-allowlist helpers behind uploads, deliberately dependency-free (no docling import) so they're unit-testable without the heavy parsing stack
+- `portfolio/app/api/main.py` / `app/api/routers/{ask.py, documents.py}` — `POST /ask` and `POST /documents`
+- `portfolio/streamlit_app/Home.py` — the demo UI, including the file uploader
 - `portfolio/pyproject.toml` — extended in place with the new dependencies (no second manifest)
 
 Not yet implemented (Epics 2-4):
@@ -119,7 +121,7 @@ Not yet implemented (Epics 2-4):
 
 ## Verification
 
-- Epic 1: run `scripts/ingest.py` against the pinned corpus, then manually query `/ask` (or the Streamlit UI) with ~15 prose/table/figure-referencing questions; confirm every answer cites a specific chunk/page and that table/figure content is retrievable (not flattened into prose).
+- Epic 1: run `scripts/ingest.py` against the pinned corpus, then manually query `/ask` (or the Streamlit UI) with ~15 prose/table/figure-referencing questions; confirm every answer cites a specific chunk/page and that table/figure content is retrievable (not flattened into prose). Upload a DOCX and an image in one session via `POST /documents`/the Streamlit uploader, confirm a question about it is answerable with `session_id` set, confirm the same question fails (or falls back to the corpus) with no `session_id`/a different one, and confirm re-uploading the identical file doesn't duplicate chunks.
 - Epic 2: run `scripts/run_eval.py` before and after the real pipeline is in place; confirm `pytest tests/eval/test_ragas_thresholds.py` passes, and that a deliberately regressed config fails the CI gate in `eval.yml`.
 - Epic 3: enqueue a deliberately contradictory/ambiguous item (via the Playwright scraper or `poll_arxiv_feed.py`), run the agent, and confirm it triggers `interrupt()` (visible in the Streamlit Review Queue) rather than silently committing; verify the second run of the same item hits the cache instead of re-embedding; verify a scraped item containing injected instructions is flagged by `injection_guard.py`; verify killing/restarting the Arq worker mid-batch doesn't lose or duplicate jobs; verify a forced Curator/Evaluator disagreement escalates regardless of either agent's individual confidence; verify episodic memory reduces escalation on a repeat of a previously-approved case; verify a subagent cannot call `commit` even if prompted to try (blocked at the MCP tool-scope layer, checked with a deliberately adversarial subagent prompt).
 - Epic 4: `docker-compose up` from a clean checkout brings up api + streamlit + phoenix + redis + worker; confirm logs/traces appear in Phoenix and the observability Streamlit page, that `/ask` rejects requests without a valid API key and rate-limits abuse, that `test_agent_trace_assertions.py` passes in CI, and that the quickstart steps work verbatim.

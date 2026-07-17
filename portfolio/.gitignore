@@ -10,6 +10,7 @@ deployment.xml
 data/chroma/
 data/raw_pdfs/
 data/processed/
+data/uploads/
 data/eval/results/
 data/incoming_queue.db
 

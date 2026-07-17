@@ -11,6 +11,6 @@ class Retriever:
     def __init__(self, store: ChromaStore | None = None) -> None:
         self._store = store or ChromaStore()
 
-    def retrieve(self, query: str, top_k: int | None = None) -> list[Document]:
+    def retrieve(self, query: str, top_k: int | None = None, session_id: str | None = None) -> list[Document]:
         settings = get_settings()
-        return self._store.query(query, top_k=top_k or settings.retrieval_top_k)
+        return self._store.query(query, top_k=top_k or settings.retrieval_top_k, session_id=session_id)
