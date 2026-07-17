@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import arxiv
+import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -25,7 +26,15 @@ def main() -> None:
             continue
 
         result = next(client.results(arxiv.Search(id_list=[arxiv_id])))
-        result.download_pdf(dirpath=str(settings.raw_pdf_dir), filename=out_path.name)
+        if result.pdf_url is None:
+            print(f"no PDF link for {arxiv_id}, skipping")
+            continue
+
+        # arxiv>=4.0.0 removed the Result.download_pdf convenience method; download
+        # the PDF ourselves from the URL it still exposes via `pdf_url`.
+        response = requests.get(result.pdf_url, timeout=30)
+        response.raise_for_status()
+        out_path.write_bytes(response.content)
         print(f"downloaded: {arxiv_id} -> {out_path}")
 
 
