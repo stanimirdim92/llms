@@ -108,7 +108,7 @@ Implemented (Epic 1):
 - `portfolio/streamlit_app/Home.py` — the demo UI, including the file uploader
 - `portfolio/pyproject.toml` — extended in place with the new dependencies (no second manifest)
 - `.github/workflows/portfolio-ci.yml` (repo root, not under `portfolio/` — see the Directory Layout note above) — lint, format, type-check, full-app-import, and unit-test gate on every PR touching `portfolio/**`
-- `portfolio/Dockerfile` — multi-stage (`builder`/`runtime`, `api`/`streamlit` targets); deliberately skips installing the project as a package (see the comment in the file) so `app/config.py`'s `data/`-next-to-`app/` path assumption holds inside the container
+- `portfolio/Dockerfile` — multi-stage (`builder`/`runtime`, `api`/`streamlit` targets); deliberately skips installing the project as a package (see the comment in the file) so `app/config.py`'s `data/`-next-to-`app/` path assumption holds inside the container. Every system apt package is justified against an actual declared Python dependency in a comment block at the top of the file (e.g. `libzbar0` for `pyzbar`, `libcairo2` for `cairosvg`) rather than carried over from whatever this file started as a template — same for what's deliberately left out (tesseract, since docling uses RapidOCR not tesseract; a bundled Redis server, since Redis clients need a Redis *service*, not one baked into the app image). Runs as a non-root `appuser` with per-service `HEALTHCHECK`s and `cap_drop: [ALL]`
 - `portfolio/docker-compose.yml` — brings up `api` + `streamlit` sharing one `./data` volume (the Chroma KB and uploads)
 
 Not yet implemented (Epics 2-4):

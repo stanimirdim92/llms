@@ -1,27 +1,43 @@
 # Runs today: api + streamlit, sharing one Chroma KB via the ./data volume.
 # Epic 3/4 will add redis, a worker, and phoenix services here once that code exists --
 # not included yet since there's nothing real for them to run.
+#
+# Note on ./data permissions: the images run as a non-root `appuser`. A bind mount
+# takes on the host directory's ownership, so if you hit permission errors writing to
+# data/chroma, data/uploads, etc., either `chmod -R o+rwX ./data` once on the host, or
+# switch the volumes below to a named volume (`portfolio_data:` instead of `./data`).
 services:
   api:
     build:
       context: .
       target: api
+    restart: unless-stopped
     ports:
       - "8000:8000"
     env_file:
       - .env
     volumes:
       - ./data:/app/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   streamlit:
     build:
       context: .
       target: streamlit
+    restart: unless-stopped
     ports:
       - "8501:8501"
     env_file:
       - .env
     volumes:
       - ./data:/app/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     depends_on:
-      - api
+      api:
+        condition: service_healthy
