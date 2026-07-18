@@ -107,6 +107,11 @@ USER appuser
 
 
 FROM runtime AS api
+# Restated even though `runtime` already switched to it: some Dockerfile security
+# scanners (e.g. the JetBrains Cloud/IaC Security plugin) only check the final stage
+# for its own explicit USER line and don't trace inheritance across a multi-stage
+# FROM <stage> AS <target> split.
+USER appuser
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
@@ -114,6 +119,7 @@ CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 FROM runtime AS streamlit
+USER appuser
 EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
