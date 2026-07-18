@@ -1,0 +1,27 @@
+# Runs today: api + streamlit, sharing one Chroma KB via the ./data volume.
+# Epic 3/4 will add redis, a worker, and phoenix services here once that code exists --
+# not included yet since there's nothing real for them to run.
+services:
+  api:
+    build:
+      context: .
+      target: api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+
+  streamlit:
+    build:
+      context: .
+      target: streamlit
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - api
