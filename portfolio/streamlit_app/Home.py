@@ -5,7 +5,6 @@ cited answer grounded in the curated corpus plus anything you've uploaded this s
 import uuid
 
 import streamlit as st
-
 from app.config import get_settings
 from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
@@ -14,7 +13,7 @@ from app.ingestion.uploads import upload_doc_id
 from app.vectorstore.chroma_store import ChromaStore
 
 st.set_page_config(page_title="AI Engineer Portfolio — RAG Demo", page_icon="📄")
-st.title("Scientific Document RAG — Iris.ai Track")
+st.title("Scientific Document RAG — Track")
 st.caption("Ask a question about the curated materials-science / battery corpus, or upload your own documents first.")
 
 if "session_id" not in st.session_state:

@@ -67,7 +67,7 @@ dependencies = [
     #opencv-python  = "^4"
     #celery = {extras = ["redis"], version = "^5.5"}
     "pyrefly>=1.1.1",
-    # AI Engineer Portfolio (Iris.ai track) — RAG / eval / agent additions.
+    # AI Engineer Portfolio (track) — RAG / eval / agent additions.
     # Generation, embeddings, vector store, and reranking all go through LangChain's
     # integration packages (not the raw provider SDKs) so Epic 1 is built on the same
     # framework Epic 3's LangGraph agent runs on, per the original plan.

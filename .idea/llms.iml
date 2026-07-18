@@ -5,9 +5,11 @@
       <sourceFolder url="file://$MODULE_DIR$/LLM Engineers Handbook" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/LLM Engineers Handbook/app" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/transformers-course" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/portfolio" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/LLM Engineers Handbook/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/transformers-course/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/fastai-dl/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/portfolio/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="uv (llms)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
