@@ -5,6 +5,33 @@
 #   docker build --target api -t portfolio-api .
 #   docker build --target streamlit -t portfolio-streamlit .
 # (docker-compose.yml does this for you.)
+#
+# System-package notes (checked against what pyproject.toml actually declares, not
+# copied wholesale from wherever this Dockerfile started as a template):
+# - libzbar0 (runtime): pyzbar loads it via ctypes at import time -- pure-Python
+#   wheel, but non-functional without the shared library present.
+# - libcairo2 (runtime): cairosvg (via cairocffi) loads it the same way.
+# - libssl3 (runtime): defensive -- see the cryptography note below.
+# - build-essential/libssl-dev/libffi-dev/pkg-config/rustc/cargo (builder-only):
+#   only needed if `cryptography` has no prebuilt wheel for this exact Python
+#   version/arch and uv has to build it from source; harmless to include since the
+#   whole builder stage is discarded and never reaches the runtime image.
+# - poppler-utils (the PyPI package, not the apt one): ships its own precompiled
+#   binaries, so no system `poppler-utils` package is needed.
+# - tesseract-ocr and friends: NOT included. They'd only matter for the commented-out
+#   `unstructured[pdf]` dependency; docling's own OCR path is RapidOCR (onnxruntime),
+#   not tesseract. Add them back if `unstructured[pdf]` gets uncommented.
+# - redis (the server, as an apt package): deliberately not installed in this image.
+#   redis[hiredis]/aiocache[redis] are *clients* -- they connect to a Redis server,
+#   they don't need to run one. When Epic 3 actually needs Redis, it belongs as its
+#   own service in docker-compose.yml (e.g. the official `redis:alpine` image), not
+#   bundled into the app container.
+# - gnupg/openssl (the CLIs): were needed for the old Dockerfile's
+#   `curl | python3 -` Poetry bootstrap. We install uv by copying the binary
+#   (below), so there's no script-piping step that needs them.
+# - Fonts (liberation/noto/emoji): matter once Playwright or cairosvg actually
+#   render pages/text to images. Nothing in this codebase does that yet (Epic 3's
+#   scraper isn't built), so they're deferred rather than paid for speculatively.
 
 FROM python:3.14-slim AS builder
 
@@ -14,6 +41,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     UV_PYTHON_DOWNLOADS=0
+
+# Build-time-only toolchain: discarded entirely once this stage isn't copied forward.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    pkg-config \
+    rustc \
+    cargo \
+    && rm -rf /var/lib/apt/lists/*
 
 # Installing uv this way (copying the prebuilt binary, version-pinned to match
 # build-system.requires in pyproject.toml) is Astral's own recommended approach for
@@ -44,23 +81,40 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app \
     PATH="/opt/venv/bin:$PATH"
 
-# libgomp1: the OpenMP runtime torch (a docling dependency) needs at import time.
+# See the system-package notes at the top of this file for why each of these (and
+# not others) is here.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
+    libzbar0 \
+    libcairo2 \
+    libssl3 \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system app \
+    && useradd --system --gid app --create-home --home-dir /home/appuser appuser
+# --create-home: Streamlit writes to ~/.streamlit (config/credentials) on first run;
+# a homeless system user would leave that with nowhere writable to go.
+
+ENV HOME=/home/appuser
 
 WORKDIR /app
-COPY --from=builder /opt/venv /opt/venv
-COPY app ./app
-COPY streamlit_app ./streamlit_app
-COPY data/manifest.json ./data/manifest.json
+COPY --from=builder --chown=appuser:app /opt/venv /opt/venv
+COPY --chown=appuser:app app ./app
+COPY --chown=appuser:app streamlit_app ./streamlit_app
+COPY --chown=appuser:app data/manifest.json ./data/manifest.json
+
+USER appuser
 
 
 FROM runtime AS api
 EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/ || exit 1
 CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 FROM runtime AS streamlit
 EXPOSE 8501
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8501/_stcore/health || exit 1
 CMD ["streamlit", "run", "streamlit_app/Home.py", "--server.address=0.0.0.0", "--server.port=8501"]
