@@ -26,6 +26,10 @@
 #   they don't need to run one. When Epic 3 actually needs Redis, it belongs as its
 #   own service in docker-compose.yml (e.g. the official `redis:alpine` image), not
 #   bundled into the app container.
+# - libgl1/libglib2.0-0 (runtime): docling's table-structure model pulls in
+#   opencv-python transitively (via docling-ibm-models), which dlopens libGL/glib
+#   at import time regardless of the "headless" framing -- without these, ingesting
+#   any document fails at table-model init with `ImportError: libGL.so.1`.
 # - gnupg/openssl (the CLIs): were needed for the old Dockerfile's
 #   `curl | python3 -` Poetry bootstrap. We install uv by copying the binary
 #   (below), so there's no script-piping step that needs them.
@@ -85,6 +89,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # not others) is here.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
+    libgl1 \
+    libglib2.0-0 \
     libzbar0 \
     libcairo2 \
     libssl3 \
