@@ -58,7 +58,7 @@ This document surveys how production agentic systems are actually architected (a
 2. `injection_guard.py` — heuristic + Claude classification pass, run before any agent sees the content.
 3. Tool-call validation — subagents structurally cannot call `commit`; only the orchestrator can, after the interrupt gate resolves.
 4. Least-privilege MCP scoping — each subagent's tool access is scoped narrowly to its role.
-5. Runtime monitoring — Arize Phoenix traces every step (Epic 4).
+5. Runtime monitoring — LangSmith traces every LangChain/LangGraph step, including subagent tool calls (Epic 4; supersedes the originally-planned Arize Phoenix — see `README.md`'s Observability row).
 
 No single layer above is assumed sufficient on its own — that assumption is exactly what an 84%-success-rate attack vector exploits.
 
