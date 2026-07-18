@@ -359,6 +359,7 @@ MailHog
 
 .ipython/
 .env.*
+!.env.example
 uv.lock
 
 project.css

@@ -1,66 +1,66 @@
-FROM python:3.13-slim AS builder
+# syntax=docker/dockerfile:1
+#
+# Two runnable images from one build: `api` (FastAPI) and `streamlit` (demo UI).
+# Build/run a specific one with `--target`:
+#   docker build --target api -t portfolio-api .
+#   docker build --target streamlit -t portfolio-streamlit .
+# (docker-compose.yml does this for you.)
 
-ENV LANG=C.UTF-8 \
-    PYTHONFAULTHANDLER=1 \
+FROM python:3.14-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONHASHSEED=random \
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    # Poetry's configuration:
-    POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_CREATE=false \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_CACHE_DIR='/var/cache/pypoetry' \
-    POETRY_HOME='/usr/local/poetry' \
-    POETRY_VERSION=2.2.1 \
-    # Project
-    PYSETUP_PATH="/usr/local/www/langchain" \
-    VENV_PATH="/usr/local/www/langchain/.venv"
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON_DOWNLOADS=0
+
+# Installing uv this way (copying the prebuilt binary, version-pinned to match
+# build-system.requires in pyproject.toml) is Astral's own recommended approach for
+# Docker images -- no curl/pip bootstrap needed.
+COPY --from=ghcr.io/astral-sh/uv:0.11.29 /uv /uvx /bin/
+
+WORKDIR /app
+
+# Dependencies only, no project source yet: this layer stays cached across rebuilds
+# as long as pyproject.toml doesn't change, regardless of how often app/ changes.
+#
+# We deliberately stop at --no-install-project rather than also installing this
+# project itself (Astral's own example does a second `uv sync --no-editable` here).
+# `app/config.py` resolves DATA_DIR relative to its own file location
+# (`Path(__file__).resolve().parent.parent`), matching the local-dev layout where
+# `data/` sits next to `app/` -- a non-editable install would move config.py into
+# site-packages, breaking that assumption. Skipping the install and relying on
+# PYTHONPATH=/app (set below) keeps the same layout in the container as on disk.
+COPY pyproject.toml ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-install-project
 
 
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+FROM python:3.14-slim AS runtime
 
-# Install necessary packages
-RUN apt-get update  \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends --fix-missing   \
-    ca-certificates \
-    curl \
-    redis \
-    gnupg \
-    openssl \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    python3-dev \
-    tesseract-ocr \
-    libtesseract-dev \
-    tesseract-ocr-deu \
-    libzbar0 \
-    libmagic-dev  \
-    poppler-utils  \
-    fonts-liberation \
-    fonts-noto fonts-noto-color-emoji \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    &&  rm -rf /var/lib/apt/lists/* /tmp/*
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PATH="/opt/venv/bin:$PATH"
 
-# Set the working directory
-WORKDIR $PYSETUP_PATH
+# libgomp1: the OpenMP runtime torch (a docling dependency) needs at import time.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
-COPY pyproject.toml  ./
-
-# Install dependencies using Poetry
-RUN poetry install --no-root --no-interaction --no-ansi -vvv
+WORKDIR /app
+COPY --from=builder /opt/venv /opt/venv
+COPY app ./app
+COPY streamlit_app ./streamlit_app
+COPY data/manifest.json ./data/manifest.json
 
 
-RUN playwright install --with-deps chromium
-COPY ./app ./app
-COPY ./technologies ./technologies
-COPY .env ./.env
-COPY ./block.txt ./block.txt
-COPY ./categories.json ./categories.json
-COPY ./Image-not-found.png ./Image-not-found.png
+FROM runtime AS api
+EXPOSE 8000
+CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-CMD ["bash", "-c", "gunicorn app.server:app -b 0.0.0.0:8200 -w 17 --threads 5 -k uvicorn.workers.UvicornWorker -t 120 --keep-alive 70 --max-requests-jitter 100 --max-requests 1000"]
+
+FROM runtime AS streamlit
+EXPOSE 8501
+CMD ["streamlit", "run", "streamlit_app/Home.py", "--server.address=0.0.0.0", "--server.port=8501"]

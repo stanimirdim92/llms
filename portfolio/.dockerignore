@@ -1,0 +1,20 @@
+.git
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+# Not committed (see .gitignore) and never used for the build -- no --locked sync,
+# so this should never affect the image even if present locally.
+uv.lock
+
+# Generated data -- never baked into the image, mounted as a volume instead.
+data/chroma/
+data/raw_pdfs/
+data/processed/
+data/uploads/
+data/eval/results/
+
+.env
+.env.*
+!.env.example
