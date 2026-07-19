@@ -36,7 +36,7 @@ async def upload_document(
     if len(file_bytes) > max_bytes:
         raise HTTPException(status_code=413, detail=f"File exceeds the {settings.max_upload_size_mb}MB limit")
 
-    session_id = session_id or uuid.uuid4().hex
+    session_id = session_id or uuid.uuid7().hex
     doc_id = upload_doc_id(session_id, file_bytes)
 
     session_dir = settings.upload_dir / session_id
