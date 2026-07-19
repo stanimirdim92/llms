@@ -35,11 +35,14 @@ def _voyage_compressor() -> BaseDocumentCompressor:
     )
 
 
-def rerank(query: str, documents: list[Document], top_n: int | None = None) -> list[Document]:
+async def rerank(query: str, documents: list[Document], top_n: int | None = None) -> list[Document]:
     settings = get_settings()
     if not documents:
         return []
     compressor = _local_compressor() if settings.reranker_backend == "local" else _voyage_compressor()
-    reranked = compressor.compress_documents(documents, query)
+    # VoyageAIRerank has a real async client; the local cross-encoder falls back to
+    # BaseDocumentCompressor's default (sync call run in a thread pool) since torch
+    # inference has no async form -- either way this doesn't block the event loop.
+    reranked = await compressor.acompress_documents(documents, query)
     n = top_n or settings.rerank_top_n
     return list(reranked)[:n]
