@@ -11,7 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/fastai-dl/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/portfolio/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="uv (llms)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="uv (llms) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

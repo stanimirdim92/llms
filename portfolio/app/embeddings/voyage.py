@@ -12,4 +12,4 @@ from app.config import get_settings
 @lru_cache
 def get_embeddings() -> VoyageAIEmbeddings:
     settings = get_settings()
-    return VoyageAIEmbeddings(voyage_api_key=settings.voyage_api_key, model=settings.voyage_model)
+    return VoyageAIEmbeddings(api_key=settings.voyage_api_key, model=settings.voyage_model)
