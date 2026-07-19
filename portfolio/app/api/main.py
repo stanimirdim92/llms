@@ -1,7 +1,8 @@
-from app.api.routers.ask import router as ask_router
-from app.api.routers.documents import router as documents_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.api.routers.ask import router as ask_router
+from app.api.routers.documents import router as documents_router
 
 app = FastAPI(
     title="AI Engineer Portfolio — Track",

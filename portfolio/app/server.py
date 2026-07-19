@@ -1,4 +1,4 @@
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -28,5 +28,5 @@ app.add_middleware(
 
 
 @app.get("/")
-async def root():
+async def root() -> dict:
     return {"message": "Welcome to API LLM"}

@@ -68,15 +68,18 @@ class ChromaStore:
         documents = [_to_document(chunk) for chunk in chunks]
         self._store.add_documents(documents, ids=[chunk.chunk_id for chunk in chunks])
 
-    def query(
+    async def query(
         self,
         query: str,
         top_k: int,
         chunk_types: list[str] | None = None,
         session_id: str | None = None,
     ) -> list[Document]:
+        # `Chroma` has no native async client -- `asimilarity_search` is `VectorStore`'s
+        # default, which runs the sync call in a thread pool. Still worth it: it keeps
+        # this off the event loop instead of blocking every concurrent request on it.
         where = _build_filter(chunk_types, session_id)
-        return self._store.similarity_search(query, k=top_k, filter=where)
+        return await self._store.asimilarity_search(query, k=top_k, filter=where)
 
     def as_retriever(self, top_k: int) -> VectorStoreRetriever:
         return self._store.as_retriever(search_kwargs={"k": top_k})
