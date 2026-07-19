@@ -109,12 +109,12 @@ class AnswerService:
             thinking={"type": "disabled"},
         )
 
-    def answer(self, question: str, session_id: str | None = None) -> Answer:
+    async def answer(self, question: str, session_id: str | None = None) -> Answer:
         start = perf_counter()
-        candidates = self._retriever.retrieve(question, session_id=session_id)
-        top_documents = rerank(question, candidates)
+        candidates = await self._retriever.retrieve(question, session_id=session_id)
+        top_documents = await rerank(question, candidates)
 
-        response = self._llm.invoke(
+        response = await self._llm.ainvoke(
             [
                 SystemMessage(content=SYSTEM_PROMPT),
                 HumanMessage(content=[*_build_document_blocks(top_documents), {"type": "text", "text": question}]),

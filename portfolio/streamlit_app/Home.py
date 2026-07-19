@@ -2,9 +2,11 @@
 cited answer grounded in the curated corpus plus anything you've uploaded this session.
 """
 
+import asyncio
 import uuid
 
 import streamlit as st
+
 from app.config import get_settings
 from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
@@ -64,7 +66,9 @@ question = st.text_input("Question", placeholder="What cathode materials show th
 
 if st.button("Ask", type="primary") and question:
     with st.spinner("Retrieving, reranking, and generating..."):
-        result = _service().answer(question, session_id=st.session_state.session_id)
+        # Streamlit's script model runs synchronously (no event loop of its own), so an
+        # async call needs its own loop here rather than a plain await.
+        result = asyncio.run(_service().answer(question, session_id=st.session_state.session_id))
 
     st.subheader("Answer")
     st.write(result.text)
