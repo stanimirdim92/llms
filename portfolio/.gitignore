@@ -6,8 +6,8 @@ deployment.xml
 *.pyc
 .env
 
-# AI Engineer Portfolio — generated data, never checked in
-data/chroma/
+# AI Engineer Portfolio — generated data, never checked in. Qdrant/Postgres data live
+# in their own named Docker volumes (docker-compose.yml), not under ./data.
 data/raw_pdfs/
 data/processed/
 data/uploads/

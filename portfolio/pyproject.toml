@@ -73,7 +73,9 @@ dependencies = [
     # framework Epic 3's LangGraph agent runs on, per the original plan.
     "langchain-anthropic>=1.4.8,<2.0.0",
     "langchain-voyageai>=0.4.0,<1.0.0",
-    "langchain-chroma>=1.1.0,<2.0.0",
+    "langchain-qdrant>=1.1.0,<2.0.0",
+    "qdrant-client>=1.18.0,<2.0.0",
+    "psycopg[binary]>=3.3.4,<4.0.0",
     "langgraph-checkpoint-sqlite>=3.1.0,<4.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
     "docling>=2.113.0,<3.0.0",

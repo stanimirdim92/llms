@@ -1,5 +1,6 @@
-"""Vector search over the Chroma KB. Embedding of the query happens inside `Chroma` itself
-(via the `Embeddings` instance passed to `ChromaStore`), so this stays a thin wrapper.
+"""Vector search over the Qdrant KB. Embedding of the query happens inside
+`QdrantVectorStore` itself (via the `Embeddings` instance passed to `QdrantStore`), so
+this stays a thin wrapper.
 """
 
 from __future__ import annotations
@@ -7,15 +8,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from app.config import get_settings
-from app.vectorstore.chroma_store import ChromaStore
+from app.vectorstore.qdrant_store import QdrantStore
 
 if TYPE_CHECKING:
     from langchain_core.documents import Document
 
 
 class Retriever:
-    def __init__(self, store: ChromaStore | None = None) -> None:
-        self._store = store or ChromaStore()
+    def __init__(self, store: QdrantStore | None = None) -> None:
+        self._store = store or QdrantStore()
 
     async def retrieve(self, query: str, top_k: int | None = None, session_id: str | None = None) -> list[Document]:
         settings = get_settings()

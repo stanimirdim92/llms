@@ -8,13 +8,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.config import get_settings
 from app.ingestion.pipeline import ingest_document
-from app.vectorstore.chroma_store import ChromaStore
+from app.vectorstore.qdrant_store import QdrantStore
 
 
 def main() -> None:
     settings = get_settings()
     manifest = json.loads(settings.manifest_path.read_text(encoding="utf-8"))
-    store = ChromaStore()
+    store = QdrantStore()
 
     total_chunks = 0
     for paper in manifest["papers"]:
