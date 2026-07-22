@@ -1,9 +1,16 @@
-from fastapi import FastAPI
+import structlog
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
 from app.config import get_settings
+from app.exceptions import PortfolioError
+from app.logs import configure_logging
+
+configure_logging()
+log = structlog.get_logger(__name__)
 
 app = FastAPI(
     title="AI Engineer Portfolio — Track",
@@ -26,6 +33,15 @@ app.add_middleware(
 
 app.include_router(ask_router, prefix="/v1")
 app.include_router(documents_router, prefix="/v1")
+
+
+@app.exception_handler(PortfolioError)
+async def portfolio_error_handler(request: Request, exc: PortfolioError) -> JSONResponse:
+    # FastAPI's default HTTPException handler already produces this exact response
+    # shape; this handler only adds structured logging on top of that, so a raised
+    # APIError still shows up in the same place as everything else structlog captures.
+    log.warning("api.error", path=request.url.path, status_code=exc.status_code, detail=exc.detail)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 @app.get("/")

@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     cors_allow_headers: list[str] = Field(default_factory=list)
     cors_expose_headers: list[str] = Field(default_factory=list)
 
+    log_level: str = Field(default="INFO")
+    log_json: bool = Field(default=False)  # True in containers; console-friendly locally
+
 
 def _configure_langsmith(settings: Settings) -> None:
     """Bridge our own env-loaded Settings into the env vars LangChain/LangSmith's

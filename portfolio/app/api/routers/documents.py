@@ -2,10 +2,11 @@ import uuid
 from functools import lru_cache
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, UploadFile
 
 from app.api.schemas import UploadResponse
 from app.config import get_settings
+from app.exceptions import APIError
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.pipeline import ingest_document
 from app.ingestion.uploads import upload_doc_id
@@ -33,16 +34,13 @@ async def upload_document(
     session_id: Annotated[str | None, Form()] = None,
 ) -> UploadResponse:
     if not file.filename or not is_supported_upload(file.filename):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file type. Supported extensions: {sorted(SUPPORTED_UPLOAD_EXTENSIONS)}",
-        )
+        raise APIError(f"Unsupported file type. Supported extensions: {sorted(SUPPORTED_UPLOAD_EXTENSIONS)}")
 
     settings = get_settings()
     max_bytes = settings.max_upload_size_mb * 1024 * 1024
     file_bytes = await file.read()
     if len(file_bytes) > max_bytes:
-        raise HTTPException(status_code=413, detail=f"File exceeds the {settings.max_upload_size_mb}MB limit")
+        raise APIError(f"File exceeds the {settings.max_upload_size_mb}MB limit", code=413)
 
     session_id = session_id or uuid.uuid7().hex
     doc_id = upload_doc_id(session_id, file_bytes)
