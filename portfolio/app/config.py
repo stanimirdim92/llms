@@ -44,6 +44,16 @@ class Settings(BaseSettings):
 
     chunk_max_tokens: int = Field(default=700)
 
+    # Defaults preserve today's hardcoded CORSMiddleware call in api/main.py exactly --
+    # override via .env once there's a real frontend origin to lock this down to.
+    cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])
+    cors_allow_methods: list[str] = Field(default_factory=lambda: ["GET", "POST"])
+    cors_allow_headers: list[str] = Field(default_factory=list)
+    cors_expose_headers: list[str] = Field(default_factory=list)
+
+    log_level: str = Field(default="INFO")
+    log_json: bool = Field(default=False)  # True in containers; console-friendly locally
+
 
 def _configure_langsmith(settings: Settings) -> None:
     """Bridge our own env-loaded Settings into the env vars LangChain/LangSmith's

@@ -121,7 +121,12 @@ USER appuser
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
-CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# --loop uvloop makes explicit what uvicorn's default `--loop auto` already does
+# silently (uvloop is a declared dependency, and `auto` picks it up automatically per
+# uvicorn's own loop-selection code) -- explicit here so it's not relying on import-time
+# magic, and so startup fails loudly if uvloop is ever removed instead of silently
+# falling back to plain asyncio.
+CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop"]
 
 
 FROM runtime AS streamlit
