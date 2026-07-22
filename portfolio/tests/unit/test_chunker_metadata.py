@@ -1,5 +1,5 @@
 from app.ingestion.models import Chunk
-from app.vectorstore.chroma_store import _chunk_metadata
+from app.vectorstore.qdrant_store import _chunk_metadata
 
 
 def test_text_chunk_metadata_has_no_page_when_unknown() -> None:

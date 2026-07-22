@@ -28,8 +28,10 @@ class Settings(BaseSettings):
     voyage_rerank_model: str = Field(default="rerank-2.5")
     local_reranker_model: str = Field(default="BAAI/bge-reranker-v2-m3")
 
-    chroma_path: Path = Field(default=DATA_DIR / "chroma")
-    chroma_collection: str = Field(default="portfolio_rag")
+    qdrant_url: str = Field(default="http://localhost:6333")
+    qdrant_collection: str = Field(default="portfolio_rag")
+
+    database_url: str = Field(default="postgresql+psycopg://portfolio:portfolio@localhost:5432/portfolio")
 
     manifest_path: Path = Field(default=DATA_DIR / "manifest.json")
     raw_pdf_dir: Path = Field(default=DATA_DIR / "raw_pdfs")

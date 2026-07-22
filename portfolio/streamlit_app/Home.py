@@ -12,7 +12,7 @@ from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.pipeline import ingest_document
 from app.ingestion.uploads import upload_doc_id
-from app.vectorstore.chroma_store import ChromaStore
+from app.vectorstore.qdrant_store import QdrantStore
 
 st.set_page_config(page_title="AI Engineer Portfolio — RAG Demo", page_icon="📄")
 st.title("Scientific Document RAG — Track")
@@ -30,8 +30,8 @@ def _service() -> AnswerService:
 
 
 @st.cache_resource
-def _store() -> ChromaStore:
-    return ChromaStore()
+def _store() -> QdrantStore:
+    return QdrantStore()
 
 
 with st.expander("Upload your own documents (this browser session only)", expanded=False):

@@ -9,14 +9,14 @@ from app.config import get_settings
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.pipeline import ingest_document
 from app.ingestion.uploads import upload_doc_id
-from app.vectorstore.chroma_store import ChromaStore
+from app.vectorstore.qdrant_store import QdrantStore
 
 router = APIRouter()
 
 
 @lru_cache
-def _store() -> ChromaStore:
-    return ChromaStore()
+def _store() -> QdrantStore:
+    return QdrantStore()
 
 
 @router.post("/documents", response_model=UploadResponse)

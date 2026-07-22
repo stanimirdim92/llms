@@ -50,7 +50,7 @@ This document surveys how production agentic systems are actually architected (a
 | Tier | What | Where |
 |---|---|---|
 | Short-term | Current run's state | LangGraph `StateGraph` state, checkpointed via `SqliteSaver` |
-| Long-term | The knowledge base itself | Epic 1's Chroma collection (Epic 3 imports it directly — no second store) |
+| Long-term | The knowledge base itself | Epic 1's Qdrant collection (Epic 3 imports it directly — no second store) |
 | Episodic | Past human curation decisions + rationale | `app/agent/episodic_memory.py` (sqlmodel), consulted by the Curator so settled judgment calls aren't re-litigated every run |
 
 **Defense-in-depth against prompt injection** (scraped web content is the untrusted-input surface here):

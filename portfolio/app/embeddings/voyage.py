@@ -1,5 +1,6 @@
 """Voyage AI embeddings via LangChain's `Embeddings` interface — one embedding space shared
-by text, table, and figure-caption chunks, and usable directly as `Chroma`'s embedding_function.
+by text, table, and figure-caption chunks, and usable directly as `QdrantVectorStore`'s
+`embedding` argument.
 """
 
 from functools import lru_cache

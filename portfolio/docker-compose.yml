@@ -1,12 +1,67 @@
-# Runs today: api + streamlit, sharing one Chroma KB via the ./data volume.
+# Runs today: api + streamlit + qdrant (vector store) + postgres (document registry).
 # Epic 3/4 will add redis, a worker, and phoenix services here once that code exists --
 # not included yet since there's nothing real for them to run.
 #
 # Note on ./data permissions: the images run as a non-root `appuser`. A bind mount
 # takes on the host directory's ownership, so if you hit permission errors writing to
-# data/chroma, data/uploads, etc., either `chmod -R o+rwX ./data` once on the host, or
+# data/uploads, data/raw_pdfs, etc., either `chmod -R o+rwX ./data` once on the host, or
 # switch the volumes below to a named volume (`portfolio_data:` instead of `./data`).
+# `qdrant`/`postgres` deliberately use named volumes (not `./data`) instead -- each
+# image manages that volume's ownership itself, so there's no equivalent permission
+# dance to do for them.
 services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      # No curl/wget in this image (deliberately, per the maintainers) -- a bash
+      # TCP-connect check only proves the port is listening, not that /healthz
+      # returns 200, but that's enough to gate startup ordering here.
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # docker-entrypoint.sh runs as root on first boot to chown $PGDATA to the postgres
+    # user (`gosu`, i.e. setuid/setgid) before initdb -- cap_drop: ALL alone breaks
+    # bootstrapping a fresh volume. This is a minimal allowlist, not "give up and drop
+    # nothing": CHOWN/SETUID/SETGID are the hard requirements; DAC_OVERRIDE/FOWNER
+    # avoid corner-case permission failures during initdb.
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - FOWNER
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-portfolio} -d ${POSTGRES_DB:-portfolio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: .
@@ -16,12 +71,20 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/${POSTGRES_DB:-portfolio}
     volumes:
       - ./data:/app/data
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   streamlit:
     build:
@@ -32,6 +95,9 @@ services:
       - "8501:8501"
     env_file:
       - .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/${POSTGRES_DB:-portfolio}
     volumes:
       - ./data:/app/data
     security_opt:
@@ -41,3 +107,11 @@ services:
     depends_on:
       api:
         condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+volumes:
+  qdrant_data:
+  postgres_data:

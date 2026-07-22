@@ -8,8 +8,8 @@ __pycache__
 # so this should never affect the image even if present locally.
 uv.lock
 
-# Generated data -- never baked into the image, mounted as a volume instead.
-data/chroma/
+# Generated data -- never baked into the image, mounted as a volume instead. Qdrant/
+# Postgres data live in their own named Docker volumes, not under ./data.
 data/raw_pdfs/
 data/processed/
 data/uploads/
