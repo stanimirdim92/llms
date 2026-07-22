@@ -9,7 +9,10 @@
 # redis (cache -- infra only for now, nothing in app/ calls create_redis() yet) + nginx
 # (reverse proxy in front of api only -- HTTP-only via Dockerfile.dev/default_dev.conf
 # since there's no real domain to provision TLS for yet; see nginx/conf.d/default.conf's
-# own comments for what to change once there is one). A worker and phoenix service
+# own comments for what to change once there is one). nginx lives at .docker/nginx/ (a
+# sibling of this file), not ../nginx like redis -- everything else here follows the
+# reference project's "each infra piece is a sibling of .docker/" convention, but nginx
+# specifically was asked to live inside .docker/ instead. A worker and phoenix service
 # still aren't included since there's nothing real for them to run yet.
 #
 # Note on ../data permissions: the images run as a non-root `appuser`. A bind mount
@@ -117,7 +120,7 @@ services:
 
   nginx:
     build:
-      context: ../nginx
+      context: nginx
       dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
