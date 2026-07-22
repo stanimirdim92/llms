@@ -13,7 +13,15 @@ def _service() -> AnswerService:
     return AnswerService()
 
 
-@router.post("/ask", response_model=AskResponse)
+@router.post(
+    "/ask",
+    response_model=AskResponse,
+    tags=["ask"],
+    summary="Ask a question over the curated corpus and/or a session's uploads",
+    description="Retrieves relevant chunks, reranks them, and generates a cited answer grounded only "
+    "in what was retrieved. Omitting `session_id` searches only the curated corpus.",
+    response_description="A cited answer, its citations, and every chunk that was retrieved/reranked",
+)
 async def ask(request: AskRequest) -> AskResponse:
     result = await _service().answer(request.question, session_id=request.session_id)
     return AskResponse(

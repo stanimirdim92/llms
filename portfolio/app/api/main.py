@@ -19,8 +19,8 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
 )
 
-app.include_router(ask_router)
-app.include_router(documents_router)
+app.include_router(ask_router, prefix="/v1")
+app.include_router(documents_router, prefix="/v1")
 
 
 @app.get("/")

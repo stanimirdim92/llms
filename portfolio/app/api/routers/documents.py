@@ -19,7 +19,15 @@ def _store() -> QdrantStore:
     return QdrantStore()
 
 
-@router.post("/documents", response_model=UploadResponse)
+@router.post(
+    "/documents",
+    response_model=UploadResponse,
+    tags=["documents"],
+    summary="Upload a document into a session's own searchable scope",
+    description="Ingests the file (parse, chunk, embed, store) and tags every chunk with `session_id` so "
+    "it's only searchable by /ask calls passing that same session_id, never by other sessions.",
+    response_description="The session/document ids to use with /ask, plus how many chunks were produced",
+)
 async def upload_document(
     file: Annotated[UploadFile, File()],
     session_id: Annotated[str | None, Form()] = None,
