@@ -121,12 +121,30 @@ USER appuser
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
-# --loop uvloop makes explicit what uvicorn's default `--loop auto` already does
-# silently (uvloop is a declared dependency, and `auto` picks it up automatically per
-# uvicorn's own loop-selection code) -- explicit here so it's not relying on import-time
-# magic, and so startup fails loudly if uvloop is ever removed instead of silently
-# falling back to plain asyncio.
-CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop"]
+# gunicorn + UvicornWorker (process-supervised multi-worker serving), not bare uvicorn --
+# gunicorn[http2] is already a dependency. GUNICORN_WORKERS is env-configurable rather
+# than a fixed count: a much bigger box would want more than this container's default of
+# 2, and hardcoding a large number here would be wrong for a demo-scale deployment.
+# uvicorn.workers.UvicornWorker's own CONFIG_KWARGS defaults to loop="auto", so this
+# keeps the same uvloop-when-available behavior the previous bare-uvicorn --loop uvloop
+# had explicitly -- no separate loop flag needed with this worker class.
+# --preload loads the app (and its heavy import graph -- docling, langchain, etc.) once
+# in the master process before forking, so workers share that via copy-on-write memory
+# instead of each separately re-importing it. Safe here because nothing at import time
+# eagerly opens a Qdrant/Postgres connection -- api/routers/{ask,documents}.py's
+# @lru_cache-decorated store/service getters only construct their client on a worker's
+# first actual request, after the fork, so each worker still gets its own connection
+# rather than sharing one across forked processes. (Reasoned through the code, not
+# load-tested against a live multi-worker deployment -- no way to do that in this sandbox.)
+CMD ["bash", "-c", "gunicorn app.api.main:app \
+    --workers ${GUNICORN_WORKERS:-2} \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:8000 \
+    --timeout ${GUNICORN_TIMEOUT:-120} \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --preload"]
 
 
 FROM runtime AS streamlit
