@@ -82,7 +82,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -125,6 +125,7 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     security_opt:
       - no-new-privileges:true
     cap_drop:
