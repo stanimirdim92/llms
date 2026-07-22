@@ -6,9 +6,11 @@
 # relative paths against the compose file's own location, not the cwd.
 #
 # Runs today: api + streamlit + qdrant (vector store) + postgres (document registry) +
-# redis (cache -- infra only for now, nothing in app/ calls create_redis() yet). A
-# worker and phoenix service still aren't included since there's nothing real for them
-# to run yet.
+# redis (cache -- infra only for now, nothing in app/ calls create_redis() yet) + nginx
+# (reverse proxy in front of api only -- HTTP-only via Dockerfile.dev/default_dev.conf
+# since there's no real domain to provision TLS for yet; see nginx/conf.d/default.conf's
+# own comments for what to change once there is one). A worker and phoenix service
+# still aren't included since there's nothing real for them to run yet.
 #
 # Note on ../data permissions: the images run as a non-root `appuser`. A bind mount
 # takes on the host directory's ownership, so if you hit permission errors writing to
@@ -112,6 +114,39 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+
+  nginx:
+    build:
+      context: ../nginx
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Root's usual "superpowers" are themselves capability-gated, not just UID-0 --
+    # cap_drop: ALL removes them from root too. Confirmed both are actually needed here
+    # (not just "might as well keep"): NET_BIND_SERVICE for binding port 80 (a
+    # privileged port), SETUID/SETGID for the master process's privilege drop to the
+    # `user www-data;` worker processes nginx.conf configures. No CAP_CHOWN needed --
+    # checked the stock image's docker-entrypoint.sh/docker-entrypoint.d/*.sh: none of
+    # them chown or chmod anything at container startup.
+    cap_add:
+      - NET_BIND_SERVICE
+      - SETUID
+      - SETGID
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      # No curl/wget in the stock nginx image -- same TCP-connect approach as qdrant's
+      # healthcheck above.
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/80' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   streamlit:
     build:
