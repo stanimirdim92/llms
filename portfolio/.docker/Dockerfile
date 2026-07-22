@@ -118,9 +118,13 @@ FROM runtime AS api
 # for its own explicit USER line and don't trace inheritance across a multi-stage
 # FROM <stage> AS <target> split.
 USER appuser
+# Informational only -- EXPOSE doesn't control the actual bind port (the CMD below
+# does, reading $PORT at container runtime) or enforce anything at the network level;
+# docker-compose.yml's port mapping is what actually matters. Left static since making
+# it dynamic would need an ARG plumbed through just for documentation's sake.
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:8000/ || exit 1
+    CMD curl -f http://localhost:${PORT:-8000}/ || exit 1
 # gunicorn + UvicornWorker (process-supervised multi-worker serving), not bare uvicorn --
 # gunicorn[http2] is already a dependency. GUNICORN_WORKERS is env-configurable rather
 # than a fixed count: a much bigger box would want more than this container's default of
@@ -139,7 +143,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 CMD ["bash", "-c", "gunicorn app.api.main:app \
     --workers ${GUNICORN_WORKERS:-2} \
     --worker-class uvicorn.workers.UvicornWorker \
-    --bind 0.0.0.0:8000 \
+    --bind 0.0.0.0:${PORT:-8000} \
     --timeout ${GUNICORN_TIMEOUT:-120} \
     --keep-alive 5 \
     --max-requests 1000 \
