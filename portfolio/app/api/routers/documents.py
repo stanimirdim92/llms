@@ -50,6 +50,6 @@ async def upload_document(
     file_path = session_dir / file.filename
     file_path.write_bytes(file_bytes)
 
-    chunk_count = ingest_document(doc_id=doc_id, file_path=file_path, store=_store(), session_id=session_id)
+    chunk_count = await ingest_document(doc_id=doc_id, file_path=file_path, store=_store(), session_id=session_id)
 
     return UploadResponse(session_id=session_id, doc_id=doc_id, chunk_count=chunk_count)
