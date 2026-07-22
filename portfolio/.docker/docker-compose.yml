@@ -1,14 +1,23 @@
-# Runs today: api + streamlit + qdrant (vector store) + postgres (document registry).
-# Epic 3/4 will add redis, a worker, and phoenix services here once that code exists --
-# not included yet since there's nothing real for them to run.
+# This file lives in .docker/, but the build context for api/streamlit is `..` (the
+# portfolio/ root) -- their COPY paths inside Dockerfile are relative to that root, not
+# to wherever the Dockerfile itself sits. Run this from portfolio/ as
+# `docker compose -f .docker/docker-compose.yml up`, or `cd .docker && docker compose up`
+# -- both resolve `context`/`env_file`/volume paths the same way, since compose resolves
+# relative paths against the compose file's own location, not the cwd.
 #
-# Note on ./data permissions: the images run as a non-root `appuser`. A bind mount
+# Runs today: api + streamlit + qdrant (vector store) + postgres (document registry) +
+# redis (cache -- infra only for now, nothing in app/ calls create_redis() yet). A
+# worker and phoenix service still aren't included since there's nothing real for them
+# to run yet.
+#
+# Note on ../data permissions: the images run as a non-root `appuser`. A bind mount
 # takes on the host directory's ownership, so if you hit permission errors writing to
-# data/uploads, data/raw_pdfs, etc., either `chmod -R o+rwX ./data` once on the host, or
-# switch the volumes below to a named volume (`portfolio_data:` instead of `./data`).
-# `qdrant`/`postgres` deliberately use named volumes (not `./data`) instead -- each
+# data/uploads, data/raw_pdfs, etc., either `chmod -R o+rwX ../data` once on the host, or
+# switch the volumes below to a named volume (`portfolio_data:` instead of `../data`).
+# `qdrant`/`postgres` deliberately use named volumes (not `../data`) instead -- each
 # image manages that volume's ownership itself, so there's no equivalent permission
-# dance to do for them.
+# dance to do for them. `redis` needs no volume at all: its conf disables persistence
+# (it's a pure cache), so there's nothing to keep across a restart.
 services:
   qdrant:
     image: qdrant/qdrant:v1.12.5
@@ -62,20 +71,38 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    build:
+      context: ../redis
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
-      context: .
+      context: ..
+      dockerfile: .docker/Dockerfile
       target: api
     restart: unless-stopped
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - ../.env
     environment:
       QDRANT_URL: http://qdrant:6333
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/${POSTGRES_DB:-portfolio}
     volumes:
-      - ./data:/app/data
+      - ../data:/app/data
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -88,18 +115,19 @@ services:
 
   streamlit:
     build:
-      context: .
+      context: ..
+      dockerfile: .docker/Dockerfile
       target: streamlit
     restart: unless-stopped
     ports:
       - "8501:8501"
     env_file:
-      - .env
+      - ../.env
     environment:
       QDRANT_URL: http://qdrant:6333
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/${POSTGRES_DB:-portfolio}
     volumes:
-      - ./data:/app/data
+      - ../data:/app/data
     security_opt:
       - no-new-privileges:true
     cap_drop:
