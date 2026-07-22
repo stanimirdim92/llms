@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
+from app.config import get_settings
 
 app = FastAPI(
     title="AI Engineer Portfolio — Track",
@@ -13,10 +14,14 @@ app = FastAPI(
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
 )
+
+_settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["GET", "POST"],
+    allow_origins=_settings.cors_allow_origins,
+    allow_methods=_settings.cors_allow_methods,
+    allow_headers=_settings.cors_allow_headers,
+    expose_headers=_settings.cors_expose_headers,
 )
 
 app.include_router(ask_router, prefix="/v1")
