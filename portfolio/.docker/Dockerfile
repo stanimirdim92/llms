@@ -59,7 +59,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Installing uv this way (copying the prebuilt binary, version-pinned to match
 # build-system.requires in pyproject.toml) is Astral's own recommended approach for
 # Docker images -- no curl/pip bootstrap needed.
-COPY --from=ghcr.io/astral-sh/uv:0.11.29 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /uvx /bin/
 
 WORKDIR /app
 
