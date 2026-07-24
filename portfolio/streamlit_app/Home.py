@@ -54,8 +54,12 @@ with st.expander("Upload your own documents (this browser session only)", expand
             doc_id = upload_doc_id(st.session_state.session_id, file_bytes)
             if doc_id not in st.session_state.uploaded_docs:
                 with st.spinner(f"Ingesting {uploaded_file.name}..."):
-                    chunk_count = ingest_document(
-                        doc_id=doc_id, file_path=file_path, store=_store(), session_id=st.session_state.session_id
+                    # Streamlit's script model has no event loop of its own, same reason
+                    # the /ask call below needs asyncio.run() rather than a plain await.
+                    chunk_count = asyncio.run(
+                        ingest_document(
+                            doc_id=doc_id, file_path=file_path, store=_store(), session_id=st.session_state.session_id
+                        )
                     )
                 st.session_state.uploaded_docs.append(doc_id)
                 st.success(f"Ingested {uploaded_file.name} — {chunk_count} chunks (doc_id: {doc_id})")

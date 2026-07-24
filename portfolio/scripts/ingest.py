@@ -1,5 +1,6 @@
 """CLI: run the full ingestion pipeline over every PDF in data/raw_pdfs/."""
 
+import asyncio
 import json
 import sys
 from pathlib import Path
@@ -11,7 +12,7 @@ from app.ingestion.pipeline import ingest_document
 from app.vectorstore.qdrant_store import QdrantStore
 
 
-def main() -> None:
+async def main() -> None:
     settings = get_settings()
     manifest = json.loads(settings.manifest_path.read_text(encoding="utf-8"))
     store = QdrantStore()
@@ -24,7 +25,7 @@ def main() -> None:
             print(f"missing PDF, run fetch_corpus.py first: {arxiv_id}")
             continue
 
-        count = ingest_document(doc_id=arxiv_id, file_path=pdf_path, store=store)
+        count = await ingest_document(doc_id=arxiv_id, file_path=pdf_path, store=store)
         total_chunks += count
         print(f"ingested {arxiv_id}: {count} chunks")
 
@@ -32,4 +33,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 from typing import TYPE_CHECKING
 
@@ -18,13 +19,17 @@ from app.registry.models import DocumentRecord
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from app.ingestion.models import Chunk
     from app.vectorstore.qdrant_store import QdrantStore
 
 log = structlog.get_logger(__name__)
 
 
-def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, session_id: str = GLOBAL_SESSION) -> int:
-    """Ingest a single document end-to-end. Returns the number of chunks written."""
+def _parse_and_chunk(doc_id: str, file_path: Path, session_id: str) -> tuple[list[Chunk], str, int]:
+    """Everything here is synchronous, CPU-bound work (Docling parsing, chunking) or
+    local disk I/O -- run via `asyncio.to_thread` from `ingest_document` so it doesn't
+    block the event loop while other requests (e.g. concurrent uploads) are in flight.
+    """
     settings = get_settings()
     processed_path = settings.processed_dir / f"{doc_id}.json"
 
@@ -43,21 +48,32 @@ def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, session_id
     chunks = chunk_document(document, doc_id=doc_id, figures=figures, session_id=session_id)
     log.info("ingestion.chunked", doc_id=doc_id, session_id=session_id, count=len(chunks))
 
-    store.upsert(chunks)
+    content_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]
+    return chunks, content_hash, file_path.stat().st_size
+
+
+async def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, session_id: str = GLOBAL_SESSION) -> int:
+    """Ingest a single document end-to-end. Returns the number of chunks written."""
+    chunks, content_hash, file_size_bytes = await asyncio.to_thread(_parse_and_chunk, doc_id, file_path, session_id)
+
+    # `QdrantStore.upsert` has no native async client (see qdrant_store.py's own note on
+    # `query`) -- offload it the same way as the parse/chunk work above rather than
+    # blocking the event loop on network I/O.
+    await asyncio.to_thread(store.upsert, chunks)
     log.info("ingestion.stored", doc_id=doc_id, count=len(chunks))
 
-    init_db()
+    await init_db()
     record = DocumentRecord(
         doc_id=doc_id,
         session_id=session_id,
         filename=file_path.name,
-        content_hash=hashlib.sha256(file_path.read_bytes()).hexdigest()[:16],
+        content_hash=content_hash,
         file_extension=file_path.suffix,
-        file_size_bytes=file_path.stat().st_size,
+        file_size_bytes=file_size_bytes,
         chunk_count=len(chunks),
     )
-    with get_session() as session:
-        save_document_record(session, record)
+    async with get_session() as session:
+        await save_document_record(session, record)
     log.info("ingestion.registered", doc_id=doc_id, session_id=session_id)
 
     return len(chunks)
