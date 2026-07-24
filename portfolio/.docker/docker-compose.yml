@@ -30,6 +30,15 @@
 # image manages that volume's ownership itself, so there's no equivalent permission
 # dance to do for them. `redis` needs no volume at all: its conf disables persistence
 # (it's a pure cache), so there's nothing to keep across a restart.
+#
+# Pinned below rather than left to Compose's default (the containing directory's
+# basename) -- without this, running from `.docker/` names containers `docker-api-1`
+# etc., while running from `portfolio/` names them `portfolio-api-1`, and each gets
+# treated as a separate project. That's how a stale container from one invocation
+# style silently survives and collides on the same host port when you later run it
+# the other way.
+name: portfolio
+
 services:
   qdrant:
     image: qdrant/qdrant:v1.12.5
