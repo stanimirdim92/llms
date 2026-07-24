@@ -1,10 +1,12 @@
 # Coding rules
 
 Rules 1-4 are Andrej Karpathy's, from his January 2026 post on recurring LLM
-coding failure modes. Rules 5-12 are community extensions (credited to @mnilax);
-published variants disagree on which eight they are, so treat these as this
-repo's chosen set rather than a canonical list. Each rule names the failure it
-exists to catch -- that's the part that makes it actionable instead of generic.
+coding failure modes. Rules 5-7 are three of the community extensions credited
+to @mnilax, kept deliberately -- the rest of that set was dropped as either
+redundant with how this project already works or built on arbitrary thresholds.
+Numbering here is therefore our own past rule 4; don't expect it to line up with
+a published twelve-rule list. Each rule names the failure it exists to catch,
+which is the part that makes it actionable instead of generic.
 
 ## Karpathy's four
 
@@ -24,40 +26,18 @@ exists to catch -- that's the part that makes it actionable instead of generic.
    then loop until it's confirmed -- not until it looks right.
    *Catches: declaring success without running anything.*
 
-## Extensions
+## Kept extensions
 
 5. **Use the model only for judgment calls.** Reserve LLM calls for
    classification, extraction, and drafting. Deterministic operations get plain
    code.
    *Catches: paying latency and nondeterminism for work `if`/`else` would do.*
 
-6. **Respect the token budget.** When a task is ballooning, summarize and restart
-   rather than dragging a bloated context forward. (The source proposes hard
-   caps -- ~4k per task, ~30k per session; adjust to the task, but treat "this is
-   getting long" as a signal to checkpoint, not to push on.)
-   *Catches: quality degrading silently as context fills.*
-
-7. **Surface conflicts, don't average them.** When two patterns in the codebase
+6. **Surface conflicts, don't average them.** When two patterns in the codebase
    contradict each other, pick one and say why. Never blend them into a third
    thing that matches neither.
    *Catches: inventing a novel pattern nobody chose.*
 
-8. **Read before you write.** Understand the file's existing structure and
-   conventions before adding to it.
-   *Catches: reimplementing a helper that already exists two functions up.*
-
-9. **Tests verify intent, not just behavior.** A test should encode *why* the
-   behavior matters, so breaking it tells you what assumption you violated.
-   *Catches: tests that pass while the feature is wrong.*
-
-10. **Checkpoint after every significant step.** State what's done, how it was
-    verified, and what remains.
-    *Catches: long silent runs that end somewhere unintended.*
-
-11. **Match the codebase's conventions.** Conform to what's here, even when you'd
-    prefer a different approach. Argue for a change separately from making it.
-    *Catches: a file that reads like it came from a different project.*
-
-12. **Fail loud.** Surface uncertainty, skipped steps, and unverified claims
-    explicitly. Never let "I couldn't check this" read as "this works".
-    *Catches: silent gaps the reader assumes were covered.*
+7. **Fail loud.** Surface uncertainty, skipped steps, and unverified claims
+   explicitly. Never let "I couldn't check this" read as "this works".
+   *Catches: silent gaps the reader assumes were covered.*
