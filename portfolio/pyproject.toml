@@ -19,11 +19,11 @@ dependencies = [
     "attrs>=26.1.0",
     "python-dotenv>=1.2.2,<2.0.0",
     "langchain>=1.3.14,<2.0.0",
-    "langchain-core>=1.4.9,<2.0.0",
+    "langchain-core>=1.5.1,<2.0.0",
     "langchain-community>=0.4.2,<0.5.0",
-    "langchain-openai>=1.3.5,<2.0.0",
+    "langchain-openai>=1.4.1,<2.0.0",
     "langchain-text-splitters>=1.1.2,<2.0.0",
-    "langsmith>=0.10.6,<1.2.0",
+    "langsmith>=0.10.10,<1.2.0",
     "langgraph>=1.2.9,<2.0.0",
     # unstructured with extra + python marker
     #    "unstructured[pdf]>=0.22.0,<0.40.0; python_version >= '3.12' and python_version < '4.0'",
@@ -40,22 +40,22 @@ dependencies = [
     "hiredis>=3.4.0,<4.0.0",
     # redis with extra
     "redis[hiredis]>=8.0.1,<9.0.0",
-    "cachetools>=7.1.4,<8.1.0",
+    "cachetools>=7.1.6,<8.1.0",
     "fastapi[standard]>=0.139.2,<0.150.0",
     "uvicorn>=0.51.0,<0.60.0",
-    "sse-starlette>=3.4.5,<4.0.0",
+    "sse-starlette>=3.4.6,<4.0.0",
     "sqlmodel>=0.0.39,<0.0.50",
     "googlemaps>=4.10.0,<5.0.0",
     "uvloop>=0.22.1,<0.24.0",
     "lxml>=6.1.1,<7.0.0",
     "cssutils>=2.15.0,<3.0.0",
     "cryptography>=49.0.0,<50.0.0",
-    "openai>=2.46.0,<3.0.0",
+    "openai>=2.48.0,<3.0.0",
     "openai-agents>=0.18.3,<0.20",
     # html-to-markdown with extra
-    "html-to-markdown>=3.8.3,<4.0.0",
+    "html-to-markdown>=3.9.0,<4.0.0",
     "ijson>=3.5.1,<4.0.0",
-    "brightdata-sdk>=2.4.0,<3.0.0",
+    "brightdata-sdk>=2.4.1,<3.0.0",
     "cairosvg>=2.9.0,<3.0.0",
     "scikit-learn>=1.9.0,<2.0.0",
     "numpy>=2.5.1,<3.0.0",
@@ -71,30 +71,30 @@ dependencies = [
     # Generation, embeddings, vector store, and reranking all go through LangChain's
     # integration packages (not the raw provider SDKs) so Epic 1 is built on the same
     # framework Epic 3's LangGraph agent runs on, per the original plan.
-    "langchain-anthropic>=1.4.8,<2.0.0",
+    "langchain-anthropic>=1.5.2,<2.0.0",
     "langchain-voyageai>=0.4.0,<1.0.0",
     "langchain-qdrant>=1.1.0,<2.0.0",
     "qdrant-client>=1.18.0,<2.0.0",
     "psycopg[binary]>=3.3.4,<4.0.0",
     "langgraph-checkpoint-sqlite>=3.1.0,<4.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
-    "docling>=2.113.0,<3.0.0",
+    "docling>=2.115.0,<3.0.0",
     "arxiv>=4.0.0,<5.0.0",
-    "requests>=2.32.0,<2.34.0",  # arxiv==4.0.0 itself pins requests<2.34,>=2.32
+    "requests>=2.33.1,<2.34.0",  # arxiv==4.0.0 itself pins requests<2.34,>=2.32
     "structlog>=26.1.0,<27.0.0",
-    "streamlit>=1.59.2,<2.0.0",
+    "streamlit>=1.60.0,<2.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
   "devtools>=0.12.2",
-  "ruff>=0.15.22",
-  "ty>=0.0.60",
+  "ruff>=0.16.0",
+  "ty>=0.0.63",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9.1.1,<10",
 ]
 local-reranker = [
-  "sentence-transformers>=5.6.0,<6.0.0",
+  "sentence-transformers>=5.6.1,<6.0.0",
   # CrossEncoderReranker moved out of `langchain` into this package in the 1.0 split
   "langchain-classic>=1.0.8,<2.0.0",
 ]
@@ -106,7 +106,7 @@ repository = "https://github.com/cs83/smartico-ai"
 documentation = "https://github.com/cs83/smartico-ai"
 
 [build-system]
-requires = ["uv_build>=0.11.29,<0.12"]
+requires = ["uv_build>=0.11.32,<0.12"]
 build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"
