@@ -56,10 +56,16 @@ services:
     restart: unless-stopped
     ports:
       - "5432:5432"
+    # POSTGRES_USER/PASSWORD/DB come from ../.env via env_file, the same way api/
+    # streamlit already load it -- not the `${POSTGRES_USER:-portfolio}` compose-time
+    # substitution this used to use. That substitution resolves against the shell env or
+    # a `.env` next to *this* compose file, never ../.env, so a real override in
+    # ../.env would have silently been ignored here while still reaching the app
+    # containers below. `.env.example` uncomments these three (a password is required
+    # for the image to start) so they're never actually unset.
+    env_file:
+      - ../.env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
-      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
       # Explicit, not inherited from the image/locale default -- psycopg 3 negotiates
       # client encoding against whatever this is, so pin it rather than assume it.
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C.UTF-8 --lc-ctype=C.UTF-8"
@@ -81,7 +87,13 @@ services:
       - DAC_OVERRIDE
       - FOWNER
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-portfolio} -d ${POSTGRES_DB:-portfolio}"]
+      # $POSTGRES_USER/$POSTGRES_DB here are the *container's own* shell-expanded env
+      # vars at healthcheck-execution time (single $, evaluated inside the container by
+      # CMD-SHELL) -- not compose's `${...}` substitution, which (see the env_file note
+      # above) can't see ../.env. Using compose substitution here would check the
+      # fallback default even when the container itself is running with a real
+      # ../.env-provided override, breaking the healthcheck for anyone who customizes it.
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -115,15 +127,13 @@ services:
       - ../.env
     environment:
       QDRANT_URL: http://qdrant:6333
-      # Split vars, not a constructed DATABASE_URL -- app/config.py assembles the DSN
-      # itself from these (see its `_assemble_database_url` validator), so
-      # POSTGRES_USER/PASSWORD/DB above stay the single source of truth instead of
-      # being duplicated into a second string here.
+      # POSTGRES_USER/PASSWORD/DB reach app/config.py's Settings straight from ../.env
+      # via env_file above -- no DATABASE_URL or DB_USER/PASSWORD/NAME to construct or
+      # keep in sync here. Only DB_HOST needs overriding: config.py's default
+      # ("localhost") is right for a bare/local run, but inside this compose network
+      # postgres is reachable by its service name instead. DB_PORT stays the default
+      # 5432 either way, so it's not repeated here.
       DB_HOST: postgres
-      DB_PORT: "5432"
-      DB_USER: ${POSTGRES_USER:-portfolio}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
-      DB_NAME: ${POSTGRES_DB:-portfolio}
     volumes:
       - ../data:/app/data
     security_opt:
@@ -184,15 +194,13 @@ services:
       - ../.env
     environment:
       QDRANT_URL: http://qdrant:6333
-      # Split vars, not a constructed DATABASE_URL -- app/config.py assembles the DSN
-      # itself from these (see its `_assemble_database_url` validator), so
-      # POSTGRES_USER/PASSWORD/DB above stay the single source of truth instead of
-      # being duplicated into a second string here.
+      # POSTGRES_USER/PASSWORD/DB reach app/config.py's Settings straight from ../.env
+      # via env_file above -- no DATABASE_URL or DB_USER/PASSWORD/NAME to construct or
+      # keep in sync here. Only DB_HOST needs overriding: config.py's default
+      # ("localhost") is right for a bare/local run, but inside this compose network
+      # postgres is reachable by its service name instead. DB_PORT stays the default
+      # 5432 either way, so it's not repeated here.
       DB_HOST: postgres
-      DB_PORT: "5432"
-      DB_USER: ${POSTGRES_USER:-portfolio}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
-      DB_NAME: ${POSTGRES_DB:-portfolio}
     volumes:
       - ../data:/app/data
     security_opt:

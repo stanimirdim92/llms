@@ -34,20 +34,27 @@ class Settings(BaseSettings):
     qdrant_url: str = Field(default="http://localhost:6333")
     qdrant_collection: str = Field(default="portfolio_rag")
 
-    # Split vars are the configurable surface (e.g. rotate DB_PASSWORD alone without
-    # touching a DSN string); DATABASE_URL is an escape hatch that overrides all of them
-    # at once when set. `postgresql+psycopg` (psycopg 3, already pinned in pyproject.toml)
-    # has native asyncio support in the same package -- unlike MySQL's psycopg2/aiomysql
-    # split, there's no separate async driver to add for Postgres.
+    # Split vars are the configurable surface (e.g. rotate POSTGRES_PASSWORD alone
+    # without touching a DSN string); DATABASE_URL is an escape hatch that overrides all
+    # of them at once when set. `postgresql+psycopg` (psycopg 3, already pinned in
+    # pyproject.toml) has native asyncio support in the same package -- unlike MySQL's
+    # psycopg2/aiomysql split, there's no separate async driver to add for Postgres.
+    #
+    # postgres_user/password/db deliberately reuse the exact env var names
+    # (POSTGRES_USER/PASSWORD/DB) the official `postgres` docker image itself reads to
+    # initialize the database -- one credential trio serves both consumers instead of
+    # a second DB_USER/PASSWORD/NAME copy that has to be kept in sync with it.
+    # db_host/db_port/db_driver have no such upstream name to reuse (the postgres image
+    # doesn't take a "what port am I on" env var), so those stay ours alone.
     db_driver: str = Field(default="postgresql+psycopg")
     db_host: str = Field(default="localhost")
     db_port: int = Field(default=5432)
-    db_user: str = Field(default="portfolio")
-    db_password: str = Field(default="portfolio")
-    db_name: str = Field(default="portfolio")
+    postgres_user: str = Field(default="portfolio")
+    postgres_password: str = Field(default="portfolio")
+    postgres_db: str = Field(default="portfolio")
     database_url: str = Field(
         default="",
-        description="Full DSN override. If unset, built from db_host/db_port/db_user/db_password/db_name/db_driver.",
+        description="Full DSN override. If unset, built from db_host/db_port/db_driver/postgres_user/password/db.",
     )
 
     # Sized for a single gunicorn worker's own engine (each worker gets its own pool --
@@ -88,11 +95,11 @@ class Settings(BaseSettings):
         if not self.database_url:
             self.database_url = URL.create(
                 drivername=self.db_driver,
-                username=self.db_user,
-                password=self.db_password,
+                username=self.postgres_user,
+                password=self.postgres_password,
                 host=self.db_host,
                 port=self.db_port,
-                database=self.db_name,
+                database=self.postgres_db,
             ).render_as_string(hide_password=False)
         return self
 
