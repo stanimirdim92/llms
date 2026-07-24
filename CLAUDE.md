@@ -1,3 +1,12 @@
+# Repo
+
+Four independent projects, no shared code: `portfolio/` is the active one (an AI
+engineer portfolio -- RAG, LLM eval, agentic HITL); `fastai-dl/`,
+`transformers-course/`, and `LLM Engineers Handbook/` are course and book
+material. Each carries its own tooling -- don't assume a command that works in
+one works in another. `portfolio/CLAUDE.md` has that project's own rules and
+failure contracts.
+
 # Coding rules
 
 Rules 1-4 are Andrej Karpathy's, from his January 2026 post on recurring LLM
