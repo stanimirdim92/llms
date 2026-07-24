@@ -170,16 +170,21 @@ services:
     cap_drop:
       - ALL
     # Root's usual "superpowers" are themselves capability-gated, not just UID-0 --
-    # cap_drop: ALL removes them from root too. Confirmed both are actually needed here
-    # (not just "might as well keep"): NET_BIND_SERVICE for binding port 80 (a
+    # cap_drop: ALL removes them from root too. NET_BIND_SERVICE for binding port 80 (a
     # privileged port), SETUID/SETGID for the master process's privilege drop to the
-    # `user www-data;` worker processes nginx.conf configures. No CAP_CHOWN needed --
-    # checked the stock image's docker-entrypoint.sh/docker-entrypoint.d/*.sh: none of
-    # them chown or chmod anything at container startup.
+    # `user www-data;` worker processes nginx.conf configures. CHOWN *is* needed --
+    # correcting an earlier assumption here: the stock image's own
+    # docker-entrypoint.sh/docker-entrypoint.d/*.sh scripts genuinely don't chown
+    # anything (that part was checked correctly), but nginx's own master process does,
+    # internally, chowning its cache/temp dirs (/var/cache/nginx/*) to the `user`
+    # directive's UID before dropping privileges -- that's a different layer than the
+    # shell entrypoint scripts, and missing it meant nginx crash-looped on every start
+    # with `chown(...) failed (1: Operation not permitted)` until this was added.
     cap_add:
       - NET_BIND_SERVICE
       - SETUID
       - SETGID
+      - CHOWN
     depends_on:
       api:
         condition: service_healthy
