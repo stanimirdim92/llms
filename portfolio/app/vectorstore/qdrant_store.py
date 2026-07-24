@@ -5,6 +5,7 @@ Epic 3's agent imports this module directly rather than constructing a second st
 
 from __future__ import annotations
 
+import uuid
 from typing import TYPE_CHECKING
 
 from langchain_core.documents import Document
@@ -17,6 +18,21 @@ from app.ingestion.models import GLOBAL_SESSION, Chunk
 
 if TYPE_CHECKING:
     from langchain_core.vectorstores.base import VectorStoreRetriever
+
+# Fixed, arbitrary namespace for deriving Qdrant point IDs from our own chunk_id strings
+# via uuid5 -- never regenerate this, or every existing point ID changes and re-ingesting
+# unchanged documents would duplicate rather than upsert. Qdrant point IDs must be an
+# unsigned integer or a UUID (unlike Chroma, which accepted arbitrary strings); our
+# chunk_id values ("{doc_id}-text-0000" etc.) are neither, so they can't be used as the
+# point ID directly. uuid5 (not uuid4) keeps this deterministic: the same chunk_id always
+# maps to the same point ID, which is what makes re-ingesting identical content an upsert
+# rather than a duplicate. The human-readable chunk_id itself is unaffected -- it's still
+# stored in the payload (_chunk_metadata below) and is what citations actually read.
+_POINT_ID_NAMESPACE = uuid.UUID("6f2d7e2a-9b1a-4c3e-8f7a-1d2e3c4b5a6f")
+
+
+def _point_id(chunk_id: str) -> str:
+    return str(uuid.uuid5(_POINT_ID_NAMESPACE, chunk_id))
 
 
 def _chunk_metadata(chunk: Chunk) -> dict:
@@ -76,7 +92,7 @@ class QdrantStore:
         if not chunks:
             return
         documents = [_to_document(chunk) for chunk in chunks]
-        self._store.add_documents(documents, ids=[chunk.chunk_id for chunk in chunks])
+        self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id) for chunk in chunks])
 
     async def query(
         self,
