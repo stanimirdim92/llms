@@ -103,6 +103,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ENV HOME=/home/appuser
 
+# Docling downloads its models on first use, not at build time: the layout model
+# (docling-layout-heron) and table-structure model from HuggingFace, plus RapidOCR's
+# detection/recognition weights. That's ~1 minute of downloads on a cold start, and
+# without a persisted cache it repeats on every container recreate -- which is most of
+# what a "slow first upload" actually is, not inference.
+#
+# All three env vars point inside one directory so a single volume mount
+# (docker-compose.yml mounts `model_cache` here) persists every cache at once:
+# HF_HOME covers HuggingFace, TORCH_HOME covers torch.hub, and XDG_CACHE_HOME is the
+# fallback RapidOCR and other libs respect. Pre-created with appuser ownership so the
+# named volume inherits it -- a volume mounted over a root-owned path would leave the
+# non-root process unable to write, and the downloads would silently fail to cache.
+ENV XDG_CACHE_HOME=/home/appuser/.cache \
+    HF_HOME=/home/appuser/.cache/huggingface \
+    TORCH_HOME=/home/appuser/.cache/torch
+RUN mkdir -p /home/appuser/.cache/huggingface /home/appuser/.cache/torch \
+    && chown -R appuser:app /home/appuser/.cache
+
 WORKDIR /app
 COPY --from=builder --chown=appuser:app /opt/venv /opt/venv
 COPY --chown=appuser:app app ./app

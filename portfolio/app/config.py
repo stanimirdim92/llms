@@ -80,6 +80,16 @@ class Settings(BaseSettings):
 
     chunk_max_tokens: int = Field(default=700)
 
+    # Docling's own AcceleratorOptions defaults num_threads to 4, which leaves most of a
+    # modern box idle during layout/table inference (the CPU-bound bulk of ingestion).
+    # None means "detect at runtime" -- see parser.py. Note the env var for this field,
+    # DOCLING_NUM_THREADS, is deliberately the same one Docling's AcceleratorOptions
+    # reads itself (it's a BaseSettings with env_prefix="DOCLING_"), so setting it once
+    # configures both paths consistently rather than having two competing knobs.
+    docling_num_threads: int | None = Field(
+        default=None, description="CPU threads for Docling model inference. None = os.cpu_count()."
+    )
+
     # Defaults preserve today's hardcoded CORSMiddleware call in api/main.py exactly --
     # override via .env once there's a real frontend origin to lock this down to.
     cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])

@@ -149,6 +149,12 @@ services:
       DB_HOST: postgres
     volumes:
       - ../data:/app/data
+      # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container
+      # recreates (~1 min of cold-start downloads otherwise). Named volume, not a bind
+      # mount, so it inherits the image's appuser ownership -- see the Dockerfile's
+      # XDG_CACHE_HOME block. Shared with `streamlit`: both run the same ingestion code,
+      # so they'd otherwise each download their own copy.
+      - model_cache:/home/appuser/.cache
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -221,6 +227,12 @@ services:
       DB_HOST: postgres
     volumes:
       - ../data:/app/data
+      # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container
+      # recreates (~1 min of cold-start downloads otherwise). Named volume, not a bind
+      # mount, so it inherits the image's appuser ownership -- see the Dockerfile's
+      # XDG_CACHE_HOME block. Shared with `streamlit`: both run the same ingestion code,
+      # so they'd otherwise each download their own copy.
+      - model_cache:/home/appuser/.cache
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -236,3 +248,4 @@ services:
 volumes:
   qdrant_data:
   postgres_data:
+  model_cache:
