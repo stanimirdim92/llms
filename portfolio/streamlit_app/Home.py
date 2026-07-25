@@ -22,7 +22,7 @@ st.title("Scientific Document RAG — Track")
 st.caption("Ask a question about the curated materials-science / battery corpus, or upload your own documents first.")
 
 if "session_id" not in st.session_state:
-    st.session_state.session_id = uuid.uuid4().hex
+    st.session_state.session_id = uuid.uuid7().hex
 if "uploaded_docs" not in st.session_state:
     st.session_state.uploaded_docs = []
 

@@ -33,7 +33,7 @@ _ACCELERATOR_OPTIONS = AcceleratorOptions(num_threads=get_settings().docling_num
 # PPTX, HTML, images, ...) carry their figures as embedded assets already and use Docling's
 # defaults, so they don't need (or support) this option the same way.
 _PDF_PIPELINE_OPTIONS = PdfPipelineOptions(
-    generate_picture_images=True, images_scale=2.0, accelerator_options=_ACCELERATOR_OPTIONS
+    generate_picture_images=True, images_scale=1.5, accelerator_options=_ACCELERATOR_OPTIONS, document_timeout=90
 )
 
 _converter = DocumentConverter(
