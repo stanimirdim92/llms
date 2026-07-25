@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
-from qdrant_client.models import FieldCondition, Filter, MatchAny
+from qdrant_client.models import FieldCondition, Filter, FilterSelector, MatchAny, MatchValue
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
@@ -88,9 +88,41 @@ class QdrantStore:
             collection_name=collection_name or settings.qdrant_collection,
         )
 
+    def delete_document(self, doc_id: str) -> None:
+        """Remove every point belonging to `doc_id`, whatever its chunk ids were.
+
+        Upserting by id alone is NOT sufficient to make re-ingestion idempotent: chunk ids
+        encode position (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything that
+        changes how many chunks a document yields -- a different `chunk_max_tokens`, a
+        Docling upgrade that detects one more figure, toggling `do_ocr` -- shifts the ids.
+        The new ids upsert cleanly while the *old* points stay behind, still matching the
+        session filter, still retrievable, now stale. Deleting by `doc_id` first makes
+        re-ingestion correct regardless of how the chunk ids moved.
+        """
+        self._store.client.delete(
+            collection_name=self._store.collection_name,
+            points_selector=FilterSelector(
+                filter=Filter(must=[FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id))])
+            ),
+        )
+
     def upsert(self, chunks: list[Chunk]) -> None:
+        """Replace a document's points: delete-then-insert, not insert-by-id.
+
+        See `delete_document` for why the delete is required rather than paranoid. All
+        chunks passed in one call must share a `doc_id` -- that's how every caller uses it
+        (`ingest_document` handles exactly one document), and the assert makes the
+        assumption fail loudly here rather than silently deleting the wrong document's
+        points if a future caller batches across documents.
+        """
         if not chunks:
             return
+        doc_ids = {chunk.doc_id for chunk in chunks}
+        if len(doc_ids) != 1:
+            msg = f"upsert() expects chunks from exactly one document, got {sorted(doc_ids)}"
+            raise ValueError(msg)
+
+        self.delete_document(doc_ids.pop())
         documents = [_to_document(chunk) for chunk in chunks]
         self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id) for chunk in chunks])
 

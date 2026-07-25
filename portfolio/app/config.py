@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     anthropic_api_key: str = Field(default="")
     answer_model: str = Field(default="claude-sonnet-5")
     figure_caption_model: str = Field(default="claude-sonnet-5")
+    # Figure captions are one Anthropic call per figure and were the sequential stage of
+    # ingestion -- a 15-figure paper meant 15 round-trips back to back, which no amount of
+    # CPU or GPU touches. Kept modest rather than unbounded: the ceiling here is Anthropic's
+    # rate limit, and a 429 storm would be slower than running sequentially.
+    figure_caption_concurrency: int = Field(default=5)
 
     voyage_api_key: str = Field(default="")
     voyage_model: str = Field(default="voyage-4")

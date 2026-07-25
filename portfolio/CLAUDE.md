@@ -23,9 +23,17 @@ plainly rather than implying green tests mean the pipeline works.
 
 - **Never commit `.env`.** It holds a real LangSmith API key. `.env.example` stays a
   template with placeholders only -- no real secrets, ever.
-- **Never regenerate `_POINT_ID_NAMESPACE`** in `app/vectorstore/qdrant_store.py`.
-  Point IDs are `uuid5(namespace, chunk_id)`; a new namespace changes every ID, so
-  re-ingesting unchanged documents silently duplicates instead of upserting.
+- **Never remove the delete step from `QdrantStore.upsert`.** It deletes every point
+  for the document's `doc_id` before inserting, and that is what makes re-ingestion
+  correct -- not the point-id derivation. Chunk ids encode position
+  (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything changing how many chunks a
+  document yields (`chunk_max_tokens`, a Docling upgrade detecting one more figure,
+  toggling `do_ocr`) shifts every later id: the new ids insert cleanly while the old
+  points stay behind, still matching the session filter, still retrievable, now stale.
+  There is no other cleanup path.
+- **Never renumber figure ids** in `figure_extractor.extract_figures`. A picture item
+  with no renderable image still consumes its `enumerate` index on purpose;
+  `tests/unit/test_figure_ids.py` pins this.
 - `uv.lock` is gitignored here (unusual for a uv project). Don't add it.
 
 ## Failure contracts
