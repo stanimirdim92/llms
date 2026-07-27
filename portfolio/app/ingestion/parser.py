@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from docling.datamodel.base_models import InputFormat
+from docling.datamodel.base_models import ConversionStatus, InputFormat
 from docling.datamodel.pipeline_options import AcceleratorOptions, PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc.document import DoclingDocument
@@ -41,9 +41,28 @@ _converter = DocumentConverter(
 )
 
 
+class DocumentParseError(RuntimeError):
+    """Docling did not fully convert the document, so its output must not be used."""
+
+
 def parse_document(file_path: Path) -> DoclingDocument:
-    """Convert a document into a Docling document with layout-aware text, tables, and figures."""
+    """Convert a document into a Docling document with layout-aware text, tables, and figures.
+
+    Raises `DocumentParseError` unless the conversion fully succeeded. This check is not
+    defensive padding -- `document_timeout` above makes a partial result a routine
+    outcome, and Docling reports it by *returning* rather than raising: it logs a warning,
+    appends a TIMEOUT `ErrorItem`, sets `status = PARTIAL_SUCCESS`, and stops processing
+    the remaining pages (see `docling/pipeline/base_pipeline.py`). A truncated
+    `DoclingDocument` is indistinguishable from a complete one at this boundary, and the
+    caller's next step is to persist it to `data/processed/<doc_id>.json` -- which every
+    later ingest then loads from cache. So silently accepting a partial parse doesn't just
+    lose half a document once, it makes the truncation permanent and invisible.
+    """
     result = _converter.convert(str(file_path))
+    if result.status != ConversionStatus.SUCCESS:
+        detail = "; ".join(error.error_message for error in result.errors) or "no error detail reported"
+        msg = f"Docling returned status '{result.status.value}' for {file_path.name}: {detail}"
+        raise DocumentParseError(msg)
     return result.document
 
 
