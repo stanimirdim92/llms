@@ -21,10 +21,11 @@ Already done ahead of this epic (not repeated below): the multi-stage Dockerfile
 
 ## Naming conflict to resolve first
 
-README calls for `api/middleware/auth.py`, but this is a **FastAPI dependency**, not
-middleware — it must run per-route with access to path params and be overridable in tests,
-which middleware isn't. Plan uses `app/api/deps.py` (FastAPI convention) and updates the
-README rather than misnaming the mechanism.
+The original plan (now `docs/IMPLEMENTATION_PLAN.md`) calls for `api/middleware/auth.py`,
+but this is a **FastAPI dependency**, not middleware — it must run per-route with access to
+path params and be overridable in tests, which middleware isn't. Plan uses
+`app/api/deps.py` (FastAPI convention) rather than misnaming the mechanism. Resolved:
+Phase 3 recorded the correction in the plan's own header.
 
 ---
 
@@ -186,13 +187,29 @@ Deferred: `/review` doesn't exist until Epic 3.
 
 ---
 
-## Phase 3 — Documentation (buildable now)
+## Phase 3 — Documentation ✅ BUILT
 
 - `TECHNICAL_DECISIONS.md`: consolidate the rationale currently spread across README rows
   and code comments — chunking, reranker, embeddings, Qdrant (incl. point-ID and delete-then-insert
   contracts), pool sizing, the tenant-scope collapse and why, tracing choice.
 - README rewrite: becomes a real project README (quickstart, architecture, what's built vs
   planned); plan content moves into history. Fold in the `deps.py`-vs-`middleware/` correction.
+
+Built as specified, plus:
+
+- The old README moved to `docs/IMPLEMENTATION_PLAN.md` via `git mv` (rename preserved in
+  history) rather than being deleted and rewritten in place. Its new header lists every
+  point where the plan and the code now disagree — `middleware/` vs `deps.py`, `slowapi`,
+  the `session_id` → `tenant_id` security fix, the test count — so a reader who lands there
+  first isn't misled.
+- The README's "Known gaps" section states the four things that are *not* covered:
+  the 6-vs-45-paper corpus, the un-run Epic 1 spot-check, that no test exercises Qdrant,
+  and that uploads buffer fully in memory before the size check.
+- Stale pointers fixed: `CLAUDE.md`, `app/api/deps.py`, and `app/registry/models.py` all
+  referenced "README" for content that is now in the plan or in `TECHNICAL_DECISIONS.md`.
+- `TECHNICAL_DECISIONS.md` is 16 sections, each with the rejected alternative and what
+  would justify revisiting it. `CLAUDE.md` now states which doc to update when a decision
+  changes, so the plan doesn't get edited back into being a live document.
 
 ---
 

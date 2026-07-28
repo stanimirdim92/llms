@@ -1,7 +1,7 @@
 """Flat table recording every ingested document (curated corpus and user uploads
 alike), kept intentionally free of graph-shaped columns -- this is groundwork for an
-eventual Neo4j sync job, not a graph model itself. See README.md's Document Registry
-row.
+eventual Neo4j sync job, not a graph model itself. See TECHNICAL_DECISIONS.md's
+"Database: Postgres, and only Postgres" section.
 """
 
 from __future__ import annotations

@@ -4,9 +4,15 @@ RAG over scientific documents, plus an LLM eval framework and an agentic
 human-in-the-loop curation layer.
 
 Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack) and
-Epic 4 Phases 1-2 (API-key auth, tenant scoping, per-tenant rate limiting) -- see
+Epic 4 Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs) -- see
 `EPIC_4_PLAN.md` for the remaining phases. Not built: Epics 2 and 3, designed in
-`README.md` only -- no eval framework, no agent. Don't assume code for them.
+`docs/IMPLEMENTATION_PLAN.md` only -- no eval framework, no agent. Don't assume code for
+them.
+
+Docs: `README.md` describes the system as it is; `TECHNICAL_DECISIONS.md` says why each
+choice was made and what was rejected; `docs/IMPLEMENTATION_PLAN.md` is the original plan,
+kept as history and outdated on purpose. When a decision changes, update
+`TECHNICAL_DECISIONS.md` -- not the plan.
 
 ## Verification gate
 
