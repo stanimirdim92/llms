@@ -1,8 +1,8 @@
-# AI Engineer Portfolio — Iris.ai Track (Implementation Plan)
+# AI Engineer Portfolio (Implementation Plan)
 
 ## Context
 
-The source `PLAN.md` (uploaded separately) lays out a 4-epic portfolio project — RAG over scientific/technical documents → LLM eval framework → LangGraph agent with human-in-the-loop on the *same* vector store → production hardening — designed to mirror Iris.ai's actual stack for a job application.
+The source `PLAN.md` (uploaded separately) lays out a 4-epic portfolio project — RAG over scientific/technical documents → LLM eval framework → LangGraph agent with human-in-the-loop on the *same* vector store → production hardening
 
 This project lives inside the existing `portfolio/` folder (already scaffolded here as `documentio-ai`: `pyproject.toml` with a uv build backend and a substantial dependency set, `ruff.toml`/`ty.toml` targeting Python 3.14, a `Dockerfile`, Apache-2.0 `LICENSE`) rather than a new sibling folder — extend this scaffold, don't duplicate it.
 
@@ -23,7 +23,7 @@ The source `PLAN.md` leaves several implementation choices open (dataset, extrac
 | Layer | Choice | Why |
 |---|---|---|
 | Project scaffold | Extend the existing `portfolio/pyproject.toml` (`documentio-ai`), `ruff.toml`/`ty.toml` (Python 3.14, `ty` type checker), `Dockerfile`, `LICENSE` | Don't fork a parallel toolchain for the same repo folder; the scaffold already targets the right Python version and lint/type tooling |
-| Dataset | ~45 curated arXiv papers, materials-science / battery domain (`cond-mat.mtrl-sci`) | Mirrors Iris.ai's actual R&D customer domains; has real tables and figures, not just prose |
+| Dataset | ~45 curated arXiv papers, materials-science / battery domain (`cond-mat.mtrl-sci`) | has real tables and figures, not just prose |
 | Corpus sourcing | `arxiv` Python client (new dependency), pinned manifest (`data/manifest.json`, checked in) | Deterministic/reproducible demo, no live-scrape flakiness |
 | Framework | **LangChain + LangGraph throughout**, not raw provider SDKs — `ChatAnthropic`, `VoyageAIEmbeddings`, `langchain_qdrant.QdrantVectorStore`, `VoyageAIRerank`/`CrossEncoderReranker` for Epic 1; LangGraph for Epic 3's agent | This was the original plan and the existing `pyproject.toml` already core-depends on `langchain`/`langgraph` — Epic 1 and Epic 3 should run on the same framework, not a raw-SDK Epic 1 bolted to a LangGraph Epic 3 |
 | PDF/table/figure extraction | **Docling** (IBM, OSS, new dependency, used directly — not via `langchain-docling`), with `PdfPipelineOptions(generate_picture_images=True)` so Docling renders each figure itself | Docling's raw `DoclingDocument` gives per-table and per-figure objects with bboxes/page numbers; LangChain's `DoclingLoader` pre-chunks into generic `Document`s and would lose the "tables atomic / figures as their own chunk type" control this project needs. **PyMuPDF is not used**: an earlier version manually re-cropped the PDF with PyMuPDF, including flipping Docling's bbox coordinate origin to match PyMuPDF's — both the extra dependency and the coordinate math were unnecessary, since `PictureItem.get_image(document)` already returns the rendered image directly |
