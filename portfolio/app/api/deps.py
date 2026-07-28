@@ -9,12 +9,17 @@ free.
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends, Header
 
 from app.auth.service import resolve_tenant
+from app.config import get_settings
 from app.exceptions import APIError
+from app.rate_limit import RateLimitExceeded, check
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
 
 
 async def current_tenant(x_api_key: Annotated[str | None, Header()] = None) -> str:
@@ -35,3 +40,32 @@ async def current_tenant(x_api_key: Annotated[str | None, Header()] = None) -> s
 
 CurrentTenant = Annotated[str, Depends(current_tenant)]
 """Alias so routes read as `tenant_id: CurrentTenant` instead of repeating the Depends()."""
+
+
+def rate_limited(scope: str, limit_name: str) -> Callable[[str], Awaitable[None]]:
+    """A dependency enforcing `tenant_id`'s budget for `scope`.
+
+    Depends on `current_tenant`, so an unauthenticated request is rejected with 401 before
+    any budget is consumed -- otherwise anonymous traffic could exhaust a tenant's limit, or
+    worse, share one bucket keyed on nothing.
+
+    FastAPI caches dependency results per request, so `current_tenant` resolves once even
+    though both this and the route handler ask for it. That's why the tenant doesn't need
+    stashing on `request.state` the way slowapi's `key_func(request)` signature would force.
+
+    `limit_name` is read from `Settings` at request time rather than captured at import, so
+    limits stay configurable without the decorator freezing whatever value was loaded first.
+    """
+
+    async def _check(tenant_id: CurrentTenant) -> None:
+        limit = getattr(get_settings(), limit_name)
+        try:
+            await check(scope, tenant_id, limit)
+        except RateLimitExceeded as exc:
+            raise APIError(
+                str(exc),
+                code=429,
+                headers={"Retry-After": str(exc.retry_after_seconds)},
+            ) from exc
+
+    return _check

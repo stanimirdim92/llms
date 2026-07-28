@@ -1,11 +1,11 @@
 from functools import lru_cache
 from typing import Annotated
 
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 
-# Runtime import on purpose -- see the note in ask.py: FastAPI resolves this annotation
+# Runtime import on purpose -- see the note in ask.py: FastAPI resolves these annotations
 # when registering the route, so a TYPE_CHECKING-only import breaks dependency injection.
-from app.api.deps import CurrentTenant  # noqa: TC001
+from app.api.deps import CurrentTenant, rate_limited
 from app.api.schemas import UploadResponse
 from app.config import get_settings
 from app.exceptions import APIError
@@ -31,6 +31,7 @@ def _store() -> QdrantStore:
     "the `x-api-key` header authenticates as, so only that tenant's /ask calls can retrieve it. "
     "Requires a valid API key.",
     response_description="The tenant/document ids and how many chunks were produced",
+    dependencies=[Depends(rate_limited("upload", "rate_limit_upload"))],
 )
 async def upload_document(
     file: Annotated[UploadFile, File()],

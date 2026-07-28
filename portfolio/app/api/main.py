@@ -60,8 +60,13 @@ async def portfolio_error_handler(request: Request, exc: PortfolioError) -> JSON
     # FastAPI's default HTTPException handler already produces this exact response
     # shape; this handler only adds structured logging on top of that, so a raised
     # APIError still shows up in the same place as everything else structlog captures.
+    #
+    # `headers=exc.headers` is not optional decoration: overriding the default handler means
+    # this one is now solely responsible for anything the default would have forwarded, and
+    # dropping them silently discards `Retry-After` on a 429 -- the response would tell a
+    # client to back off without saying for how long.
     log.warning("api.error", path=request.url.path, status_code=exc.status_code, detail=exc.detail)
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers)
 
 
 @app.get("/")

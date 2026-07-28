@@ -170,7 +170,7 @@ The cross-tenant test is the one that matters:
 
 ---
 
-## Phase 2 — Rate limiting (buildable now)
+## Phase 2 — Rate limiting ✅ BUILT
 
 Depends on Phase 1 for the tenant key.
 

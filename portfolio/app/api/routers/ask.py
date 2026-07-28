@@ -1,11 +1,12 @@
 from functools import lru_cache
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-# Not a TYPE_CHECKING-only import despite appearing only in an annotation: FastAPI reads
-# these hints at runtime (via get_type_hints when the route is registered) to discover the
-# Depends() marker inside CurrentTenant. Deferring it raises NameError at import.
-from app.api.deps import CurrentTenant  # noqa: TC001
+# Must stay a runtime import. `rate_limited` is called below, and `CurrentTenant` -- though
+# it appears only in an annotation -- is read at runtime by FastAPI (get_type_hints, when the
+# route is registered) to find the Depends() marker inside it. If `rate_limited` ever leaves
+# this import, ruff will suggest moving the rest into a TYPE_CHECKING block; don't.
+from app.api.deps import CurrentTenant, rate_limited
 from app.api.schemas import AskRequest, AskResponse, CitationResponse, RetrievedChunkResponse
 from app.generation.answer_service import AnswerService
 
@@ -26,6 +27,7 @@ def _service() -> AnswerService:
     "in what was retrieved. Searches the shared corpus plus documents uploaded by the tenant the "
     "`x-api-key` header authenticates as -- never another tenant's. Requires a valid API key.",
     response_description="A cited answer, its citations, and every chunk that was retrieved/reranked",
+    dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
 )
 async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
     result = await _service().answer(request.question, tenant_id=tenant_id)

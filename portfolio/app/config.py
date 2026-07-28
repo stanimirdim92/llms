@@ -105,6 +105,30 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO")
     log_json: bool = Field(default=False)  # True in containers; console-friendly locally
 
+    # Redis backs rate limiting (app/rate_limit.py) -- its first real consumer; the service
+    # had been running as unused infra. Counters must be shared, not per-process: with
+    # GUNICORN_WORKERS > 1, in-process counters would let through workers x limit requests.
+    redis_host: str = Field(default="localhost")
+    redis_port: int = Field(default=6379)
+    redis_db: int = Field(default=0)
+    redis_username: str = Field(default="")
+    redis_password: str = Field(default="")
+
+    # Per-tenant request budgets, per `rate_limit_window_seconds`. Uploads get a much
+    # tighter budget than questions because they cost far more: Docling parsing (CPU), one
+    # Anthropic vision call per figure, and a Voyage embedding call per chunk. /ask is a
+    # retrieve + rerank + one generation.
+    rate_limit_window_seconds: int = Field(default=60)
+    rate_limit_ask: int = Field(default=60)
+    rate_limit_upload: int = Field(default=10)
+
+    @property
+    def redis_url(self) -> str:
+        credentials = ""
+        if self.redis_password:
+            credentials = f"{self.redis_username}:{self.redis_password}@"
+        return f"redis://{credentials}{self.redis_host}:{self.redis_port}/{self.redis_db}"
+
     @model_validator(mode="after")
     def _assemble_database_url(self) -> Settings:
         if not self.database_url:

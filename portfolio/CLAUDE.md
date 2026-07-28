@@ -4,9 +4,9 @@ RAG over scientific documents, plus an LLM eval framework and an agentic
 human-in-the-loop curation layer.
 
 Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack) and
-Epic 4 Phase 1 (API-key auth, tenant scoping) -- see `EPIC_4_PLAN.md` for the remaining
-phases. Not built: Epics 2 and 3, designed in `README.md` only -- no eval framework, no
-agent, no rate limiting. Don't assume code for them.
+Epic 4 Phases 1-2 (API-key auth, tenant scoping, per-tenant rate limiting) -- see
+`EPIC_4_PLAN.md` for the remaining phases. Not built: Epics 2 and 3, designed in
+`README.md` only -- no eval framework, no agent. Don't assume code for them.
 
 ## Verification gate
 
@@ -17,10 +17,12 @@ All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
     uv run pytest tests/unit
     cd .docker && docker compose config    # after any compose/Dockerfile edit
 
-A live Qdrant/Postgres round-trip is NOT covered by any of these. The auth tests do hit
-a real Postgres when one is reachable and skip otherwise, but nothing exercises Qdrant,
-so bugs in the store layer only surface on a real ingest. Say that plainly rather than
-implying green tests mean the pipeline works.
+Qdrant is NOT covered by any of these. The auth tests hit a real Postgres and the
+rate-limit tests a real Redis, both skipping when unreachable -- but nothing exercises
+Qdrant, so bugs in the store layer only surface on a real ingest. Say that plainly rather
+than implying green tests mean the pipeline works. Note both suites *skip* rather than
+fail without their service, so a green local run may have tested less than it looks;
+CI provides both and asserts the auth tests didn't skip.
 
 ## Never
 
@@ -120,3 +122,19 @@ rather than raising -- it fails silently, as cross-tenant data access.
   ids are `uuid7().hex`, so no tenant can ever be issued that value.
 - `tests/unit/test_tenant_scoping.py` asserts on the built filter directly, which is why
   it catches leaks without a live Qdrant.
+
+## Rate limiting
+
+- Hand-rolled in `app/rate_limit.py`, deliberately not `slowapi`: `limits[redis]` requires
+  `redis<8.0.0` against this project's `redis>=8.0.1` (uv calls it unsatisfiable), and its
+  redis-py storage is synchronous, so every check would block the event loop.
+- The check is a **Lua script** so it is atomic. A read-then-write version lets concurrent
+  requests all observe a count under the limit and all proceed.
+- **Fails open**: unreachable Redis allows the request and logs a warning. A guardrail's
+  outage must not become the API's outage. `docker-compose.yml` therefore has `api` wait on
+  redis being healthy, so the gap isn't silently open at startup.
+- The Redis client is cached **per event loop**, not per process -- a `redis.asyncio` client
+  binds its pool to the creating loop, so a process-wide singleton breaks under repeated
+  `asyncio.run()` (Streamlit, CLIs, per-test loops).
+- `api/main.py`'s error handler must forward `exc.headers`; it overrides FastAPI's default,
+  so dropping them silently strips `Retry-After` from every 429.

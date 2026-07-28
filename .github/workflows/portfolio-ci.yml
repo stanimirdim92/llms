@@ -38,6 +38,19 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      # The rate-limit tests need real Redis for the same reason: the limiter is a Lua
+      # script plus a sorted-set expiry contract, and they fail *open* -- so a missing
+      # Redis would make them skip rather than fail, hiding a broken limiter.
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       # tests/unit/test_auth_touch.py appends `_test` to this database name and creates it
       # on demand, so it never touches the database above directly.
@@ -46,6 +59,8 @@ jobs:
       POSTGRES_USER: portfolio
       POSTGRES_PASSWORD: portfolio
       POSTGRES_DB: portfolio
+      REDIS_HOST: localhost
+      REDIS_PORT: "6379"
 
     steps:
       - uses: actions/checkout@v7
@@ -79,7 +94,12 @@ jobs:
       - name: Unit tests
         run: uv run pytest tests/unit -v
 
-      - name: Fail if the database-backed auth tests skipped
-        # A skip here means the service wiring broke, and a silently-skipped auth test suite
-        # is indistinguishable from a passing one in the summary. Assert they actually ran.
-        run: uv run pytest tests/unit/test_auth_touch.py -q --no-header -rN | tee /dev/stderr | grep -qv "skipped"
+      - name: Fail if the service-backed tests skipped
+        # Both suites skip when their service is unreachable, so broken service wiring would
+        # look identical to a pass in the summary. Assert they actually ran.
+        run: |
+          for suite in tests/unit/test_auth_touch.py tests/unit/test_rate_limit.py; do
+            uv run pytest "$suite" -q --no-header -rN | tee /dev/stderr | grep -q "skipped" \
+              && { echo "::error::$suite skipped -- service wiring is broken"; exit 1; }
+          done
+          echo "both service-backed suites ran"

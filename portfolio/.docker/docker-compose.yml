@@ -147,6 +147,9 @@ services:
       # postgres is reachable by its service name instead. DB_PORT stays the default
       # 5432 either way, so it's not repeated here.
       DB_HOST: postgres
+      # Rate-limit counters (app/rate_limit.py) -- must be shared across gunicorn workers,
+      # which is why they live in Redis rather than in process memory.
+      REDIS_HOST: redis
     volumes:
       - ../data:/app/data
       # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container
@@ -163,6 +166,11 @@ services:
       qdrant:
         condition: service_healthy
       postgres:
+        condition: service_healthy
+      # Rate limiting fails open when Redis is unreachable, so without this the api would
+      # start serving unthrottled for however long redis took to come up -- a silent gap
+      # rather than a visible failure, which is the worse kind.
+      redis:
         condition: service_healthy
 
   nginx:
@@ -225,6 +233,9 @@ services:
       # postgres is reachable by its service name instead. DB_PORT stays the default
       # 5432 either way, so it's not repeated here.
       DB_HOST: postgres
+      # Rate-limit counters (app/rate_limit.py) -- must be shared across gunicorn workers,
+      # which is why they live in Redis rather than in process memory.
+      REDIS_HOST: redis
     volumes:
       - ../data:/app/data
       # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container
