@@ -18,6 +18,35 @@ defaults:
 jobs:
   lint-type-test:
     runs-on: ubuntu-latest
+
+    # The auth tests need a real Postgres, and deliberately do not fall back to SQLite:
+    # the app runs on one engine, and testing auth against a different one is how a
+    # backend-specific bug hides. They skip when no server is reachable, so without this
+    # service they would skip silently here -- which is worse than not having them.
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_DB: portfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # tests/unit/test_auth_touch.py appends `_test` to this database name and creates it
+      # on demand, so it never touches the database above directly.
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+      POSTGRES_DB: portfolio
+
     steps:
       - uses: actions/checkout@v7
 
@@ -43,5 +72,14 @@ jobs:
       - name: Import the full app (catches import-time errors ty/ruff can't)
         run: uv run python -c "import app.api.main; import app.ingestion.pipeline; import app.retrieval.reranker"
 
+      - name: Create the test database
+        run: |
+          PGPASSWORD=portfolio createdb -h localhost -U portfolio portfolio_test || true
+
       - name: Unit tests
         run: uv run pytest tests/unit -v
+
+      - name: Fail if the database-backed auth tests skipped
+        # A skip here means the service wiring broke, and a silently-skipped auth test suite
+        # is indistinguishable from a passing one in the summary. Assert they actually ran.
+        run: uv run pytest tests/unit/test_auth_touch.py -q --no-header -rN | tee /dev/stderr | grep -qv "skipped"

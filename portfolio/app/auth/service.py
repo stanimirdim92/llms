@@ -44,23 +44,19 @@ async def resolve_tenant(presented_key: str | None) -> str | None:
         return api_key.tenant_id
 
 
-def _as_aware(value: datetime) -> datetime:
-    """Normalize a datetime read back from the database to timezone-aware UTC.
-
-    `models.py` declares these columns `DateTime(timezone=True)`, which is enough on
-    Postgres -- but that is a per-backend guarantee, not a Python one. SQLite has no
-    tz-aware type and hands back naive values, so subtracting `datetime.now(UTC)` raises
-    "can't subtract offset-naive and offset-aware datetimes" on the *second* request with
-    a given key. Verified, not assumed: see `test_auth_touch.py`.
-    """
-    return value if value.tzinfo is not None else value.replace(tzinfo=UTC)
-
-
 async def _touch(session: AsyncSession, api_key: ApiKey) -> None:
-    """Bump `last_used_at`, but only past the resolution window -- see the constant."""
+    """Bump `last_used_at`, but only past the resolution window -- see the constant.
+
+    The subtraction below requires `previous` to be timezone-aware. That holds because this
+    project runs on Postgres only and `models.py` declares the column
+    `DateTime(timezone=True)`, which round-trips an aware value. There is deliberately no
+    defensive normalization here: an explicit test
+    (`test_stored_timestamps_come_back_timezone_aware`) pins that assumption instead, so
+    dropping `timezone=True` fails loudly in CI rather than being silently absorbed.
+    """
     now = datetime.now(UTC)
     previous = api_key.last_used_at
-    if previous is not None and (now - _as_aware(previous)).total_seconds() < _LAST_USED_RESOLUTION_SECONDS:
+    if previous is not None and (now - previous).total_seconds() < _LAST_USED_RESOLUTION_SECONDS:
         return
     api_key.last_used_at = now
     session.add(api_key)

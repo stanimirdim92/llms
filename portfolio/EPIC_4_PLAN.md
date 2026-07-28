@@ -40,11 +40,18 @@ Delivered as planned, with these deviations worth recording:
 - **Streamlit had to authenticate too.** It calls the pipeline in process, so the FastAPI
   dependency never runs for it; it now asks for a key and resolves it through the same
   `auth.service.resolve_tenant`, rather than minting a tenant id as it used to.
-- Added `pytest-asyncio` + `aiosqlite` (dev only) so the auth path has database-backed
-  tests. Contradicts this plan's original "DB tests belong in an integration suite" note --
-  the coverage was worth two dev dependencies on the one path where a silent regression
-  means cross-tenant reads. It immediately earned that: SQLite's *naive* datetimes exposed
-  a tz-comparison bug that Postgres alone would have hidden.
+- Added `pytest-asyncio` (dev only) so the auth path has database-backed tests, against a
+  real Postgres, skipped when none is reachable. Contradicts this plan's original "DB tests
+  belong in an integration suite" note -- the coverage was worth it on the one path where a
+  silent regression means cross-tenant reads. CI runs a `postgres:18-alpine` service and
+  asserts these tests did **not** skip, since a silently-skipped auth suite looks identical
+  to a passing one.
+  An interim version used in-memory SQLite instead, which did surface a real tz-comparison
+  bug -- but testing auth on an engine the app never runs is how backend-specific bugs hide,
+  so it was replaced. The assumption that bug exposed is now pinned by an explicit test
+  (`test_stored_timestamps_come_back_timezone_aware`) rather than by defensive code.
+- `langgraph-checkpoint-sqlite` swapped for `langgraph-checkpoint-postgres`, and Epic 3's
+  planned SQLite `incoming_queue` becomes a Postgres table: one database engine, project-wide.
 - 1.6 (streaming upload) **not** done, as flagged optional. The size check still runs after
   a full `await file.read()`, so `max_upload_size_mb` bounds what's stored, not what's
   buffered. Noted in `documents.py`.

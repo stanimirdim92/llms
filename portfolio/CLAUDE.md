@@ -1,11 +1,12 @@
 # portfolio
 
 RAG over scientific documents, plus an LLM eval framework and an agentic
-human-in-the-loop curation layer. Epic 1 (the retrieve -> rerank -> generate
-pipeline, multi-format tenant-scoped uploads, API-key auth, Docker stack) is built and
-verified. Epic 4 Phase 1 (API-key auth and tenant scoping) is built -- see
-`EPIC_4_PLAN.md` for what remains. Epics 2 and 3 are designed in `README.md` but **not
-implemented**: no eval framework, no agent, no rate limiting. Don't assume code for them.
+human-in-the-loop curation layer.
+
+Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack) and
+Epic 4 Phase 1 (API-key auth, tenant scoping) -- see `EPIC_4_PLAN.md` for the remaining
+phases. Not built: Epics 2 and 3, designed in `README.md` only -- no eval framework, no
+agent, no rate limiting. Don't assume code for them.
 
 ## Verification gate
 
@@ -17,9 +18,9 @@ All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
     cd .docker && docker compose config    # after any compose/Dockerfile edit
 
 A live Qdrant/Postgres round-trip is NOT covered by any of these. The auth tests do hit
-a real database (in-memory SQLite via `aiosqlite`), but nothing exercises Qdrant, so bugs
-in the store layer only surface on a real ingest. Say that plainly rather than implying
-green tests mean the pipeline works.
+a real Postgres when one is reachable and skip otherwise, but nothing exercises Qdrant,
+so bugs in the store layer only surface on a real ingest. Say that plainly rather than
+implying green tests mean the pipeline works.
 
 ## Never
 
@@ -73,13 +74,16 @@ Things that look correct and aren't:
   `from __future__ import annotations` with `datetime` imported under `TYPE_CHECKING`.
   Without it SQLModel infers the column type from an annotation that is a string it can't
   resolve, failing at *import* time with `issubclass() arg 1 must be a class` -- which
-  reads like a library bug rather than a missing argument. `Column(DateTime(timezone=True))`
-  also keeps values aware; see the next entry for why that isn't sufficient on its own.
-- **A `DateTime(timezone=True)` column is only aware on Postgres.** SQLite has no
-  tz-aware type and returns naive datetimes, so comparing one against
-  `datetime.now(UTC)` raises "can't subtract offset-naive and offset-aware datetimes".
-  Normalize before arithmetic (`auth/service.py::_as_aware`) rather than trusting the
-  column declaration -- the auth tests run on SQLite precisely to keep this honest.
+  reads like a library bug rather than a missing argument. Use
+  `Column(DateTime(timezone=True))`, which also keeps values aware -- see the next entry.
+- **Postgres is the only database engine.** No SQLite anywhere -- not for tests, not for
+  Epic 3's checkpointer or incoming queue. Datetime arithmetic in `auth/service.py` relies
+  on `DateTime(timezone=True)` round-tripping an aware value, which is a *Postgres*
+  guarantee; SQLite returns naive datetimes and would raise "can't subtract offset-naive
+  and offset-aware datetimes". Rather than defensively normalizing, a test pins the
+  assumption (`test_stored_timestamps_come_back_timezone_aware`) so a schema change that
+  drops `timezone=True` fails loudly. Substituting SQLite in tests would hide exactly this
+  class of bug.
 - **`app/db.py::init_db` must import every model module.** `SQLModel.metadata` is
   populated as an import side effect, so a table whose module was never imported is
   silently skipped by `create_all` and only fails later as "relation does not exist".

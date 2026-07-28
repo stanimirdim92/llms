@@ -18,7 +18,7 @@ from app.config import get_settings
 from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.pipeline import ingest_document
-from app.ingestion.uploads import upload_doc_id
+from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
 from app.logs import configure_logging
 from app.vectorstore.qdrant_store import QdrantStore
 
@@ -48,12 +48,18 @@ with st.sidebar:
     st.subheader("API key")
     st.caption("Create one with `python scripts/create_tenant.py`.")
     api_key = st.text_input("Key", type="password", label_visibility="collapsed")
-    if api_key and st.session_state.tenant_id is None:
+    # Re-resolve whenever the entered key changes, not only when no tenant is set yet --
+    # otherwise pasting a second tenant's key silently keeps the first tenant's scope, which
+    # looks like the app ignoring you and reads like a leak even though it isn't one.
+    if api_key and api_key != st.session_state.get("resolved_for_key"):
         resolved = asyncio.run(resolve_tenant(api_key))
+        st.session_state.resolved_for_key = api_key
+        st.session_state.tenant_id = resolved
         if resolved is None:
             st.error("Invalid or revoked key.")
-        else:
-            st.session_state.tenant_id = resolved
+    if not api_key:
+        st.session_state.tenant_id = None
+        st.session_state.resolved_for_key = None
     if st.session_state.tenant_id:
         st.success(f"Tenant `{st.session_state.tenant_id[:8]}…`")
 
@@ -71,10 +77,13 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
             st.error(f"Unsupported file type: {uploaded_file.name}")
         else:
             settings = get_settings()
-            tenant_dir = settings.upload_dir / tenant_id
+            # Same hardened helpers the API route uses, rather than joining the path by
+            # hand: this UI writes to disk itself, so it needs the identical containment
+            # and filename checks, not a second unvalidated version of them.
+            tenant_dir = tenant_upload_dir(settings.upload_dir, tenant_id)
             tenant_dir.mkdir(parents=True, exist_ok=True)
             file_bytes = uploaded_file.getvalue()
-            file_path = tenant_dir / uploaded_file.name
+            file_path = tenant_dir / safe_filename(uploaded_file.name)
             file_path.write_bytes(file_bytes)
 
             doc_id = upload_doc_id(tenant_id, file_bytes)

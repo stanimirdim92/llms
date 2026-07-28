@@ -1,14 +1,15 @@
 """Filesystem hardening on the upload path.
 
-`UploadFile.filename` is whatever the client sent. Before this, it was joined straight onto
-a directory, so `../../evil.py` wrote outside the upload root -- an arbitrary file write.
+Client-supplied filenames were joined straight onto a directory, so `../../evil.py` wrote
+outside the upload root -- an arbitrary file write. These helpers live in
+`ingestion/uploads.py` rather than the router because the Streamlit UI writes to disk in
+process too and needs the identical checks.
 """
 
 import pytest
 
-from app.api.routers.documents import _safe_filename, _tenant_upload_dir
 from app.config import get_settings
-from app.exceptions import APIError
+from app.ingestion.uploads import safe_filename, tenant_upload_dir
 
 _VALID_TENANT = "a" * 32
 
@@ -24,20 +25,20 @@ _VALID_TENANT = "a" * 32
     ],
 )
 def test_directory_components_are_stripped(supplied: str, expected: str) -> None:
-    assert _safe_filename(supplied) == expected
+    assert safe_filename(supplied) == expected
 
 
 @pytest.mark.parametrize("supplied", [None, "", "..", ".", "/", ".hidden", "../"])
 def test_unusable_filenames_are_refused(supplied: str | None) -> None:
     """`..` and `/` reduce to an empty or dot-only name -- refuse rather than invent one."""
-    with pytest.raises(APIError):
-        _safe_filename(supplied)
+    with pytest.raises(ValueError, match="filename"):
+        safe_filename(supplied)
 
 
 def test_upload_dir_is_inside_the_configured_root() -> None:
     root = get_settings().upload_dir.resolve()
 
-    assert _tenant_upload_dir(_VALID_TENANT).is_relative_to(root)
+    assert tenant_upload_dir(root, _VALID_TENANT).is_relative_to(root)
 
 
 @pytest.mark.parametrize(
@@ -45,8 +46,8 @@ def test_upload_dir_is_inside_the_configured_root() -> None:
     ["../escape", "..", "a" * 31, "a" * 33, "A" * 32, "g" * 32, "", "a/b", "a" * 16 + "/" + "b" * 15],
 )
 def test_malformed_tenant_ids_never_become_paths(tenant_id: str) -> None:
-    """Tenant ids are server-generated, so this should be unreachable -- which is the point.
+    """Tenant ids are server-issued, so this should be unreachable -- which is the point.
     If it ever becomes reachable, it fails loudly here instead of escaping the upload root.
     """
-    with pytest.raises(APIError):
-        _tenant_upload_dir(tenant_id)
+    with pytest.raises(ValueError, match="tenant id"):
+        tenant_upload_dir(get_settings().upload_dir, tenant_id)
