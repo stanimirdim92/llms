@@ -28,7 +28,31 @@ README rather than misnaming the mechanism.
 
 ---
 
-## Phase 1 — Authentication and tenant scoping (buildable now)
+## Phase 1 — Authentication and tenant scoping ✅ BUILT
+
+Delivered as planned, with these deviations worth recording:
+
+- Engine/session moved from `registry/db.py` to a new **`app/db.py`**, since auth needs the
+  same engine and importing it from a module named for the document registry would misstate
+  ownership. `registry/db.py` keeps only `save_document_record`.
+- `AskRequest` gained `extra="forbid"`, so a stale client still sending `session_id` gets a
+  422 rather than being silently downgraded to corpus-only results.
+- **Streamlit had to authenticate too.** It calls the pipeline in process, so the FastAPI
+  dependency never runs for it; it now asks for a key and resolves it through the same
+  `auth.service.resolve_tenant`, rather than minting a tenant id as it used to.
+- Added `pytest-asyncio` + `aiosqlite` (dev only) so the auth path has database-backed
+  tests. Contradicts this plan's original "DB tests belong in an integration suite" note --
+  the coverage was worth two dev dependencies on the one path where a silent regression
+  means cross-tenant reads. It immediately earned that: SQLite's *naive* datetimes exposed
+  a tz-comparison bug that Postgres alone would have hidden.
+- 1.6 (streaming upload) **not** done, as flagged optional. The size check still runs after
+  a full `await file.read()`, so `max_upload_size_mb` bounds what's stored, not what's
+  buffered. Noted in `documents.py`.
+
+Not verified here: no live Postgres or Qdrant in the dev sandbox, so `init_db` against real
+Postgres and end-to-end cross-tenant retrieval remain to be checked on real infrastructure.
+
+### Original plan (for reference)
 
 The security-critical phase. Everything else in Epic 4 is additive; this one closes two
 live holes: `/ask` accepts a client-supplied `session_id` (any caller can read another
@@ -39,16 +63,17 @@ paths (arbitrary file write).
 
 ```python
 class Tenant(SQLModel, table=True):
-    id: str = Field(primary_key=True)          # uuid7 hex, server-generated
+    id: str = Field(primary_key=True)  # uuid7 hex, server-generated
     name: str
     created_at: datetime | None = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now()))
 
+
 class ApiKey(SQLModel, table=True):
-    id: str = Field(primary_key=True)          # uuid7 hex
+    id: str = Field(primary_key=True)  # uuid7 hex
     tenant_id: str = Field(foreign_key="tenant.id", index=True)
-    key_hash: str = Field(index=True, unique=True)   # sha256 hex of the full key
-    prefix: str                                 # first ~12 chars, for display only
-    name: str                                   # human label ("ci", "laptop")
+    key_hash: str = Field(index=True, unique=True)  # sha256 hex of the full key
+    prefix: str  # first ~12 chars, for display only
+    name: str  # human label ("ci", "laptop")
     created_at: datetime | None = ...
     last_used_at: datetime | None = None
     revoked_at: datetime | None = None

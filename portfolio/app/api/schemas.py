@@ -1,13 +1,19 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AskRequest(BaseModel):
+    """Carries no tenant/session field, by design.
+
+    Retrieval scope comes from the `x-api-key` header via `api/deps.py::current_tenant`. An
+    earlier version accepted `session_id` here, which let any caller read another tenant's
+    documents just by passing their id. `extra="forbid"` makes a request that still sends
+    one fail with a 422 rather than being silently ignored -- a stale client is told plainly
+    instead of quietly getting corpus-only results.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
     question: str = Field(description="The question to answer, grounded in the retrieved documents")
-    session_id: str | None = Field(
-        default=None,
-        description="Omit to search only the curated corpus; pass an upload session's id to also "
-        "search that session's own uploaded documents (never other sessions').",
-    )
 
 
 class CitationResponse(BaseModel):
@@ -35,8 +41,9 @@ class AskResponse(BaseModel):
 
 
 class UploadResponse(BaseModel):
-    session_id: str = Field(
-        description="The session this document was ingested under -- pass it to /ask to query this document"
+    tenant_id: str = Field(
+        description="The tenant this document was ingested under, echoed for confirmation. Nothing needs "
+        "to be passed back to /ask -- that call resolves the same tenant from your API key."
     )
     doc_id: str = Field(description="Content-hash-derived identifier assigned to the uploaded document")
     chunk_count: int = Field(description="Number of chunks the document was split into")

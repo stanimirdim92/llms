@@ -10,8 +10,11 @@ from typing import Literal
 ChunkType = Literal["text", "table", "figure"]
 
 
-GLOBAL_SESSION = "global"
-"""Session tag for the curated corpus, always searchable regardless of who's asking."""
+GLOBAL_TENANT = "global"
+"""Tenant tag for the curated corpus: readable by every tenant, owned by none.
+
+Deliberately not a valid tenant id -- real ids are `uuid7().hex` (32 hex chars), so no
+tenant can ever be issued this value and thereby claim the shared corpus as its own."""
 
 
 @dataclass(frozen=True)
@@ -23,4 +26,4 @@ class Chunk:
     page_no: int | None = None
     section_path: str = ""
     metadata: dict = field(default_factory=dict)
-    session_id: str = GLOBAL_SESSION
+    tenant_id: str = GLOBAL_TENANT

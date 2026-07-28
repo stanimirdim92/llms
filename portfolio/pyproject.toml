@@ -96,6 +96,12 @@ dev = [
   "ty>=0.0.63",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9.1.1,<10",
+  # Auth is the one path where a silent regression means cross-tenant data access, so it
+  # gets real database-backed tests rather than pure-function ones only. aiosqlite lets
+  # those run in-memory in the normal unit suite -- and its *naive* datetimes are what
+  # caught the tz-normalization bug that Postgres alone would have hidden.
+  "pytest-asyncio>=1.3.0,<2",
+  "aiosqlite>=0.21.0,<1",
 ]
 local-reranker = [
   "sentence-transformers>=5.6.1,<6.0.0",
@@ -115,3 +121,8 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"
 module-root = ""
+
+[tool.pytest.ini_options]
+# asyncio_mode = auto so `async def test_...` runs without decorating every test.
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

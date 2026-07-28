@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class DocumentRecord(SQLModel, table=True):
     doc_id: str = Field(primary_key=True)
-    session_id: str = Field(index=True)
+    tenant_id: str = Field(index=True)
     """`"global"` for the curated corpus, a real session id for uploads."""
     filename: str
     content_hash: str

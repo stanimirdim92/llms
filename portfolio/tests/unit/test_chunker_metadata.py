@@ -9,7 +9,7 @@ def test_text_chunk_metadata_has_no_page_when_unknown() -> None:
 
     assert metadata["doc_id"] == "doc"
     assert metadata["chunk_type"] == "text"
-    assert metadata["session_id"] == "global"
+    assert metadata["tenant_id"] == "global"
     assert "page_no" not in metadata
 
 

@@ -1,3 +1,6 @@
+from collections.abc import AsyncIterator  # noqa: TC003  -- FastAPI reads lifespan's return annotation at runtime
+from contextlib import asynccontextmanager
+
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,11 +9,27 @@ from fastapi.responses import JSONResponse
 from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
 from app.config import get_settings
+from app.db import init_db
 from app.exceptions import PortfolioError
 from app.logs import configure_logging
 
 configure_logging()
 log = structlog.get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Create tables before serving.
+
+    Without this, the first authenticated request queries `api_keys` on a database where it
+    may not exist yet, and a missing table surfaces as a 500 that looks nothing like the
+    auth problem it resembles. `init_db` is guarded internally, so this stays a single DDL
+    round-trip per process rather than one per request.
+    """
+    await init_db()
+    log.info("api.started")
+    yield
+
 
 app = FastAPI(
     title="AI Engineer Portfolio — Track",
@@ -20,6 +39,7 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
+    lifespan=lifespan,
 )
 
 _settings = get_settings()

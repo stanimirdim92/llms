@@ -1,12 +1,19 @@
 """Demo UI for the /ask RAG pipeline: upload your own documents, ask a question, get a
-cited answer grounded in the curated corpus plus anything you've uploaded this session.
+cited answer grounded in the curated corpus plus your tenant's own uploads.
+
+This UI calls the ingestion and answer code *in process* rather than over HTTP, so
+`api/deps.py::current_tenant` never runs for it. It therefore has to authenticate itself:
+it asks for an API key and resolves it through `auth.service.resolve_tenant` -- the same
+function the API dependency uses, so there is one auth implementation rather than two. It
+must not mint its own tenant id; that would be exactly the "client chooses its own scope"
+hole the API just closed.
 """
 
 import asyncio
-import uuid
 
 import streamlit as st
 
+from app.auth.service import resolve_tenant
 from app.config import get_settings
 from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
@@ -18,11 +25,11 @@ from app.vectorstore.qdrant_store import QdrantStore
 configure_logging()
 
 st.set_page_config(page_title="AI Engineer Portfolio — RAG Demo", page_icon="📄")
-st.title("Scientific Document RAG — Track")
+st.title("Scientific Document RAG")
 st.caption("Ask a question about the curated materials-science / battery corpus, or upload your own documents first.")
 
-if "session_id" not in st.session_state:
-    st.session_state.session_id = uuid.uuid7().hex
+if "tenant_id" not in st.session_state:
+    st.session_state.tenant_id = None
 if "uploaded_docs" not in st.session_state:
     st.session_state.uploaded_docs = []
 
@@ -37,7 +44,26 @@ def _store() -> QdrantStore:
     return QdrantStore()
 
 
-with st.expander("Upload your own documents (this browser session only)", expanded=False):
+with st.sidebar:
+    st.subheader("API key")
+    st.caption("Create one with `python scripts/create_tenant.py`.")
+    api_key = st.text_input("Key", type="password", label_visibility="collapsed")
+    if api_key and st.session_state.tenant_id is None:
+        resolved = asyncio.run(resolve_tenant(api_key))
+        if resolved is None:
+            st.error("Invalid or revoked key.")
+        else:
+            st.session_state.tenant_id = resolved
+    if st.session_state.tenant_id:
+        st.success(f"Tenant `{st.session_state.tenant_id[:8]}…`")
+
+if st.session_state.tenant_id is None:
+    st.info("Enter an API key in the sidebar to upload documents or ask questions.")
+    st.stop()
+
+tenant_id: str = st.session_state.tenant_id
+
+with st.expander("Upload your own documents (visible to your tenant only)", expanded=False):
     st.caption(f"Supported: {', '.join(sorted(SUPPORTED_UPLOAD_EXTENSIONS))}")
     uploaded_file = st.file_uploader("Choose a file", label_visibility="collapsed")
     if uploaded_file is not None:
@@ -45,29 +71,27 @@ with st.expander("Upload your own documents (this browser session only)", expand
             st.error(f"Unsupported file type: {uploaded_file.name}")
         else:
             settings = get_settings()
-            session_dir = settings.upload_dir / st.session_state.session_id
-            session_dir.mkdir(parents=True, exist_ok=True)
+            tenant_dir = settings.upload_dir / tenant_id
+            tenant_dir.mkdir(parents=True, exist_ok=True)
             file_bytes = uploaded_file.getvalue()
-            file_path = session_dir / uploaded_file.name
+            file_path = tenant_dir / uploaded_file.name
             file_path.write_bytes(file_bytes)
 
-            doc_id = upload_doc_id(st.session_state.session_id, file_bytes)
+            doc_id = upload_doc_id(tenant_id, file_bytes)
             if doc_id not in st.session_state.uploaded_docs:
                 with st.spinner(f"Ingesting {uploaded_file.name}..."):
                     # Streamlit's script model has no event loop of its own, same reason
                     # the /ask call below needs asyncio.run() rather than a plain await.
                     chunk_count = asyncio.run(
-                        ingest_document(
-                            doc_id=doc_id, file_path=file_path, store=_store(), session_id=st.session_state.session_id
-                        )
+                        ingest_document(doc_id=doc_id, file_path=file_path, store=_store(), tenant_id=tenant_id)
                     )
                 st.session_state.uploaded_docs.append(doc_id)
                 st.success(f"Ingested {uploaded_file.name} — {chunk_count} chunks (doc_id: {doc_id})")
             else:
-                st.info(f"{uploaded_file.name} was already ingested this session.")
+                st.info(f"{uploaded_file.name} was already ingested.")
 
     if st.session_state.uploaded_docs:
-        st.caption(f"This session's uploads: {', '.join(st.session_state.uploaded_docs)}")
+        st.caption(f"This tenant's uploads: {', '.join(st.session_state.uploaded_docs)}")
 
 question = st.text_input("Question", placeholder="What cathode materials show the highest cycling stability?")
 
@@ -75,7 +99,7 @@ if st.button("Ask", type="primary") and question:
     with st.spinner("Retrieving, reranking, and generating..."):
         # Streamlit's script model runs synchronously (no event loop of its own), so an
         # async call needs its own loop here rather than a plain await.
-        result = asyncio.run(_service().answer(question, session_id=st.session_state.session_id))
+        result = asyncio.run(_service().answer(question, tenant_id=tenant_id))
 
     st.subheader("Answer")
     st.write(result.text)

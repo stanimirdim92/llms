@@ -14,7 +14,7 @@ from qdrant_client.models import FieldCondition, Filter, FilterSelector, MatchAn
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
-from app.ingestion.models import GLOBAL_SESSION, Chunk
+from app.ingestion.models import GLOBAL_TENANT, Chunk
 
 if TYPE_CHECKING:
     from langchain_core.vectorstores.base import VectorStoreRetriever
@@ -41,7 +41,7 @@ def _chunk_metadata(chunk: Chunk) -> dict:
         "doc_id": chunk.doc_id,
         "chunk_type": chunk.chunk_type,
         "section_path": chunk.section_path,
-        "session_id": chunk.session_id,
+        "tenant_id": chunk.tenant_id,
     }
     if chunk.page_no is not None:
         metadata["page_no"] = chunk.page_no
@@ -55,10 +55,13 @@ def _to_document(chunk: Chunk) -> Document:
     return Document(page_content=chunk.text, metadata=_chunk_metadata(chunk))
 
 
-def _build_filter(chunk_types: list[str] | None, session_id: str | None) -> Filter:
-    """Always includes the global corpus; additionally includes `session_id`'s own
-    uploads if given. This is the only thing that makes uploaded documents searchable
-    only by the session that uploaded them -- see ARCHITECTURE.md.
+def _build_filter(chunk_types: list[str] | None, tenant_id: str | None) -> Filter:
+    """Always includes the global corpus; additionally includes `tenant_id`'s own uploads.
+
+    This is the entire retrieval security boundary: it is what stops one tenant reading
+    another's documents. `tenant_id` must therefore only ever come from
+    `api/deps.py::current_tenant` -- i.e. from a verified API key, never from a request body.
+    Accepting a caller-supplied scope here is exactly the vulnerability this replaced.
 
     `QdrantVectorStore`'s dict-based filter shorthand only supports flat equality
     matching (no `$in`/`$and`) and is deprecated by the library itself -- building a
@@ -66,8 +69,8 @@ def _build_filter(chunk_types: list[str] | None, session_id: str | None) -> Filt
     the AND, `MatchAny` is the IN. Metadata lives under LangChain's `metadata` payload
     key, hence the `metadata.<field>` key prefix.
     """
-    session_ids = [GLOBAL_SESSION] if not session_id or session_id == GLOBAL_SESSION else [GLOBAL_SESSION, session_id]
-    must = [FieldCondition(key="metadata.session_id", match=MatchAny(any=session_ids))]
+    tenant_ids = [GLOBAL_TENANT] if not tenant_id or tenant_id == GLOBAL_TENANT else [GLOBAL_TENANT, tenant_id]
+    must = [FieldCondition(key="metadata.tenant_id", match=MatchAny(any=tenant_ids))]
     if chunk_types:
         must.append(FieldCondition(key="metadata.chunk_type", match=MatchAny(any=chunk_types)))
     return Filter(must=must)
@@ -131,14 +134,14 @@ class QdrantStore:
         query: str,
         top_k: int,
         chunk_types: list[str] | None = None,
-        session_id: str | None = None,
+        tenant_id: str | None = None,
     ) -> list[Document]:
         # `qdrant-client`'s `QdrantVectorStore` (as of langchain-qdrant 1.1.0) has no
         # native async client of its own, same as Chroma -- `asimilarity_search` is
         # still `VectorStore`'s thread-pool-shimmed default. Kept async regardless: it's
         # free (no extra dependency, no behavior change either way) and keeps this
         # call's signature consistent with the rest of the already-async /ask chain.
-        where = _build_filter(chunk_types, session_id)
+        where = _build_filter(chunk_types, tenant_id)
         return await self._store.asimilarity_search(query, k=top_k, filter=where)
 
     def as_retriever(self, top_k: int) -> VectorStoreRetriever:
