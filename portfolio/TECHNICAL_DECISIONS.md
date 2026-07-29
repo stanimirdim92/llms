@@ -368,10 +368,35 @@ All of `procrastinate`, `rq`, `celery`, `saq`, and `arq` resolve under `requires
   "Redis is a cache, Postgres is the database" split.
 
 The strongest argument against it is `rq`'s fork-per-job isolation, which would contain a
-Docling segfault better than in-process async workers. Recorded rather than dismissed. And the
-choice has a real cost: procrastinate ships its own SQL migrations, so "no Alembic" below stops
-being the whole story and deploys gain a `procrastinate schema --apply` step. `taskiq` was
-excluded for declaring `Development Status :: 3 - Alpha` in its own metadata.
+Docling segfault better than in-process async workers. Recorded rather than dismissed.
+`taskiq` was excluded for declaring `Development Status :: 3 - Alpha` in its own metadata.
+
+**Transactional enqueue does not work the documented way.** `procrastinate.contrib.sqlalchemy`
+exists and is psycopg2-based and sync-only, so it is unusable against this project's psycopg 3
+async engine. The path that works is `defer_async(connection=...)` with the raw
+`psycopg.AsyncConnection` unwrapped from the session — `await session.connection()` →
+`get_raw_connection()` → `.driver_connection`. Verified against a live Postgres before anything
+was built on it: defer inside a transaction then roll back leaves 0 rows in
+`procrastinate_jobs`; commit leaves 1.
+
+**The producer defers by task name, not by importing the task.** `app/worker/app.py` carries no
+`import_paths`, because `configure_task` calls `perform_import_paths()` first — so an
+`import_paths` entry would make the *api* import `tasks.py`, and with it the ingestion pipeline
+and Docling. Measured at ~10s inside the first upload request. The worker CLI is pointed at
+`app.worker.tasks.app` instead, since importing that module is what registers the task. The
+trade-off: a wrong task name is no longer an import error but a job no worker claims, so a test
+asserts the registered name matches the shared constant.
+
+Two costs of this choice, both real:
+
+- procrastinate ships its own SQL migrations, so "no Alembic" below stops being the whole story.
+  The initial schema is applied from `init_db` behind a `to_regclass` existence check (its
+  `schema.sql` uses bare `CREATE TABLE` and is not idempotent), chosen over a deploy step that
+  fails as "relation does not exist" when forgotten. **Version upgrades still need
+  `procrastinate schema --migrate`** — that is a boundary, not a solved problem.
+- Postgres now serves both the registry and the queue. Fine at this scale (thousands of
+  documents, not thousands of jobs per second), and worth revisiting only if queue throughput
+  starts competing with application queries for the same connection pool.
 
 **Capabilities are dropped and re-added minimally.** `cap_drop: [ALL]` removes root's
 privileges too, because they are capability-gated rather than UID-gated. nginx needs
@@ -383,6 +408,33 @@ needs `CHOWN`, `SETUID`, `SETGID`, `DAC_OVERRIDE`, `FOWNER` to bootstrap a fresh
 **Compose project name is pinned** (`name: portfolio`), because otherwise Compose derives it
 from the invoking directory and the same stack gets two identities depending on where you run
 it from — which is how a stale container survives and collides on a published port.
+
+## Keeping the ingestion stack out of the api process
+
+Docling plus torch plus transformers is the heaviest thing this project imports. Once ingestion
+moved to a worker, the api had no use for it — but two imports kept dragging it in anyway, and
+neither was visible as a problem because nothing broke:
+
+1. `app/worker/app.py`'s `import_paths` (see above), and
+2. `app/ingestion/formats.py`, which derived its upload extension allowlist from Docling's
+   `FormatToExtensions` mapping at import time.
+
+The second is the more instructive one. Deriving the list reads as the *more* rigorous choice —
+it can't go stale — and the README even advertised these helpers as "deliberately
+dependency-free (no docling import)", which was false. Measuring `import app.api.main` with and
+without it: **8.74s / 830MB → 6.78s / 673MB.**
+
+The list is now pinned in the module, with a per-format drift check in
+`tests/unit/test_upload_formats.py` — importing Docling in a test costs nothing. That also makes
+the allowlist better on its own terms: it is a validation boundary on a public endpoint, and a
+dependency bump should not silently widen what strangers may upload. Widening it is now an edit
+someone makes on purpose.
+
+A test asserts `app.api.main` imports no `docling*` module, because this regresses invisibly:
+one convenience import in a router and the api is slow and fat again with nothing failing. The
+test deliberately does *not* assert on torch/transformers — those arrive through
+`langchain_core.language_models.base`, reached via `ChatAnthropic`, which `/ask` genuinely needs.
+Traced rather than assumed, and not something this project can fix.
 
 ## Observability: LangSmith, not Phoenix
 

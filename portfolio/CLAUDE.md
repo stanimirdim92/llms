@@ -3,11 +3,30 @@
 RAG over scientific documents, plus an LLM eval framework and an agentic
 human-in-the-loop curation layer.
 
-Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack) and
-Epic 4 Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs) -- see
-`EPIC_4_PLAN.md` for the remaining phases. Not built: Epics 2 and 3, designed in
-`docs/IMPLEMENTATION_PLAN.md` only -- no eval framework, no agent. Don't assume code for
-them.
+Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack), Epic 4
+Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs), and Phase 5.1
+(ingestion behind a Postgres-backed job queue) -- see `EPIC_4_PLAN.md` for the rest. Not
+built: Epics 2 and 3, designed in `docs/IMPLEMENTATION_PLAN.md` only -- no eval framework,
+no agent. Don't assume code for them.
+
+## Producer/consumer split
+
+`POST /v1/documents` returns **202** and enqueues; the `worker` service ingests. Two rules
+hold this together, and both fail quietly if broken:
+
+- **The api must not import the ingestion stack.** `app/worker/app.py` carries no
+  `import_paths` and defers by task *name* so it never imports `tasks.py` (which pulls
+  Docling). Adding a convenient `from app.ingestion...` to a router or to `formats.py` costs
+  ~2s of startup and ~157MB per api process and breaks nothing visibly.
+  `tests/unit/test_upload_formats.py` pins it. `app/ingestion/formats.py` therefore keeps a
+  *pinned* extension list, drift-checked against Docling in that same test.
+- **The worker CLI points at `app.worker.tasks.app`, not `app.worker.app.app`.** Importing
+  `tasks.py` is what registers the task. Point it at `app.py` and the worker connects fine,
+  then rejects every job as unknown -- which reads as a queueing bug.
+
+Status lives on `DocumentRecord.status` (`pending`/`processing`/`ingested`/`failed`). The task
+owns `processing`/`failed`; `ingest_document` owns the terminal `ingested` write, because
+`scripts/ingest.py` and Streamlit call it directly and bypass the queue entirely.
 
 Docs: `README.md` describes the system as it is; `TECHNICAL_DECISIONS.md` says why each
 choice was made and what was rejected; `docs/IMPLEMENTATION_PLAN.md` is the original plan,
@@ -23,12 +42,12 @@ All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
     uv run pytest tests/unit
     cd .docker && docker compose config    # after any compose/Dockerfile edit
 
-Qdrant is NOT covered by any of these. The auth tests hit a real Postgres and the
-rate-limit tests a real Redis, both skipping when unreachable -- but nothing exercises
-Qdrant, so bugs in the store layer only surface on a real ingest. Say that plainly rather
-than implying green tests mean the pipeline works. Note both suites *skip* rather than
-fail without their service, so a green local run may have tested less than it looks;
-CI provides both and asserts the auth tests didn't skip.
+Qdrant is NOT covered by any of these. The auth, rate-limit, and worker/registry tests hit a
+real Postgres or Redis, skipping when unreachable -- but nothing exercises Qdrant, so bugs in
+the store layer only surface on a real ingest. Say that plainly rather than implying green
+tests mean the pipeline works. Note the service-backed suites *skip* rather than fail without
+their service, so a green local run may have tested less than it looks; CI provides both
+services and asserts none of the three skipped.
 
 ## Never
 
@@ -84,6 +103,15 @@ Things that look correct and aren't:
   resolve, failing at *import* time with `issubclass() arg 1 must be a class` -- which
   reads like a library bug rather than a missing argument. Use
   `Column(DateTime(timezone=True))`, which also keeps values aware -- see the next entry.
+- **...and `datetime` must ALSO be a runtime import in model modules.** `sa_column` fixes
+  the import-time half only. `model_dump()` makes pydantic resolve those stringified
+  annotations against the module's *runtime* globals, so a TYPE_CHECKING-only `datetime`
+  raises ``PydanticUserError: `X` is not fully defined`` from inside `model_dump`. This is
+  not hypothetical: it made every `save_document_record` call fail *after* the Qdrant upsert
+  had already committed, so documents were searchable with no row in Postgres, and it
+  survived for weeks because it only triggers when a row is actually written -- no import,
+  lint, or type check sees it. Import `datetime` normally and `# noqa: TC003` the linter.
+  `tests/unit/test_worker_enqueue.py` now covers the registry write path.
 - **Postgres is the only database engine.** No SQLite anywhere -- not for tests, not for
   Epic 3's checkpointer or incoming queue. Datetime arithmetic in `auth/service.py` relies
   on `DateTime(timezone=True)` round-tripping an aware value, which is a *Postgres*

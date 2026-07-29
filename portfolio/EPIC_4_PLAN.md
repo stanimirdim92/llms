@@ -287,7 +287,47 @@ Rejected, with reasons rather than a shrug:
 deploys gain a `procrastinate schema --apply` step. That's a real cost of the choice and it
 belongs in the decision record, not discovered at deploy time.
 
-### 5.1 Uploads become jobs — `app/worker/`
+### 5.1 Uploads become jobs — `app/worker/` ✅ BUILT
+
+Delivered as specified. Deviations and findings worth recording:
+
+- **Transactional enqueue needed proving before designing around it.** `procrastinate.contrib.sqlalchemy`
+  is psycopg2-based and sync-only, so the advertised SQLAlchemy integration doesn't fit this
+  stack at all. The working path is `defer_async(connection=...)` with the raw
+  `psycopg.AsyncConnection` unwrapped from the async session
+  (`session.connection()` → `get_raw_connection()` → `.driver_connection`). Verified against a
+  live Postgres before building on it: deferring inside a transaction and rolling back leaves
+  0 jobs, committing leaves 1.
+- **`_raw_connection` type-checks the driver.** `DB_DRIVER` is a `Settings` field, so pointing
+  it at `postgresql+asyncpg` would hand procrastinate's psycopg connector an asyncpg
+  connection and fail deep inside with an error naming neither. Now raises at the boundary.
+- **The api was importing Docling to enqueue.** The first version put `import_paths` on the
+  App, which makes `configure_task` import `tasks.py` → the pipeline → Docling. Measured at
+  ~10s inside the first upload request. Fixed by deferring **by name** with no `import_paths`,
+  and pointing the worker CLI at `app.worker.tasks.app` instead. A test pins that the name
+  matches the registered task, since that check moved from import time to runtime.
+- **`app/ingestion/formats.py` was the other Docling importer** — it derived its extension list
+  from Docling's `FormatToExtensions` at import time. The README's claim that these helpers are
+  "deliberately dependency-free (no docling import)" was simply false. Now a pinned list with a
+  drift check in the test suite: `import app.api.main` went 8.74s/830MB → 6.78s/673MB. Pinning
+  is also the better posture for an upload allowlist, which shouldn't silently widen on a
+  dependency bump.
+- **Found a pre-existing bug that had never worked:** `save_document_record` raised
+  `PydanticUserError` on every call, because `model_dump()` needs `datetime` resolvable at
+  runtime and `registry/models.py` imported it under `TYPE_CHECKING`. Every ingest wrote to
+  Qdrant and then failed before the Postgres row. It survived because no test touched the
+  registry and the symptom looks like a database problem. Confirmed against `HEAD` before
+  fixing, and the new tests fail without the fix.
+- **procrastinate's schema is applied in `init_db`**, guarded by a `to_regclass` existence
+  check because `schema.sql` uses bare `CREATE TABLE` and is not idempotent. Chosen over a
+  documented `procrastinate schema --apply` deploy step, which fails as "relation does not
+  exist" when forgotten. Version *migrations* still need the CLI — a stated boundary, not a
+  claim to have handled them.
+- **Breaking API change**: `chunk_count` is gone from the upload response, since nothing has
+  been parsed when the 202 is written. Returning 0 would have preserved the shape and lied.
+- No `SLO`/observability wiring, no `GET /v1/documents` list, no `DELETE` — those are 5.5.
+
+### 5.1 Original plan (for reference)
 
 Today `POST /v1/documents` blocks for the whole ingest (10s–2min measured). A browser UI
 cannot hold that: no progress, no cancel, and one worker occupied per upload. The 10-minute

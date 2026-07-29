@@ -190,3 +190,28 @@ EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 CMD ["streamlit", "run", "streamlit_app/Home.py", "--server.address=0.0.0.0", "--server.port=8501"]
+
+
+FROM runtime AS worker
+# Runs document ingestion off the request path -- parse/chunk/embed for one upload takes
+# 10s-2min, which the api can't hold a connection open for. Same image as `api` on purpose:
+# it runs the same `ingest_document` code over the same models and the same ../data mount, so
+# a separate leaner image would mean two dependency sets to keep in step for no gain.
+USER appuser
+# No EXPOSE and no HTTP healthcheck: this process listens on nothing. Liveness is instead
+# "is it consuming jobs", which is only answerable from the database -- a `procrastinate
+# healthchecks` shell probe here would report the *connector* is fine while the worker loop is
+# wedged. Deliberately left without one rather than given a check that can't fail.
+#
+# --concurrency is bounded, not maximal: WORKER_CONCURRENCY x DOCLING_NUM_THREADS is what
+# competes for cores (see config.py's comment). --one-shot is not used -- the worker is a
+# long-running consumer, and restart-per-job would re-pay the torch/Docling import cost that
+# dominates a short ingest.
+# --app points at app.worker.tasks.app, NOT app.worker.app.app. Importing tasks.py is what
+# registers the task on the app object; pointing at app.py would start a worker that connects
+# fine and then rejects every job as an unknown task -- a failure that reads like a queueing
+# bug rather than a missing import. (app.py deliberately carries no `import_paths`, so that the
+# api can enqueue without importing Docling; see its module docstring.)
+CMD ["bash", "-c", "procrastinate --app=app.worker.tasks.app worker \
+    --concurrency ${WORKER_CONCURRENCY:-2} \
+    --queues ingest"]

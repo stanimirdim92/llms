@@ -95,6 +95,14 @@ class Settings(BaseSettings):
         default=None, description="CPU threads for Docling model inference. None = os.cpu_count()."
     )
 
+    # Concurrent ingest jobs per worker process. Neither this nor docling_num_threads means
+    # anything alone -- their *product* is what competes for cores, so on the 8-vCPU target
+    # box 2 x 4 fits and 4 x 8 would oversubscribe by 4x, making concurrent ingests slower
+    # than running them one at a time (context-switching on top of thread contention inside
+    # Docling's layout and table-structure passes). Raise this only alongside lowering
+    # DOCLING_NUM_THREADS, or on a bigger machine.
+    worker_concurrency: int = Field(default=2, description="Concurrent ingest jobs per worker process.")
+
     # Defaults preserve today's hardcoded CORSMiddleware call in api/main.py exactly --
     # override via .env once there's a real frontend origin to lock this down to.
     #

@@ -89,6 +89,13 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
             doc_id = upload_doc_id(tenant_id, file_bytes)
             if doc_id not in st.session_state.uploaded_docs:
                 with st.spinner(f"Ingesting {uploaded_file.name}..."):
+                    # Deliberately still synchronous, unlike POST /v1/documents, which now
+                    # returns 202 and lets a worker do this. Streamlit blocks its own script
+                    # run either way, so a queue would buy nothing here beyond a status-polling
+                    # loop to write -- and this UI retires when the React app lands
+                    # (EPIC_4_PLAN.md Phase 6). It writes the row itself via ingest_document's
+                    # terminal upsert, so the two paths agree on what a finished row looks like.
+                    #
                     # Streamlit's script model has no event loop of its own, same reason
                     # the /ask call below needs asyncio.run() rather than a plain await.
                     chunk_count = asyncio.run(

@@ -64,9 +64,10 @@ async def init_db() -> None:
     silently absent from `create_all` and only fails later, at query time, as a confusing
     "relation does not exist". Every table module must be imported here.
 
-    Still no Alembic. That's a real simplification rather than a shrug -- with three tables
-    a schema change means dropping the volume and re-ingesting. Revisit when there is data
-    worth migrating rather than recreating.
+    Still no Alembic for our own tables. That's a real simplification rather than a shrug --
+    with three tables a schema change means dropping the volume and re-ingesting. Revisit when
+    there is data worth migrating rather than recreating. (procrastinate's tables are the
+    exception; see `_apply_procrastinate_schema`.)
     """
     global _initialized  # noqa: PLW0603
     if _initialized:
@@ -80,7 +81,38 @@ async def init_db() -> None:
 
         async with get_engine().begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
+        await _apply_procrastinate_schema()
         _initialized = True
+
+
+async def _apply_procrastinate_schema() -> None:
+    """Create procrastinate's tables/functions on first run.
+
+    Done here rather than as a documented `procrastinate schema --apply` deploy step because a
+    forgotten deploy step fails at runtime as "relation procrastinate_jobs does not exist" --
+    the same confusing shape this module's docstring already warns about for un-imported model
+    modules. One less thing to remember, failing at startup instead of on first upload.
+
+    Guarded by an existence check because `procrastinate/sql/schema.sql` uses bare
+    `CREATE TABLE`, not `IF NOT EXISTS` -- calling `apply_schema_async` unconditionally would
+    fail on every start after the first. Checked, not assumed.
+
+    **This covers the initial install only, not version upgrades.** Bumping procrastinate to a
+    release that changes its schema still needs `procrastinate schema --migrate` (or the
+    per-version SQL under `procrastinate/sql/migrations/`); this function will see the tables
+    already there and do nothing. That's the honest boundary of the convenience.
+    """
+    from sqlalchemy import text  # noqa: PLC0415
+
+    from app.worker.app import app as procrastinate_app  # noqa: PLC0415 -- avoids an import cycle
+
+    async with get_engine().begin() as conn:
+        already_applied = (await conn.execute(text("SELECT to_regclass('procrastinate_jobs')"))).scalar() is not None
+    if already_applied:
+        return
+
+    async with procrastinate_app.open_async():
+        await procrastinate_app.schema_manager.apply_schema_async()
 
 
 @asynccontextmanager

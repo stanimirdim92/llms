@@ -11,10 +11,10 @@ Retrieval reranks before generating, and answers are produced through Anthropic'
 Citations API, so every claim carries the chunk and page it came from rather than a
 model-authored footnote.
 
-Of four planned epics, Epic 1 and three of Epic 4's five phases are built; the eval
-framework (Epic 2) and the agentic curation layer (Epic 3) are designs with no code behind
-them. [Status](#status) is precise about the boundary, including the gaps in what *is*
-built.
+Of four planned epics, Epic 1 is built, as are Epic 4's phases 1–3 and the async-ingestion
+half of phase 5; the eval framework (Epic 2) and the agentic curation layer (Epic 3) are
+designs with no code behind them. [Status](#status) is precise about the boundary, including
+the gaps in what *is* built.
 
 ## Quickstart
 
@@ -32,10 +32,10 @@ docker compose -f .docker/docker-compose.yml --env-file .env up --build
 `MAX_UPLOAD_SIZE_MB` from your `.env` reach the app container but **not** the port mappings
 or the nginx build — and the mismatch doesn't raise anything.
 
-That brings up six services: `api` (gunicorn + uvicorn workers), `streamlit`, `qdrant`,
-`postgres`, `redis`, and `nginx` in front of the api. The API is on
-`http://localhost:8000` directly or `http://localhost/` through nginx; Streamlit is on
-`http://localhost:8501`, not proxied.
+That brings up seven services: `api` (gunicorn + uvicorn workers), `worker` (background
+ingestion), `streamlit`, `qdrant`, `postgres`, `redis`, and `nginx` in front of the api. The
+API is on `http://localhost:8000` directly or `http://localhost/` through nginx; Streamlit is
+on `http://localhost:8501`, not proxied.
 
 Every request needs an API key. There is no master key in the environment on purpose — a
 key in env couldn't be revoked or rotated — so mint one:
@@ -52,8 +52,12 @@ talks to the compose Postgres over its published `5432`. `--list` shows tenants 
 Then upload a document and ask about it:
 
 ```bash
+# Returns 202 immediately -- ingestion runs in the worker (10s-2min depending on the document)
 curl -X POST http://localhost:8000/v1/documents \
   -H "x-api-key: pf_live_..." -F "file=@paper.pdf"
+
+# Poll until status is "ingested" (or "failed", with error_message saying why)
+curl http://localhost:8000/v1/documents/<doc_id> -H "x-api-key: pf_live_..."
 
 curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
@@ -94,19 +98,33 @@ uv run streamlit run streamlit_app/Home.py
 ## Architecture
 
 ```
-upload ──> parse ──> figures ──> chunk ──> embed ──> Qdrant (vectors + payload)
-           Docling   Claude      3 kinds   Voyage └─> Postgres (one row per document)
-                     vision
+POST /v1/documents ──> write file + row + job  ──> 202 Accepted
+   (api)                (ONE transaction)              │
+                                                       │  Postgres queue
+   (worker) ─────────────────────────────────────────> ▼
+            parse ──> figures ──> chunk ──> embed ──> Qdrant (vectors + payload)
+            Docling   Claude      3 kinds   Voyage └─> Postgres (status: ingested)
+                      vision
 
 ask ──> embed ──> Qdrant search ──> rerank ──> generate ──> cited answer
         Voyage    (tenant-filtered)  Voyage     Claude +
                                      or local   Citations API
 ```
 
-Ingestion is `async def` but the work that matters is offloaded: Docling's parse and the
-Qdrant client's sync `upsert` go through `asyncio.to_thread`, because both are CPU-bound
-or blocking and would otherwise stall every other request sharing the worker's event
-loop. Figure captions go out as one batched vision call set with bounded concurrency.
+Ingestion takes 10s–2min, so it runs in a **worker** rather than in the request.
+`POST /v1/documents` returns 202 and `GET /v1/documents/{doc_id}` reports
+`pending`/`processing`/`ingested`/`failed` — a failure carries the reason, so a client can
+tell a broken document from one that was never uploaded.
+
+The queue is Postgres (`procrastinate`), not Redis, for one specific reason: the document row
+and its job commit in **one transaction**. With a separate broker there's a window where the
+row exists and the job doesn't — a document stuck in `pending` forever, indistinguishable from
+one still legitimately queued — and nothing raises when it happens.
+
+Inside the worker, the offloading still matters: Docling's parse and Qdrant's sync `upsert` go
+through `asyncio.to_thread` because both would otherwise stall the event loop, and figure
+captions go out as one batched vision call set with bounded concurrency. The api, meanwhile,
+deliberately never imports Docling at all — it only enqueues.
 
 The answer path is deliberately **not** agentic — it is a fixed retrieve → rerank →
 generate sequence with no branching. Adaptive judgment is Epic 3's job; adding it here
@@ -128,7 +146,8 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Vector store | Qdrant (real server, `langchain_qdrant.QdrantVectorStore`) |
 | Reranker | Voyage `rerank-2.5`, with a local `bge-reranker-v2-m3` cross-encoder as a no-API-key fallback |
 | Generation | `ChatAnthropic` (Claude Sonnet 5) + Anthropic's native Citations API |
-| Document registry | Postgres + SQLModel, one row per ingested document |
+| Document registry | Postgres + SQLModel, one row per document, with ingestion status |
+| Job queue | `procrastinate` on the same Postgres — transactional enqueue |
 | Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-256 hashed, individually revocable |
 | Rate limiting | Per-tenant sliding window, one Lua script on `redis.asyncio` |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
@@ -157,6 +176,10 @@ Epic 3's design.
 - **Epic 4 Phase 2 — Per-tenant rate limiting.** Sliding window in Redis, atomic via Lua,
   separate budgets per scope so exhausting uploads doesn't block questions, failing open
   when Redis is down.
+- **Epic 4 Phase 5.1 — Async ingestion.** `POST /v1/documents` returns 202 and a
+  `procrastinate` worker does the work, with the document row and its job committed in one
+  transaction. Status polling via `GET /v1/documents/{doc_id}`, including a reason on
+  failure.
 
 **Not built.** These exist as designs in
 [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) and nowhere else — there is
@@ -171,10 +194,9 @@ no code for any of them, so don't infer any from the plan's directory layout:
   review.
 - **Epic 4 Phase 4** — observability: the latency SLO check is buildable, faithfulness
   alerting needs Epic 2's scores.
-- **Epic 4 Phase 5** — the application backend: user accounts, conversations with
-  persisted citations, document list/delete, semantic search, streaming `/ask`, shareable
-  conversation snapshots, and **ingestion behind a job queue** (`procrastinate`) so an
-  upload stops holding an HTTP request open for minutes.
+- **Epic 4 Phase 5** — the application backend. **5.1 (ingestion behind a job queue) is
+  built**; still to come: user accounts, conversations with persisted citations, document
+  list/delete, semantic search, streaming `/ask`, and shareable conversation snapshots.
 - **Epic 4 Phase 6** — a React + TypeScript UI on top of Phase 5, with a typed client
   generated from the OpenAPI schema. Streamlit retires when this ships.
 
@@ -185,12 +207,21 @@ identity decision, is in [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
 
 - The corpus is 6 papers, not the ~45 the plan called for, and Epic 1's final
   15-question prose/table/figure spot-check has not been run.
-- **No test exercises Qdrant.** The auth tests hit a real Postgres and the rate-limit
-  tests a real Redis, but nothing covers the store layer — bugs there surface only on a
-  real ingest. This is how the point-ID constraint was found: in production, not in CI.
+- **No test exercises Qdrant.** The auth, rate-limit, and worker suites hit a real Postgres
+  or Redis, but nothing covers the store layer — bugs there surface only on a real ingest.
+  This is how the point-ID constraint was found: in production, not in CI. It is also how a
+  registry-write bug survived until phase 5.1 added the first test over that path: every
+  ingest wrote to Qdrant and then crashed before the Postgres row, and the symptom read as a
+  database problem.
+- **The end-to-end queued path has not been run against real infrastructure.** Transactional
+  enqueue is verified against a live Postgres, but no Docker daemon exists in the development
+  sandbox, so `worker` has never actually consumed a job here. The nginx config's *syntax* is
+  likewise unvalidated (no daemon, no nginx binary) — only its build-time substitution is.
 - Uploads are read fully into memory before the size check, so `MAX_UPLOAD_SIZE_MB`
   bounds what is *stored*, not what is buffered. Streaming to disk is tracked as
   `EPIC_4_PLAN.md` 1.6.
+- **A stuck job is detectable but not handled.** `updated_at` makes a worker that died
+  mid-`processing` visible, and nothing yet sweeps or re-enqueues those.
 - nginx is HTTP-only. There is no domain yet to provision certificates against; the TLS
   scaffolding is in place and `conf.d/default.conf` documents the remaining steps.
 
@@ -203,14 +234,15 @@ portfolio/
 │   ├── ingestion/     parser, figure_extractor, chunker, pipeline, formats, uploads
 │   ├── embeddings/    voyage
 │   ├── vectorstore/   qdrant_store       # owns _build_filter -- the tenant boundary
-│   ├── registry/      models, db         # DocumentRecord, one row per ingested doc
+│   ├── registry/      models, db         # DocumentRecord + its ingestion status
+│   ├── worker/        app, tasks         # procrastinate app; api defers by NAME, never imports tasks
 │   ├── retrieval/     retriever, reranker
 │   ├── generation/    prompts, answer_service
 │   ├── auth/          models, keys, service
 │   └── api/           main, deps, schemas, routers/{ask, documents}
 ├── streamlit_app/Home.py                 # calls the pipeline in process, not over HTTP
 ├── scripts/           fetch_corpus, ingest, create_tenant
-├── tests/unit/                           # 8 files; Postgres/Redis-backed ones skip if unreachable
+├── tests/unit/                           # 11 files; Postgres/Redis-backed ones skip if unreachable
 ├── data/manifest.json                    # the pinned corpus
 ├── .docker/           Dockerfile, docker-compose.yml, nginx/
 ├── redis/             Dockerfile, redis.conf

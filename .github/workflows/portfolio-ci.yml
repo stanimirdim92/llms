@@ -85,7 +85,12 @@ jobs:
         run: uv run ty check .
 
       - name: Import the full app (catches import-time errors ty/ruff can't)
-        run: uv run python -c "import app.api.main; import app.ingestion.pipeline; import app.retrieval.reranker"
+        run: |
+          uv run python -c "import app.api.main; import app.ingestion.pipeline; import app.retrieval.reranker"
+          # Separately, because it's the worker's entrypoint and a different import graph: the
+          # CMD points at app.worker.tasks.app, and app.py deliberately has no import_paths, so
+          # nothing else would catch this module failing to import.
+          uv run python -c "import app.worker.tasks; assert 'ingest_document' in app.worker.tasks.app.tasks"
 
       - name: Create the test database
         run: |
@@ -95,10 +100,10 @@ jobs:
         run: uv run pytest tests/unit -v
 
       - name: Fail if the service-backed tests skipped
-        # Both suites skip when their service is unreachable, so broken service wiring would
+        # These suites skip when their service is unreachable, so broken service wiring would
         # look identical to a pass in the summary. Assert they actually ran.
         run: |
-          for suite in tests/unit/test_auth_touch.py tests/unit/test_rate_limit.py; do
+          for suite in tests/unit/test_auth_touch.py tests/unit/test_rate_limit.py tests/unit/test_worker_enqueue.py; do
             uv run pytest "$suite" -q --no-header -rN | tee /dev/stderr | grep -q "skipped" \
               && { echo "::error::$suite skipped -- service wiring is broken"; exit 1; }
           done

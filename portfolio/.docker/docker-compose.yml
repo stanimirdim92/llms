@@ -29,8 +29,9 @@
 # MAX_UPLOAD_SIZE_MB work the same way, for the same reason -- see the nginx service's
 # build args.
 #
-# Runs today: api + streamlit + qdrant (vector store) + postgres (document registry) +
-# redis (cache -- infra only for now, nothing in app/ calls create_redis() yet) + nginx
+# Runs today: api + worker (background ingestion) + streamlit + qdrant (vector store) +
+# postgres (document registry *and* the job queue) +
+# redis (rate-limit counters) + nginx
 # (reverse proxy in front of api only -- HTTP-only for now via conf.d/default.conf,
 # whose own comments describe what to change once there's a real domain to provision
 # TLS for; the 443 port mapping below is just reserved, nothing listens there yet).
@@ -189,6 +190,37 @@ services:
       # start serving unthrottled for however long redis took to come up -- a silent gap
       # rather than a visible failure, which is the worse kind.
       redis:
+        condition: service_healthy
+
+  worker:
+    # Consumes the ingest queue. Same image and same ../data mount as `api` -- it runs the
+    # identical ingest_document code, so the file the api wrote must be at the same path here.
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+      target: worker
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      DB_HOST: postgres
+      # No REDIS_HOST: the worker doesn't rate-limit anything. Its queue is Postgres.
+    volumes:
+      - ../data:/app/data
+      # Same named volume as `api`, so the ~1min of Docling model downloads is paid once
+      # across both rather than per container.
+      - model_cache:/home/appuser/.cache
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      # No dependency on `api`: the queue is in Postgres, so the worker is useful the moment
+      # the database is up, and coupling them would mean an api restart takes ingestion down.
+      postgres:
+        condition: service_healthy
+      qdrant:
         condition: service_healthy
 
   nginx:
