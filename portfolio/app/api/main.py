@@ -49,6 +49,10 @@ app.add_middleware(
     allow_methods=_settings.cors_allow_methods,
     allow_headers=_settings.cors_allow_headers,
     expose_headers=_settings.cors_expose_headers,
+    # Settings refuses to construct if this is on alongside wildcard origins -- see
+    # config.py::_reject_credentialed_wildcard_cors for what Starlette does with that
+    # pair and why it can't be left to a warning.
+    allow_credentials=_settings.cors_allow_credentials,
 )
 
 app.include_router(ask_router, prefix="/v1")

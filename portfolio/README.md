@@ -24,8 +24,13 @@ Requires Docker and an [Anthropic](https://console.anthropic.com/) plus
 ```bash
 cd portfolio
 cp .env.example .env      # then fill in ANTHROPIC_API_KEY and VOYAGE_API_KEY
-cd .docker && docker compose up --build
+docker compose -f .docker/docker-compose.yml --env-file .env up --build
 ```
+
+`--env-file` is required, not stylistic. Compose resolves `${VAR}` from a `.env` in the
+*project* directory (`.docker/`), so without it `PORT`, `GUNICORN_TIMEOUT`, and
+`MAX_UPLOAD_SIZE_MB` from your `.env` reach the app container but **not** the port mappings
+or the nginx build — and the mismatch doesn't raise anything.
 
 That brings up six services: `api` (gunicorn + uvicorn workers), `streamlit`, `qdrant`,
 `postgres`, `redis`, and `nginx` in front of the api. The API is on
@@ -164,9 +169,17 @@ no code for any of them, so don't infer any from the plan's directory layout:
   orchestrator plus Curator/Evaluator subagents over the same Qdrant collection,
   prompt-injection defense on scraped content, and LangGraph `interrupt()` for human
   review.
-- **Epic 4 Phases 3-5.** Documentation (this rewrite), observability/SLO alerting, and a
-  user-facing signup flow. Phase-by-phase detail in
-  [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
+- **Epic 4 Phase 4** — observability: the latency SLO check is buildable, faithfulness
+  alerting needs Epic 2's scores.
+- **Epic 4 Phase 5** — the application backend: user accounts, conversations with
+  persisted citations, document list/delete, semantic search, streaming `/ask`, shareable
+  conversation snapshots, and **ingestion behind a job queue** (`procrastinate`) so an
+  upload stops holding an HTTP request open for minutes.
+- **Epic 4 Phase 6** — a React + TypeScript UI on top of Phase 5, with a typed client
+  generated from the OpenAPI schema. Streamlit retires when this ships.
+
+Phase-by-phase detail, including the rejected alternatives for the queue and the
+identity decision, is in [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 

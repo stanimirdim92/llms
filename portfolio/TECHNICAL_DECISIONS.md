@@ -274,7 +274,104 @@ as a sibling build context and `nginx/` nested inside `.docker/`.
 port mapping, and nginx's upstream all derive from it. nginx's is baked in at image build time
 by a `sed` on an `__API_PORT__` placeholder — deliberately *not* nginx's `envsubst` templates,
 which substitute every `$`-prefixed token and would happily blank nginx's own `$scheme` and
-`$remote_addr` throughout the file.
+`$remote_addr` throughout the file. `GUNICORN_TIMEOUT` and `MAX_UPLOAD_SIZE_MB` reach nginx
+the same way, as `REQUEST_TIMEOUT`/`MAX_UPLOAD_MB` build args, and the nginx image's build
+fails if any `__PLACEHOLDER__` is left unsubstituted — a literal `__FOO__` in an nginx
+directive is a config parse error, i.e. a crash-loop to debug instead of a build error to read.
+
+**That single source of truth requires `--env-file`**, which is not obvious and was wrong
+until it was measured:
+
+    docker compose -f .docker/docker-compose.yml --env-file .env up      # from portfolio/
+
+Compose resolves `${VAR}` from the shell or from a `.env` in the *project directory* — which
+is `.docker/`, not `portfolio/` and not the cwd. Verified both documented invocation styles
+with a value set only in `portfolio/.env`: **both silently used the fallback default.** A
+service's `env_file: ../.env` is a different mechanism (it populates a container's
+environment) and does not feed substitution.
+
+The failure is worse than a wrong default because the halves disagree. `PORT=9000` in
+`.env` alone yields gunicorn bound to 9000 *inside* the container, a published mapping of
+`8000:8000`, and an nginx upstream pointing at `api:8000` — three values, one correct, no
+error anywhere. This is the same class of bug as the postgres healthcheck reading the
+fallback password while the container ran with the real one.
+
+**Timeouts are wired together rather than set independently.** nginx's `proxy_read_timeout`
+derives from the same value as gunicorn's `--timeout` (600s), because whichever is shorter
+silently becomes the real budget: nginx first gives a 504 while the worker keeps burning CPU
+on an abandoned request; gunicorn first SIGKILLs the worker mid-parse, so the client gets a
+bare connection failure that never names the timeout. `proxy_connect_timeout` is deliberately
+*not* wired to it and stays at 75s — nginx documents that this one "cannot usually exceed 75
+seconds", so the 315s previously configured there was never real.
+
+`client_body_timeout` was 32s and is now also 600s. It bounds the gap between reads of the
+request body, and 32s kills real uploads from a phone on mobile data — a 408 that reads as a
+server fault. **It is the one timeout an async job queue will not make irrelevant**: the bytes
+still have to arrive over the wire regardless of what processes them afterwards. The 600s
+gunicorn timeout, by contrast, is a stopgap for synchronous ingestion and should come back
+down once uploads are jobs (`EPIC_4_PLAN.md` 5.1) — a 10-minute worker timeout means one
+stuck request holds a worker for ten minutes.
+
+`client_max_body_size` derives from `MAX_UPLOAD_SIZE_MB` for a related reason: nginx enforces
+it *first*, so if it were the smaller of the two the app's own limit would be dead code and
+raising `MAX_UPLOAD_SIZE_MB` would appear to do nothing — every oversized upload getting a
+413 from nginx that looks exactly like the app's own 413.
+
+## CORS: wildcard origins and credentials are mutually exclusive
+
+`Settings` refuses to construct when `cors_allow_credentials` is true and `cors_allow_origins`
+contains `"*"`. Starlette does not reject that pair, and what it does instead is the problem —
+from `starlette/middleware/cors.py` (1.3.1):
+
+```python
+if self.allow_all_origins and self.allow_credentials:
+    self.allow_explicit_origin(headers, origin)
+```
+
+It reflects back whatever `Origin` the caller sent, alongside `Access-Control-Allow-Credentials:
+true`. A literal `Allow-Origin: *` would at least make browsers refuse to attach cookies;
+reflecting the origin tells the browser that this specific attacker's site is trusted. Any page
+on the internet could then call the API with the victim's session cookie and read every
+document and conversation. There is no partial version of this mistake.
+
+The wildcard default is inert **today** and the guard exists so it can't stop being inert
+quietly: `cors_allow_credentials` is false and `cors_allow_headers` is empty, so a browser
+can't attach `x-api-key` cross-origin, the preflight fails, and nothing authenticated is
+reachable. The moment Phase 5 adds cookie sessions that changes, which is exactly when
+someone flips credentials on without revisiting origins.
+
+Raised at construction rather than logged, because nothing looks wrong from the server's
+side — it serves correct responses, and the damage is only visible from the attacker's page.
+`tests/unit/test_cors.py` pins it, including a wildcard buried in an otherwise-explicit list
+(`["https://app.example.com", "*"]` is exactly as open as `["*"]`, since Starlette checks
+`"*" in allow_origins`).
+
+## Job queue: procrastinate, replacing the planned arq
+
+Not yet built — recorded here because the choice was made and the reasoning is the load-bearing
+part. `arq` was the plan and is in **maintenance-only mode** upstream ("we'll continue to fix
+critical security issues […] but don't expect work on new fixes"), so it's not abandoned but
+isn't something to start new work on. Same call as `fastapi-users`.
+
+All of `procrastinate`, `rq`, `celery`, `saq`, and `arq` resolve under `requires-python =
+">=3.14"` with this project's pins (checked with `uv lock`, the method that caught the
+`slowapi` conflict), so resolvability didn't decide it. `procrastinate` wins on:
+
+- **Async-native**, matching `ingest_document` and the async SQLAlchemy engine. Celery and RQ
+  are sync-first, so every job would wrap `asyncio.run(...)` and open a fresh event loop and
+  connection pool per job.
+- **Transactional enqueue.** Being Postgres-backed, the `DocumentRecord` row and its job commit
+  together — there is no window where a document exists with no job (stuck "pending" forever)
+  or a job with no row. With a Redis broker those are two systems and the gap is real.
+- **No new infrastructure**: uses the existing Postgres through `psycopg` 3, already a
+  dependency. Redis stays purely a rate-limit counter store, consistent with the existing
+  "Redis is a cache, Postgres is the database" split.
+
+The strongest argument against it is `rq`'s fork-per-job isolation, which would contain a
+Docling segfault better than in-process async workers. Recorded rather than dismissed. And the
+choice has a real cost: procrastinate ships its own SQL migrations, so "no Alembic" below stops
+being the whole story and deploys gain a `procrastinate schema --apply` step. `taskiq` was
+excluded for declaring `Development Status :: 3 - Alpha` in its own metadata.
 
 **Capabilities are dropped and re-added minimally.** `cap_drop: [ALL]` removes root's
 privileges too, because they are capability-gated rather than UID-gated. nginx needs

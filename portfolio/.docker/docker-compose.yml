@@ -1,15 +1,33 @@
 # This file lives in .docker/, but the build context for api/streamlit is `..` (the
 # portfolio/ root) -- their COPY paths inside Dockerfile are relative to that root, not
-# to wherever the Dockerfile itself sits. Run this from portfolio/ as
-# `docker compose -f .docker/docker-compose.yml up`, or `cd .docker && docker compose up`
-# -- both resolve `context`/`env_file`/volume paths the same way, since compose resolves
-# relative paths against the compose file's own location, not the cwd.
+# to wherever the Dockerfile itself sits. Compose resolves `context`/`env_file`/volume
+# paths against this file's own location rather than the cwd, so those work either way.
+#
+# ALWAYS pass --env-file, from portfolio/:
+#
+#     docker compose -f .docker/docker-compose.yml --env-file .env up
+#
+# or from .docker/: `docker compose --env-file ../.env up`. This is not optional and not
+# cosmetic. The `${VAR:-default}` substitutions below are resolved by Compose itself,
+# which reads them from the shell or from a `.env` in the *project directory* -- that is
+# `.docker/`, not portfolio/ and not the cwd. Verified both invocation styles: with a
+# value set only in ../.env and no --env-file, both silently used the fallback default.
+# `env_file: ../.env` on individual services is a different mechanism (it populates a
+# container's environment) and does not help here.
+#
+# The consequence is worse than a wrong default, because the two halves disagree: the
+# api container reads the real value from ../.env via env_file, while this file's port
+# mappings and the nginx build args get the fallback. So PORT=9000 in ../.env alone
+# yields gunicorn bound to 9000, a published mapping of 8000:8000, and an nginx upstream
+# pointing at api:8000 -- three values, one of them right, no error anywhere.
 #
 # PORT (set it in ../.env, defaults to 8000) is the one source of truth for the api
 # service's actual port: it drives gunicorn's --bind inside the container (Dockerfile's
 # CMD reads it directly from the runtime environment), this file's port mapping for
 # `api` below, and nginx's upstream block (baked in at nginx's own build time via the
-# API_PORT build arg below, sourced from the same PORT value).
+# API_PORT build arg below, sourced from the same PORT value). GUNICORN_TIMEOUT and
+# MAX_UPLOAD_SIZE_MB work the same way, for the same reason -- see the nginx service's
+# build args.
 #
 # Runs today: api + streamlit + qdrant (vector store) + postgres (document registry) +
 # redis (cache -- infra only for now, nothing in app/ calls create_redis() yet) + nginx
@@ -179,6 +197,11 @@ services:
       dockerfile: Dockerfile
       args:
         API_PORT: ${PORT:-8000}
+        # Both must match what the api service runs with -- nginx sits in front, so
+        # whichever limit is smaller is the one that actually applies, silently. See
+        # nginx/Dockerfile for what each failure looks like when they drift.
+        REQUEST_TIMEOUT: ${GUNICORN_TIMEOUT:-600}
+        MAX_UPLOAD_MB: ${MAX_UPLOAD_SIZE_MB:-20}
     restart: unless-stopped
     ports:
       - "80:80"

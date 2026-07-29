@@ -102,7 +102,30 @@ Things that look correct and aren't:
   the compose port mapping, and nginx's upstream (baked in at nginx build time by
   `sed` on the `__API_PORT__` placeholder). Deliberately not nginx's `envsubst`
   templates -- those substitute every `$`-token and would wipe nginx's own
-  `$scheme`/`$remote_addr` too.
+  `$scheme`/`$remote_addr` too. `GUNICORN_TIMEOUT` and `MAX_UPLOAD_SIZE_MB` reach
+  nginx the same way (`REQUEST_TIMEOUT`/`MAX_UPLOAD_MB` build args), and the nginx
+  build fails on any unsubstituted `__PLACEHOLDER__`.
+- **Compose needs `--env-file` or none of that works.** Run it as
+  `docker compose -f .docker/docker-compose.yml --env-file .env up` from `portfolio/`.
+  Compose reads `${VAR}` from the shell or a `.env` in the *project directory*
+  (`.docker/`) -- never from `portfolio/.env`, and `env_file:` on a service doesn't
+  help (different mechanism). Measured: both documented invocation styles silently
+  used the fallback defaults. And the halves disagree, so it doesn't error --
+  `PORT=9000` in `.env` alone gives gunicorn on 9000, a mapping of `8000:8000`, and
+  an nginx upstream on `api:8000`.
+- **Timeouts are one value, not three.** gunicorn `--timeout` and nginx's
+  `proxy_read_timeout`/`client_body_timeout` are all 600s from `GUNICORN_TIMEOUT`,
+  because the shorter one silently becomes the real budget: nginx-first is a 504 with
+  the worker still burning CPU, gunicorn-first is a SIGKILL mid-parse that reaches the
+  client as a bare connection failure naming nothing. `proxy_connect_timeout` stays 75s
+  on purpose -- nginx caps it there regardless, so a larger number is decoration.
+  The 600s gunicorn value is a stopgap for synchronous ingestion; `client_body_timeout`
+  is not (bytes still arrive over the wire once uploads become jobs).
+- **`cors_allow_credentials` + `"*"` origins is refused at startup.** Starlette answers
+  that pair by reflecting the caller's own `Origin` with `Allow-Credentials: true`, so
+  every site on the internet becomes trusted. The wildcard default is only inert while
+  credentials are off and `cors_allow_headers` is empty. `tests/unit/test_cors.py` pins
+  it; don't relax the guard to make a frontend work -- name the origins.
 - **`POSTGRES_USER`/`PASSWORD`/`DB` is one set serving two consumers**: the postgres
   image, and `app/config.py`'s `Settings`, which assembles `DATABASE_URL` from them.
   Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME`.

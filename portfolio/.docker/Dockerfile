@@ -147,6 +147,21 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 # gunicorn[http2] is already a dependency. GUNICORN_WORKERS is env-configurable rather
 # than a fixed count: a much bigger box would want more than this container's default of
 # 2, and hardcoding a large number here would be wrong for a demo-scale deployment.
+#
+# --timeout is 600 (10 minutes), raised from 120. Ingestion is synchronous today and a
+# real document takes anywhere from 10s to 2min -- 120s sat close enough to the upper end
+# that a large PDF could trip it, and gunicorn's timeout is not a graceful 504: it SIGKILLs
+# the worker mid-parse, so the client sees a bare connection failure with nothing naming
+# the timeout, and any other request being served by that worker dies with it. nginx's
+# proxy_read_timeout is wired to the same value (see nginx/Dockerfile) so the two can't
+# drift into a mismatch where the shorter one silently decides the real budget.
+#
+# This is a stopgap, not the destination: a 10-minute worker timeout means one stuck
+# request holds a worker for 10 minutes, and with GUNICORN_WORKERS=2 two of them stall
+# the service. Once ingestion moves behind a job queue (EPIC_4_PLAN.md Phase 5) the
+# upload request returns in milliseconds and this should come back down -- the value that
+# genuinely has to stay large is nginx's client_body_timeout, since the bytes still have
+# to arrive over the wire no matter what processes them afterwards.
 # uvicorn.workers.UvicornWorker's own CONFIG_KWARGS defaults to loop="auto", so this
 # keeps the same uvloop-when-available behavior the previous bare-uvicorn --loop uvloop
 # had explicitly -- no separate loop flag needed with this worker class.
@@ -162,7 +177,7 @@ CMD ["bash", "-c", "gunicorn app.api.main:app \
     --workers ${GUNICORN_WORKERS:-2} \
     --worker-class uvicorn.workers.UvicornWorker \
     --bind 0.0.0.0:${PORT:-8000} \
-    --timeout ${GUNICORN_TIMEOUT:-120} \
+    --timeout ${GUNICORN_TIMEOUT:-600} \
     --keep-alive 5 \
     --max-requests 1000 \
     --max-requests-jitter 100 \

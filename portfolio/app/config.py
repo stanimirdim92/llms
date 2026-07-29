@@ -97,10 +97,20 @@ class Settings(BaseSettings):
 
     # Defaults preserve today's hardcoded CORSMiddleware call in api/main.py exactly --
     # override via .env once there's a real frontend origin to lock this down to.
+    #
+    # The wildcard default is inert *today* and must not survive a browser UI. It is inert
+    # because cors_allow_credentials is False and cors_allow_headers is empty: a browser
+    # can't attach `x-api-key` to a cross-origin request without it being allow-listed, so
+    # the preflight fails and the underlying request 401s. Nothing authenticated is
+    # reachable, so no data is exposed. What makes it dangerous is turning on credentials
+    # -- see the validator below.
     cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])
     cors_allow_methods: list[str] = Field(default_factory=lambda: ["GET", "POST"])
     cors_allow_headers: list[str] = Field(default_factory=list)
     cors_expose_headers: list[str] = Field(default_factory=list)
+    cors_allow_credentials: bool = Field(
+        default=False, description="Required for cookie-based browser sessions. Forbidden with '*' origins."
+    )
 
     log_level: str = Field(default="INFO")
     log_json: bool = Field(default=False)  # True in containers; console-friendly locally
@@ -128,6 +138,37 @@ class Settings(BaseSettings):
         if self.redis_password:
             credentials = f"{self.redis_username}:{self.redis_password}@"
         return f"redis://{credentials}{self.redis_host}:{self.redis_port}/{self.redis_db}"
+
+    @model_validator(mode="after")
+    def _reject_credentialed_wildcard_cors(self) -> Settings:
+        """Refuse to start on `cors_allow_origins=["*"]` together with credentials.
+
+        Starlette does not reject this combination, and what it does instead is the
+        problem. From `starlette/middleware/cors.py` (1.3.1):
+
+            if self.allow_all_origins and self.allow_credentials:
+                self.allow_explicit_origin(headers, origin)
+
+        With the wildcard it echoes back *whatever* `Origin` the caller sent, alongside
+        `Access-Control-Allow-Credentials: true`. `Allow-Origin: *` would at least make
+        browsers refuse to send cookies; reflecting the origin tells the browser this
+        specific attacker site is trusted. So any page on the internet can call this API
+        with the victim's session cookie attached and read the response -- every document
+        and every conversation, from a drive-by. It is the one CORS mistake with no
+        partial version: it is either off or it is total.
+
+        Raised at startup rather than logged, because the whole failure mode is that
+        nothing looks wrong from the inside: the app serves correct responses, and the
+        damage is only visible from the attacker's page.
+        """
+        if self.cors_allow_credentials and "*" in self.cors_allow_origins:
+            msg = (
+                "CORS_ALLOW_CREDENTIALS=true with CORS_ALLOW_ORIGINS=['*'] lets any origin read "
+                "authenticated responses. List the frontend's exact origins instead, e.g. "
+                'CORS_ALLOW_ORIGINS=["https://app.example.com"].'
+            )
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def _assemble_database_url(self) -> Settings:

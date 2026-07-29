@@ -1,8 +1,14 @@
 # Epic 4 — Production Rigor: implementation plan
 
-Scope note: roughly half of Epic 4 depends on Epics 2 and 3, which are not built. This
-plan covers the whole epic and marks blocked work explicitly rather than pretending the
-epic is one unblocked unit. Phases 1-3 are buildable today; 4 is partial; 5 waits.
+Scope note: parts of Epic 4 depend on Epics 2 and 3, which are not built. This plan covers
+the whole epic and marks blocked work explicitly rather than pretending the epic is one
+unblocked unit. Phases 1-3 are **built**; 4 is partial (latency SLO yes, faithfulness no);
+5 and 6 are buildable today and are the largest remaining work; a separate section lists
+what genuinely waits on Epics 2 and 3.
+
+Phases 5 and 6 were previously one "blocked on a product decision" placeholder. They are
+now the application layer — Phase 5 is the backend (users, conversations, document CRUD,
+async ingestion), Phase 6 is the React + TypeScript UI on top of it.
 
 Already done ahead of this epic (not repeated below): the multi-stage Dockerfile and
 `.docker/` layout, gunicorn + UvicornWorker, docker-compose (qdrant/postgres/redis/nginx),
@@ -223,9 +229,242 @@ Built as specified, plus:
 
 ---
 
-## Phase 5 — Blocked on Epics 2 and 3
+## Phase 5 — Application backend: users, conversations, document CRUD
 
-Listed so the sequence is explicit, not to be attempted now:
+The backend the React app of Phase 6 consumes. Split from Phase 6 deliberately: this is
+roughly three times the work, and bundling them means nothing is verifiable until
+everything is. Every item here is testable over HTTP with `curl` and no frontend.
+
+**Prerequisite that isn't obvious:** uploads must stop being synchronous. See 5.1.
+
+### Decisions taken for this phase
+
+| Decision | Choice | Why |
+|---|---|---|
+| Tenant ↔ user | `User` **belongs to** `Tenant`, exactly one member for now | Confirmed with the user. 1:1 today, but the FK costs nothing now and adding it later is a migration on live data |
+| Job queue | **`procrastinate`** | See "Job queue" below — `arq` is maintenance-only |
+| Chat-thread naming | **`Conversation`**, never "session" | `session_id` used to be the retrieval scope and removing it was a security fix; reusing the word makes the boundary unreadable |
+| Password auth | **Delegate to an IdP** (recommendation; see 5.2) | Email verification, reset, and lockout are all table stakes and all someone else's solved problem |
+| Document sharing | **Not in this phase** | Needs per-document ACLs; conversation snapshots don't |
+
+### Job queue — why not `arq`, and why `procrastinate`
+
+`arq` was the original plan. It is in **maintenance-only mode** (upstream: "we'll continue
+to fix critical security issues […] but don't expect work on new fixes"), so it is not
+abandoned but is not a thing to start new work on — the same call already made about
+`fastapi-users`. Verified against the repo, not assumed from a version number.
+
+Candidates checked for resolvability under `requires-python = ">=3.14"` with this
+project's existing pins (`uv lock`, the method that caught the `slowapi` conflict): all of
+`procrastinate`, `rq`, `celery`, `saq`, `arq` resolve. So resolvability doesn't decide it.
+
+**`procrastinate`**, on these grounds:
+
+- **Async-native.** `ingest_document` is `async def` over an async SQLAlchemy engine.
+  Celery and RQ are sync-first: every job would be a `def` wrapping `asyncio.run(...)`,
+  opening a fresh event loop and a fresh connection pool per job.
+- **Transactional enqueue**, which kills a specific failure mode rather than being a nice
+  property. Postgres-backed means the `DocumentRecord` row and the job land in **one
+  transaction**: there is no window where a document exists with no job (stuck "pending"
+  forever, and the UI's job is to show exactly that) or a job exists with no row. With
+  Redis as the broker those are two systems and the gap is real.
+- **No new infrastructure.** It uses the Postgres already running, via `psycopg` 3 which
+  is already a dependency. Redis stays purely a rate-limit counter store, consistent with
+  the existing "Redis is a cache, Postgres is the database" split.
+- Actively released, `Development Status :: 5 - Production/Stable`.
+
+Rejected, with reasons rather than a shrug:
+
+| Option | Why not |
+|---|---|
+| `celery` | Sync-first; async support is still not native. Heaviest config surface (broker + result backend + beat) for one job type |
+| `rq` | Simple and solid, and **fork-per-job would isolate a Docling segfault better than procrastinate's in-process workers** — the one real argument against this recommendation. Still sync-first, and adds a second queue system alongside Postgres |
+| `saq` | Async-native and arq-shaped, so the closest drop-in. Loses the transactional-enqueue property; smaller install base |
+| `taskiq` | Ships `Development Status :: 3 - Alpha` in its own metadata. Not for a production framing |
+
+**Deviation to accept explicitly:** procrastinate ships its own SQL migrations, so
+"no Alembic for one table" (see `TECHNICAL_DECISIONS.md`) stops being the whole story —
+deploys gain a `procrastinate schema --apply` step. That's a real cost of the choice and it
+belongs in the decision record, not discovered at deploy time.
+
+### 5.1 Uploads become jobs — `app/worker/`
+
+Today `POST /v1/documents` blocks for the whole ingest (10s–2min measured). A browser UI
+cannot hold that: no progress, no cancel, and one worker occupied per upload. The 10-minute
+gunicorn/nginx timeout now in place is the stopgap that keeps today's behaviour from
+failing outright; it is not the fix.
+
+- `DocumentRecord.status` grows `pending` / `processing` / `failed` alongside `ingested`,
+  plus `error_message` and `updated_at`. The status column already exists and is already
+  written — this widens its vocabulary rather than adding a concept.
+- `POST /v1/documents` writes the row and enqueues in one transaction, returns **202** with
+  the `doc_id`. `GET /v1/documents/{doc_id}` reports status. Polling is enough; SSE for
+  upload progress is not worth a second streaming surface.
+- Failures must land as `status="failed"` with a message. Right now nothing catches
+  exceptions inside `ingest_document`, so a failed ingest leaves no row at all and the UI
+  cannot distinguish "failed" from "never uploaded".
+- `worker` becomes a compose service on the same image, `depends_on` postgres.
+- **Bound the concurrency.** Docling is CPU-bound and already uses `DOCLING_NUM_THREADS`
+  (default `os.cpu_count()`). Worker concurrency × Docling threads must not exceed the
+  box's cores, or parallel ingests get slower than sequential ones. On the target 8-vCPU
+  machine: 2 concurrent jobs × 4 threads.
+
+### 5.2 Identity — the open decision, with a recommendation
+
+The user's position: "really not sure how to do user logins", and email verification is
+required. That combination argues for delegating.
+
+**Recommended: self-hosted Keycloak** as one more compose service. It provides
+registration, email verification, password reset, lockout, MFA, and OIDC discovery. The app
+gets a `current_user` dependency that verifies a JWT against Keycloak's JWKS, and
+provisions a `Tenant` + `User` row on first login. Costs: ~512MB–1GB of JVM heap on a
+16GB box that also runs torch and Docling, plus a realm/client configuration surface that
+is genuinely large for 1k users.
+
+Alternative if Keycloak is too much: **own it**, with `argon2-cffi` for password hashing
+(*not* the API keys' SHA-256 — opposite threat model, see `TECHNICAL_DECISIONS.md`),
+`itsdangerous` for signed session cookies, and a transactional-email provider. Budget for
+what that actually includes: verification tokens, reset tokens with single-use semantics,
+lockout, timing-safe comparison, and the tests to prove each one.
+
+Either way:
+
+- **The browser must not use `x-api-key`.** A long-lived key in `localStorage` is
+  exfiltrable by any XSS and cannot be revoked per-tab. Browser requests authenticate with
+  a short-lived credential in an `httpOnly` cookie; API keys stay for programmatic access.
+  Two entry points, one identity resolution — `current_tenant` becomes the shared tail.
+- Cookies mean **CSRF protection** (double-submit or `SameSite=Strict` plus origin checks)
+  and mean CORS must name real origins. The wildcard-plus-credentials guard added in
+  `config.py` exists so that combination can't be reached by accident.
+- **Login needs its own rate limit.** The existing limiter keys on tenant, which is useless
+  for an endpoint you hit *before* knowing the tenant. Credential stuffing needs an
+  IP-and-email-keyed bucket. Delegating to an IdP means this is Keycloak's problem.
+- **Signup is a cost control, not just hygiene.** Every upload is Docling CPU plus one
+  vision call per figure plus one embedding call per chunk. Open signup on a public URL is
+  an uncapped Anthropic bill, so email verification gates ingestion, and per-tenant quotas
+  (documents stored, tokens/month) land in this phase rather than after the first surprise.
+
+### 5.3 Conversations — `app/conversations/`
+
+- `Conversation`: `id`, `tenant_id` (indexed), `user_id`, `title`, `created_at`,
+  `updated_at`. Titles generated from the first question — one cheap LLM call, a legitimate
+  judgment call rather than a deterministic one.
+- `Message`: `id`, `conversation_id` (indexed), `role`, `content`, `created_at`, **plus the
+  citations and retrieved chunk ids as JSONB**. Persisting only the text loses provenance
+  on reload, which is the one thing this product sells.
+- `POST /v1/conversations`, `GET /v1/conversations`, `GET /v1/conversations/{id}`,
+  `PATCH` (rename), `DELETE`. All tenant-scoped through the existing dependency.
+- **Multi-turn retrieval needs a condensation step.** "What about the second one?" embeds
+  to nothing useful. Before retrieval, rewrite the question against the last N turns into a
+  standalone query. This is not optional polish — it is the difference between the second
+  turn working and not.
+- `/v1/ask` gains an optional `conversation_id`; without one it stays the stateless
+  single-turn endpoint it is today, so existing API clients don't break.
+
+### 5.4 Document scoping on `/ask`
+
+An optional `doc_ids` filter, so a question can target one document instead of everything.
+`_build_filter` takes another `MatchAny` condition; the API doesn't expose it yet.
+
+**Every id must be verified as owned by the calling tenant before it reaches the filter.**
+Otherwise this is a fresh cross-tenant read: name someone else's `doc_id` and the tenant
+condition is satisfied by the *other* clause. Belongs in the same test file as the existing
+scoping assertions.
+
+### 5.5 Document CRUD
+
+- `GET /v1/documents` — list for the tenant, paginated, with status.
+- `DELETE /v1/documents/{doc_id}` — and this is more than it looks. Four things must go:
+  the Qdrant points (`QdrantStore.delete_document` exists), the file under
+  `data/uploads/<tenant_id>/`, the registry row, and a decision about messages that cite
+  it. Recommendation: keep the messages, mark the citation dangling in the response — a
+  chat log that silently rewrites itself is worse than one that says a source is gone.
+- `DELETE /v1/account` — cascades all of the above for every document, plus conversations.
+  Needed for GDPR and trivially forgotten.
+
+### 5.6 Search
+
+Two of the three possible meanings, chosen deliberately:
+
+- `GET /v1/documents?q=` — filename/metadata match in Postgres.
+- `POST /v1/search` — semantic chunk search: embed, retrieve, rerank, **no generation**.
+  Fast and cheap next to `/ask`, and it's the honest primitive behind "search".
+
+Chat-history search is skipped for now; it needs Postgres FTS and it is the least-used of
+the three.
+
+### 5.7 Streaming `/ask`
+
+Yes, this is mostly easy — with two caveats worth stating before it's built.
+
+- `ChatAnthropic.astream` and an SSE response is the straightforward part.
+  `proxy_buffering off` is **already set** in `conf.d/default.conf`, which is the usual
+  thing that breaks SSE behind nginx.
+- **Caveat 1: it doesn't help time-to-first-byte as much as expected.** Retrieval and
+  reranking both complete before the first token — that's the multi-second part. Streaming
+  removes the generation wait, not the retrieval wait. If the goal is a responsive UI, emit
+  progress events for the retrieval stages too, otherwise the stream just starts late.
+- **Caveat 2: errors after the first byte can't be a 4xx/5xx.** The status line is already
+  sent, so a mid-stream failure has to be an in-band error event the client explicitly
+  handles, and the existing `PortfolioError` handler cannot help. Every streaming API gets
+  this wrong once.
+- Citations arrive as Anthropic content-block deltas, so the payload shape differs from the
+  non-streaming response. Keep `POST /v1/ask` as-is and add `POST /v1/ask/stream` rather
+  than making one endpoint return two shapes.
+
+### 5.8 Sharing — conversation snapshots only
+
+A public link is unauthenticated read access to tenant-scoped content, so the shape matters
+more than the feature:
+
+- A **frozen snapshot** — answer text and citations copied at share time. Not a live query.
+  A live shared link re-runs retrieval as the owner, so documents uploaded *later* leak
+  through a link they've forgotten about.
+- Unguessable token (`secrets.token_urlsafe`), revocable, optional expiry.
+- **Never serves the underlying document**, only the quoted citation text.
+- Document sharing between users is explicitly out: it needs per-document ACLs, which is a
+  change to the payload schema and the filter, i.e. its own phase.
+
+### 5.9 Tests
+
+There are currently **no HTTP-level tests at all** — all eight files are unit-level. A
+consumed API contract changes that calculus:
+
+- `httpx.ASGITransport` against the app for the auth, CRUD, and conversation routes.
+- Cross-tenant negative tests on every new endpoint: list, get, delete, share, `doc_ids`.
+  The pattern from `test_tenant_scoping.py` applies to each one.
+- A test that a `failed` ingest leaves a `failed` row, since the whole point of 5.1 is that
+  the UI can distinguish failure from absence.
+
+---
+
+## Phase 6 — React + TypeScript frontend
+
+Consumes Phase 5. Nothing here is buildable before it.
+
+- **Location** `portfolio/web/`, Vite + React + TypeScript. Its own `package.json`; the
+  repo-root CI workflow gains a second job scoped to `portfolio/web/**`.
+- **Typed client generated from OpenAPI**, via `openapi-typescript`. FastAPI already emits
+  the schema and every route and field already carries descriptions, so this is free and
+  keeps the client from drifting. Don't hand-write request types.
+- **Screens**: signup/login (or IdP redirect), document list with upload + per-document
+  status polling, conversation list, a conversation view with streaming answers and
+  inline citations, search, and share-link management.
+- **Citations are the differentiator**, so render them as first-class UI — click a citation,
+  see the quoted chunk with its page number — not footnote markers.
+- **Serving**: nginx serves the static build and proxies `/v1` to `api`. Today it proxies
+  `/` wholesale, so `conf.d/default.conf` needs a real location split.
+- **Streamlit's fate must be decided, not left to drift.** Once this exists,
+  `streamlit_app/Home.py` is redundant *and* it is the one component calling the pipeline
+  in-process rather than over HTTP — the reason it needed its own auth path. Recommendation:
+  delete it when Phase 6 ships, and remove the `streamlit` compose service with it.
+
+---
+
+## Blocked on Epics 2 and 3 (not a phase)
+
+Listed so the sequence stays explicit. None of it is attemptable now, and none of it
+blocks Phases 5 or 6:
 
 | Item | Blocked on |
 |---|---|
@@ -233,20 +472,16 @@ Listed so the sequence is explicit, not to be attempted now:
 | Rate limit on `/review` | Epic 3's review endpoint |
 | `eval/agent_trace_assertions.py` + `tests/eval/` | Epic 3's agent **and** Epic 2's harness |
 | Faithfulness SLO in `alerts.py` | Epic 2's RAGAS scores |
-| User login UI + key-management screen | Product decision below |
-
-**Open decision for the login half:** hand-rolling password auth means owning reset flows,
-email verification, lockout, and timing-safe comparison. Recommend `fastapi-users` or an
-external IdP (Keycloak self-hosted; WorkOS/Clerk/Auth0 hosted) with the tenant read from a
-verified JWT claim. API keys stay hand-rolled — they're simple and safe with high-entropy
-secrets. Does not block Phases 1-4.
 
 ## Dependencies added
 
 | Package | Phase | For |
 |---|---|---|
-| `slowapi` | 2 | Rate limiting |
-| `fastapi-users` *or* IdP client | 5 | Password login only, if not delegated |
+| `slowapi` | 2 | Rate limiting — **rejected, not added**; see Phase 2 |
+| `procrastinate` | 5 | Job queue for async ingestion (replaces the planned `arq`) |
+| IdP client (`authlib`/`python-jose`) *or* `argon2-cffi` + `itsdangerous` | 5 | Depends on 5.2's outcome |
+| Transactional email provider SDK | 5 | Verification and reset mail, if not delegated |
+| `openapi-typescript` (npm, dev) | 6 | Generated API client |
 
 No new dependency for Phase 1: `secrets` and `hashlib` are stdlib, `sqlmodel` and
 `psycopg` are already present.
@@ -259,3 +494,22 @@ No new dependency for Phase 1: `secrets` and `hashlib` are stdlib, `sqlmodel` an
   as a confusing runtime error, not at startup.
 - **`last_used_at` writes** add a DB write per request if implemented naively.
 - **Re-ingest required** after 1.3. Harmless now, would need a migration path with real data.
+
+Added for Phases 5-6:
+
+- **`doc_ids` on `/ask` is a new cross-tenant read** if the ids aren't verified as owned
+  before they reach the filter. Same silent-failure shape as the original `session_id` bug:
+  it returns results rather than erroring.
+- **Cookie auth plus permissive CORS is a total bypass**, because Starlette answers
+  wildcard-plus-credentials by reflecting the caller's own origin. Guarded in `config.py`
+  as of this phase's groundwork, with `tests/unit/test_cors.py` pinning it.
+- **A 10-minute gunicorn timeout means one stuck request holds a worker for 10 minutes.**
+  With `GUNICORN_WORKERS=2`, two of them stall the service. This is why 5.1 is a
+  prerequisite and not a later optimisation.
+- **Worker concurrency × `DOCLING_NUM_THREADS` can oversubscribe the box**, making parallel
+  ingests slower than sequential ones. Neither number is meaningful alone.
+- **Share links outlive the intent behind them.** A live (non-snapshot) shared link keeps
+  querying the owner's corpus, so it leaks documents uploaded after it was created. The
+  snapshot requirement in 5.8 is the mitigation and it is not optional.
+- **procrastinate brings schema migrations** into a project that deliberately had none.
+  Deploys gain a schema-apply step, and forgetting it fails at runtime as a missing table.
