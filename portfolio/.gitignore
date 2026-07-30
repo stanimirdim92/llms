@@ -13,7 +13,7 @@ data/processed/
 data/uploads/
 data/eval/results/
 data/incoming_queue.db
-
+.idea
 
 ### Python template
 # Byte-compiled / optimized / DLL files
