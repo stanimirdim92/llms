@@ -11,6 +11,9 @@ data. CI provides the server (see portfolio-ci.yml).
 
 from __future__ import annotations
 
+import asyncio
+import os
+import sys
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
@@ -276,6 +279,60 @@ async def test_marking_a_missing_document_does_nothing(db: SessionFactory) -> No
 
     async with db() as session:
         assert await get_document_record(session, tenant_id=TENANT_A, doc_id="does-not-exist") is None
+
+
+async def test_concurrent_processes_can_initialise_the_schema(db: SessionFactory) -> None:
+    """`init_db` must survive several processes running it at once on an empty database.
+
+    This is the failure that crashed a gunicorn worker on the first real boot: with
+    GUNICORN_WORKERS=2, both workers ran `to_regclass('procrastinate_jobs')`, both saw nothing,
+    and both applied procrastinate's schema. The loser got
+    `DuplicateObject: type "procrastinate_job_status" already exists` and exited, which reads as
+    a database fault rather than a race. The `worker` container runs `init_db` too, so it's three
+    racers, not two.
+
+    Uses real subprocesses because the bug is *cross-process*: `init_db`'s asyncio lock already
+    serializes coroutines inside one process, so an `asyncio.gather` version of this test passes
+    even with the advisory lock removed. Confirmed by removing it.
+    """
+    url = _test_database_url()
+    async with db() as session:
+        connection = await session.connection()
+        # Drop and recreate the whole schema rather than enumerating objects. procrastinate's
+        # schema.sql contains 3 CREATE TYPE, 4 CREATE TABLE and 18 CREATE FUNCTION, none of them
+        # `OR REPLACE`, so a hand-written drop list silently misses things: an earlier version of
+        # this test dropped only the tables and `procrastinate_job_status`, left
+        # `procrastinate_job_event_type` behind, and every subprocess then failed on that -- which
+        # looked like the advisory lock not working.
+        await connection.execute(text("DROP SCHEMA public CASCADE"))
+        await connection.execute(text("CREATE SCHEMA public"))
+        await session.commit()
+
+    code = "import asyncio, app.db; asyncio.run(app.db.init_db())"
+    env = {**os.environ, "DATABASE_URL": url}
+
+    async def _run_init() -> tuple[int | None, str]:
+        process = await asyncio.create_subprocess_exec(
+            sys.executable,
+            "-c",
+            code,
+            env=env,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        _, stderr = await process.communicate()
+        return process.returncode, stderr.decode()
+
+    # Spawned together and awaited together, so all three are inside init_db at once. Sequential
+    # runs would pass with or without the lock.
+    outcomes = await asyncio.gather(*(_run_init() for _ in range(3)))
+
+    failures = [(code_, err.strip().splitlines()[-1] if err.strip() else "") for code_, err in outcomes if code_ != 0]
+    assert not failures, f"concurrent init_db failed: {failures}"
+
+    async with db() as session:
+        connection = await session.connection()
+        assert (await connection.execute(text("SELECT to_regclass('procrastinate_jobs')"))).scalar() is not None
 
 
 async def test_status_transitions_stamp_updated_at(db: SessionFactory) -> None:
