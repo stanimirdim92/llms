@@ -57,6 +57,16 @@ not at the 1k-user target. Details in `VENDORED.md`.
 
 ## Verification gate
 
+Install the hooks once so this isn't memory-dependent:
+
+    cd portfolio && uv run pre-commit install -c .pre-commit-config.yaml
+
+The `-c` is required (monorepo: git's hooks are at the root, the config lives here). Hooks are
+`repo: local` calling `uv run`, so tool versions come from `uv.lock` rather than pre-commit's own
+pins -- don't switch them to `astral-sh/ruff-pre-commit`, which reintroduces exactly that drift.
+Python hooks are scoped `^portfolio/`; unscoped, pre-commit hands ruff the sibling projects' files.
+
+
 All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
 
     uv run ruff check . && uv run ruff format --check .

@@ -1,0 +1,117 @@
+# Pre-commit hooks for portfolio/.
+#
+# Install once, FROM THE REPO ROOT (this is a monorepo; git's hooks live at the root while this
+# config lives with the project it gates, alongside ruff.toml/ty.toml/CLAUDE.md):
+#
+#     cd portfolio && uv run pre-commit install -c .pre-commit-config.yaml
+#
+# The `-c` is required -- without it pre-commit looks for a config at the repo root and fails.
+# `default_install_hook_types` below means that one command installs both the pre-commit and
+# pre-push hooks. Every `files:` pattern is relative to the *git root*, hence the `^portfolio/`
+# prefixes, and the hooks `cd portfolio` before invoking project tools.
+#
+# Every project-tool hook is `repo: local` calling `uv run`, deliberately. The obvious
+# alternative -- astral-sh/ruff-pre-commit and friends -- makes pre-commit manage its own
+# isolated environments with their own pinned versions, so the ruff that gates a commit is a
+# *different* ruff from the one CI runs and the one `uv.lock` pins. That drift shows up as a
+# commit passing locally and failing CI on formatting, which is the most annoying possible
+# failure. Routing through `uv run` means one version of truth: uv.lock.
+#
+# Split by stage on cost. Anything sub-second runs pre-commit; the test suite runs pre-push,
+# because it needs a live Postgres and Redis and takes ~30s, and a 30-second pre-commit hook
+# gets bypassed with --no-verify within a day and then never runs again.
+
+default_install_hook_types: [pre-commit, pre-push]
+fail_fast: false
+
+repos:
+  # --- File hygiene and secret guards -------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # The important one. `.env` holds a real LangSmith API key; it is gitignored, but a
+      # `git add -f` or a rename slips past that, and a key in git history is not retractable.
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+        # uv.lock is ~620KB and committed on purpose, so the limit sits above it.
+      - id: end-of-file-fixer
+        exclude: ^portfolio/\.claude/skills/qdrant-  # vendored verbatim; not ours to reformat
+      - id: trailing-whitespace
+        exclude: ^portfolio/\.claude/skills/qdrant-
+      - id: check-merge-conflict
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-toml
+
+  # --- Project tools, all via uv ------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: no-env-file
+        name: refuse to commit .env
+        # Belt to detect-private-key's braces: that hook catches PEM-style keys, not
+        # `ANTHROPIC_API_KEY=sk-ant-...`. This refuses the file outright, by name.
+        entry: bash -c 'echo "Refusing to commit .env -- it holds real API keys. Use .env.example." && exit 1'
+        language: system
+        files: ^portfolio/\.env$
+        pass_filenames: false
+
+      - id: ruff-check
+        name: ruff check
+        entry: uv run --project portfolio ruff check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        # Scoped, because pre-commit passes paths from the *git root*: without this it hands ruff
+        # every .py in the monorepo, and `LLM Engineers Handbook/` and `fastai-dl/` fail rules
+        # portfolio's ruff.toml was never meant to govern. Verified -- it reported 4 such errors.
+        files: ^portfolio/
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff format --check
+        entry: uv run --project portfolio ruff format --check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        files: ^portfolio/
+        require_serial: true
+
+      - id: ty
+        files: ^portfolio/
+        name: ty check
+        # Whole-project, not per-file: a type error is usually in the *caller* of the file you
+        # edited, so passing only staged paths reports clean while the tree is broken. Fast
+        # enough to run every commit because ty is compiled.
+        entry: bash -c 'cd portfolio && uv run ty check'
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
+
+      - id: uv-lock-current
+        name: uv.lock matches pyproject.toml
+        # `--locked` errors when the lock is stale. Catching it here rather than in CI matters
+        # because the failure mode is silent: with `--frozen` (which the Docker build used to
+        # use) a missing dependency just isn't installed and surfaces as a runtime ImportError.
+        entry: bash -c 'cd portfolio && uv lock --check'
+        language: system
+        files: ^portfolio/(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
+
+      - id: compose-config
+        name: docker compose config
+        entry: bash -c 'cd portfolio/.docker && docker compose --env-file ../.env config -q'
+        language: system
+        files: ^portfolio/\.docker/
+        pass_filenames: false
+
+      # --- pre-push only ---------------------------------------------------------------------
+      - id: pytest
+        files: ^portfolio/
+        name: pytest (unit)
+        # Reads the skip count, not just the exit code. The service-backed suites *skip* when
+        # Postgres or Redis is unreachable, so a green exit can mean auth, rate limiting, and
+        # the job queue were never exercised -- see the `verify` skill.
+        entry: bash portfolio/scripts/pytest-hook.sh
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
+        stages: [pre-push]

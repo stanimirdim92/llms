@@ -6,62 +6,38 @@ on:
     paths:
       - "portfolio/**"
       - ".github/workflows/portfolio-ci.yml"
+      - ".github/dependabot.yml"
   pull_request:
     paths:
       - "portfolio/**"
       - ".github/workflows/portfolio-ci.yml"
+      - ".github/dependabot.yml"
+  workflow_dispatch:
+
+# Least privilege. Unset, the token defaults to whatever the repository setting says, which is
+# often write -- a compromised action step could then push. Nothing here needs more than read.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same ref. Without this, pushing three times to a PR runs three
+# full pipelines (including the image build) and the first two answer questions nobody is asking.
+# Not applied to main: those runs are the record of what was merged.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
     working-directory: portfolio
 
 jobs:
-  lint-type-test:
+  # ---------------------------------------------------------------------------------------------
+  # Fast, no services. Split from `test` so a formatting mistake fails in ~40s instead of waiting
+  # on Postgres, Redis, and the full suite.
+  # ---------------------------------------------------------------------------------------------
+  static:
+    name: lint, format, types
     runs-on: ubuntu-latest
-
-    # The auth tests need a real Postgres, and deliberately do not fall back to SQLite:
-    # the app runs on one engine, and testing auth against a different one is how a
-    # backend-specific bug hides. They skip when no server is reachable, so without this
-    # service they would skip silently here -- which is worse than not having them.
-    services:
-      postgres:
-        image: postgres:18-alpine
-        env:
-          POSTGRES_USER: portfolio
-          POSTGRES_PASSWORD: portfolio
-          POSTGRES_DB: portfolio
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      # The rate-limit tests need real Redis for the same reason: the limiter is a Lua
-      # script plus a sorted-set expiry contract, and they fail *open* -- so a missing
-      # Redis would make them skip rather than fail, hiding a broken limiter.
-      redis:
-        image: redis:8-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      # tests/unit/test_auth_touch.py appends `_test` to this database name and creates it
-      # on demand, so it never touches the database above directly.
-      DB_HOST: localhost
-      DB_PORT: "5432"
-      POSTGRES_USER: portfolio
-      POSTGRES_PASSWORD: portfolio
-      POSTGRES_DB: portfolio
-      REDIS_HOST: localhost
-      REDIS_PORT: "6379"
-
     steps:
       - uses: actions/checkout@v7
 
@@ -88,6 +64,69 @@ jobs:
       - name: Type check (ty)
         run: uv run ty check .
 
+  # ---------------------------------------------------------------------------------------------
+  # Service-backed. The three suites that touch Postgres/Redis SKIP when unreachable, so this job
+  # exists to make them actually run -- and then asserts they did.
+  # ---------------------------------------------------------------------------------------------
+  test:
+    name: unit tests
+    runs-on: ubuntu-latest
+
+    services:
+      # The auth tests need a real Postgres and deliberately do not fall back to SQLite: the app
+      # runs on one engine, and testing auth against a different one is how a backend-specific
+      # bug hides (a real FK violation, hidden by SQLite, was found exactly this way).
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_DB: portfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      # The rate-limit tests need real Redis for the same reason: the limiter is a Lua script
+      # plus a sorted-set expiry contract, and it fails *open* -- so a missing Redis would make
+      # them skip rather than fail, hiding a broken limiter.
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # tests/unit/test_auth_touch.py and test_worker_enqueue.py append `_test` to this database
+      # name and create it on demand, so they never touch the database above directly.
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+      POSTGRES_DB: portfolio
+      REDIS_HOST: localhost
+      REDIS_PORT: "6379"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.3.2
+        with:
+          python-version: "3.14"
+          enable-cache: auto
+          cache-dependency-glob: "portfolio/uv.lock"
+
+      - name: Install dependencies
+        run: uv sync --extra dev --locked
+
       - name: Import the full app (catches import-time errors ty/ruff can't)
         run: |
           uv run python -c "import app.api.main; import app.ingestion.pipeline; import app.retrieval.reranker"
@@ -97,8 +136,7 @@ jobs:
           uv run python -c "import app.worker.tasks; assert 'ingest_document' in app.worker.tasks.app.tasks"
 
       - name: Create the test database
-        run: |
-          PGPASSWORD=portfolio createdb -h localhost -U portfolio portfolio_test || true
+        run: PGPASSWORD=portfolio createdb -h localhost -U portfolio portfolio_test || true
 
       - name: Unit tests
         run: uv run pytest tests/unit -v
@@ -111,4 +149,137 @@ jobs:
             uv run pytest "$suite" -q --no-header -rN | tee /dev/stderr | grep -q "skipped" \
               && { echo "::error::$suite skipped -- service wiring is broken"; exit 1; }
           done
-          echo "both service-backed suites ran"
+          echo "all service-backed suites ran"
+
+  # ---------------------------------------------------------------------------------------------
+  # Supply chain. Cheap, and the only thing watching 265 locked packages.
+  # ---------------------------------------------------------------------------------------------
+  security:
+    name: dependency CVEs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.3.2
+        with:
+          python-version: "3.14"
+          enable-cache: auto
+          cache-dependency-glob: "portfolio/uv.lock"
+
+      - name: Audit the locked dependency set
+        # Audits what is actually pinned, via `uv export`, rather than whatever a fresh resolution
+        # would pick -- the point is to check the versions that ship. --disable-pip keeps
+        # pip-audit from re-resolving; it reads the pinned versions directly.
+        #
+        # This FAILS the job on a known advisory. A scan that only prints is a scan nobody reads.
+        # When a finding is real but unfixable (no patched release yet), add `--ignore-vuln <ID>`
+        # with a comment naming the advisory and why -- an explicit, reviewable exception rather
+        # than a disabled job.
+        run: |
+          uv export --format requirements-txt --no-emit-project --no-dev -q > /tmp/requirements.txt
+          uvx pip-audit -r /tmp/requirements.txt --disable-pip
+
+  # ---------------------------------------------------------------------------------------------
+  # The class of failure CI has never seen: image builds, the nginx config, the gunicorn CMD, the
+  # worker's --app path, schema creation under concurrent boot, and readiness itself. Every Docker
+  # bug so far reached a human before it reached a test.
+  #
+  # Not run on pull requests: the api image installs torch and Docling, so a cold build is slow
+  # and large. On main and on demand, which is where "did this actually deploy" matters.
+  # ---------------------------------------------------------------------------------------------
+  stack:
+    name: build images and smoke the stack
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    needs: [static]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Write a .env for the stack
+        # Dummy provider keys on purpose. The api now refuses to boot without ANTHROPIC_API_KEY
+        # and VOYAGE_API_KEY (see config.require_provider_credentials), and the boot check only
+        # asserts they are non-empty -- so the stack starts and readiness works without any real
+        # credentials or outbound provider calls. Nothing here ingests or answers.
+        run: |
+          cat > .env <<'EOF'
+          ANTHROPIC_API_KEY=ci-not-a-real-key
+          VOYAGE_API_KEY=ci-not-a-real-key
+          POSTGRES_USER=portfolio
+          POSTGRES_PASSWORD=portfolio
+          POSTGRES_DB=portfolio
+          LOG_JSON=true
+          EOF
+
+      - name: Validate the compose file
+        run: cd .docker && docker compose --env-file ../.env config -q
+
+      - name: Bring the stack up
+        # --env-file is mandatory: compose resolves ${VAR} from the project directory (.docker/),
+        # never from ../.env, so without it PORT/GUNICORN_TIMEOUT/MAX_UPLOAD_SIZE_MB reach the
+        # containers but not the port mappings or the nginx build args.
+        run: cd .docker && docker compose --env-file ../.env up --build -d
+
+      - name: Wait for readiness
+        # Polls the real readiness endpoint, which probes Postgres, Qdrant and Redis. This is the
+        # assertion: if it never turns 200, one of them is unreachable from the api container.
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/health/ready > /tmp/ready.json; then
+              echo "ready after ${i}0s"; cat /tmp/ready.json; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::/health/ready never returned 200"
+          cd .docker && docker compose --env-file ../.env logs --tail=100
+          exit 1
+
+      - name: Readiness reports every dependency healthy
+        run: |
+          python3 -c "
+          import json, sys
+          body = json.load(open('/tmp/ready.json'))
+          assert body['ready'] is True, body
+          for name, dep in body['dependencies'].items():
+              assert dep['status'] == 'ok', f'{name} is {dep[\"status\"]}: {dep.get(\"detail\")}'
+          print('postgres, qdrant and redis all reachable from the api container')
+          "
+
+      - name: nginx config is valid and proxying
+        # nginx resolves `server api:<port>` in its upstream block at startup, so this could not
+        # be checked with a standalone `nginx -t` outside the compose network -- the hostname
+        # would not resolve. Running it inside the network is the real check, and the 200 through
+        # port 80 proves the placeholder substitution produced a working upstream.
+        run: |
+          cd .docker && docker compose --env-file ../.env exec -T nginx nginx -t
+          curl -fsS http://localhost/health/ready > /dev/null && echo "readiness reachable through nginx"
+
+      - name: Auth is enforced through the proxy
+        # A 401 here means the dependency ran; a 200 or 500 would mean the route is open or the
+        # auth path is broken behind the proxy specifically.
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost/v1/ask \
+            -H 'content-type: application/json' -d '{"question":"hi"}')
+          [ "$code" = "401" ] || { echo "::error::expected 401 without a key, got $code"; exit 1; }
+          echo "unauthenticated /v1/ask is 401 through nginx"
+
+      - name: The worker started and claimed its queue
+        # The worker is the one service with no healthcheck (it listens on nothing), so its log
+        # line is the only evidence it booted with the right --app and queue. Pointing --app at
+        # app.worker.app.app instead of app.worker.tasks.app connects fine and then rejects every
+        # job as unknown, which this catches.
+        run: |
+          cd .docker && docker compose --env-file ../.env logs worker | tee /tmp/worker.log
+          grep -q "Starting worker on queues ingest" /tmp/worker.log \
+            || { echo "::error::worker did not start on the ingest queue"; exit 1; }
+
+      - name: Dump logs on failure
+        if: failure()
+        run: cd .docker && docker compose --env-file ../.env logs --tail=200
+
+      - name: Tear down
+        if: always()
+        run: cd .docker && docker compose --env-file ../.env down -v

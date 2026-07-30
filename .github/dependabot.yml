@@ -1,0 +1,80 @@
+# Dependabot version updates.
+#
+# Scoped to `portfolio/` plus the repo-root workflows. The sibling projects
+# (`LLM Engineers Handbook/`, `fastai-dl/`, `transformers-course/`) are course and book
+# material that is read and run, not deployed -- updating their pins would be a weekly PR
+# stream with nothing at stake.
+#
+# Everything here depends on `portfolio/uv.lock` being committed. Dependabot's uv support reads
+# the lockfile to determine current versions, so while it was gitignored none of this was
+# possible. Note the known upstream limitation: Dependabot updates `uv.lock` but does not touch
+# `pyproject.toml`, so the floors declared there stay put and only the resolution moves. That is
+# the desired direction anyway -- and if a bump ever lands outside a declared constraint, CI's
+# `uv sync --locked` fails loudly rather than the drift going unnoticed.
+
+version: 2
+
+updates:
+  # --- Python dependencies -------------------------------------------------------------------
+  - package-ecosystem: "uv"
+    directory: "/portfolio"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    # 254 locked packages. Ungrouped, a weekly run would open dozens of PRs and get ignored,
+    # which is worse than not running it. Minor and patch bumps travel together as one
+    # reviewable PR; majors arrive individually because they are the ones that need reading.
+    groups:
+      python-minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # --- GitHub Actions -----------------------------------------------------------------------
+  # Worth covering specifically: the workflow pins action versions by hand, and a stale action
+  # is a supply-chain surface that nothing else in this repo watches.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # --- Base images in Dockerfiles -----------------------------------------------------------
+  # Three separate build contexts, each with its own Dockerfile and its own pinned base.
+  - package-ecosystem: "docker"
+    directories:
+      - "/portfolio/.docker"
+      - "/portfolio/.docker/nginx"
+      - "/portfolio/redis"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "docker"
+    groups:
+      base-images:
+        patterns: ["*"]
+
+  # --- Service image tags in docker-compose.yml ----------------------------------------------
+  # Separate ecosystem from `docker` above: these are the `image:` tags for qdrant/postgres/redis,
+  # pinned by hand and previously only bumped when someone remembered. The postgres 17->18 bump
+  # is exactly the kind of change that needs a human reading the release notes, which is why
+  # majors are not grouped anywhere in this file.
+  - package-ecosystem: "docker-compose"
+    directory: "/portfolio/.docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "docker"
+    groups:
+      service-images:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

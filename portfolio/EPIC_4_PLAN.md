@@ -533,6 +533,61 @@ Not done from that review: no stuck-job sweeper, no `GET /v1/documents` list or 
 (5.5), no metrics, no request-correlation id, no payload index on `metadata.tenant_id`
 (see `.claude/skills/VENDORED.md`).
 
+### Backups — deliberately deferred
+
+**There are no backups of anything.** Qdrant and Postgres each live in a single Docker volume;
+losing or corrupting either destroys every document, tenant, and API key with no recovery path.
+No `pg_dump`, no Qdrant snapshot, no restore drill.
+
+Deferred on the owner's call while the project is pre-alpha: there is no production data to lose
+yet, and a backup mechanism nobody has restored from is theatre anyway. Recorded here rather than
+dropped, because the moment there is a real user this becomes the highest-priority gap in the
+repo — and it is the kind of thing that gets remembered only after it matters.
+
+What it would involve, so the decision can be revisited cheaply:
+
+- `pg_dump` on a schedule, covering `tenants`/`api_keys`/`documentrecord` *and* procrastinate's
+  tables — the queue lives in the same database, so a partial restore resurrects jobs for
+  documents that no longer exist.
+- Qdrant snapshots via its own snapshot API (not a volume copy: copying a live storage directory
+  is not crash-consistent).
+- The two must be restored **together and consistently**. A Postgres restore newer than the
+  Qdrant one leaves rows whose points are missing; the reverse leaves orphaned points that still
+  match a tenant filter and are still retrievable. This is the part that makes it real work
+  rather than two cron jobs.
+- `data/uploads/<tenant_id>/` too, or accept that re-ingestion is impossible after a restore.
+- **A restore drill in CI or a runbook.** Untested backups are the default failure mode.
+
+### Second review pass: CI/CD, pre-commit, supply chain ✅ BUILT
+
+- **`.pre-commit-config.yaml`**, all project-tool hooks `repo: local` calling `uv run` so the
+  ruff/ty that gate a commit are the versions `uv.lock` pins -- not pre-commit's own separately
+  pinned copies, whose drift shows up as "passes locally, fails CI on formatting". Fast checks on
+  commit, the suite on push. Includes a hook that refuses `.env` outright, since
+  `detect-private-key` catches PEM blocks and not `ANTHROPIC_API_KEY=...`. Every Python hook is
+  scoped `^portfolio/`: pre-commit passes git-root-relative paths, so unscoped it handed ruff the
+  sibling projects' files and reported 4 errors from code this project doesn't govern.
+- **`.github/dependabot.yml`** for `uv`, `github-actions`, `docker` (three Dockerfiles) and
+  `docker-compose` (the service image tags). Verified the `uv` ecosystem is GA and reads
+  `uv.lock` -- which is only possible because the lock is now committed. Minor/patch grouped into
+  one PR per ecosystem; majors deliberately ungrouped, since postgres 17->18 is exactly the bump
+  that needs someone reading release notes.
+- **CI restructured**: explicit `permissions: contents: read` (unset, the token defaults to the
+  repo setting, often write); `concurrency` cancelling superseded PR runs but never main's; and
+  the single job split into `static` (fast, no services), `test` (services + the no-skip
+  assertion), `security`, and `stack`.
+- **`security` job** runs `pip-audit` over `uv export`'s pinned set -- the versions that actually
+  ship, not a fresh resolution -- and **fails** on a finding. Currently clean across 265
+  packages. Real-but-unfixable findings get an explicit `--ignore-vuln <ID>` with a comment,
+  rather than a disabled job.
+- **`stack` job** builds the images and smokes the running stack: waits on `/health/ready`,
+  asserts every dependency reports `ok`, runs `nginx -t` *inside* the compose network (a
+  standalone run can't resolve the `api` upstream), checks readiness and a 401 through the proxy,
+  and greps the worker's log for the ingest queue. This is the class of failure CI has never seen
+  -- every Docker bug so far reached a human first. Gated off pull requests because the api image
+  installs torch and Docling. Dummy provider keys are enough: the boot check only asserts
+  non-empty, so nothing calls out.
+
 ---
 
 ## Blocked on Epics 2 and 3 (not a phase)
