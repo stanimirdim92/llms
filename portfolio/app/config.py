@@ -211,3 +211,44 @@ def get_settings() -> Settings:
     settings = Settings()
     _configure_langsmith(settings)
     return settings
+
+
+class MissingCredentialsError(RuntimeError):
+    """Raised when a provider key needed to do actual work isn't configured."""
+
+
+def require_provider_credentials() -> None:
+    """Fail loudly when the keys the pipeline cannot work without are absent.
+
+    Deliberately *not* a `Settings` validator. Plenty of legitimate entry points need no
+    provider keys at all -- `scripts/create_tenant.py`, the whole unit suite, `ty`, and any
+    `import app.config` -- and making construction raise would break all of them to catch a
+    deployment mistake.
+
+    Called instead from the two places where the absence actually matters:
+
+    - `api/main.py`'s lifespan, so a misconfigured container refuses to start rather than
+      accepting traffic and failing every request deep inside an HTTP call;
+    - `worker/tasks.py`'s job, where it fails *that document* with a readable
+      `error_message` instead of killing the worker. A user who uploaded something gets
+      "ANTHROPIC_API_KEY is not configured" on their document rather than silence.
+
+    Both keys are unconditional: Voyage is the embedding provider (needed even when
+    `RERANKER_BACKEND=local`, which only replaces reranking), and Anthropic answers questions
+    and captions every figure.
+    """
+    settings = get_settings()
+    missing = [
+        name
+        for name, value in (
+            ("ANTHROPIC_API_KEY", settings.anthropic_api_key),
+            ("VOYAGE_API_KEY", settings.voyage_api_key),
+        )
+        if not value.strip()
+    ]
+    if missing:
+        msg = (
+            f"{' and '.join(missing)} not configured. Set them in portfolio/.env "
+            f"(see .env.example). Ingestion and /ask cannot work without them."
+        )
+        raise MissingCredentialsError(msg)

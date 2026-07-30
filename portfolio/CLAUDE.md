@@ -53,12 +53,40 @@ All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
     uv run pytest tests/unit
     cd .docker && docker compose config    # after any compose/Dockerfile edit
 
-Qdrant is NOT covered by any of these. The auth, rate-limit, and worker/registry tests hit a
-real Postgres or Redis, skipping when unreachable -- but nothing exercises Qdrant, so bugs in
-the store layer only surface on a real ingest. Say that plainly rather than implying green
-tests mean the pipeline works. Note the service-backed suites *skip* rather than fail without
-their service, so a green local run may have tested less than it looks; CI provides both
-services and asserts none of the three skipped.
+**Qdrant's filtering is covered; its network path is not.**
+`tests/unit/test_qdrant_filtering.py` runs `_build_filter` through `qdrant_client`'s in-memory
+engine with fake embeddings, so tenant isolation and the delete-then-insert contract are proved
+by execution, in CI, with no server and no API keys. What remains untested is the real client
+over the wire -- which is where the point-ID constraint escaped to production -- so don't say
+"Qdrant is tested" without that qualifier.
+
+The auth, rate-limit, and worker/registry suites hit a real Postgres or Redis and *skip* when
+unreachable, so a green local run may have tested less than it looks; CI provides both services
+and asserts none of the three skipped.
+
+## Health checks
+
+`GET /health/live` is static; `GET /health/ready` probes Postgres, Qdrant, and Redis and 503s
+when a *required* one is down. Three things not to undo:
+
+- **Liveness must not check dependencies.** A liveness probe failing on a Postgres blip gets the
+  process restarted, which fixes nothing and turns a hiccup into a restart loop.
+- **Redis is reported but not required.** Rate limiting fails open, so its outage degrades a
+  guardrail, not the API. Marking it required would pull instances from rotation over an
+  optional component.
+- **Readiness must not construct `QdrantStore`.** Its `__init__` sends a throwaway *probe
+  embedding* to detect vector size, so that would bill a Voyage call every 30 seconds and report
+  Qdrant down whenever Voyage was. `health.py` uses a bare cached `AsyncQdrantClient`.
+
+The container `HEALTHCHECK` targets readiness, so `depends_on: service_healthy` means "can
+serve". It previously targeted `GET /`, which returned a static body and so reported healthy
+with every dependency down.
+
+Missing `ANTHROPIC_API_KEY`/`VOYAGE_API_KEY` fails the api at boot (`require_provider_credentials`
+in the lifespan) and fails an individual *job* in the worker, so the reason lands in
+`documentrecord.error_message` rather than killing the worker. Deliberately not a `Settings`
+validator -- that would break the unit suite, `ty`, and `scripts/create_tenant.py`, none of which
+need provider keys.
 
 ## Never
 
@@ -75,7 +103,15 @@ services and asserts none of the three skipped.
 - **Never renumber figure ids** in `figure_extractor.extract_figures`. A picture item
   with no renderable image still consumes its `enumerate` index on purpose;
   `tests/unit/test_figure_ids.py` pins this.
-- `uv.lock` is gitignored here (unusual for a uv project). Don't add it.
+- **`uv.lock` is committed, and `--locked` is used everywhere** (Dockerfile, CI). It was
+  gitignored, which this file previously recorded as deliberate; that was reversed because it
+  made builds non-reproducible -- the image re-resolved at build time, so CI could test a
+  dependency set nobody deployed, and a stale local venv had nothing to sync against. After
+  editing `pyproject.toml`, run `uv lock` and commit the result.
+  **`--locked`, not `--frozen`** -- verified, because the names suggest the opposite of what they
+  do: `--frozen` uses the lock without checking it, so a dependency added and not re-locked is
+  silently omitted and fails at runtime as an ImportError. Only `--locked` errors with "the
+  lockfile needs to be updated".
 
 ## Failure contracts
 

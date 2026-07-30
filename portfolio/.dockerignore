@@ -6,7 +6,6 @@ __pycache__
 .ruff_cache
 # Not committed (see .gitignore) and never used for the build -- no --locked sync,
 # so this should never affect the image even if present locally.
-uv.lock
 
 # Generated data -- never baked into the image, mounted as a volume instead. Qdrant/
 # Postgres data live in their own named Docker volumes, not under ./data.

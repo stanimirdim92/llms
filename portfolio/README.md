@@ -151,6 +151,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-256 hashed, individually revocable |
 | Rate limiting | Per-tenant sliding window, one Lua script on `redis.asyncio` |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
+| Health | `/health/live` static; `/health/ready` probes Postgres/Qdrant/Redis, 503 on a required outage |
 | Tracing | LangSmith (zero-code — every call is already a LangChain object) |
 | Lint/type/test | ruff, `ty`, pytest; CI on every PR touching `portfolio/**` |
 
@@ -207,12 +208,12 @@ identity decision, is in [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
 
 - The corpus is 6 papers, not the ~45 the plan called for, and Epic 1's final
   15-question prose/table/figure spot-check has not been run.
-- **No test exercises Qdrant.** The auth, rate-limit, and worker suites hit a real Postgres
-  or Redis, but nothing covers the store layer — bugs there surface only on a real ingest.
-  This is how the point-ID constraint was found: in production, not in CI. It is also how a
-  registry-write bug survived until phase 5.1 added the first test over that path: every
-  ingest wrote to Qdrant and then crashed before the Postgres row, and the symptom read as a
-  database problem.
+- **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation and
+  the delete-then-insert contract run through `qdrant_client`'s in-memory engine in CI — but
+  the live client over the wire isn't, and that's where the point-ID constraint escaped to
+  production. It's also how a registry-write bug survived until phase 5.1 added the first test
+  over that path: every ingest wrote to Qdrant and then crashed before the Postgres row, and
+  the symptom read as a database problem.
 - **The end-to-end queued path has not been run against real infrastructure.** Transactional
   enqueue is verified against a live Postgres, but no Docker daemon exists in the development
   sandbox, so `worker` has never actually consumed a job here. The nginx config's *syntax* is
@@ -242,7 +243,7 @@ portfolio/
 │   └── api/           main, deps, schemas, routers/{ask, documents}
 ├── streamlit_app/Home.py                 # calls the pipeline in process, not over HTTP
 ├── scripts/           fetch_corpus, ingest, create_tenant
-├── tests/unit/                           # 11 files; Postgres/Redis-backed ones skip if unreachable
+├── tests/unit/                           # 13 files, 116 tests; Postgres/Redis-backed ones skip if unreachable
 ├── data/manifest.json                    # the pinned corpus
 ├── .docker/           Dockerfile, docker-compose.yml, nginx/
 ├── redis/             Dockerfile, redis.conf
@@ -271,6 +272,9 @@ uv run ty check
 uv run pytest tests/unit
 cd .docker && docker compose config      # after any compose/Dockerfile edit
 ```
+
+After editing `pyproject.toml`, run `uv lock` and commit the result — `uv.lock` is committed and
+CI installs with `--locked`, which fails if the two have drifted.
 
 Both service-backed suites *skip* when their service is unreachable, so a green local run
 may have tested less than it looks. CI provides Postgres and Redis and then asserts

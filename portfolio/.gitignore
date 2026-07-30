@@ -360,7 +360,6 @@ MailHog
 .ipython/
 .env.*
 !.env.example
-uv.lock
 
 project.css
 project.min.css
@@ -399,3 +398,8 @@ evals/reports/
 # IPython
 profile_default/
 ipython_config.py
+
+# The repo-root .gitignore ignores uv.lock for the whole monorepo; this project needs it
+# committed, so builds are reproducible and `uv sync --locked` has something to assert against.
+# Negated here rather than removed from the root file, which serves three other projects.
+!uv.lock

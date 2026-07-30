@@ -8,7 +8,8 @@ from fastapi.responses import JSONResponse
 
 from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
-from app.config import get_settings
+from app.api.routers.health import router as health_router
+from app.config import get_settings, require_provider_credentials
 from app.db import init_db
 from app.exceptions import PortfolioError
 from app.logs import configure_logging
@@ -19,13 +20,20 @@ log = structlog.get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
-    """Create tables before serving.
+    """Check credentials and create tables before serving.
 
-    Without this, the first authenticated request queries `api_keys` on a database where it
-    may not exist yet, and a missing table surfaces as a 500 that looks nothing like the
+    Credentials first, and it refuses to start without them rather than logging a warning.
+    Every `/ask` and every ingest needs Anthropic and Voyage, so a container missing them can
+    serve nothing -- but it would still pass a health check, accept uploads, and fail each one
+    individually somewhere inside an HTTP call. Failing at boot puts the reason in the first
+    lines of `docker compose logs api` instead.
+
+    Without `init_db`, the first authenticated request queries `api_keys` on a database where
+    it may not exist yet, and a missing table surfaces as a 500 that looks nothing like the
     auth problem it resembles. `init_db` is guarded internally, so this stays a single DDL
     round-trip per process rather than one per request.
     """
+    require_provider_credentials()
     await init_db()
     log.info("api.started")
     yield
@@ -55,6 +63,9 @@ app.add_middleware(
     allow_credentials=_settings.cors_allow_credentials,
 )
 
+# No /v1 prefix: probes are infrastructure, not API surface. Versioning them would mean an
+# orchestrator's health check breaking when the API version moves, which is backwards.
+app.include_router(health_router)
 app.include_router(ask_router, prefix="/v1")
 app.include_router(documents_router, prefix="/v1")
 

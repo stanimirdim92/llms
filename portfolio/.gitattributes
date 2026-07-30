@@ -4,6 +4,12 @@
 # Generated files
 # Mark as generated for GitHub language stats; disable diffs/merges for locks
 *.lock              linguist-generated -diff -merge
+
+# uv.lock is committed (unlike other *.lock here), so it must stay diffable: a lockfile diff is
+# precisely where a dependency version change -- including an unintended one -- becomes visible
+# in review, and `-diff` above renders it as "Binary files differ". `-merge` is kept, because a
+# lockfile conflict has no sane 3-way resolution; re-run `uv lock` instead.
+uv.lock             linguist-generated -merge diff
 package-lock.json   linguist-generated -diff -merge
 *_auto_*.py         linguist-generated
 *.svg               linguist-generated

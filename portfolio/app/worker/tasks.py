@@ -13,6 +13,7 @@ from pathlib import Path
 
 import structlog
 
+from app.config import require_provider_credentials
 from app.db import get_session, init_db
 from app.ingestion.pipeline import ingest_document
 from app.registry.db import mark_document_failed, mark_document_processing
@@ -57,6 +58,12 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> i
 
     log.info("worker.ingest_start", doc_id=doc_id, tenant_id=tenant_id)
     try:
+        # Inside the try, and after the row is marked, so a missing key lands in
+        # `error_message` like any other failure -- the person who uploaded the document reads
+        # "ANTHROPIC_API_KEY not configured" instead of watching it sit in `pending`.
+        # Deliberately per-job rather than at worker startup: raising on import would take down
+        # the whole worker and break CI's import check, which runs without keys.
+        require_provider_credentials()
         chunk_count = await ingest_document(doc_id=doc_id, file_path=path, store=_store(), tenant_id=tenant_id)
     except Exception as exc:
         # Broad on purpose: any failure must be visible in the row, and the specific

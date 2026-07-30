@@ -73,9 +73,18 @@ WORKDIR /app
 # `data/` sits next to `app/` -- a non-editable install would move config.py into
 # site-packages, breaking that assumption. Skipping the install and relying on
 # PYTHONPATH=/app (set below) keeps the same layout in the container as on disk.
-COPY pyproject.toml ./
+#
+# uv.lock is copied so the image installs the exact resolution the repository pins instead of
+# re-resolving at build time. Without it, two builds of the same commit could ship different
+# dependency versions and CI would test a set nobody deploys.
+#
+# `--locked`, not `--frozen`. Both use the lock as-is, but only `--locked` asserts the lock is
+# still current for pyproject.toml -- checked, because the distinction is easy to get backwards:
+# with `--frozen`, adding a dependency to pyproject.toml and forgetting to re-lock builds
+# happily and silently omits it, and the failure lands at runtime as an ImportError.
+COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-install-project
+    uv sync --no-install-project --locked
 
 
 FROM python:3.14-slim AS runtime
@@ -141,8 +150,17 @@ USER appuser
 # docker-compose.yml's port mapping is what actually matters. Left static since making
 # it dynamic would need an ARG plumbed through just for documentation's sake.
 EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/ || exit 1
+# /health/ready, not `/`. `/` returned a static JSON body, so this reported healthy with
+# Postgres down, Qdrant unreachable and Redis gone -- and `depends_on: service_healthy` plus
+# nginx both trusted that answer, so every dependency outage presented as a working container
+# serving 500s. Readiness probes the dependencies and 503s when a required one is missing.
+#
+# --start-period is longer than the old 10s: readiness genuinely can't pass until postgres and
+# qdrant accept connections, and a too-short grace period marks a correctly-starting container
+# unhealthy. --timeout exceeds the endpoint's own 3s per-probe budget so a slow dependency is
+# reported as down by the endpoint rather than as a curl timeout with no detail.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/health/ready || exit 1
 # gunicorn + UvicornWorker (process-supervised multi-worker serving), not bare uvicorn --
 # gunicorn[http2] is already a dependency. GUNICORN_WORKERS is env-configurable rather
 # than a fixed count: a much bigger box would want more than this container's default of

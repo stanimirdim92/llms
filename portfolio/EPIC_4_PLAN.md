@@ -501,6 +501,40 @@ Consumes Phase 5. Nothing here is buildable before it.
 
 ---
 
+## Operational hardening (unplanned, done after 5.1 shipped) ✅ BUILT
+
+Four gaps found by reviewing the repo rather than by following the plan. None were in it.
+
+- **`uv.lock` is now committed**, with `--locked` in the Dockerfile and CI. It was gitignored and
+  `CLAUDE.md` recorded that as deliberate; reversed because it made builds non-reproducible —
+  the image re-resolved at build time, so CI could pass against a dependency set nobody deployed.
+  It is also what broke a local venv in practice: nothing to sync *against*.
+  `--locked`, not `--frozen`: verified that `--frozen` uses the lock without checking it, so a
+  dependency added and not re-locked builds fine and fails later as an ImportError.
+- **`/health/live` + `/health/ready`** replace `GET /`, which returned a static body — so the
+  container `HEALTHCHECK`, `depends_on: service_healthy`, and nginx all reported healthy with
+  every dependency down. Readiness probes Postgres/Qdrant/Redis concurrently and 503s on a
+  required outage; Redis is reported but *not* required, because rate limiting fails open.
+  Readiness deliberately avoids `QdrantStore`, whose `__init__` sends a throwaway probe
+  embedding — that would have billed a Voyage call every 30 seconds and reported Qdrant down
+  whenever Voyage was.
+- **Missing provider keys now fail at boot** for the api, and fail an individual *job* in the
+  worker so the reason lands in `documentrecord.error_message`. Not a `Settings` validator: that
+  would break the unit suite, `ty`, and `scripts/create_tenant.py`, none of which need keys.
+- **Qdrant filtering and the HTTP layer are now tested** (19 new tests, 116 total).
+  `test_qdrant_filtering.py` runs the real `_build_filter` through `qdrant_client`'s in-memory
+  engine with fake embeddings, so cross-tenant exclusion and the delete-then-insert contract are
+  proved by execution rather than by asserting the filter's shape — and run in CI with no server
+  and no keys. `test_api_contract.py` covers 401 on every route, the `extra="forbid"` 422, the
+  extension allowlist, 413, and readiness semantics. **Still untested: the live Qdrant client
+  over the wire**, which is exactly where the point-ID constraint escaped.
+
+Not done from that review: no stuck-job sweeper, no `GET /v1/documents` list or `DELETE`
+(5.5), no metrics, no request-correlation id, no payload index on `metadata.tenant_id`
+(see `.claude/skills/VENDORED.md`).
+
+---
+
 ## Blocked on Epics 2 and 3 (not a phase)
 
 Listed so the sequence stays explicit. None of it is attemptable now, and none of it

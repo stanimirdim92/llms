@@ -73,7 +73,11 @@ jobs:
           cache-dependency-glob: "portfolio/uv.lock"
 
       - name: Install dependencies
-        run: uv sync --extra dev
+        # --locked: install exactly what uv.lock pins, and fail if the lock is stale relative to
+        # pyproject.toml. Without it CI silently re-resolves and can pass against versions that
+        # never reach the image. Note --frozen would NOT catch that: it uses the lock as-is
+        # without checking, so a dependency added and not re-locked would just be missing.
+        run: uv sync --extra dev --locked
 
       - name: Lint (ruff check)
         run: uv run ruff check .
