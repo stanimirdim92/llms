@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/app.iml" filepath="$PROJECT_DIR$/.idea/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/documentio-ai.iml" filepath="$PROJECT_DIR$/.idea/documentio-ai.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/fastai-dl.iml" filepath="$PROJECT_DIR$/.idea/fastai-dl.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/llms.iml" filepath="$PROJECT_DIR$/.idea/llms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/transformers-course.iml" filepath="$PROJECT_DIR$/.idea/transformers-course.iml" />
     </modules>
   </component>
 </project>
