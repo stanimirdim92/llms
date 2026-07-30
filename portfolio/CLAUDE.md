@@ -33,6 +33,17 @@ choice was made and what was rejected; `docs/IMPLEMENTATION_PLAN.md` is the orig
 kept as history and outdated on purpose. When a decision changes, update
 `TECHNICAL_DECISIONS.md` -- not the plan.
 
+## Skills
+
+`.claude/skills/` holds `run-stack/` (ours) plus 10 `qdrant-*` skills vendored verbatim from
+github.com/qdrant/skills at a pinned commit — see `.claude/skills/VENDORED.md` for provenance
+and how to refresh. Reach for `qdrant-multitenancy` before touching the tenant filter and
+`qdrant-search-quality` when Epic 2's eval work starts, rather than re-deriving either.
+
+One open finding from them: **no payload index exists on `metadata.tenant_id`**, and the
+multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents,
+not at the 1k-user target. Details in `VENDORED.md`.
+
 ## Verification gate
 
 All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
