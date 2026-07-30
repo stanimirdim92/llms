@@ -2,6 +2,11 @@ target-version = "py314"
 line-length = 120
 indent-width = 4
 extend-exclude = [
+    # Vendored verbatim from github.com/qdrant/skills (see .claude/skills/VENDORED.md).
+    # Excluded because it isn't ours to format: ruff already walks these 30 markdown files,
+    # and a future version that actually rewrites markdown would dirty the vendor diff and
+    # make "did upstream change?" unanswerable.
+    ".claude/skills/qdrant-*",
     ".ruff_cache",
     ".env",
     "*.pyi",

@@ -18,3 +18,7 @@ data/eval/results/
 .env
 .env.*
 !.env.example
+
+# Agent tooling -- 332KB of markdown (mostly the vendored qdrant-* skills) that the image
+# never COPYs. Excluded so it isn't shipped to the daemon as build context on every build.
+.claude/
