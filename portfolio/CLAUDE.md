@@ -35,10 +35,21 @@ kept as history and outdated on purpose. When a decision changes, update
 
 ## Skills
 
-`.claude/skills/` holds `run-stack/` (ours) plus 10 `qdrant-*` skills vendored verbatim from
-github.com/qdrant/skills at a pinned commit — see `.claude/skills/VENDORED.md` for provenance
-and how to refresh. Reach for `qdrant-multitenancy` before touching the tenant filter and
-`qdrant-search-quality` when Epic 2's eval work starts, rather than re-deriving either.
+Ours, in `.claude/skills/`:
+
+- **`verify`** — the gate, and the two ways it lies (silently skipped service-backed suites; the
+  pre-release-interpreter workaround that also rewrites `uv.lock`). Use it instead of running the
+  commands from memory.
+- **`add-endpoint`** — the per-route checklist. Authorization here is per-route *and* per-query,
+  so a forgotten `CurrentTenant` or a `doc_id` lookup without `tenant_id` in the WHERE clause is
+  a silent leak rather than an error.
+- **`run-stack`** — bringing the stack up, minting a key, and tracing one document across
+  api → job → worker → Qdrant → registry when it misbehaves.
+
+Plus 10 `qdrant-*` skills vendored verbatim from github.com/qdrant/skills at a pinned commit —
+see `.claude/skills/VENDORED.md` for provenance and how to refresh. Reach for
+`qdrant-multitenancy` before touching the tenant filter and `qdrant-search-quality` when Epic 2's
+eval work starts, rather than re-deriving either.
 
 One open finding from them: **no payload index exists on `metadata.tenant_id`**, and the
 multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents,

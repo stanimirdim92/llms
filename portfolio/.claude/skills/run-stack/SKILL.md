@@ -121,6 +121,44 @@ Bare mode uses `app/config.py`'s local defaults (`db_host=localhost`,
 `qdrant_url=http://localhost:6333`, `redis_host=localhost`) with no overrides needed --
 compose only overrides those to service names for the containerized services.
 
+## Tracing one document end to end
+
+When a document misbehaves, walk the path in order rather than guessing. Each step has a
+different owner, and the symptom of a break is nearly always "nothing happened".
+
+    # 1. did the api accept it and stage the row + job atomically?
+    docker compose -f .docker/docker-compose.yml --env-file .env logs api | grep -i "$DOC_ID"
+    psql: select doc_id, status, chunk_count, error_message, updated_at from documentrecord where doc_id = '...';
+
+    # 2. is there a job, and has anything claimed it?
+    psql: select id, task_name, status, attempts, scheduled_at from procrastinate_jobs
+          where args->>'doc_id' = '...' order by id desc;
+
+    # 3. did the worker pick it up?
+    docker compose ... logs worker | grep -E "worker.ingest_(start|done|failed)"
+
+    # 4. did the chunks land? (delete-then-insert means a delete precedes the upsert)
+    docker compose ... logs qdrant | grep -E "points/delete|points\?wait"
+
+    # 5. did the terminal registry write happen?
+    docker compose ... logs worker | grep ingestion.registered
+
+Reading the combinations:
+
+| Symptom | Meaning |
+|---|---|
+| No row, no job | The transaction rolled back. Look at api logs, not the worker's |
+| Row `pending`, no job | Should be impossible -- they commit together. If seen, the atomicity contract broke |
+| Row `pending`, job `todo` | Nothing is consuming: worker down, or `--queues` doesn't include `ingest` |
+| Job `todo`, worker up | `--app` likely points at `app.worker.app.app`; it must be `app.worker.tasks.app` |
+| Row `processing`, old `updated_at` | Worker died mid-job. Nothing sweeps these yet |
+| Row `failed` | `error_message` has the reason. `MissingCredentialsError` means no ANTHROPIC/VOYAGE key |
+| Qdrant has points, no row | The registry write failed *after* the upsert. Was a real bug, fixed in 5.1 |
+| `ingestion.registered` but no `documentrecord` row | You're looking at the wrong database -- check `DB_HOST`/`DB_PORT` |
+
+Note the Streamlit path skips steps 2 and 3 entirely: it calls `ingest_document` in process, so
+its logs show `parser.parse_start` straight through to `ingestion.registered` with no job.
+
 ## Troubleshooting
 
 **Upload stuck at `pending` forever** -- the queue holds the job and nothing is
