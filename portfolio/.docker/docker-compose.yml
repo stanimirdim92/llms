@@ -102,7 +102,21 @@ services:
       # client encoding against whatever this is, so pin it rather than assume it.
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C.UTF-8 --lc-ctype=C.UTF-8"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # `/var/lib/postgresql`, NOT `/var/lib/postgresql/data`. From postgres 18 the official
+      # images store data in a major-version-specific subdirectory (`18/docker`) so that
+      # `pg_upgrade --link` can run without crossing a mount-point boundary. Mounting at
+      # `/data` -- correct for 17 and earlier -- makes the 18 entrypoint refuse to start:
+      #   "there appears to be PostgreSQL data in: /var/lib/postgresql/data (unused
+      #    mount/volume)"
+      # which reads like a corrupt volume rather than a wrong mount path. This was missed
+      # when the image was bumped 17-alpine -> 18-alpine; the mount was left behind.
+      #
+      # The volume is also renamed rather than reused. Pointing the old `postgres_data` at
+      # the new path would nest a v17 data directory at the volume root, where the image
+      # expects a `18/` subdir -- so it would initdb alongside the old files and leave both.
+      # A new name gets a clean volume and leaves the stale one on disk to inspect or delete
+      # deliberately (`docker volume rm portfolio_postgres_data`).
+      - postgres_data_v18:/var/lib/postgresql
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -313,5 +327,7 @@ services:
 
 volumes:
   qdrant_data:
-  postgres_data:
+  # Renamed from `postgres_data` when the image moved to 18 -- see the mount comment on the
+  # postgres service. The old volume is intentionally not reused and not auto-removed.
+  postgres_data_v18:
   model_cache:
