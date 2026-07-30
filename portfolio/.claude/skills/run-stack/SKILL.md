@@ -162,6 +162,21 @@ through gunicorn, the compose mapping, and nginx's upstream automatically **prov
 `CLAUDE.md`'s failure contracts; the same applies to postgres with a different
 capability set.
 
+**postgres refusing to start with "there appears to be PostgreSQL data in:
+/var/lib/postgresql/data (unused mount/volume)"** -- the mount path is wrong for the image
+version, not the data. From postgres 18 the official images keep data in a
+major-version-specific subdirectory, so the volume must be mounted at
+`/var/lib/postgresql`, not `/var/lib/postgresql/data`. Fixed in `docker-compose.yml`; if it
+reappears after an image bump, that's the first thing to check.
+
+A pre-18 volume cannot be read by 18 without `pg_upgrade` (which needs both versions
+installed), so the compose file uses a separate `postgres_data_v18` volume. The old one is
+left on disk deliberately -- inspect it with a 17 image, or remove it with
+`docker volume rm portfolio_postgres_data`. What's lost by starting fresh is the `tenants`
+and `api_keys` rows, so re-mint a key. Note Qdrant points from earlier *uploads* are tagged
+with the old tenant id and become unreachable to the new tenant; corpus documents are tagged
+`global` and stay queryable.
+
 **Credential changes to `POSTGRES_*` appear to do nothing** -- `initdb` only runs on an
 empty volume. `docker compose down -v` first; note this now destroys the job queue as
 well as the registry, since both live in Postgres.

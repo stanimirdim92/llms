@@ -97,6 +97,13 @@ Things that look correct and aren't:
   and the container crash-loops.
 - **postgres `initdb` runs once, on an empty volume.** Changing `POSTGRES_*` after
   first boot does nothing until `docker compose down -v`.
+- **postgres 18+ wants the volume at `/var/lib/postgresql`, not `.../data`.** From 18 the
+  official images store data in a major-version-specific subdirectory so `pg_upgrade --link`
+  doesn't cross a mount boundary. The pre-18 mount path makes the entrypoint refuse to start
+  with "there appears to be PostgreSQL data in: /var/lib/postgresql/data (unused
+  mount/volume)" -- which reads as a corrupt volume rather than a wrong path. Bumping the
+  image major version means checking the mount, and a pre-18 volume needs `pg_upgrade` or a
+  fresh volume; hence `postgres_data_v18`.
 - **`SQLModel` datetime fields need an explicit `sa_column`** in any module using
   `from __future__ import annotations` with `datetime` imported under `TYPE_CHECKING`.
   Without it SQLModel infers the column type from an annotation that is a string it can't
