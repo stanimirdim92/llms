@@ -109,9 +109,9 @@ class AnswerService:
             thinking={"type": "disabled"},
         )
 
-    async def answer(self, question: str, session_id: str | None = None) -> Answer:
+    async def answer(self, question: str, tenant_id: str | None = None) -> Answer:
         start = perf_counter()
-        candidates = await self._retriever.retrieve(question, session_id=session_id)
+        candidates = await self._retriever.retrieve(question, tenant_id=tenant_id)
         top_documents = await rerank(question, candidates)
 
         response = await self._llm.ainvoke(
@@ -128,7 +128,7 @@ class AnswerService:
         log.info(
             "answer_service.answered",
             question=question,
-            session_id=session_id,
+            tenant_id=tenant_id,
             retrieved=len(candidates),
             reranked=len(top_documents),
             citation_count=len(citations),

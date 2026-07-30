@@ -147,6 +147,21 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 # gunicorn[http2] is already a dependency. GUNICORN_WORKERS is env-configurable rather
 # than a fixed count: a much bigger box would want more than this container's default of
 # 2, and hardcoding a large number here would be wrong for a demo-scale deployment.
+#
+# --timeout is 600 (10 minutes), raised from 120. Ingestion is synchronous today and a
+# real document takes anywhere from 10s to 2min -- 120s sat close enough to the upper end
+# that a large PDF could trip it, and gunicorn's timeout is not a graceful 504: it SIGKILLs
+# the worker mid-parse, so the client sees a bare connection failure with nothing naming
+# the timeout, and any other request being served by that worker dies with it. nginx's
+# proxy_read_timeout is wired to the same value (see nginx/Dockerfile) so the two can't
+# drift into a mismatch where the shorter one silently decides the real budget.
+#
+# This is a stopgap, not the destination: a 10-minute worker timeout means one stuck
+# request holds a worker for 10 minutes, and with GUNICORN_WORKERS=2 two of them stall
+# the service. Once ingestion moves behind a job queue (EPIC_4_PLAN.md Phase 5) the
+# upload request returns in milliseconds and this should come back down -- the value that
+# genuinely has to stay large is nginx's client_body_timeout, since the bytes still have
+# to arrive over the wire no matter what processes them afterwards.
 # uvicorn.workers.UvicornWorker's own CONFIG_KWARGS defaults to loop="auto", so this
 # keeps the same uvloop-when-available behavior the previous bare-uvicorn --loop uvloop
 # had explicitly -- no separate loop flag needed with this worker class.
@@ -162,7 +177,7 @@ CMD ["bash", "-c", "gunicorn app.api.main:app \
     --workers ${GUNICORN_WORKERS:-2} \
     --worker-class uvicorn.workers.UvicornWorker \
     --bind 0.0.0.0:${PORT:-8000} \
-    --timeout ${GUNICORN_TIMEOUT:-120} \
+    --timeout ${GUNICORN_TIMEOUT:-600} \
     --keep-alive 5 \
     --max-requests 1000 \
     --max-requests-jitter 100 \
@@ -175,3 +190,28 @@ EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 CMD ["streamlit", "run", "streamlit_app/Home.py", "--server.address=0.0.0.0", "--server.port=8501"]
+
+
+FROM runtime AS worker
+# Runs document ingestion off the request path -- parse/chunk/embed for one upload takes
+# 10s-2min, which the api can't hold a connection open for. Same image as `api` on purpose:
+# it runs the same `ingest_document` code over the same models and the same ../data mount, so
+# a separate leaner image would mean two dependency sets to keep in step for no gain.
+USER appuser
+# No EXPOSE and no HTTP healthcheck: this process listens on nothing. Liveness is instead
+# "is it consuming jobs", which is only answerable from the database -- a `procrastinate
+# healthchecks` shell probe here would report the *connector* is fine while the worker loop is
+# wedged. Deliberately left without one rather than given a check that can't fail.
+#
+# --concurrency is bounded, not maximal: WORKER_CONCURRENCY x DOCLING_NUM_THREADS is what
+# competes for cores (see config.py's comment). --one-shot is not used -- the worker is a
+# long-running consumer, and restart-per-job would re-pay the torch/Docling import cost that
+# dominates a short ingest.
+# --app points at app.worker.tasks.app, NOT app.worker.app.app. Importing tasks.py is what
+# registers the task on the app object; pointing at app.py would start a worker that connects
+# fine and then rejects every job as an unknown task -- a failure that reads like a queueing
+# bug rather than a missing import. (app.py deliberately carries no `import_paths`, so that the
+# api can enqueue without importing Docling; see its module docstring.)
+CMD ["bash", "-c", "procrastinate --app=app.worker.tasks.app worker \
+    --concurrency ${WORKER_CONCURRENCY:-2} \
+    --queues ingest"]

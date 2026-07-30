@@ -1,10 +1,37 @@
 # portfolio
 
 RAG over scientific documents, plus an LLM eval framework and an agentic
-human-in-the-loop curation layer. Epic 1 (the retrieve -> rerank -> generate
-pipeline, multi-format session-scoped uploads, Docker stack) is built and
-verified. Epics 2-4 are designed in `README.md` but **not implemented** -- no eval
-framework, no agent, no API auth exists yet. Don't assume code for them.
+human-in-the-loop curation layer.
+
+Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack), Epic 4
+Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs), and Phase 5.1
+(ingestion behind a Postgres-backed job queue) -- see `EPIC_4_PLAN.md` for the rest. Not
+built: Epics 2 and 3, designed in `docs/IMPLEMENTATION_PLAN.md` only -- no eval framework,
+no agent. Don't assume code for them.
+
+## Producer/consumer split
+
+`POST /v1/documents` returns **202** and enqueues; the `worker` service ingests. Two rules
+hold this together, and both fail quietly if broken:
+
+- **The api must not import the ingestion stack.** `app/worker/app.py` carries no
+  `import_paths` and defers by task *name* so it never imports `tasks.py` (which pulls
+  Docling). Adding a convenient `from app.ingestion...` to a router or to `formats.py` costs
+  ~2s of startup and ~157MB per api process and breaks nothing visibly.
+  `tests/unit/test_upload_formats.py` pins it. `app/ingestion/formats.py` therefore keeps a
+  *pinned* extension list, drift-checked against Docling in that same test.
+- **The worker CLI points at `app.worker.tasks.app`, not `app.worker.app.app`.** Importing
+  `tasks.py` is what registers the task. Point it at `app.py` and the worker connects fine,
+  then rejects every job as unknown -- which reads as a queueing bug.
+
+Status lives on `DocumentRecord.status` (`pending`/`processing`/`ingested`/`failed`). The task
+owns `processing`/`failed`; `ingest_document` owns the terminal `ingested` write, because
+`scripts/ingest.py` and Streamlit call it directly and bypass the queue entirely.
+
+Docs: `README.md` describes the system as it is; `TECHNICAL_DECISIONS.md` says why each
+choice was made and what was rejected; `docs/IMPLEMENTATION_PLAN.md` is the original plan,
+kept as history and outdated on purpose. When a decision changes, update
+`TECHNICAL_DECISIONS.md` -- not the plan.
 
 ## Verification gate
 
@@ -15,9 +42,12 @@ All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
     uv run pytest tests/unit
     cd .docker && docker compose config    # after any compose/Dockerfile edit
 
-A live Qdrant/Postgres round-trip is NOT covered by any of these -- the unit
-tests are pure. Bugs in the store layer only surface on a real ingest, so say so
-plainly rather than implying green tests mean the pipeline works.
+Qdrant is NOT covered by any of these. The auth, rate-limit, and worker/registry tests hit a
+real Postgres or Redis, skipping when unreachable -- but nothing exercises Qdrant, so bugs in
+the store layer only surface on a real ingest. Say that plainly rather than implying green
+tests mean the pipeline works. Note the service-backed suites *skip* rather than fail without
+their service, so a green local run may have tested less than it looks; CI provides both
+services and asserts none of the three skipped.
 
 ## Never
 
@@ -29,7 +59,7 @@ plainly rather than implying green tests mean the pipeline works.
   (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything changing how many chunks a
   document yields (`chunk_max_tokens`, a Docling upgrade detecting one more figure,
   toggling `do_ocr`) shifts every later id: the new ids insert cleanly while the old
-  points stay behind, still matching the session filter, still retrievable, now stale.
+  points stay behind, still matching the tenant filter, still retrievable, now stale.
   There is no other cleanup path.
 - **Never renumber figure ids** in `figure_extractor.extract_figures`. A picture item
   with no renderable image still consumes its `enumerate` index on purpose;
@@ -46,8 +76,8 @@ Things that look correct and aren't:
   read it from there, never from the point ID.
 - **Qdrant filters must be real `qdrant_client.models.Filter` objects.** The
   Mongo-style dict shorthand (`$in`/`$and`) only ever existed on the deprecated
-  `Qdrant` class. Getting this wrong doesn't error -- it silently breaks session
-  scoping, leaking one session's uploads into another's results.
+  `Qdrant` class. Getting this wrong doesn't error -- it silently breaks tenant
+  scoping, leaking one tenant's uploads into another tenant's results.
 - **`QdrantVectorStore` has no native async client.** `asimilarity_search` is
   `VectorStore`'s thread-pool shim and `upsert` is sync. That's why
   `ingest_document` offloads through `asyncio.to_thread` instead of just being
@@ -67,6 +97,32 @@ Things that look correct and aren't:
   and the container crash-loops.
 - **postgres `initdb` runs once, on an empty volume.** Changing `POSTGRES_*` after
   first boot does nothing until `docker compose down -v`.
+- **`SQLModel` datetime fields need an explicit `sa_column`** in any module using
+  `from __future__ import annotations` with `datetime` imported under `TYPE_CHECKING`.
+  Without it SQLModel infers the column type from an annotation that is a string it can't
+  resolve, failing at *import* time with `issubclass() arg 1 must be a class` -- which
+  reads like a library bug rather than a missing argument. Use
+  `Column(DateTime(timezone=True))`, which also keeps values aware -- see the next entry.
+- **...and `datetime` must ALSO be a runtime import in model modules.** `sa_column` fixes
+  the import-time half only. `model_dump()` makes pydantic resolve those stringified
+  annotations against the module's *runtime* globals, so a TYPE_CHECKING-only `datetime`
+  raises ``PydanticUserError: `X` is not fully defined`` from inside `model_dump`. This is
+  not hypothetical: it made every `save_document_record` call fail *after* the Qdrant upsert
+  had already committed, so documents were searchable with no row in Postgres, and it
+  survived for weeks because it only triggers when a row is actually written -- no import,
+  lint, or type check sees it. Import `datetime` normally and `# noqa: TC003` the linter.
+  `tests/unit/test_worker_enqueue.py` now covers the registry write path.
+- **Postgres is the only database engine.** No SQLite anywhere -- not for tests, not for
+  Epic 3's checkpointer or incoming queue. Datetime arithmetic in `auth/service.py` relies
+  on `DateTime(timezone=True)` round-tripping an aware value, which is a *Postgres*
+  guarantee; SQLite returns naive datetimes and would raise "can't subtract offset-naive
+  and offset-aware datetimes". Rather than defensively normalizing, a test pins the
+  assumption (`test_stored_timestamps_come_back_timezone_aware`) so a schema change that
+  drops `timezone=True` fails loudly. Substituting SQLite in tests would hide exactly this
+  class of bug.
+- **`app/db.py::init_db` must import every model module.** `SQLModel.metadata` is
+  populated as an import side effect, so a table whose module was never imported is
+  silently skipped by `create_all` and only fails later as "relation does not exist".
 
 ## Config invariants
 
@@ -74,10 +130,68 @@ Things that look correct and aren't:
   the compose port mapping, and nginx's upstream (baked in at nginx build time by
   `sed` on the `__API_PORT__` placeholder). Deliberately not nginx's `envsubst`
   templates -- those substitute every `$`-token and would wipe nginx's own
-  `$scheme`/`$remote_addr` too.
+  `$scheme`/`$remote_addr` too. `GUNICORN_TIMEOUT` and `MAX_UPLOAD_SIZE_MB` reach
+  nginx the same way (`REQUEST_TIMEOUT`/`MAX_UPLOAD_MB` build args), and the nginx
+  build fails on any unsubstituted `__PLACEHOLDER__`.
+- **Compose needs `--env-file` or none of that works.** Run it as
+  `docker compose -f .docker/docker-compose.yml --env-file .env up` from `portfolio/`.
+  Compose reads `${VAR}` from the shell or a `.env` in the *project directory*
+  (`.docker/`) -- never from `portfolio/.env`, and `env_file:` on a service doesn't
+  help (different mechanism). Measured: both documented invocation styles silently
+  used the fallback defaults. And the halves disagree, so it doesn't error --
+  `PORT=9000` in `.env` alone gives gunicorn on 9000, a mapping of `8000:8000`, and
+  an nginx upstream on `api:8000`.
+- **Timeouts are one value, not three.** gunicorn `--timeout` and nginx's
+  `proxy_read_timeout`/`client_body_timeout` are all 600s from `GUNICORN_TIMEOUT`,
+  because the shorter one silently becomes the real budget: nginx-first is a 504 with
+  the worker still burning CPU, gunicorn-first is a SIGKILL mid-parse that reaches the
+  client as a bare connection failure naming nothing. `proxy_connect_timeout` stays 75s
+  on purpose -- nginx caps it there regardless, so a larger number is decoration.
+  The 600s gunicorn value is a stopgap for synchronous ingestion; `client_body_timeout`
+  is not (bytes still arrive over the wire once uploads become jobs).
+- **`cors_allow_credentials` + `"*"` origins is refused at startup.** Starlette answers
+  that pair by reflecting the caller's own `Origin` with `Allow-Credentials: true`, so
+  every site on the internet becomes trusted. The wildcard default is only inert while
+  credentials are off and `cors_allow_headers` is empty. `tests/unit/test_cors.py` pins
+  it; don't relax the guard to make a frontend work -- name the origins.
 - **`POSTGRES_USER`/`PASSWORD`/`DB` is one set serving two consumers**: the postgres
   image, and `app/config.py`'s `Settings`, which assembles `DATABASE_URL` from them.
   Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME`.
-- **`requires-python` says `>=3.12` deliberately**, even though `ruff.toml`/`ty.toml`
-  target py314 and the Dockerfile pins `python:3.14-slim`. Tightening it to `>=3.14`
-  makes uv resolve against a 3.14 RC that breaks pydantic's typing internals. Leave it.
+- **`requires-python` is `>=3.14`** because `uuid.uuid7()` is 3.14 stdlib and the
+  Dockerfile pins `python:3.14-slim`. Caveat for local work: if the only 3.14 available
+  is a pre-release, pydantic may fail to build models on it
+  (`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`). That's the
+  interpreter, not this code -- run the suite on 3.14 final, or temporarily relax the
+  floor to test and restore it before committing.
+
+## The tenant boundary
+
+`tenant_id` is the *only* thing scoping retrieval, and a wrong filter returns results
+rather than raising -- it fails silently, as cross-tenant data access.
+
+- It must come from `api/deps.py::current_tenant` (a verified API key) and nowhere else.
+  Never from a request body, query string, or form field. `AskRequest` sets
+  `extra="forbid"` so a client trying to smuggle one gets a 422 instead of being ignored.
+- `streamlit_app/Home.py` calls the pipeline **in process**, so the FastAPI dependency
+  never runs for it. It authenticates via `auth.service.resolve_tenant` instead -- one
+  auth implementation, not two. It must never mint its own tenant id.
+- `GLOBAL_TENANT` (`"global"`) is the shared corpus: readable by all, owned by none. Real
+  ids are `uuid7().hex`, so no tenant can ever be issued that value.
+- `tests/unit/test_tenant_scoping.py` asserts on the built filter directly, which is why
+  it catches leaks without a live Qdrant.
+
+## Rate limiting
+
+- Hand-rolled in `app/rate_limit.py`, deliberately not `slowapi`: `limits[redis]` requires
+  `redis<8.0.0` against this project's `redis>=8.0.1` (uv calls it unsatisfiable), and its
+  redis-py storage is synchronous, so every check would block the event loop.
+- The check is a **Lua script** so it is atomic. A read-then-write version lets concurrent
+  requests all observe a count under the limit and all proceed.
+- **Fails open**: unreachable Redis allows the request and logs a warning. A guardrail's
+  outage must not become the API's outage. `docker-compose.yml` therefore has `api` wait on
+  redis being healthy, so the gap isn't silently open at startup.
+- The Redis client is cached **per event loop**, not per process -- a `redis.asyncio` client
+  binds its pool to the creating loop, so a process-wide singleton breaks under repeated
+  `asyncio.run()` (Streamlit, CLIs, per-test loops).
+- `api/main.py`'s error handler must forward `exc.headers`; it overrides FastAPI's default,
+  so dropping them silently strips `Retry-After` from every 429.

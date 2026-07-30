@@ -1,0 +1,152 @@
+"""Per-tenant rate limiting against a real Redis.
+
+Skipped when no Redis is reachable, for the same reason the auth tests need real Postgres:
+the limiter is a Lua script and a sorted-set expiry contract, and a fake would be asserting
+that the fake behaves as written rather than that Redis does.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import uuid
+
+import pytest
+from starlette.requests import Request
+
+from app import rate_limit
+from app.api.main import portfolio_error_handler
+from app.config import get_settings
+from app.exceptions import APIError
+
+TENANT_A = "a" * 32
+TENANT_B = "b" * 32
+
+
+async def _redis_reachable() -> bool:
+    try:
+        client = rate_limit._client()
+        await client.ping()
+    except Exception:  # noqa: BLE001 -- unreachable means skip, not fail
+        return False
+    return True
+
+
+@pytest.fixture(autouse=True)
+async def _redis() -> None:
+    if not await _redis_reachable():
+        pytest.skip("no Redis reachable -- start it with docker compose")
+
+
+def _scope(name: str) -> str:
+    """A unique scope per test, so runs stay independent without flushing a shared Redis
+    (which would be hostile if someone points these at a Redis holding other data).
+    """
+    return f"test-{uuid.uuid4().hex}-{name}"
+
+
+async def test_requests_within_the_budget_are_allowed() -> None:
+    scope = _scope("within")
+
+    for _ in range(3):
+        await rate_limit.check(scope, TENANT_A, limit=3)
+
+
+async def test_the_request_past_the_budget_is_refused() -> None:
+    scope = _scope("over")
+    for _ in range(3):
+        await rate_limit.check(scope, TENANT_A, limit=3)
+
+    with pytest.raises(rate_limit.RateLimitExceeded) as excinfo:
+        await rate_limit.check(scope, TENANT_A, limit=3)
+
+    assert excinfo.value.retry_after_seconds >= 1
+
+
+async def test_the_budget_is_per_tenant_not_global() -> None:
+    """The point of keying on tenant: one tenant exhausting its budget must not throttle
+    everyone else, which is what an IP-keyed or global limiter would do here.
+    """
+    scope = _scope("per-tenant")
+    for _ in range(3):
+        await rate_limit.check(scope, TENANT_A, limit=3)
+
+    with pytest.raises(rate_limit.RateLimitExceeded):
+        await rate_limit.check(scope, TENANT_A, limit=3)
+
+    await rate_limit.check(scope, TENANT_B, limit=3)  # unaffected
+
+
+async def test_scopes_have_separate_budgets() -> None:
+    """Exhausting uploads must not also block questions."""
+    upload_scope, ask_scope = _scope("upload"), _scope("ask")
+    await rate_limit.check(upload_scope, TENANT_A, limit=1)
+
+    with pytest.raises(rate_limit.RateLimitExceeded):
+        await rate_limit.check(upload_scope, TENANT_A, limit=1)
+
+    await rate_limit.check(ask_scope, TENANT_A, limit=1)
+
+
+async def test_concurrent_requests_cannot_exceed_the_budget() -> None:
+    """The reason the check is a Lua script rather than read-then-write: with a non-atomic
+    implementation, concurrent callers all observe a count below the limit and all proceed.
+    """
+    scope = _scope("concurrent")
+    limit = 5
+    attempts = 25
+
+    results = await asyncio.gather(
+        *(rate_limit.check(scope, TENANT_A, limit=limit) for _ in range(attempts)),
+        return_exceptions=True,
+    )
+    allowed = sum(1 for r in results if r is None)
+
+    assert allowed == limit, f"expected exactly {limit} to pass, {allowed} did"
+
+
+async def test_window_expiry_is_set_so_buckets_do_not_leak() -> None:
+    """Without PEXPIRE, every tenant/scope pair would leave a sorted set in Redis forever."""
+    scope = _scope("expiry")
+    await rate_limit.check(scope, TENANT_A, limit=1)
+
+    ttl = await rate_limit._client().pttl(f"ratelimit:{scope}:{TENANT_A}")
+
+    assert 0 < ttl <= get_settings().rate_limit_window_seconds * 1000
+
+
+async def test_unreachable_redis_fails_open(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A rate limiter outage must not become an API outage -- see `check`'s docstring for
+    the tradeoff this encodes.
+    """
+
+    class _Broken:
+        async def eval(self, *_args: object, **_kwargs: object) -> object:
+            msg = "connection refused"
+            raise ConnectionError(msg)
+
+    def _broken_client() -> _Broken:
+        return _Broken()
+
+    monkeypatch.setattr(rate_limit, "_client", _broken_client)
+
+    await rate_limit.check(_scope("broken"), TENANT_A, limit=1)  # must not raise
+
+
+async def test_error_handler_forwards_retry_after() -> None:
+    """A 429 must say *how long* to wait.
+
+    Exercises the handler, not just the exception: `api/main.py` overrides FastAPI's default
+    `HTTPException` handler, which makes it solely responsible for forwarding headers. It
+    originally didn't, and the omission was invisible -- the response was still a valid 429,
+    just one that told clients to back off without saying for how long.
+
+    A real `Request` built from a minimal ASGI scope rather than a stub, so this exercises
+    the handler's actual signature instead of a shape that merely resembles it.
+    """
+    request = Request({"type": "http", "method": "POST", "path": "/v1/documents", "headers": []})
+    exceeded = APIError("slow down", code=429, headers={"Retry-After": "42"})
+
+    response = await portfolio_error_handler(request, exceeded)
+
+    assert response.status_code == 429
+    assert response.headers["retry-after"] == "42"

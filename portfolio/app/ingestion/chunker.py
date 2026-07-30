@@ -9,7 +9,7 @@ from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTok
 from docling_core.types.doc.document import DoclingDocument, TableItem
 
 from app.config import get_settings
-from app.ingestion.models import GLOBAL_SESSION, Chunk
+from app.ingestion.models import GLOBAL_TENANT, Chunk
 
 if TYPE_CHECKING:
     from app.ingestion.figure_extractor import ExtractedFigure
@@ -25,7 +25,7 @@ def chunk_document(
     document: DoclingDocument,
     doc_id: str,
     figures: list[ExtractedFigure],
-    session_id: str = GLOBAL_SESSION,
+    tenant_id: str = GLOBAL_TENANT,
 ) -> list[Chunk]:
     """Produce text, table, and figure chunks for one parsed document.
 
@@ -59,7 +59,7 @@ def chunk_document(
                 text=text,
                 page_no=page_no,
                 section_path=" > ".join(headings),
-                session_id=session_id,
+                tenant_id=tenant_id,
             )
         )
         text_chunk_index += 1
@@ -79,7 +79,7 @@ def chunk_document(
                 text=text,
                 page_no=page_no,
                 metadata={"markdown": markdown},
-                session_id=session_id,
+                tenant_id=tenant_id,
             )
         )
 
@@ -92,7 +92,7 @@ def chunk_document(
                 text=figure.caption,
                 page_no=figure.page_no,
                 metadata={"image_path": str(figure.image_path)},
-                session_id=session_id,
+                tenant_id=tenant_id,
             )
         )
 

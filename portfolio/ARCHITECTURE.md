@@ -38,7 +38,7 @@ This document surveys how production agentic systems are actually architected (a
         └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Orchestrator** (`app/agent/graph.py`) — the workflow half of the system: deterministic control flow, unchanged from a plain LangGraph `StateGraph`. It owns the `interrupt()`/`SqliteSaver` HITL gate and is the *only* place the `commit` tool is reachable.
+- **Orchestrator** (`app/agent/graph.py`) — the workflow half of the system: deterministic control flow, unchanged from a plain LangGraph `StateGraph`. It owns the `interrupt()`/`PostgresSaver` HITL gate and is the *only* place the `commit` tool is reachable.
 - **Curator Agent** (`app/agent/subagents/curator.py`) — reasons over the new item against the existing KB (via `mcp_server` tools: `kb_query`, `contradiction_check`) and against `episodic_memory.py` (has something like this been decided before?), producing a confidence verdict + rationale.
 - **Evaluator Agent** (`app/agent/subagents/evaluator.py`) — the evaluator-optimizer pattern: an independent second pass that critiques the Curator's verdict rather than rubber-stamping it. Disagreement between the two forces escalation even if one side reports high confidence — this is the concrete mechanism that makes "human-in-the-loop" mean something more than "one model's confidence score."
 
@@ -49,7 +49,7 @@ This document surveys how production agentic systems are actually architected (a
 **Memory tiers**, made explicit rather than implicit:
 | Tier | What | Where |
 |---|---|---|
-| Short-term | Current run's state | LangGraph `StateGraph` state, checkpointed via `SqliteSaver` |
+| Short-term | Current run's state | LangGraph `StateGraph` state, checkpointed via `PostgresSaver` |
 | Long-term | The knowledge base itself | Epic 1's Qdrant collection (Epic 3 imports it directly — no second store) |
 | Episodic | Past human curation decisions + rationale | `app/agent/episodic_memory.py` (sqlmodel), consulted by the Curator so settled judgment calls aren't re-litigated every run |
 

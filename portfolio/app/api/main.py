@@ -1,3 +1,6 @@
+from collections.abc import AsyncIterator  # noqa: TC003  -- FastAPI reads lifespan's return annotation at runtime
+from contextlib import asynccontextmanager
+
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,11 +9,27 @@ from fastapi.responses import JSONResponse
 from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
 from app.config import get_settings
+from app.db import init_db
 from app.exceptions import PortfolioError
 from app.logs import configure_logging
 
 configure_logging()
 log = structlog.get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Create tables before serving.
+
+    Without this, the first authenticated request queries `api_keys` on a database where it
+    may not exist yet, and a missing table surfaces as a 500 that looks nothing like the
+    auth problem it resembles. `init_db` is guarded internally, so this stays a single DDL
+    round-trip per process rather than one per request.
+    """
+    await init_db()
+    log.info("api.started")
+    yield
+
 
 app = FastAPI(
     title="AI Engineer Portfolio — Track",
@@ -20,6 +39,7 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
+    lifespan=lifespan,
 )
 
 _settings = get_settings()
@@ -29,6 +49,10 @@ app.add_middleware(
     allow_methods=_settings.cors_allow_methods,
     allow_headers=_settings.cors_allow_headers,
     expose_headers=_settings.cors_expose_headers,
+    # Settings refuses to construct if this is on alongside wildcard origins -- see
+    # config.py::_reject_credentialed_wildcard_cors for what Starlette does with that
+    # pair and why it can't be left to a warning.
+    allow_credentials=_settings.cors_allow_credentials,
 )
 
 app.include_router(ask_router, prefix="/v1")
@@ -40,8 +64,13 @@ async def portfolio_error_handler(request: Request, exc: PortfolioError) -> JSON
     # FastAPI's default HTTPException handler already produces this exact response
     # shape; this handler only adds structured logging on top of that, so a raised
     # APIError still shows up in the same place as everything else structlog captures.
+    #
+    # `headers=exc.headers` is not optional decoration: overriding the default handler means
+    # this one is now solely responsible for anything the default would have forwarded, and
+    # dropping them silently discards `Retry-After` on a 429 -- the response would tell a
+    # client to back off without saying for how long.
     log.warning("api.error", path=request.url.path, status_code=exc.status_code, detail=exc.detail)
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers)
 
 
 @app.get("/")

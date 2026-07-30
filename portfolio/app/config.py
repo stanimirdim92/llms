@@ -95,15 +95,88 @@ class Settings(BaseSettings):
         default=None, description="CPU threads for Docling model inference. None = os.cpu_count()."
     )
 
+    # Concurrent ingest jobs per worker process. Neither this nor docling_num_threads means
+    # anything alone -- their *product* is what competes for cores, so on the 8-vCPU target
+    # box 2 x 4 fits and 4 x 8 would oversubscribe by 4x, making concurrent ingests slower
+    # than running them one at a time (context-switching on top of thread contention inside
+    # Docling's layout and table-structure passes). Raise this only alongside lowering
+    # DOCLING_NUM_THREADS, or on a bigger machine.
+    worker_concurrency: int = Field(default=2, description="Concurrent ingest jobs per worker process.")
+
     # Defaults preserve today's hardcoded CORSMiddleware call in api/main.py exactly --
     # override via .env once there's a real frontend origin to lock this down to.
+    #
+    # The wildcard default is inert *today* and must not survive a browser UI. It is inert
+    # because cors_allow_credentials is False and cors_allow_headers is empty: a browser
+    # can't attach `x-api-key` to a cross-origin request without it being allow-listed, so
+    # the preflight fails and the underlying request 401s. Nothing authenticated is
+    # reachable, so no data is exposed. What makes it dangerous is turning on credentials
+    # -- see the validator below.
     cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])
     cors_allow_methods: list[str] = Field(default_factory=lambda: ["GET", "POST"])
     cors_allow_headers: list[str] = Field(default_factory=list)
     cors_expose_headers: list[str] = Field(default_factory=list)
+    cors_allow_credentials: bool = Field(
+        default=False, description="Required for cookie-based browser sessions. Forbidden with '*' origins."
+    )
 
     log_level: str = Field(default="INFO")
     log_json: bool = Field(default=False)  # True in containers; console-friendly locally
+
+    # Redis backs rate limiting (app/rate_limit.py) -- its first real consumer; the service
+    # had been running as unused infra. Counters must be shared, not per-process: with
+    # GUNICORN_WORKERS > 1, in-process counters would let through workers x limit requests.
+    redis_host: str = Field(default="localhost")
+    redis_port: int = Field(default=6379)
+    redis_db: int = Field(default=0)
+    redis_username: str = Field(default="")
+    redis_password: str = Field(default="")
+
+    # Per-tenant request budgets, per `rate_limit_window_seconds`. Uploads get a much
+    # tighter budget than questions because they cost far more: Docling parsing (CPU), one
+    # Anthropic vision call per figure, and a Voyage embedding call per chunk. /ask is a
+    # retrieve + rerank + one generation.
+    rate_limit_window_seconds: int = Field(default=60)
+    rate_limit_ask: int = Field(default=60)
+    rate_limit_upload: int = Field(default=10)
+
+    @property
+    def redis_url(self) -> str:
+        credentials = ""
+        if self.redis_password:
+            credentials = f"{self.redis_username}:{self.redis_password}@"
+        return f"redis://{credentials}{self.redis_host}:{self.redis_port}/{self.redis_db}"
+
+    @model_validator(mode="after")
+    def _reject_credentialed_wildcard_cors(self) -> Settings:
+        """Refuse to start on `cors_allow_origins=["*"]` together with credentials.
+
+        Starlette does not reject this combination, and what it does instead is the
+        problem. From `starlette/middleware/cors.py` (1.3.1):
+
+            if self.allow_all_origins and self.allow_credentials:
+                self.allow_explicit_origin(headers, origin)
+
+        With the wildcard it echoes back *whatever* `Origin` the caller sent, alongside
+        `Access-Control-Allow-Credentials: true`. `Allow-Origin: *` would at least make
+        browsers refuse to send cookies; reflecting the origin tells the browser this
+        specific attacker site is trusted. So any page on the internet can call this API
+        with the victim's session cookie attached and read the response -- every document
+        and every conversation, from a drive-by. It is the one CORS mistake with no
+        partial version: it is either off or it is total.
+
+        Raised at startup rather than logged, because the whole failure mode is that
+        nothing looks wrong from the inside: the app serves correct responses, and the
+        damage is only visible from the attacker's page.
+        """
+        if self.cors_allow_credentials and "*" in self.cors_allow_origins:
+            msg = (
+                "CORS_ALLOW_CREDENTIALS=true with CORS_ALLOW_ORIGINS=['*'] lets any origin read "
+                "authenticated responses. List the frontend's exact origins instead, e.g. "
+                'CORS_ALLOW_ORIGINS=["https://app.example.com"].'
+            )
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def _assemble_database_url(self) -> Settings:

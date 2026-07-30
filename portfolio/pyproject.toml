@@ -11,7 +11,11 @@ maintainers = [
 readme = "README.md"
 license = "Apache-2.0"
 
-requires-python = ">=3.12,<4.0"
+# 3.14, not 3.12: `uuid.uuid7()` (used in api/routers/documents.py and
+# streamlit_app/Home.py for session ids) is 3.14 stdlib and raises AttributeError on
+# 3.12/3.13, and ruff.toml/ty.toml already target py314 while the Dockerfile pins
+# python:3.14-slim. The old ">=3.12" floor was a claim the code could not honor.
+requires-python = ">=3.14,<4.0"
 dependencies = [
     #    "joblib",
     "aiocache[redis]>=0.12.3,<1.0.0",
@@ -76,13 +80,15 @@ dependencies = [
     "langchain-qdrant>=1.1.0,<2.0.0",
     "qdrant-client>=1.18.0,<2.0.0",
     "psycopg[binary]>=3.3.4,<4.0.0",
-    "langgraph-checkpoint-sqlite>=3.1.0,<4.0.0",
+    # Postgres, not the sqlite checkpointer: this project runs one database engine.
+    "langgraph-checkpoint-postgres>=3.1.0,<4.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
     "docling>=2.115.0,<3.0.0",
     "arxiv>=4.0.0,<5.0.0",
-    "requests>=2.33.1,<2.34.0",  # arxiv==4.0.0 itself pins requests<2.34,>=2.32
+    "requests>=2.33.1,<2.34.0", # arxiv==4.0.0 itself pins requests<2.34,>=2.32
     "structlog>=26.1.0,<27.0.0",
     "streamlit>=1.60.0,<2.0.0",
+    "procrastinate>=3.9",
 ]
 
 [project.optional-dependencies]
@@ -92,6 +98,11 @@ dev = [
   "ty>=0.0.63",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9.1.1,<10",
+  # Auth is the one path where a silent regression means cross-tenant data access, so it
+  # gets database-backed tests. They run against a real Postgres (see tests/db/) and skip
+  # when none is reachable, rather than substituting SQLite -- testing on an engine the
+  # app never uses is how a backend-specific bug hides.
+  "pytest-asyncio>=1.3.0,<2",
 ]
 local-reranker = [
   "sentence-transformers>=5.6.1,<6.0.0",
@@ -111,3 +122,8 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"
 module-root = ""
+
+[tool.pytest.ini_options]
+# asyncio_mode = auto so `async def test_...` runs without decorating every test.
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

@@ -16,5 +16,9 @@ class PortfolioError(HTTPException):
 
 
 class APIError(PortfolioError):
-    def __init__(self, message: str, code: int = 400) -> None:
-        super().__init__(status_code=code, detail=message)
+    def __init__(self, message: str, code: int = 400, headers: dict[str, str] | None = None) -> None:
+        """`headers` exists for responses whose status code is only half the information --
+        a 429 without `Retry-After` tells a client to back off but not for how long, so it
+        either guesses or hammers.
+        """
+        super().__init__(status_code=code, detail=message, headers=headers)

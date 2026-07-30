@@ -1,0 +1,61 @@
+"""Tenant and API-key tables.
+
+`Tenant.id` replaces the old client-supplied `session_id` as the retrieval scope, so it is
+server-generated and never accepted from a request. Keys are stored hashed and can be
+revoked individually, which is why they are a separate table rather than a column on
+`Tenant`: one tenant holds many keys (laptop, CI, prod) and revoking one must not disturb
+the others.
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Column, DateTime, func
+from sqlmodel import Field, SQLModel
+
+if TYPE_CHECKING:
+    from datetime import datetime
+
+TENANT_ID_PATTERN = r"^[0-9a-f]{32}$"
+"""`uuid7().hex`. Enforced wherever a tenant id becomes a filesystem path segment --
+belt and braces, since ids are server-generated, but path building should never trust an
+identifier's shape implicitly."""
+
+
+class Tenant(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    """`uuid.uuid7().hex` -- time-ordered, so ids sort by creation and index well."""
+    name: str
+    created_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), server_default=func.now())
+    )
+
+
+class ApiKey(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    tenant_id: str = Field(foreign_key="tenant.id", index=True)
+    key_hash: str = Field(index=True, unique=True)
+    """SHA-256 hex of the full key. Indexed because authentication is a single lookup on
+    it -- see `keys.py` for why SHA-256 rather than a password KDF."""
+    prefix: str
+    """The key's first few characters, kept so a key can be *identified* in a list without
+    storing anything that could authenticate as it."""
+    name: str
+    """Human label ("ci", "laptop") -- the only way to tell keys apart once the secret is
+    unrecoverable."""
+    created_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), server_default=func.now())
+    )
+    # Every datetime column here declares `sa_column` explicitly, and that is load-bearing
+    # twice over. Without it SQLModel infers the column type from the annotation, which
+    # `from __future__ import annotations` has turned into the string "datetime | None" --
+    # unresolvable at runtime because `datetime` is imported only under TYPE_CHECKING, and
+    # it fails as a confusing `issubclass() arg 1 must be a class` at import time. It also
+    # pins `timezone=True`, so values read back are aware and compare correctly against
+    # `datetime.now(UTC)` in `service.py` rather than raising on naive/aware mixing.
+    last_used_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    revoked_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    """Revocation is a timestamp, not a delete: an audit trail of which key was used when
+    is worth more than a clean table, and a deleted row can't answer "was this leaked key
+    ever used?"."""
