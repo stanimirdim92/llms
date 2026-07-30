@@ -16,6 +16,7 @@ import io
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import structlog
 from docling_core.types.doc.document import DoclingDocument, PictureItem
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -25,11 +26,42 @@ from app.config import get_settings
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from PIL import Image
+
+log = structlog.get_logger(__name__)
+
+# Deliberately not "from a scientific paper" any more. Uploads are whatever a user has -- a CV, a
+# report, a slide deck -- and priming the model for a scientific figure when it is looking at a
+# contact icon invites exactly the confused non-answers this prompt used to produce.
 _CAPTION_PROMPT = (
-    "Describe this figure from a scientific paper in 2-4 sentences. "
-    "State what kind of figure it is (plot, micrograph, schematic, table-like chart, etc.), "
-    "the axes/quantities shown if visible, and the key trend or result it conveys. "
-    "Be factual and specific — this description is the only way the figure will be found by search."
+    "Describe this image from a document in 2-4 sentences. "
+    "State what kind of image it is (plot, micrograph, schematic, diagram, photo, logo, icon, etc.), "
+    "the axes or quantities shown if it is a chart, and the key information it conveys. "
+    "Be factual and specific — this description is the only way the image will be found by search. "
+    "If the image carries no information worth searching for (a decorative icon, a rule, a blank "
+    "region), reply with exactly: NO_USEFUL_CONTENT"
+)
+
+# The sentinel above, plus the shapes a model reaches for when it cannot make sense of an image.
+# Checked against captions because a caption is the figure's only searchable text: left in, a
+# refusal becomes a chunk that outranks real content. Observed in production -- a CV's five icon
+# "figures" produced four captions along the lines of "I'm not able to see the image you're
+# referring to -- it seems the figure wasn't included with your message."
+_UNUSABLE_CAPTION_MARKERS = (
+    "no_useful_content",
+    "not able to see",
+    "unable to see",
+    "cannot see",
+    "can't see",
+    "wasn't included",
+    "was not included",
+    "didn't come through",
+    "did not come through",
+    "no image",
+    "try uploading",
+    "re-upload",
+    "reupload",
+    "upload the image again",
 )
 
 
@@ -90,20 +122,53 @@ def _caption_all(images: list[bytes]) -> list[str]:
     return [_response_text(response) for response in responses]
 
 
+def _is_too_small(image: Image.Image) -> bool:
+    """True for images no larger than a glyph in either dimension.
+
+    Docling's `PictureItem` is any embedded image region, so contact icons, logos and decorative
+    rules arrive here indistinguishable from charts. Skipping them saves a vision call each and,
+    more importantly, keeps them out of the index -- an icon has no describable content, so its
+    "caption" is noise competing with real chunks at retrieval time.
+    """
+    return min(image.size) < get_settings().figure_min_dimension_px
+
+
+def _is_unusable_caption(caption: str) -> bool:
+    """True when a caption cannot serve as searchable text.
+
+    Either the model reported it had nothing to describe (the prompt's sentinel), produced one of
+    the familiar can't-see-the-image responses, or returned something too short to be a
+    description. Storing any of those gives the figure a chunk whose embedded text is about the
+    model's confusion rather than the document.
+    """
+    lowered = caption.casefold()
+    if any(marker in lowered for marker in _UNUSABLE_CAPTION_MARKERS):
+        return True
+    return len(caption.strip()) < get_settings().figure_min_caption_chars
+
+
 def extract_figures(document: DoclingDocument, output_dir: Path) -> list[ExtractedFigure]:
-    """Save every picture region already rendered in `document` to a PNG and caption it."""
+    """Save every picture region already rendered in `document` to a PNG and caption it.
+
+    Figures are dropped at two points -- too small to be worth captioning, and captioned but
+    unusably. Neither drop renumbers anything: see the comment on `index` below.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
     picture_items = [item for item, _level in document.iterate_items() if isinstance(item, PictureItem)]
 
     # Render and save first, caption second, so all the network calls can go out together.
-    # `index` still comes from enumerate over *every* picture item, so an item with no
-    # renderable image keeps consuming its index: figure_id feeds chunk_id, which feeds the
-    # Qdrant point id, so renumbering figures here would orphan every already-stored figure
-    # chunk instead of upserting over it.
+    # `index` still comes from enumerate over *every* picture item, so an item that is skipped --
+    # no renderable image, or too small -- keeps consuming its index: figure_id feeds chunk_id,
+    # which feeds the Qdrant point id, so renumbering figures here would orphan every
+    # already-stored figure chunk instead of upserting over it.
     rendered: list[tuple[str, int, Path, bytes]] = []
+    skipped_small = 0
     for index, item in enumerate(picture_items):
         image = item.get_image(document)
         if image is None:
+            continue
+        if _is_too_small(image):
+            skipped_small += 1
             continue
         provenance = item.prov[0] if item.prov else None
         page_no = provenance.page_no if provenance else 0
@@ -116,11 +181,26 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
         image.save(buffer, "PNG")
         rendered.append((figure_id, page_no, image_path, buffer.getvalue()))
 
+    if skipped_small:
+        log.info("figures.skipped_small", count=skipped_small, min_dimension=get_settings().figure_min_dimension_px)
+
     if not rendered:
         return []
 
     captions = _caption_all([image_bytes for *_, image_bytes in rendered])
-    return [
-        ExtractedFigure(figure_id=figure_id, page_no=page_no, image_path=image_path, caption=caption)
-        for (figure_id, page_no, image_path, _), caption in zip(rendered, captions, strict=True)
-    ]
+
+    figures: list[ExtractedFigure] = []
+    dropped: list[str] = []
+    for (figure_id, page_no, image_path, _), caption in zip(rendered, captions, strict=True):
+        if _is_unusable_caption(caption):
+            dropped.append(figure_id)
+            continue
+        figures.append(ExtractedFigure(figure_id=figure_id, page_no=page_no, image_path=image_path, caption=caption))
+
+    if dropped:
+        # Logged, not raised: one undescribable image should not fail a document. But it must be
+        # visible, because the symptom otherwise is a chunk count that quietly disagrees with the
+        # figure count.
+        log.info("figures.dropped_unusable_caption", figure_ids=dropped, count=len(dropped))
+
+    return figures

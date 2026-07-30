@@ -24,8 +24,10 @@ from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.config import get_settings
+from app.ingestion.models import GLOBAL_TENANT
 from app.registry.db import (
     get_document_record,
+    list_document_records,
     mark_document_failed,
     mark_document_processing,
     save_document_record,
@@ -356,3 +358,48 @@ async def test_status_transitions_stamp_updated_at(db: SessionFactory) -> None:
     assert second is not None
     assert second.updated_at is not None
     assert second.updated_at >= first.updated_at
+
+
+async def test_listing_returns_only_this_tenants_documents(db: SessionFactory) -> None:
+    """The endpoint behind "what documents do I have?".
+
+    That question cannot be answered by /ask: retrieval matches chunks semantically, so a
+    meta-question about the corpus gets grounded in whatever text is nearest in embedding space.
+    A real user asked it and received a confident summary of one document's chunks -- including
+    four figure "chunks" that were the vision model saying it couldn't see an image.
+    """
+    async with db() as session:
+        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
+    async with db() as session:
+        await save_document_record(session, _record(tenant_id=TENANT_B, doc_id="b" * 32))
+
+    async with db() as session:
+        mine = await list_document_records(session, tenant_id=TENANT_A)
+
+    assert [record.doc_id for record in mine] == ["a" * 32]
+
+
+async def test_listing_excludes_the_shared_corpus(db: SessionFactory) -> None:
+    """Listing means uploads. Corpus documents are readable by every tenant and owned by
+    none, so listing them as the tenant's own would misrepresent what they uploaded.
+    """
+    async with db() as session:
+        await save_document_record(session, _record(tenant_id=GLOBAL_TENANT, doc_id="c" * 32))
+    async with db() as session:
+        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
+
+    async with db() as session:
+        mine = await list_document_records(session, tenant_id=TENANT_A)
+
+    assert [record.doc_id for record in mine] == ["a" * 32]
+
+
+async def test_listing_respects_the_limit(db: SessionFactory) -> None:
+    for index in range(5):
+        async with db() as session:
+            await save_document_record(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
+
+    async with db() as session:
+        limited = await list_document_records(session, tenant_id=TENANT_A, limit=2)
+
+    assert len(limited) == 2

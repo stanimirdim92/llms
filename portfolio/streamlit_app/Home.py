@@ -10,17 +10,23 @@ hole the API just closed.
 """
 
 import asyncio
+from typing import TYPE_CHECKING
 
 import streamlit as st
 
 from app.auth.service import resolve_tenant
 from app.config import get_settings
+from app.db import get_session, init_db
 from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
-from app.ingestion.pipeline import ingest_document
+from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
 from app.logs import configure_logging
+from app.registry.db import list_document_records
 from app.vectorstore.qdrant_store import QdrantStore
+
+if TYPE_CHECKING:
+    from app.registry.models import DocumentRecord
 
 configure_logging()
 
@@ -42,6 +48,17 @@ def _service() -> AnswerService:
 @st.cache_resource
 def _store() -> QdrantStore:
     return QdrantStore()
+
+
+async def _list_documents(tenant_id: str) -> list[DocumentRecord]:
+    """Read the tenant's documents from the registry.
+
+    Not cached: the point of the panel is to show current status, and a cached list would show
+    `pending` after the ingest finished.
+    """
+    await init_db()
+    async with get_session() as session:
+        return await list_document_records(session, tenant_id=tenant_id)
 
 
 with st.sidebar:
@@ -98,16 +115,52 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
                     #
                     # Streamlit's script model has no event loop of its own, same reason
                     # the /ask call below needs asyncio.run() rather than a plain await.
-                    chunk_count = asyncio.run(
-                        ingest_document(doc_id=doc_id, file_path=file_path, store=_store(), tenant_id=tenant_id)
-                    )
-                st.session_state.uploaded_docs.append(doc_id)
-                st.success(f"Ingested {uploaded_file.name} — {chunk_count} chunks (doc_id: {doc_id})")
+                    try:
+                        chunk_count = asyncio.run(
+                            ingest_document(doc_id=doc_id, file_path=file_path, store=_store(), tenant_id=tenant_id)
+                        )
+                    except EmptyDocumentError as exc:
+                        # Surfaced rather than swallowed: a scanned PDF with no text layer parses
+                        # "successfully" and yields nothing searchable, and silently recording it
+                        # as ingested means the user only finds out by asking a question and
+                        # getting an answer grounded in some other document.
+                        st.error(str(exc))
+                    else:
+                        # `else`, not code after the `try`: `st.stop()` in the except branch raises
+                        # internally but isn't typed NoReturn, so a trailing block reads as
+                        # "chunk_count possibly unbound" to the type checker -- and would genuinely
+                        # be unbound if st.stop() ever stopped raising.
+                        st.session_state.uploaded_docs.append(doc_id)
+                        st.success(f"Ingested {uploaded_file.name} — {chunk_count} chunks (doc_id: {doc_id})")
             else:
-                st.info(f"{uploaded_file.name} was already ingested.")
+                # Wording matters here. Streamlit reruns the whole script on every interaction and
+                # `st.file_uploader` keeps returning the same file, so this branch is reached on
+                # every rerun after a successful upload -- not because the user uploaded a
+                # duplicate. "Already ingested" read as a refusal to ingest a genuinely new file.
+                st.caption(f"{uploaded_file.name} is already ingested in this session.")
 
-    if st.session_state.uploaded_docs:
-        st.caption(f"This tenant's uploads: {', '.join(st.session_state.uploaded_docs)}")
+# The registry, not session state: session state is empty after a browser refresh, while these
+# rows are what the tenant actually owns. Also the answer to "what documents do I have?", which
+# /ask cannot give -- retrieval matches chunks semantically, so a meta-question about the
+# corpus gets answered from whatever text is nearest in embedding space.
+with st.expander("My documents", expanded=not st.session_state.uploaded_docs):
+    records = asyncio.run(_list_documents(tenant_id))
+    if not records:
+        st.caption("No documents uploaded yet.")
+    else:
+        st.dataframe(
+            [
+                {
+                    "filename": record.filename,
+                    "status": record.status,
+                    "chunks": record.chunk_count,
+                    "uploaded": record.uploaded_at,
+                    "error": record.error_message or "",
+                }
+                for record in records
+            ],
+            hide_index=True,
+        )
 
 question = st.text_input("Question", placeholder="What cathode materials show the highest cycling stability?")
 

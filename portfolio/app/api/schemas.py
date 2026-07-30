@@ -83,3 +83,13 @@ class DocumentStatusResponse(BaseModel):
         description="When the status last changed. A 'processing' status with an old timestamp means a "
         "worker died mid-job rather than that work is still in progress"
     )
+
+
+class DocumentListResponse(BaseModel):
+    """`GET /v1/documents`. The answer to "what documents do I have?", which cannot come from
+    /ask: retrieval matches chunks semantically, so a meta-question about the corpus gets grounded
+    in whatever text happens to be nearest in embedding space.
+    """
+
+    documents: list[DocumentStatusResponse] = Field(description="This tenant's documents, newest first")
+    count: int = Field(description="How many are returned (bounded by `limit`)")

@@ -1,17 +1,17 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, UploadFile, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 # Runtime import on purpose -- see the note in ask.py: FastAPI resolves these annotations
 # when registering the route, so a TYPE_CHECKING-only import breaks dependency injection.
 from app.api.deps import CurrentTenant, rate_limited
-from app.api.schemas import DocumentStatusResponse, UploadAcceptedResponse
+from app.api.schemas import DocumentListResponse, DocumentStatusResponse, UploadAcceptedResponse
 from app.config import get_settings
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
-from app.registry.db import get_document_record, stage_document_record
+from app.registry.db import get_document_record, list_document_records, stage_document_record
 from app.registry.models import STATUS_PENDING, DocumentRecord
 from app.worker.app import defer_document_ingest
 
@@ -87,6 +87,44 @@ async def upload_document(
     return UploadAcceptedResponse(tenant_id=tenant_id, doc_id=doc_id, status=STATUS_PENDING)
 
 
+def _to_status(record: DocumentRecord) -> DocumentStatusResponse:
+    return DocumentStatusResponse(
+        doc_id=record.doc_id,
+        tenant_id=record.tenant_id,
+        filename=record.filename,
+        status=record.status,
+        chunk_count=record.chunk_count,
+        error_message=record.error_message,
+        uploaded_at=record.uploaded_at,
+        updated_at=record.updated_at,
+    )
+
+
+@router.get(
+    "/documents",
+    response_model=DocumentListResponse,
+    tags=["documents"],
+    summary="List the documents you have uploaded",
+    description="Returns every document owned by the tenant the `x-api-key` header authenticates "
+    "as, newest first, with ingestion status. Use this rather than asking /ask what documents "
+    "exist -- /ask matches chunks semantically, so a question about the corpus gets answered from "
+    "whatever text is nearest in embedding space, not from the document list. Excludes the shared "
+    "curated corpus, which nobody uploaded.",
+    response_description="This tenant's documents and how many were returned",
+    dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
+)
+async def list_documents(
+    tenant_id: CurrentTenant,
+    limit: Annotated[int, Query(ge=1, le=500, description="Maximum documents to return")] = 100,
+) -> DocumentListResponse:
+    await init_db()
+    async with get_session() as session:
+        records = await list_document_records(session, tenant_id=tenant_id, limit=limit)
+
+    documents = [_to_status(record) for record in records]
+    return DocumentListResponse(documents=documents, count=len(documents))
+
+
 @router.get(
     "/documents/{doc_id}",
     response_model=DocumentStatusResponse,
@@ -108,13 +146,4 @@ async def get_document_status(doc_id: str, tenant_id: CurrentTenant) -> Document
     if record is None:
         raise APIError("Document not found", code=404)
 
-    return DocumentStatusResponse(
-        doc_id=record.doc_id,
-        tenant_id=record.tenant_id,
-        filename=record.filename,
-        status=record.status,
-        chunk_count=record.chunk_count,
-        error_message=record.error_message,
-        uploaded_at=record.uploaded_at,
-        updated_at=record.updated_at,
-    )
+    return _to_status(record)

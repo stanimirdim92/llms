@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from sqlalchemy.dialects.postgresql import insert as pg_insert
-from sqlmodel import select
+from sqlmodel import col, select
 
 from app.registry.models import STATUS_FAILED, STATUS_PROCESSING, DocumentRecord
 
@@ -79,6 +79,27 @@ async def _set_status(session: AsyncSession, *, doc_id: str, status: str, error:
     record.error_message = error
     session.add(record)
     await session.commit()
+
+
+async def list_document_records(session: AsyncSession, *, tenant_id: str, limit: int = 100) -> list[DocumentRecord]:
+    """Every document this tenant owns, newest first.
+
+    Exists because "what documents do I have?" is a *metadata* question, and asking it through
+    /ask cannot work: retrieval matches chunks semantically, so a meta-question about the corpus
+    retrieves whatever happens to be nearest in embedding space and the answer is grounded in
+    that. A real user asked exactly this and got a confident summary of one document's chunks.
+
+    Deliberately excludes the shared corpus (`GLOBAL_TENANT`): this answers "my documents", and
+    mixing in corpus documents nobody uploaded would misrepresent what the tenant owns.
+    """
+    statement = (
+        select(DocumentRecord)
+        .where(DocumentRecord.tenant_id == tenant_id)
+        .order_by(col(DocumentRecord.uploaded_at).desc())
+        .limit(limit)
+    )
+    result = await session.exec(statement)
+    return list(result.all())
 
 
 async def get_document_record(session: AsyncSession, *, tenant_id: str, doc_id: str) -> DocumentRecord | None:

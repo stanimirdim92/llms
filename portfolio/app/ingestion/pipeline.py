@@ -53,9 +53,27 @@ def _parse_and_chunk(doc_id: str, file_path: Path, tenant_id: str) -> tuple[list
     return chunks, content_hash, file_path.stat().st_size
 
 
+class EmptyDocumentError(Exception):
+    """A document produced nothing searchable."""
+
+
 async def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, tenant_id: str = GLOBAL_TENANT) -> int:
     """Ingest a single document end-to-end. Returns the number of chunks written."""
     chunks, content_hash, file_size_bytes = await asyncio.to_thread(_parse_and_chunk, doc_id, file_path, tenant_id)
+
+    if not chunks:
+        # Recorded as a failure rather than a zero-chunk success, because "ingested" with nothing
+        # in the index is a lie the user can only discover by asking a question and getting
+        # nothing. A real 2MB scanned flyer hit this: Docling extracted 30 characters
+        # (`<!-- image -->` twice) with OCR off, so the document was searchable in name only.
+        # The message names the likely cause, since a scanned PDF is the overwhelming reason a
+        # parse succeeds and yields no text.
+        msg = (
+            f"{file_path.name} produced no searchable content. If it is a scanned or image-only "
+            f"PDF, it has no text layer to extract -- OCR must be enabled (DO_OCR) for it to be "
+            f"ingestible."
+        )
+        raise EmptyDocumentError(msg)
 
     # `QdrantStore.upsert` has no native async client (see qdrant_store.py's own note on
     # `query`) -- offload it the same way as the parse/chunk work above rather than

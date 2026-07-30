@@ -208,6 +208,20 @@ Things that look correct and aren't:
   crashed process would deadlock every later boot.
   `test_concurrent_processes_can_initialise_the_schema` pins it, and has to use real
   subprocesses -- an `asyncio.gather` version passes even with the lock removed.
+- **A figure's caption is its only searchable text**, so an unusable caption is worse than
+  no figure. Docling reports every embedded image region as a `PictureItem` -- contact icons,
+  logos, horizontal rules -- indistinguishable from a chart. A one-page CV produced five
+  "figures", all ~20x20px icons; the vision model answered each with "I'm not able to see the
+  image you're referring to", and those refusals became chunks that then won reranking and
+  became what an answer was grounded in. `figure_extractor` therefore drops images below
+  `figure_min_dimension_px` *before* the vision call and captions matching
+  `_UNUSABLE_CAPTION_MARKERS` (or shorter than `figure_min_caption_chars`) after it. Both drops
+  must preserve the `enumerate` index -- see the "never renumber" rule above.
+- **A successful parse does not mean an ingestible document.** A scanned, image-only PDF
+  parses fine and yields no text: a real 2MB flyer extracted 30 characters with `do_ocr=False`
+  versus 395 with it on. Recording that as `ingested` with `chunk_count=0` is a lie the user
+  can only discover by asking a question and getting someone else's document back, so
+  `ingest_document` raises `EmptyDocumentError` instead.
 - **procrastinate's schema is all-or-nothing.** `schema.sql` has 3 `CREATE TYPE`, 4
   `CREATE TABLE`, and 18 `CREATE FUNCTION`, none of them `OR REPLACE`, and the existence
   check keys only on `procrastinate_jobs`. A partially-applied schema (interrupted apply,

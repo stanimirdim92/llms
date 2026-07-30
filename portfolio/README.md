@@ -59,6 +59,10 @@ curl -X POST http://localhost:8000/v1/documents \
 # Poll until status is "ingested" (or "failed", with error_message saying why)
 curl http://localhost:8000/v1/documents/<doc_id> -H "x-api-key: pf_live_..."
 
+# Everything this tenant owns, newest first. Ask /ask "what documents do I have?" and you get
+# an answer grounded in whatever text is nearest in embedding space -- this is the real answer.
+curl http://localhost:8000/v1/documents -H "x-api-key: pf_live_..."
+
 curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "What electrolyte did they use?"}'
@@ -114,7 +118,9 @@ ask ──> embed ──> Qdrant search ──> rerank ──> generate ──> 
 Ingestion takes 10s–2min, so it runs in a **worker** rather than in the request.
 `POST /v1/documents` returns 202 and `GET /v1/documents/{doc_id}` reports
 `pending`/`processing`/`ingested`/`failed` — a failure carries the reason, so a client can
-tell a broken document from one that was never uploaded.
+tell a broken document from one that was never uploaded. `GET /v1/documents` lists the
+tenant's own documents; a document that produced no searchable text is `failed` there rather
+than reported as a zero-chunk success.
 
 The queue is Postgres (`procrastinate`), not Redis, for one specific reason: the document row
 and its job commit in **one transaction**. With a separate broker there's a window where the

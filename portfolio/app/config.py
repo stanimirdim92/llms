@@ -24,6 +24,21 @@ class Settings(BaseSettings):
     # rate limit, and a 429 storm would be slower than running sequentially.
     figure_caption_concurrency: int = Field(default=5)
 
+    # Docling's PictureItem covers *any* embedded image region, which includes contact icons,
+    # logos, bullet glyphs and decorative rules. A one-page CV yielded 5 "figures" this way, all
+    # icons, and each cost a vision call and became a retrievable chunk. Both dimensions must
+    # clear this to be captioned. At images_scale=1.5 a 16pt icon renders around 33px, so 64
+    # excludes icons while leaving any real chart or micrograph (hundreds of px) untouched.
+    figure_min_dimension_px: int = Field(
+        default=64, description="Skip captioning images smaller than this in either dimension."
+    )
+    # A caption is the figure's *only* searchable text, so an unusable one is worse than none:
+    # it becomes a chunk that competes with real content in retrieval. Anything shorter than this
+    # cannot describe a figure usefully.
+    figure_min_caption_chars: int = Field(
+        default=40, description="Captions shorter than this are treated as unusable and dropped."
+    )
+
     voyage_api_key: str = Field(default="")
     voyage_model: str = Field(default="voyage-4")
 
