@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -22,6 +23,14 @@ from app.config import get_settings
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
+
+    from sqlalchemy.ext.asyncio import AsyncConnection
+
+# Advisory-lock key serializing schema creation across processes. Arbitrary, but must be
+# identical in every process: Postgres advisory locks are bare int64 keys in one global
+# namespace per database, so this only has to avoid colliding with another user of the same
+# database. Nothing else in this project takes advisory locks.
+_SCHEMA_LOCK_KEY = 8_242_197_531_004_112
 
 
 @lru_cache
@@ -79,14 +88,31 @@ async def init_db() -> None:
         from app.auth import models as _auth_models  # noqa: F401, PLC0415
         from app.registry import models as _registry_models  # noqa: F401, PLC0415
 
+        # The asyncio lock above only serializes coroutines *within one process*, which is not
+        # the concurrency that matters here: gunicorn boots GUNICORN_WORKERS processes at once,
+        # each running this lifespan, and the `worker` container runs it too. All of them raced
+        # the DDL below. `create_all`'s checkfirst and procrastinate's existence check are both
+        # check-then-create, so the loser gets a DuplicateObject/DuplicateTable at startup --
+        # observed as `type "procrastinate_job_status" already exists`, which crashed a gunicorn
+        # worker and read as a database fault rather than a race.
+        #
+        # A Postgres advisory lock is the cross-process equivalent. Transaction-scoped
+        # (`_xact_`), so it releases when this block exits even if the DDL raises -- a
+        # session-level lock leaked by a crashed process would deadlock every later boot.
         async with get_engine().begin() as conn:
+            await conn.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": _SCHEMA_LOCK_KEY})
             await conn.run_sync(SQLModel.metadata.create_all)
-        await _apply_procrastinate_schema()
+            # Inside the lock on purpose: a process that waited here must re-check rather than
+            # act on what it saw before the winner ran.
+            await _apply_procrastinate_schema(conn)
         _initialized = True
 
 
-async def _apply_procrastinate_schema() -> None:
+async def _apply_procrastinate_schema(conn: AsyncConnection) -> None:
     """Create procrastinate's tables/functions on first run.
+
+    Must be called while holding `_SCHEMA_LOCK_KEY` -- it takes the passed-in connection rather
+    than opening its own so the caller's lock genuinely covers the check and the apply.
 
     Done here rather than as a documented `procrastinate schema --apply` deploy step because a
     forgotten deploy step fails at runtime as "relation procrastinate_jobs does not exist" --
@@ -102,15 +128,16 @@ async def _apply_procrastinate_schema() -> None:
     per-version SQL under `procrastinate/sql/migrations/`); this function will see the tables
     already there and do nothing. That's the honest boundary of the convenience.
     """
-    from sqlalchemy import text  # noqa: PLC0415
-
     from app.worker.app import app as procrastinate_app  # noqa: PLC0415 -- avoids an import cycle
 
-    async with get_engine().begin() as conn:
-        already_applied = (await conn.execute(text("SELECT to_regclass('procrastinate_jobs')"))).scalar() is not None
-    if already_applied:
+    if (await conn.execute(text("SELECT to_regclass('procrastinate_jobs')"))).scalar() is not None:
         return
 
+    # Runs on procrastinate's own pool, not `conn` -- its schema SQL is a single multi-statement
+    # script its connector executes itself. That's a second connection, so the ordering matters:
+    # this is awaited to completion (and its DDL committed) before the caller's transaction ends
+    # and releases the advisory lock, which is what makes the next process see a finished schema
+    # rather than a half-built one.
     async with procrastinate_app.open_async():
         await procrastinate_app.schema_manager.apply_schema_async()
 

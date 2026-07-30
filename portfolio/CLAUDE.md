@@ -130,6 +130,22 @@ Things that look correct and aren't:
 - **`app/db.py::init_db` must import every model module.** `SQLModel.metadata` is
   populated as an import side effect, so a table whose module was never imported is
   silently skipped by `create_all` and only fails later as "relation does not exist".
+- **Schema creation is guarded by a Postgres advisory lock, not just the asyncio one.**
+  `init_db`'s `asyncio.Lock` only serializes coroutines inside one process, and the real
+  concurrency is `GUNICORN_WORKERS` processes booting at once plus the `worker` container.
+  Both `create_all`'s checkfirst and procrastinate's existence check are check-then-create,
+  so the loser crashes at startup with `DuplicateObject: type "procrastinate_job_status"
+  already exists` -- which reads as a database fault. Observed on the first real boot.
+  `pg_advisory_xact_lock` is transaction-scoped on purpose: a session-level lock leaked by a
+  crashed process would deadlock every later boot.
+  `test_concurrent_processes_can_initialise_the_schema` pins it, and has to use real
+  subprocesses -- an `asyncio.gather` version passes even with the lock removed.
+- **procrastinate's schema is all-or-nothing.** `schema.sql` has 3 `CREATE TYPE`, 4
+  `CREATE TABLE`, and 18 `CREATE FUNCTION`, none of them `OR REPLACE`, and the existence
+  check keys only on `procrastinate_jobs`. A partially-applied schema (interrupted apply,
+  or a hand-written partial drop) therefore fails every subsequent start and cannot be
+  repaired incrementally -- reset with `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
+  on a throwaway database, or drop the volume.
 
 ## Config invariants
 

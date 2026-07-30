@@ -162,6 +162,21 @@ through gunicorn, the compose mapping, and nginx's upstream automatically **prov
 `CLAUDE.md`'s failure contracts; the same applies to postgres with a different
 capability set.
 
+**`api` crash-looping with `DuplicateObject: type "procrastinate_job_status" already
+exists`** -- fixed; if it reappears, it's the schema-init race. `GUNICORN_WORKERS` api
+processes plus the worker all run `init_db` at boot and all raced the DDL. Now serialized
+with a Postgres advisory lock. It self-heals on restart (the schema exists by then), which
+is why the symptom is a single crashed gunicorn worker rather than a dead stack.
+
+If a boot was interrupted mid-apply, the schema is partially present and *every* start then
+fails: procrastinate's `schema.sql` has no `CREATE OR REPLACE` anywhere and its existence
+check only looks for `procrastinate_jobs`. Reset it:
+
+    docker compose -f .docker/docker-compose.yml --env-file .env exec postgres \
+      psql -U portfolio -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+That destroys the registry, the queue, and the auth rows (re-mint a key), but not Qdrant.
+
 **postgres refusing to start with "there appears to be PostgreSQL data in:
 /var/lib/postgresql/data (unused mount/volume)"** -- the mount path is wrong for the image
 version, not the data. From postgres 18 the official images keep data in a
