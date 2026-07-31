@@ -359,7 +359,8 @@ registration, email verification, password reset, lockout, MFA, and OIDC discove
 gets a `current_user` dependency that verifies a JWT against Keycloak's JWKS, and
 provisions a `Tenant` + `User` row on first login. Costs: ~512MB–1GB of JVM heap on a
 16GB box that also runs torch and Docling, plus a realm/client configuration surface that
-is genuinely large for 1k users.
+is genuinely large -- though at the 10k-tenant target it is more defensible than it was
+at 1k.
 
 Alternative if Keycloak is too much: **own it**, with `argon2-cffi` for password hashing
 (*not* the API keys' SHA-256 — opposite threat model, see `TECHNICAL_DECISIONS.md`),

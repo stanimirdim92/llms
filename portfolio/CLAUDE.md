@@ -52,8 +52,10 @@ see `.claude/skills/VENDORED.md` for provenance and how to refresh. Reach for
 eval work starts, rather than re-deriving either.
 
 One open finding from them: **no payload index exists on `metadata.tenant_id`**, and the
-multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents,
-not at the 1k-user target. Details in `VENDORED.md`.
+multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents;
+**required** at the 10k-tenant x 10-document target (order 1M points, where an unindexed
+tenant filter degrades toward a scan). Details in `VENDORED.md`, verdict in
+`TECHNICAL_DECISIONS.md`.
 
 ## Verification gate
 

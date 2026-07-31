@@ -52,15 +52,16 @@ Recorded so a future session knows which to reach for rather than re-deriving it
   keys on `metadata.tenant_id` and `metadata.chunk_type` on every query, and
   `delete_document` on `metadata.doc_id`, all unindexed. `qdrant-scaling`'s tenant-scaling
   page lists skipping `is_tenant=true` under things not to do. Not fixed yet: it is a
-  one-time `create_payload_index` call at collection setup, invisible at 6 documents and not
-  invisible at the stated 1k-users target. Tracked here rather than silently added, since it
-  is outside the change that vendored these.
+  one-time `create_payload_index` call at collection setup, invisible at 6 documents and
+  **required** at the stated 10k-tenants/10-documents-each target (order 1M points).
+  Tracked here rather than silently added, since it is outside the change that vendored
+  these.
 - **`qdrant-search-quality`** — golden sets, recall@k, hybrid search, when reranking helps.
   This is Epic 2's subject matter; consult it when building the eval framework rather than
   inventing a methodology.
 - **`qdrant-performance-optimization`** and **`qdrant-monitoring`** — relevant to Epic 4
   Phase 4, and to the fact that nothing currently measures Qdrant at all.
-- **`qdrant-scaling`** — for the stated 1k-users/2-documents-each target.
+- **`qdrant-scaling`** — for the stated 10k-tenants/10-documents-each target.
 
 Less relevant here: `qdrant-edge`, `qdrant-deployment-options` (settled: self-hosted via
 compose), `qdrant-version-upgrade`, `qdrant-model-migration` (would matter if the Voyage model

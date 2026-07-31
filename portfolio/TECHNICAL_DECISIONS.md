@@ -468,3 +468,63 @@ skipped auth suite is indistinguishable from a passing one.
 
 Nothing exercises Qdrant. Store-layer bugs surface only on a real ingest — which is exactly
 how the point-id constraint was found, after it shipped.
+
+## Scale target: 10k tenants x 10 documents
+
+The working assumption is **100,000 documents** (10,000 tenants, ~10 each) on an 8 vCPU /
+16 GB host. It was 2,000 (1k x 2) until 2026-07-31; the 50x revision is recorded here
+because several decisions above were sized against the smaller number and one of them
+changes verdict:
+
+- **The Qdrant payload index on `metadata.tenant_id` moves from deferred to required.**
+  `CLAUDE.md` and `EPIC_4_PLAN.md` call it "harmless at 6 documents". At ~100k documents and
+  roughly 10 chunks each -- order 1M points -- every tenant-filtered query without a keyword
+  index on that field degrades toward a scan. The vendored `qdrant-multitenancy` skill
+  specifies a keyword index with `is_tenant=true`; that is now a prerequisite for load, not
+  an optimization.
+- **Anything O(corpus) per query is out.** Answering a question by making one model call per
+  document costs 100,000 calls. Corpus-level answering has to be bounded by retrieval first
+  (see the map-reduce note below), never by a full scan.
+- **Per-document disk is now the sizing question**, not per-document tokens: `processed_dir`
+  holds one parsed JSON per document plus a PNG per surviving figure. At 100k documents that
+  volume needs a real number attached to it before a deploy.
+
+## Graph RAG: the graph is a computation, not a storage tier
+
+`docs/IMPLEMENTATION_PLAN.md` records Neo4j as eventual work, and the registry schema was
+kept deliberately flat so a later sync job could read from it. Evidence found on 2026-07-31
+argues against the graph database specifically, and it is worth recording before that work
+is scheduled.
+
+`microsoft/graphrag` (MIT, v3.1.1) is the reference implementation of the technique, from the
+team that published it. It uses **no graph database**. The graph is built in memory with
+`networkx`, communities are detected with hierarchical Leiden via `graspologic-native`, and
+the result is persisted as **parquet tables** read back with `pyarrow`. Vector storage is
+LanceDB / Azure AI Search / CosmosDB. There is no Neo4j, and no traversal-time graph engine
+of any kind.
+
+So the graph is derived, batch-computed, and re-derivable from the documents. Adding a fourth
+stateful service to store it buys nothing until a query pattern needs traversal at request
+time -- and none of the planned queries do. Postgres plus columnar files on disk covers it.
+
+Two further findings from the same read, recorded so they are not re-derived:
+
+- **It cannot be a dependency here.** Every one of its eight packages pins
+  `requires-python = ">=3.11,<3.14"`. Against this project's `>=3.14` floor that is an
+  unsatisfiable resolution, not a warning -- the same class of conflict as `slowapi` against
+  `redis>=8`. Anything taken from it is reimplemented, not imported. MIT licence, so that is
+  permitted with attribution.
+- **Its per-document indexing cost rules out the pipeline at this scale.** Entity extraction
+  is roughly a model call per chunk, plus description summarisation, plus a report per
+  detected community. Estimated at ~20 calls per document, 100k documents is ~2M model calls,
+  re-run incrementally as uploads arrive. The technique is designed for one large static
+  corpus queried by many readers; this system is many small per-tenant corpora that change
+  constantly. The economics invert.
+
+What *is* worth taking from it is the **global-search reduce step**, which is a genuine
+answer to a question this system cannot currently answer at all: map over candidate
+documents, have each return scored key points, drop everything scoring zero, sort by score,
+and pack into a token budget. The zero-score branch returns a canned "no data" answer rather
+than synthesising from weak material -- the same principle as dropping unusable figure
+captions, arrived at independently. Bounded by retrieval rather than run over the whole
+corpus, it fits; run globally, it does not.
