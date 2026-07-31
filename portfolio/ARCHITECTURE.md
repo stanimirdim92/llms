@@ -64,6 +64,80 @@ No single layer above is assumed sufficient on its own — that assumption is ex
 
 **Full-trajectory evaluation:** `eval/agent_trace_assertions.py` asserts not just the escalate/don't-escalate binary but tool-choice correctness (did each subagent only call tools within its scope?) and step count/cost per run, run as a CI regression suite alongside the RAGAS answer-quality gate.
 
+## 2b. Where each kind of data lives
+
+Three stores exist today and a fourth arrives with Epic 2. They are not
+interchangeable, and the boundary is about *how the data behaves*, not what it
+describes.
+
+| Store | Holds | Shape | Rebuildable from |
+|---|---|---|---|
+| **Postgres** | tenants, API keys, document rows, job queue, (Epic 3) episodic memory + incoming queue | mutable, transactional, row-at-a-time reads | nothing — this is the system of record |
+| **Qdrant** | one point per chunk: vector + payload metadata | write-once per ingest, similarity reads | yes — re-ingest the documents |
+| **Disk** (`processed_dir`) | parsed Docling JSON, extracted figure PNGs | write-once cache | yes — re-parse the source file |
+| **Parquet** *(Epic 2)* | eval run output: one row per question x retrieved chunk | append-only, never updated, read in aggregate | yes — re-run the eval |
+
+The distinction that matters: **Postgres holds state that changes; parquet holds
+measurements that accumulate.** A document row goes `pending -> processing ->
+ingested` and is read by key on every status poll — that is Postgres. An eval run
+emits thousands of rows that are never touched again and are only ever read as
+`GROUP BY`/percentile aggregates — that is columnar.
+
+Eval output is deliberately **not** user data and does not belong in the
+operational database:
+
+- Each new metric would be an `ALTER TABLE` plus a migration, on the same database
+  serving live requests. In parquet a new metric is a new column in new files, and
+  DuckDB unions old and new files with `NULL`s.
+- **CI needs a committed baseline to compare against.** A retrieval-quality gate
+  reads "last known-good scores" from somewhere version-controlled, so a regression
+  shows up as a reviewable diff in the pull request. A Postgres row cannot be
+  `git diff`ed; a baseline file can.
+- Analysis wants SQL without a service. DuckDB reads
+  `SELECT ... FROM 'data/eval/runs/*.parquet'` directly — no table, no migration,
+  no connection pool.
+
+LangSmith still holds traces and hosted experiment comparison, and that overlap is
+intentional rather than redundant: LangSmith is for *exploring* a run interactively,
+the parquet baseline is for *gating* one offline and in version control. Neither
+replaces the other, and the CI gate must not depend on a network call to a hosted
+service.
+
+```mermaid
+flowchart TB
+    subgraph ingest["Ingest -- write path"]
+        UP["upload"] --> API["api"]
+        API -->|"row + job, one transaction"| PG[("Postgres")]
+        API --> W["worker"]
+        W -->|"parse"| DISK[("disk cache")]
+        W -->|"chunk vectors"| QD[("Qdrant")]
+        W -->|"status, chunk_count"| PG
+    end
+
+    subgraph ask["Ask -- read path"]
+        Q["question"] --> R{"intent router"}
+        R -->|"metadata"| PG
+        R -->|"specific fact"| RET["retrieve, rerank, cite"]
+        R -->|"aggregate"| MR["map-reduce over top-N docs"]
+        RET --> QD
+        MR --> QD
+    end
+
+    subgraph eval["Eval -- Epic 2, offline"]
+        GS["golden set (JSONL, committed)"] --> RUN["eval runner"]
+        RUN --> RET
+        RUN -->|"per-question rows"| PQ[("parquet")]
+        PQ --> DD["DuckDB: SQL analysis"]
+        PQ --> GATE{"CI gate vs committed baseline"}
+        RUN -.->|"traces"| LS["LangSmith"]
+    end
+```
+
+The intent router in the read path does not exist yet; it is Epic 2's first item
+and the general fix for a defect already observed in production (a metadata
+question -- "list my documents" -- answered from whatever chunks were nearest in
+embedding space). See `EPIC_2_PLAN.md`.
+
 ## 3. What This Deliberately Does Not Do
 
 - No swarm / peer-to-peer agent mesh — the production data doesn't support it as a starting point, and it would make the Reasoning Trace UI (an explicit acceptance criterion) far harder to build meaningfully.

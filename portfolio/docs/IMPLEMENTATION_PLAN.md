@@ -20,8 +20,13 @@ the code, the code is right and this file is the older opinion:
 - `tests/` lists one unit test file. There are eight.
 
 For the current state of the system see [`../README.md`](../README.md); for why each
-choice was made, [`../TECHNICAL_DECISIONS.md`](../TECHNICAL_DECISIONS.md); for the
-remaining Epic 4 phases, [`../EPIC_4_PLAN.md`](../EPIC_4_PLAN.md).
+choice was made, [`../TECHNICAL_DECISIONS.md`](../TECHNICAL_DECISIONS.md). Each unbuilt
+epic now has its own buildable plan, which supersedes the corresponding Build Sequence
+entry below: [`../EPIC_2_PLAN.md`](../EPIC_2_PLAN.md),
+[`../EPIC_3_PLAN.md`](../EPIC_3_PLAN.md), [`../EPIC_4_PLAN.md`](../EPIC_4_PLAN.md).
+
+Those files hold the current plan. This one is not updated when a plan changes -- that is
+the point of it.
 
 ## Context
 

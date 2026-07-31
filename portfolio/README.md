@@ -188,9 +188,11 @@ Epic 3's design.
   transaction. Status polling via `GET /v1/documents/{doc_id}`, including a reason on
   failure.
 
-**Not built.** These exist as designs in
-[`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) and nowhere else — there is
-no code for any of them, so don't infer any from the plan's directory layout:
+**Not built.** These exist as designs only — there is no code for any of them, so don't
+infer any from a plan's directory layout. The buildable plans are
+[`EPIC_2_PLAN.md`](EPIC_2_PLAN.md) and [`EPIC_3_PLAN.md`](EPIC_3_PLAN.md);
+[`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) holds the original design and
+is deliberately not kept current:
 
 - **Epic 2 — Eval framework.** RAGAS metrics as LangSmith custom evaluators over a
   versioned dataset, with a CI threshold gate and a deliberate pre-reranker baseline to
@@ -249,10 +251,11 @@ portfolio/
 │   └── api/           main, deps, schemas, routers/{ask, documents}
 ├── streamlit_app/Home.py                 # calls the pipeline in process, not over HTTP
 ├── scripts/           fetch_corpus, ingest, create_tenant
-├── tests/unit/                           # 13 files, 116 tests; Postgres/Redis-backed ones skip if unreachable
+├── tests/unit/                           # 14 files, 129 tests; Postgres/Redis-backed ones skip if unreachable
 ├── data/manifest.json                    # the pinned corpus
 ├── .docker/           Dockerfile, docker-compose.yml, nginx/
 ├── redis/             Dockerfile, redis.conf
+├── EPIC_2_PLAN.md, EPIC_3_PLAN.md        # buildable plans for the unbuilt epics
 └── docs/IMPLEMENTATION_PLAN.md           # the original plan, kept as history
 ```
 

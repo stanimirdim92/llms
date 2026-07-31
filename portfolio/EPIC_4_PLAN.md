@@ -10,6 +10,9 @@ Phases 5 and 6 were previously one "blocked on a product decision" placeholder. 
 now the application layer — Phase 5 is the backend (users, conversations, document CRUD,
 async ingestion), Phase 6 is the React + TypeScript UI on top of it.
 
+Epics 2 and 3 now have their own plans -- `EPIC_2_PLAN.md` and `EPIC_3_PLAN.md` -- so the
+blocked items below name a phase there rather than a whole epic.
+
 Already done ahead of this epic (not repeated below): the multi-stage Dockerfile and
 `.docker/` layout, gunicorn + UvicornWorker, docker-compose (qdrant/postgres/redis/nginx),
 `.dockerignore`, `.env.example`, LangSmith env bridging in `config.py`, `app/logs.py`
@@ -600,8 +603,24 @@ blocks Phases 5 or 6:
 |---|---|
 | `agent/nodes.py` structlog calls | Epic 3's agent |
 | Rate limit on `/review` | Epic 3's review endpoint |
-| `eval/agent_trace_assertions.py` + `tests/eval/` | Epic 3's agent **and** Epic 2's harness |
-| Faithfulness SLO in `alerts.py` | Epic 2's RAGAS scores |
+| `eval/agent_trace_assertions.py` + `tests/eval/` | Epic 3's agent **and** `EPIC_2_PLAN.md` Phase 2.3 |
+| Faithfulness SLO in `alerts.py` | `EPIC_2_PLAN.md` Phase 2.3 (RAGAS scores) |
+
+## Prerequisite for load, not a phase
+
+**The Qdrant payload index on `metadata.tenant_id` (`is_tenant=true`) must exist before this
+system carries real traffic.** It was recorded as a deferred nicety while the target was 1k
+tenants x 2 documents; at 10k x 10 -- order 1M points -- an unindexed tenant filter on every
+query degrades toward a scan. One `create_payload_index` call at collection setup. Details in
+`.claude/skills/VENDORED.md`, verdict in `TECHNICAL_DECISIONS.md` § "Scale target".
+
+Two sizing questions that come with the same revision and have no answer yet:
+
+- `processed_dir` holds one parsed JSON per document plus a PNG per surviving figure. At 100k
+  documents that volume needs a measured number before a deploy, not an assumption.
+- `GUNICORN_WORKERS` x `db_pool_size` against Postgres' `max_connections`, plus the worker's
+  own pool. The arithmetic works at the current scale because nothing is under load; it has
+  never been checked against a connection-count ceiling.
 
 ## Dependencies added
 
