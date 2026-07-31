@@ -20,7 +20,6 @@ router = APIRouter()
 
 @router.post(
     "/documents",
-    response_model=UploadAcceptedResponse,
     status_code=status.HTTP_202_ACCEPTED,
     tags=["documents"],
     summary="Queue a document for ingestion into the authenticated tenant's searchable scope",
@@ -102,7 +101,6 @@ def _to_status(record: DocumentRecord) -> DocumentStatusResponse:
 
 @router.get(
     "/documents",
-    response_model=DocumentListResponse,
     tags=["documents"],
     summary="List the documents you have uploaded",
     description="Returns every document owned by the tenant the `x-api-key` header authenticates "
@@ -127,7 +125,6 @@ async def list_documents(
 
 @router.get(
     "/documents/{doc_id}",
-    response_model=DocumentStatusResponse,
     tags=["documents"],
     summary="Check ingestion progress for one of your documents",
     description="Reports whether a queued document is still pending, being processed, finished, or failed "

@@ -614,13 +614,32 @@ tenants x 2 documents; at 10k x 10 -- order 1M points -- an unindexed tenant fil
 query degrades toward a scan. One `create_payload_index` call at collection setup. Details in
 `.claude/skills/VENDORED.md`, verdict in `TECHNICAL_DECISIONS.md` § "Scale target".
 
-Two sizing questions that come with the same revision and have no answer yet:
+Two sizing consequences of the same revision. Neither is an open question -- both have
+numbers -- but each needs a decision that has not been made:
 
-- `processed_dir` holds one parsed JSON per document plus a PNG per surviving figure. At 100k
-  documents that volume needs a measured number before a deploy, not an assumption.
-- `GUNICORN_WORKERS` x `db_pool_size` against Postgres' `max_connections`, plus the worker's
-  own pool. The arithmetic works at the current scale because nothing is under load; it has
-  never been checked against a connection-count ceiling.
+- **Connections.** The arithmetic is already in `app/config.py`: each gunicorn worker owns
+  its own engine, so the ceiling is `GUNICORN_WORKERS * (db_pool_size + db_max_overflow)`
+  against Postgres' `max_connections` (100 by default). At the shipped defaults that is
+  `2 * (10 + 5) = 30` -- fine. An 8 vCPU box wants `2*cpu+1 = 17` workers, which is
+  **`17 * 15 = 255`, over the limit by 2.5x**, and the `worker` container's own pool is on
+  top of that. Three ways out -- lower `db_pool_size`, raise `max_connections`, or put
+  PgBouncer in front -- and the decision is which, not whether. Nothing enforces the
+  invariant at startup today, so exceeding it surfaces as connection errors under load
+  rather than as a boot failure; a startup assertion is the cheap half of the fix.
+- **Disk. Still unmeasured, and an attempt to measure it failed informatively.**
+  `processed_dir` holds one parsed Docling JSON per document plus a PNG per surviving
+  figure; `upload_dir` holds the original upload. Per-document cost is therefore driven by
+  page count and figure count, not by file size -- but no number exists yet, and none should
+  be invented. Parsing one 16-page corpus paper (2.7MB, arXiv 2008.10896) to obtain one
+  **failed**: Docling returned `partial_success` with 1 of 16 pages parsed and fifteen
+  `document timeout exceeded` errors. That is a genuine finding independent of disk sizing:
+  the sandbox has no GPU and limited CPU, and a real paper exceeded the per-document
+  timeout. Whether production hardware clears it is unknown, which makes **ingest latency and
+  timeout budget on real corpus documents a load-test item in its own right** -- the 10s-2min
+  figure quoted in `README.md` comes from small documents.
+  Two things follow regardless of the eventual number: `processed_dir` is rebuildable by
+  re-parsing and so should be an evictable cache with a retention policy, unlike
+  `upload_dir`; and the measurement wants a machine that can actually finish a parse.
 
 ## Dependencies added
 

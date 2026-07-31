@@ -1,4 +1,4 @@
-from datetime import datetime  # noqa: TC003 -- see below
+from datetime import datetime  # see the note below: must stay a runtime import
 
 from pydantic import BaseModel, ConfigDict, Field
 

@@ -10,7 +10,6 @@ hole the API just closed.
 """
 
 import asyncio
-from typing import TYPE_CHECKING
 
 import streamlit as st
 
@@ -23,10 +22,15 @@ from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
 from app.logs import configure_logging
 from app.registry.db import list_document_records
-from app.vectorstore.qdrant_store import QdrantStore
 
-if TYPE_CHECKING:
-    from app.registry.models import DocumentRecord
+# Runtime import, not TYPE_CHECKING. This module has no `from __future__ import
+# annotations`, so `-> list[DocumentRecord]` on `_list_documents` is evaluated when the
+# function is defined: under a TYPE_CHECKING-only import that raises NameError at import
+# time and Streamlit never starts. Same trap as `datetime` in the model modules -- see
+# CLAUDE.md's failure contracts. ruff only catches it when target-version is the real
+# floor (py313); on py314 PEP 649 defers the annotation and the bug is invisible.
+from app.registry.models import DocumentRecord
+from app.vectorstore.qdrant_store import QdrantStore
 
 configure_logging()
 

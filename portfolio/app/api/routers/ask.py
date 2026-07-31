@@ -20,7 +20,6 @@ def _service() -> AnswerService:
 
 @router.post(
     "/ask",
-    response_model=AskResponse,
     tags=["ask"],
     summary="Ask a question over the curated corpus plus your own tenant's uploads",
     description="Retrieves relevant chunks, reranks them, and generates a cited answer grounded only "

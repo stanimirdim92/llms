@@ -11,11 +11,14 @@ maintainers = [
 readme = "README.md"
 license = "Apache-2.0"
 
-# 3.14, not 3.12: `uuid.uuid7()` (used in api/routers/documents.py and
-# streamlit_app/Home.py for session ids) is 3.14 stdlib and raises AttributeError on
-# 3.12/3.13, and ruff.toml/ty.toml already target py314 while the Dockerfile pins
-# python:3.14-slim. The old ">=3.12" floor was a claim the code could not honor.
-requires-python = ">=3.14,<4.0"
+# 3.13, lowered from 3.14. The 3.14 floor existed for `uuid.uuid7()`, and the comment
+# here claimed api/routers/documents.py and streamlit_app/Home.py used it -- stale, since
+# those call sites went away when `session_id` became an auth-derived `tenant_id`. It
+# survived in `scripts/create_tenant.py` only, which is not even copied into the image;
+# `app/ids.py` now provides it with an RFC 9562 fallback, so 3.13 is honestly supported.
+# Docker and CI still run 3.14 -- a runtime newer than the floor is the normal case. The
+# floor is what the code *requires*, and nothing here requires 3.14 any more.
+requires-python = ">=3.13,<4.0"
 dependencies = [
     #    "joblib",
     "aiocache[redis]>=0.12.3,<1.0.0",

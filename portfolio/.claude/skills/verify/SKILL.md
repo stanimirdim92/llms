@@ -38,28 +38,45 @@ once at the start. `pg_ctl` refuses to run as root -- hence the `su postgres`.
 Outside this container, the compose Postgres/Redis serve the same purpose and need no port
 overrides. CI provides both and asserts none of the three suites skipped.
 
-## Trap 2: the interpreter may not be able to run pytest
+## Trap 2: build the dev venv on 3.13, not 3.14
 
-`requires-python` is `>=3.14`. If the only 3.14 available is a **pre-release**, pydantic fails
-to build models on it:
+`requires-python` is `>=3.13` while Docker and CI run 3.14. **Build the local venv on 3.13:**
+
+    uv venv --python 3.13 && uv sync --extra dev --locked
+
+On a 3.14 *pre-release* -- which is the only 3.14 some environments offer -- pydantic cannot
+build models:
 
     TypeError: _eval_type() got an unexpected keyword argument 'prefer_fwd_module'
 
-That is the interpreter, not the code. ruff, ty, and `docker compose config` still work; pytest
-and any `import app.api.main` do not. Workaround, in this order:
+That is the interpreter, not the code: ruff, ty, and `docker compose config` still pass while
+pytest and any `import app.api.main` fail. Since `uv` prefers the newest interpreter satisfying
+the floor, a venv created without `--python 3.13` may land on the pre-release and appear
+broken. Check which one you are on before believing a failure:
 
-1. `sed -i 's/^requires-python = ">=3.14,<4.0"/requires-python = ">=3.13,<4.0"/' pyproject.toml`
-2. `uv sync --extra dev --python 3.13 -q`
-3. run the tests
-4. **`git checkout pyproject.toml`**, then `rm -f uv.lock && uv lock` and `uv sync --extra dev --locked`
+    uv run python -V
 
-Step 4 is not optional and is easy to half-finish. `uv sync` **re-resolves the lock** under the
-relaxed floor, so a lockfile generated during the detour pins `>=3.13` and must be regenerated
-before committing. Check it:
+This used to require temporarily editing `requires-python` and regenerating `uv.lock`
+afterwards. It no longer does -- the floor is 3.13 for real. If you find that editing
+procedure anywhere, it is stale.
 
-    grep -m1 'requires-python' uv.lock        # must read ">=3.14, <4.0"
+## Trap 3: `uv run pytest` lies when dev extras are not synced
 
-On Python 3.14 *final* none of this applies -- run the suite directly.
+If `pytest` is absent from the venv, `uv run pytest` does **not** fail with "pytest not
+found" -- it resolves pytest into an isolated tool environment that has none of the project
+dependencies, then reports a wall of:
+
+    ModuleNotFoundError: No module named 'pydantic'
+    ModuleNotFoundError: No module named 'httpx'
+    ModuleNotFoundError: No module named 'sqlalchemy'
+
+Twelve collection errors that read as a broken project. The cause is a missing
+`uv sync --extra dev`. Confirm before diagnosing anything else:
+
+    uv run python -c "import pydantic, httpx, sqlalchemy; print('deps present')"
+
+If that succeeds while pytest reports the modules missing, pytest is running from somewhere
+else. Sync dev extras and re-run.
 
 ## What green does NOT mean
 

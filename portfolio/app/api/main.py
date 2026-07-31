@@ -1,4 +1,6 @@
-from collections.abc import AsyncIterator  # noqa: TC003  -- FastAPI reads lifespan's return annotation at runtime
+# FastAPI reads lifespan's return annotation at runtime, so this import must not move
+# into a TYPE_CHECKING block.
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import structlog

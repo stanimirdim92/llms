@@ -11,7 +11,6 @@ Until Phase 5 adds a registration UI, this is the only way to get a usable key.
 import argparse
 import asyncio
 import sys
-import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -23,6 +22,7 @@ from sqlmodel import select
 from app.auth.keys import display_prefix, generate_key, hash_key
 from app.auth.models import ApiKey, Tenant
 from app.db import get_session, init_db
+from app.ids import new_id
 
 
 async def _mint_key(tenant_id: str, name: str) -> str:
@@ -33,7 +33,7 @@ async def _mint_key(tenant_id: str, name: str) -> str:
     async with get_session() as session:
         session.add(
             ApiKey(
-                id=uuid.uuid7().hex,
+                id=new_id(),
                 tenant_id=tenant_id,
                 key_hash=hash_key(key),
                 prefix=display_prefix(key),
@@ -45,7 +45,7 @@ async def _mint_key(tenant_id: str, name: str) -> str:
 
 
 async def create_tenant(tenant_name: str, key_name: str) -> None:
-    tenant_id = uuid.uuid7().hex
+    tenant_id = new_id()
     async with get_session() as session:
         session.add(Tenant(id=tenant_id, name=tenant_name))
         await session.commit()

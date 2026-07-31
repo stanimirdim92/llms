@@ -443,14 +443,41 @@ zero-code once `LANGSMITH_*` env vars are set. Running Phoenix alongside it woul
 trace backends covering the same call graph. Phoenix is dropped from the plan rather than
 layered on top.
 
-## Python 3.14 floor
+## Python floor: 3.13, after 3.12 and 3.14
 
-`requires-python = ">=3.14"` because `uuid.uuid7()` is 3.14 stdlib and the Dockerfile pins
-`python:3.14-slim`. The floor previously said `>=3.12`, which the code could not honour.
+Three positions, in order, and the middle one was wrong in both directions.
 
-One caveat for local work: if the only available 3.14 is a pre-release, pydantic may fail to
-build models on it (`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`).
-That is the interpreter, not this code.
+`>=3.12` was the original floor and the code could not honour it: `uuid.uuid7()` is 3.14
+stdlib and raises `AttributeError` below it. Raised to `>=3.14`, correctly at the time.
+
+Lowered again to **`>=3.13`** once the justification was re-checked and found to be almost
+entirely stale. The comment in `pyproject.toml` claimed `api/routers/documents.py` and
+`streamlit_app/Home.py` called `uuid7()` for session ids; both call sites disappeared when
+`session_id` became an auth-derived `tenant_id`, and nobody updated the comment. What
+actually remained was **two calls in `scripts/create_tenant.py`** -- a host-side CLI that is
+deliberately not copied into the image. The app's own uuid usage is `uuid5` (Qdrant point
+ids) and `uuid4` (rate-limit script keys), both ancient.
+
+`app/ids.py::new_id` now supplies the id, using `uuid.uuid7()` when the interpreter has it
+and an RFC 9562 §5.7 implementation when it does not. **A `uuid4` fallback was rejected**:
+these are primary keys, and v7's leading 48-bit timestamp is what gives them index locality
+on insert. A fallback that silently dropped the ordering would make key distribution depend
+on which interpreter minted the row -- visible months later as index bloat, never as an
+error. `tests/unit/test_ids.py` asserts the version and variant bits, that the timestamp
+occupies the leading 48 bits, and that hex ordering matches creation order, so substituting
+`uuid4` fails the suite rather than passing quietly.
+
+Docker and CI stay on 3.14. A runtime newer than the floor is the normal case; the floor
+states what the code *requires*, and nothing requires 3.14 any more.
+
+**What this actually bought**: local testing. The only 3.14 available in some environments
+is a pre-release, and on 3.14.0rc2 pydantic fails to build models
+(`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`) -- so the suite could
+not run locally at all under a `>=3.14` floor, since `uv sync` refuses a 3.13 interpreter.
+Previously that was worked around by editing the floor temporarily and remembering to put it
+back, which also rewrote `uv.lock` each time. Now `uv venv --python 3.13 && uv sync
+--extra dev` just works. That is the whole reason to prefer the lowest floor the code
+honestly supports rather than the highest one it happens to run on.
 
 ## Testing: real services, and skip rather than fake
 

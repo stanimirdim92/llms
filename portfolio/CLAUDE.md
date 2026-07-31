@@ -264,12 +264,14 @@ Things that look correct and aren't:
 - **`POSTGRES_USER`/`PASSWORD`/`DB` is one set serving two consumers**: the postgres
   image, and `app/config.py`'s `Settings`, which assembles `DATABASE_URL` from them.
   Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME`.
-- **`requires-python` is `>=3.14`** because `uuid.uuid7()` is 3.14 stdlib and the
-  Dockerfile pins `python:3.14-slim`. Caveat for local work: if the only 3.14 available
-  is a pre-release, pydantic may fail to build models on it
-  (`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`). That's the
-  interpreter, not this code -- run the suite on 3.14 final, or temporarily relax the
-  floor to test and restore it before committing.
+- **`requires-python` is `>=3.13`**, while Docker and CI run 3.14 -- deliberately. The
+  floor is what the code requires; nothing requires 3.14 since `app/ids.py` took over
+  `uuid7` with an RFC 9562 fallback. **Never call `uuid.uuid7()` directly** -- it raises
+  `AttributeError` on 3.13 and the floor permits 3.13. Use `app.ids.new_id()`.
+  This matters locally: on a 3.14 *pre-release* pydantic fails to build models
+  (`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`), so a 3.14-floored
+  project could not run its own suite. Build the dev venv on 3.13
+  (`uv venv --python 3.13 && uv sync --extra dev`) and the whole problem disappears.
 
 ## The tenant boundary
 
