@@ -18,6 +18,14 @@ class Retriever:
     def __init__(self, store: QdrantStore | None = None) -> None:
         self._store = store or QdrantStore()
 
-    async def retrieve(self, query: str, top_k: int | None = None, tenant_id: str | None = None) -> list[Document]:
+    async def retrieve(
+        self,
+        query: str,
+        top_k: int | None = None,
+        tenant_id: str | None = None,
+        doc_ids: list[str] | None = None,
+    ) -> list[Document]:
         settings = get_settings()
-        return await self._store.query(query, top_k=top_k or settings.retrieval_top_k, tenant_id=tenant_id)
+        return await self._store.query(
+            query, top_k=top_k or settings.retrieval_top_k, tenant_id=tenant_id, doc_ids=doc_ids
+        )

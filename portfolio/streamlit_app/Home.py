@@ -30,6 +30,7 @@ from app.registry.db import list_document_records
 # CLAUDE.md's failure contracts. ruff only catches it when target-version is the real
 # floor (py313); on py314 PEP 649 defers the annotation and the bug is invisible.
 from app.registry.models import DocumentRecord
+from app.retrieval.document_scope import DocumentScope, mentions_a_filename, resolve_scope
 from app.vectorstore.qdrant_store import QdrantStore
 
 configure_logging()
@@ -166,15 +167,31 @@ with st.expander("My documents", expanded=not st.session_state.uploaded_docs):
             hide_index=True,
         )
 
-question = st.text_input("Question", placeholder="What cathode materials show the highest cycling stability?")
+question = st.text_input(
+    "Question",
+    placeholder="What cathode materials show the highest cycling stability?",
+    help="Name a file from the table above (extension included) to restrict the search to it.",
+)
 
 if st.button("Ask", type="primary") and question:
+    # Reuses the rows the expander above already fetched, so scoping costs no extra query
+    # here -- unlike `/ask`, which has no such list at hand and gates the read on the regex.
+    scope = resolve_scope(question, records) if mentions_a_filename(question) else DocumentScope()
+
+    if scope.names_nothing_owned:
+        # Same contract as the API's 404: refuse rather than fall back to searching
+        # everything, which would answer confidently about a different document.
+        st.error(f"No document named {', '.join(scope.unknown)} in your documents.")
+        st.stop()
+
     with st.spinner("Retrieving, reranking, and generating..."):
         # Streamlit's script model runs synchronously (no event loop of its own), so an
         # async call needs its own loop here rather than a plain await.
-        result = asyncio.run(_service().answer(question, tenant_id=tenant_id))
+        result = asyncio.run(_service().answer(question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None))
 
     st.subheader("Answer")
+    if scope.filenames:
+        st.caption(f"Scoped to {', '.join(scope.filenames)} — the rest of your corpus was not searched.")
     st.write(result.text)
 
     if result.citations:
@@ -189,7 +206,10 @@ if st.button("Ask", type="primary") and question:
     for doc in result.retrieved_chunks:
         meta = doc.metadata
         section_or_page = meta.get("section_path") or f"page {meta.get('page_no')}"
-        with st.expander(f"[{meta.get('chunk_type', 'text')}] {meta.get('doc_id', '')} — {section_or_page}"):
+        # Filename first, doc_id only as the fallback for chunks written before it was stamped:
+        # a 64-character content hash tells the reader nothing about which document this is.
+        label = meta.get("filename") or meta.get("doc_id", "")
+        with st.expander(f"[{meta.get('chunk_type', 'text')}] {label} — {section_or_page}"):
             if meta.get("chunk_type") == "figure" and meta.get("image_path"):
                 st.image(meta["image_path"])
             st.markdown(doc.page_content)

@@ -41,6 +41,13 @@ class RetrievedChunkResponse(BaseModel):
 
 class AskResponse(BaseModel):
     answer: str = Field(description="The generated answer text")
+    scoped_to: list[str] = Field(
+        default_factory=list,
+        description="Filenames the search was restricted to, because the question named them. "
+        "Empty means the whole corpus plus all of this tenant's uploads were searched. Present so "
+        "narrowing is never silent -- an answer drawn from one document reads identically to one "
+        "drawn from everything.",
+    )
     citations: list[CitationResponse] = Field(description="Sources the answer explicitly cites")
     retrieved_chunks: list[RetrievedChunkResponse] = Field(
         description="Every chunk retrieved and reranked for this question, cited or not"

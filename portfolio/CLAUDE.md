@@ -7,7 +7,10 @@ Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stac
 Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs), and Phase 5.1
 (ingestion behind a Postgres-backed job queue) -- see `EPIC_4_PLAN.md` for the rest. Not
 built: Epics 2 and 3, designed in `docs/IMPLEMENTATION_PLAN.md` only -- no eval framework,
-no agent. Don't assume code for them.
+no agent. Don't assume code for them. The one exception is
+`app/retrieval/document_scope.py`, pulled out of Epic 2 early: naming a filename in an `/ask`
+question scopes retrieval to that document. It is **not** the intent router, and there is
+still no golden set and no metric, so nothing measures whether an answer is good.
 
 ## Producer/consumer split
 

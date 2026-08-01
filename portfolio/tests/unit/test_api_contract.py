@@ -14,6 +14,7 @@ is only possible because `current_tenant` is a dependency rather than middleware
 
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 import pytest
@@ -21,7 +22,8 @@ from httpx import ASGITransport, AsyncClient
 
 from app.api import deps
 from app.api.main import app
-from app.api.routers import health
+from app.api.routers import ask as ask_router, health
+from app.retrieval.document_scope import DocumentScope
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
@@ -90,6 +92,51 @@ async def test_a_smuggled_tenant_id_is_also_refused(client: AsyncClient) -> None
     response = await client.post("/v1/ask", json={"question": "hi", "tenant_id": TENANT_B})
 
     assert response.status_code == 422
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_naming_an_unowned_document_is_404_through_http(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Asserted at the HTTP layer, not just on `resolve_scope`, because the wiring is what
+    broke once: a helper added above `async def ask` took the route decorator with it, and the
+    endpoint started returning the helper's type. Unit tests on the resolver all still passed.
+
+    Also pins 404 rather than 403 -- distinguishing "not yours" from "does not exist" would
+    confirm to any caller that a given file had been uploaded by somebody.
+    """
+
+    async def _no_documents(_question: str, _tenant_id: str) -> DocumentScope:
+        return DocumentScope(unknown=["MISSING.pdf"])
+
+    monkeypatch.setattr(ask_router, "_document_scope", _no_documents)
+    response = await client.post("/v1/ask", json={"question": "tell me about MISSING.pdf"})
+
+    assert response.status_code == 404
+    assert "MISSING.pdf" in response.json()["detail"]
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_a_question_naming_nothing_never_reads_the_registry(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`/ask` is the hot path, so the registry read is gated on a regex. If that gate is lost
+    every question pays a query, which shows up as latency rather than as a failure.
+    """
+    called = False
+
+    async def _tripwire(*_args: object, **_kwargs: object) -> list:
+        nonlocal called
+        called = True
+        return []
+
+    monkeypatch.setattr(ask_router, "list_document_records", _tripwire)
+    # The answer itself needs Voyage/Anthropic, so this asserts only on the pre-check by
+    # letting the call fail afterwards -- the tripwire is what is under test.
+    with contextlib.suppress(Exception):
+        await client.post("/v1/ask", json={"question": "what cathode materials cycle best?"})
+
+    assert not called, "a question naming no filename must not hit the registry"
 
 
 @pytest.mark.usefixtures("as_tenant_a")

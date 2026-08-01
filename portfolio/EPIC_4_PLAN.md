@@ -66,8 +66,11 @@ Delivered as planned, with these deviations worth recording:
   a full `await file.read()`, so `max_upload_size_mb` bounds what's stored, not what's
   buffered. Noted in `documents.py`.
 
-Not verified here: no live Postgres or Qdrant in the dev sandbox, so `init_db` against real
-Postgres and end-to-end cross-tenant retrieval remain to be checked on real infrastructure.
+Since verified on the real stack: `init_db` runs against a live Postgres (including the
+advisory-lock path, which the first real boot is what surfaced), and the queued path has been
+observed end to end — `POST /v1/documents` → job row → `worker` consuming it → Qdrant points →
+an `ingested` registry row. What remains unverified on real infrastructure is Qdrant's client
+over the wire under concurrency, and the nginx config's syntax.
 
 ### Original plan (for reference)
 

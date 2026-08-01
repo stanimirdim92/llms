@@ -66,6 +66,14 @@ curl http://localhost:8000/v1/documents -H "x-api-key: pf_live_..."
 curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "What electrolyte did they use?"}'
+
+# Naming a file you own -- extension included -- restricts the search to it. No extra
+# parameter: the filename in the question text is what does it, and `scoped_to` in the
+# response says which documents it narrowed to. An unowned name is a 404, not a silent
+# search of everything.
+curl -X POST http://localhost:8000/v1/ask \
+  -H "x-api-key: pf_live_..." -H "content-type: application/json" \
+  -d '{"question": "summarise paper.pdf"}'
 ```
 
 The answer comes back with `citations` (quoted text plus `chunk_id`/`doc_id`/`page_no`)
@@ -187,6 +195,11 @@ Epic 3's design.
   `procrastinate` worker does the work, with the document row and its job committed in one
   transaction. Status polling via `GET /v1/documents/{doc_id}`, including a reason on
   failure.
+- **Explicit document scoping on `/ask`** (pulled forward out of Epic 2, because it fixed an
+  observed defect rather than moving a metric). Naming a file you own in the question narrows
+  retrieval to it via a `doc_id` filter resolved from your registry rows; naming one you don't
+  own is a 404. No model call — see `app/retrieval/document_scope.py` for why, and
+  `EPIC_2_PLAN.md` for what is deliberately left out (semantic reference: "the flyer").
 
 **Not built.** These exist as designs only — there is no code for any of them, so don't
 infer any from a plan's directory layout. The buildable plans are
@@ -196,7 +209,8 @@ is deliberately not kept current:
 
 - **Epic 2 — Eval framework.** RAGAS metrics as LangSmith custom evaluators over a
   versioned dataset, with a CI threshold gate and a deliberate pre-reranker baseline to
-  compare against.
+  compare against. Explicit document scoping is the one piece already shipped (above); the
+  intent router, golden set, and gate are not.
 - **Epic 3 — Knowledge-curation agent with HITL.** Playwright scraping, an
   orchestrator plus Curator/Evaluator subagents over the same Qdrant collection,
   prompt-injection defense on scraped content, and LangGraph `interrupt()` for human
@@ -222,10 +236,9 @@ identity decision, is in [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
   production. It's also how a registry-write bug survived until phase 5.1 added the first test
   over that path: every ingest wrote to Qdrant and then crashed before the Postgres row, and
   the symptom read as a database problem.
-- **The end-to-end queued path has not been run against real infrastructure.** Transactional
-  enqueue is verified against a live Postgres, but no Docker daemon exists in the development
-  sandbox, so `worker` has never actually consumed a job here. The nginx config's *syntax* is
-  likewise unvalidated (no daemon, no nginx binary) — only its build-time substitution is.
+- The nginx config's *syntax* is unvalidated (no nginx binary in the development sandbox) —
+  only its build-time placeholder substitution is checked, by the build failing on any
+  unsubstituted `__PLACEHOLDER__`.
 - Uploads are read fully into memory before the size check, so `MAX_UPLOAD_SIZE_MB`
   bounds what is *stored*, not what is buffered. Streaming to disk is tracked as
   `EPIC_4_PLAN.md` 1.6.

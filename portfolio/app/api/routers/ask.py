@@ -8,7 +8,11 @@ from fastapi import APIRouter, Depends
 # this import, ruff will suggest moving the rest into a TYPE_CHECKING block; don't.
 from app.api.deps import CurrentTenant, rate_limited
 from app.api.schemas import AskRequest, AskResponse, CitationResponse, RetrievedChunkResponse
+from app.db import get_session, init_db
+from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
+from app.registry.db import list_document_records
+from app.retrieval.document_scope import DocumentScope, mentions_a_filename, resolve_scope
 
 router = APIRouter()
 
@@ -18,20 +22,54 @@ def _service() -> AnswerService:
     return AnswerService()
 
 
+async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
+    """Resolve a filename named in the question against *this tenant's* documents.
+
+    The registry read is gated on `mentions_a_filename` so the common case -- a question that
+    names nothing -- costs no query. The records passed to `resolve_scope` come from
+    `list_document_records`, which filters on `tenant_id` in the WHERE clause, so a resolved
+    `doc_id` is always one the caller owns. That is the ownership check required before any
+    id reaches a Qdrant filter: `doc_id` is a content hash, so two tenants uploading the same
+    file share one, and matching on the id alone would resolve to the other tenant's document
+    while looking entirely correct.
+    """
+    if not mentions_a_filename(question):
+        return DocumentScope()
+
+    await init_db()
+    async with get_session() as session:
+        records = await list_document_records(session, tenant_id=tenant_id)
+    return resolve_scope(question, records)
+
+
 @router.post(
     "/ask",
     tags=["ask"],
     summary="Ask a question over the curated corpus plus your own tenant's uploads",
     description="Retrieves relevant chunks, reranks them, and generates a cited answer grounded only "
     "in what was retrieved. Searches the shared corpus plus documents uploaded by the tenant the "
-    "`x-api-key` header authenticates as -- never another tenant's. Requires a valid API key.",
+    "`x-api-key` header authenticates as -- never another tenant's. Requires a valid API key.\n\n"
+    "Naming one of your own documents by filename in the question -- 'give me the contents of "
+    "report.pdf' -- restricts the search to that document, and `scoped_to` in the response says "
+    "which. The filename must be written in full, extension included, exactly as "
+    "`GET /v1/documents` reports it. Naming a file you do not have returns 404 rather than "
+    "silently searching everything.",
     response_description="A cited answer, its citations, and every chunk that was retrieved/reranked",
     dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
 )
 async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
-    result = await _service().answer(request.question, tenant_id=tenant_id)
+    scope = await _document_scope(request.question, tenant_id)
+    if scope.names_nothing_owned:
+        # 404, not 403, and deliberately without saying whether the file exists for anyone
+        # else -- that would be an existence oracle over content hashes. Naming the caller's
+        # own documents back is safe and is the thing that makes the error actionable.
+        named = ", ".join(scope.unknown)
+        raise APIError(f"No document named {named} in your documents. Check GET /v1/documents.", code=404)
+
+    result = await _service().answer(request.question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
     return AskResponse(
         answer=result.text,
+        scoped_to=scope.filenames,
         citations=[
             CitationResponse(quoted_text=c.quoted_text, chunk_id=c.chunk_id, doc_id=c.doc_id, page_no=c.page_no)
             for c in result.citations

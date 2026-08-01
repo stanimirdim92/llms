@@ -55,7 +55,7 @@ def _to_document(chunk: Chunk) -> Document:
     return Document(page_content=chunk.text, metadata=_chunk_metadata(chunk))
 
 
-def _build_filter(chunk_types: list[str] | None, tenant_id: str | None) -> Filter:
+def _build_filter(chunk_types: list[str] | None, tenant_id: str | None, doc_ids: list[str] | None = None) -> Filter:
     """Always includes the global corpus; additionally includes `tenant_id`'s own uploads.
 
     This is the entire retrieval security boundary: it is what stops one tenant reading
@@ -73,6 +73,11 @@ def _build_filter(chunk_types: list[str] | None, tenant_id: str | None) -> Filte
     must = [FieldCondition(key="metadata.tenant_id", match=MatchAny(any=tenant_ids))]
     if chunk_types:
         must.append(FieldCondition(key="metadata.chunk_type", match=MatchAny(any=chunk_types)))
+    if doc_ids:
+        # ANDed with the tenant condition above, never replacing it: a doc_id is resolved from
+        # the caller's own registry rows, but this filter is the security boundary and must not
+        # depend on that being true somewhere upstream.
+        must.append(FieldCondition(key="metadata.doc_id", match=MatchAny(any=doc_ids)))
     return Filter(must=must)
 
 
@@ -135,13 +140,14 @@ class QdrantStore:
         top_k: int,
         chunk_types: list[str] | None = None,
         tenant_id: str | None = None,
+        doc_ids: list[str] | None = None,
     ) -> list[Document]:
         # `qdrant-client`'s `QdrantVectorStore` (as of langchain-qdrant 1.1.0) has no
         # native async client of its own, same as Chroma -- `asimilarity_search` is
         # still `VectorStore`'s thread-pool-shimmed default. Kept async regardless: it's
         # free (no extra dependency, no behavior change either way) and keeps this
         # call's signature consistent with the rest of the already-async /ask chain.
-        where = _build_filter(chunk_types, tenant_id)
+        where = _build_filter(chunk_types, tenant_id, doc_ids)
         return await self._store.asimilarity_search(query, k=top_k, filter=where)
 
     def as_retriever(self, top_k: int) -> VectorStoreRetriever:

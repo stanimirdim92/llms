@@ -5,7 +5,9 @@ evaluators, a CI threshold gate). That still holds. This file is the buildable p
 plus everything learned since Epic 1 shipped — most of it from a real defect and from
 reading `microsoft/graphrag`.
 
-Nothing here is built. Epic 1's answer path works and has never been measured.
+Nothing here is built except explicit document scoping (under Phase 2.0 below, shipped early
+because it fixed a defect rather than a metric). Epic 1's answer path works and has never
+been measured.
 
 ## Why this epic now blocks other work
 
@@ -47,26 +49,41 @@ metadata questions.
 (assert on a store spy, not on the answer text), an out-of-scope question is refused, and
 the factual path is byte-identical to today's behaviour.
 
-### Scoping a question to one named document
+### Scoping a question to one named document — built, not planned
 
-A related class the router should recognise: *"tell me about 24383456-639402.pdf"* -- a
-factual question **restricted to one document**. Half of this is already fixed: `filename`
-now rides in the chunk payload and leads the block title the model reads, so it can match a
-name it is shown. The missing half is retrieval-side filtering -- nothing narrows the search
-to that document, so the answer is assembled from whatever ranked highest across the whole
-tenant.
+*"give me the contents of 3020072D.pdf"* is a factual question **restricted to one
+document**, and it now works. It shipped ahead of the rest of this epic for the same reason
+2.0 does: it fixes an observed defect rather than moving a metric, so it needed no recall
+measurement to justify. Both halves are in:
 
-That wants `filename` (or `doc_id`) as an optional condition in
-`QdrantStore._build_filter`, resolved from the registry rather than trusted from the
-question -- a filename in a question is user input, and matching it against
-`list_document_records` first means an unknown name gets an honest "no such document"
-instead of a silent unfiltered search. Sequenced here rather than in 2.0 because it is a
-retrieval change and belongs behind recall measurement, but it is the same user-facing
-complaint, so keep them together when scheduling.
+- `filename` rides in the chunk payload and leads the block title the model reads
+  (`answer_service._chunk_title`), so the model can match a name it is actually shown. The
+  production symptom without it was a model summarising a document's contents while stating
+  it had no document by that name — the only label it had was a content-hash `doc_id`.
+- `app/retrieval/document_scope.py` reads filename-shaped tokens out of the question and
+  resolves them against the caller's own registry rows; the resulting `doc_ids` become a
+  `MatchAny` condition ANDed into `QdrantStore._build_filter`. A named document this tenant
+  does not own is a 404 naming it, not a silent unfiltered search.
 
-Note the payload-index consequence: filtering on `metadata.filename` at the 10k x 10 target
-needs its own keyword index, exactly like `metadata.tenant_id`
-(`TECHNICAL_DECISIONS.md` § "Scale target").
+**Deliberately no model call** — the candidate set is a closed one (the tenant's own
+documents), so it is string matching, per rule 5. Matching requires the full filename
+*including extension*, which is what stops a tenant owning `data.pdf` having "what data does
+the study use?" silently narrowed to that one file.
+
+What is *not* built, and does belong behind measurement: **semantic** reference — "the
+flyer", "my CV", "the German one". That needs a model, and it needs 2.3 to show the guessing
+helps more than it hurts, since a wrong guess here produces a confident answer about the
+wrong document with nothing in the response indicating it.
+
+Two consequences to carry forward:
+
+- Scoped retrieval currently reuses the same `top_k`. Within one document that is a much
+  larger fraction of the available chunks, so the scoped path wants its own recall@k line in
+  2.1's golden set rather than being assumed equivalent.
+- If matching ever moves to filtering on `metadata.filename` directly instead of resolving to
+  `doc_id` first, that field needs its own keyword payload index at the 10k x 10 target,
+  exactly like `metadata.tenant_id` (`TECHNICAL_DECISIONS.md` § "Scale target"). Resolving
+  through the registry avoids that today.
 
 ## Phase 2.1 — Golden set
 
