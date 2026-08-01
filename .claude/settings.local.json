@@ -4,7 +4,10 @@
       "Bash(git -C /var/www/html/personal/llms status --short)",
       "Bash(gh pr *)",
       "Bash(python3 -c \"import json; d=json.load\\(open\\('/var/www/html/personal/llms/portfolio/data/manifest.json'\\)\\); print\\(len\\(d\\), 'entries'\\); print\\(json.dumps\\(d[0] if isinstance\\(d,list\\) else list\\(d.items\\(\\)\\)[0], indent=2\\)[:400]\\)\")",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "mcp__Claude_Code_Remote__list_repos",
+      "mcp__Claude_Code_Remote__add_repo",
+      "mcp__Claude_Code_Remote__register_repo_root"
     ]
   }
 }
