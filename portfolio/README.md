@@ -67,13 +67,18 @@ curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "What electrolyte did they use?"}'
 
-# Naming a file you own -- extension included -- restricts the search to it. No extra
-# parameter: the filename in the question text is what does it, and `scoped_to` in the
-# response says which documents it narrowed to. An unowned name is a 404, not a silent
-# search of everything.
+# Naming a document you own restricts the search to it. No extra parameter: the identifier
+# in the question text is what does it, and `scoped_to` in the response says which documents
+# it narrowed to. An unowned name is a 404, not a silent search of everything.
 curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "summarise paper.pdf"}'
+
+# ...or by doc_id, bare or behind a `doc_id=` marker. The marker is the only form that works
+# for the shared corpus, whose ids are bare arXiv numbers a regex cannot tell from a decimal.
+curl -X POST http://localhost:8000/v1/ask \
+  -H "x-api-key: pf_live_..." -H "content-type: application/json" \
+  -d '{"question": "extract the contact details from doc_id=019fb3eb...-64a6d182..."}'
 ```
 
 The answer comes back with `citations` (quoted text plus `chunk_id`/`doc_id`/`page_no`)
@@ -196,10 +201,11 @@ Epic 3's design.
   transaction. Status polling via `GET /v1/documents/{doc_id}`, including a reason on
   failure.
 - **Explicit document scoping on `/ask`** (pulled forward out of Epic 2, because it fixed an
-  observed defect rather than moving a metric). Naming a file you own in the question narrows
-  retrieval to it via a `doc_id` filter resolved from your registry rows; naming one you don't
-  own is a 404. No model call — see `app/retrieval/document_scope.py` for why, and
-  `EPIC_2_PLAN.md` for what is deliberately left out (semantic reference: "the flyer").
+  observed defect rather than moving a metric). Naming a document you own in the question — by
+  filename or by `doc_id` — narrows retrieval to it via a `doc_id` filter resolved from your
+  registry rows; naming one you don't own is a 404. No model call — see
+  `app/retrieval/document_scope.py` for why, and `EPIC_2_PLAN.md` for what is deliberately
+  left out (semantic reference: "the flyer").
 
 **Not built.** These exist as designs only — there is no code for any of them, so don't
 infer any from a plan's directory layout. The buildable plans are

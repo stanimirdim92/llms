@@ -11,12 +11,24 @@ extraction from open text -- plain code, per the project's rule about reserving 
 for judgment calls. It is also fully unit-testable with no services and no API keys, which
 a classifier would not be.
 
-The matching rule is narrow on purpose: **a token in the question must equal a full
-filename, extension included.** The looser alternatives all fail badly. Matching bare stems
-means a tenant owning `data.pdf` has "what data does the study use?" silently narrowed to
-that one file -- a wrong answer with no error, which is the worst failure this system has.
-Requiring the extension makes the trigger something a user types deliberately, usually by
-copying it out of `GET /v1/documents`.
+Two things count as naming a document, because both are things a user copies out of
+`GET /v1/documents`:
+
+- **A full filename, extension included.** The looser alternatives all fail badly. Matching
+  bare stems means a tenant owning `data.pdf` has "what data does the study use?" silently
+  narrowed to that one file -- a wrong answer with no error, which is the worst failure this
+  system has. Requiring the extension makes the trigger deliberate.
+- **A `doc_id`**, either behind an explicit `doc_id=` marker or as the bare
+  `{tenant_id}-{hash}` shape that `upload_doc_id` generates. The marker is what makes the
+  curated corpus's ids usable at all: those are bare arXiv ids like `2008.10896`, which no
+  regex can distinguish from a decimal number in running prose.
+
+Ignoring ids was a real defect, not a hypothetical. Asked for structured output "for document
+with id ... doc_id=019fb3...", the search ran unscoped and four of the five chunks that won
+reranking came from the tenant's CV rather than the named advertisement -- the question was
+mostly Pydantic field descriptions ("The name of the company or entity", "the phone number,
+formatted for international dialling"), which embed far closer to a CV's contact and profile
+sections than to a sparse one-page flyer.
 
 Two outcomes besides a match, both of which the caller must surface rather than swallow:
 
@@ -41,7 +53,7 @@ from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS
 if TYPE_CHECKING:
     from app.registry.models import DocumentRecord
 
-__all__ = ["DocumentScope", "mentions_a_filename", "resolve_scope"]
+__all__ = ["DocumentScope", "mentions_a_document", "resolve_scope"]
 
 # Built from the same extension set uploads are validated against, so a format that becomes
 # ingestible becomes namable in the same commit. Sorted longest-first because the regex
@@ -53,15 +65,28 @@ _EXTENSION_ALTERNATION = "|".join(re.escape(ext) for ext in sorted(SUPPORTED_UPL
 # into the token. The trailing boundary stops `report.pdfx` matching as `report.pdf`.
 _FILENAME_TOKEN = re.compile(rf"[\w.\-]+\.(?:{_EXTENSION_ALTERNATION})\b", re.IGNORECASE)
 
+# An explicit marker, so *any* id shape works -- including the curated corpus's bare arXiv
+# ids, which are unmatchable on shape alone. Accepts what people actually type: `doc_id=x`,
+# `doc id: x`, `docid = x`.
+_DOC_ID_MARKER = re.compile(r"\bdoc[_\s-]?id\s*[=:]\s*([^\s,;]+)", re.IGNORECASE)
 
-def mentions_a_filename(question: str) -> bool:
+# The shape `upload_doc_id` generates: `{tenant_id}-{sha256[:32]}`, where tenant_id is a
+# `uuid7().hex` or the literal `global` for the shared corpus. Matched bare so an id pasted
+# straight out of `GET /v1/documents` works without the marker. Two fixed-length hex runs are
+# specific enough not to collide with prose; a bare arXiv id deliberately is not.
+_DOC_ID_SHAPE = re.compile(r"\b(?:[0-9a-f]{32}|global)-[0-9a-f]{32}\b", re.IGNORECASE)
+
+
+def mentions_a_document(question: str) -> bool:
     """Cheap pre-check so the hot path does not pay for a registry read it does not need.
 
     `/ask` is the highest-traffic route and most questions name no document at all, so
     fetching the tenant's rows unconditionally would add a query per request for nothing.
-    This is a regex over the question and touches no I/O; only a `True` justifies the read.
+    This is three regexes over the question and touches no I/O; only a `True` justifies the
+    read. It must stay in sync with what `resolve_scope` looks for -- a token this misses is
+    a token that silently never scopes, which is how naming a `doc_id` came to be ignored.
     """
-    return _FILENAME_TOKEN.search(question) is not None
+    return any(pattern.search(question) for pattern in (_FILENAME_TOKEN, _DOC_ID_MARKER, _DOC_ID_SHAPE))
 
 
 @dataclass(frozen=True)
@@ -89,7 +114,7 @@ class DocumentScope:
 
 
 def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope:
-    """Match filename-shaped tokens in `question` against `records`.
+    """Match filename- and doc_id-shaped tokens in `question` against `records`.
 
     `records` must already be tenant-scoped -- pass the output of
     `registry.db.list_document_records`. This function does no authorization of its own and
@@ -97,23 +122,38 @@ def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope
     `doc_id`, and the Qdrant filter would then AND that against the tenant condition and
     return nothing, which reads as "document is empty" rather than as a leak. Correct, but
     only by accident -- keep the tenant filter upstream where it is legible.
+
+    A `doc_id` typed into a question is user input like any other and gets the same treatment
+    as a filename: it resolves only if it is in this caller's own rows. That is what makes
+    accepting it safe, since a `doc_id` embeds a tenant prefix and would otherwise look
+    authoritative enough to trust.
     """
-    # The extension alternation is non-capturing, so `findall` yields whole matches.
-    tokens = _FILENAME_TOKEN.findall(question)
+    # Both id patterns are non-capturing except the marker's single group, so `findall`
+    # yields the token itself in every case.
+    tokens = [
+        *_FILENAME_TOKEN.findall(question),
+        *_DOC_ID_MARKER.findall(question),
+        *_DOC_ID_SHAPE.findall(question),
+    ]
     if not tokens:
         return DocumentScope()
 
     by_name = {record.filename.casefold(): record for record in records if record.filename}
+    # doc_id wins on collision, but the keyspaces cannot overlap in practice: every filename
+    # match carries a supported extension and no doc_id shape ends in one.
+    by_id = {record.doc_id.casefold(): record for record in records}
 
     doc_ids: list[str] = []
     filenames: list[str] = []
     unknown: list[str] = []
     for token in dict.fromkeys(tokens):  # de-duplicate, preserve order
-        record = by_name.get(token.casefold())
+        record = by_id.get(token.casefold()) or by_name.get(token.casefold())
         if record is None:
             unknown.append(token)
         elif record.doc_id not in doc_ids:
             doc_ids.append(record.doc_id)
-            filenames.append(record.filename)
+            # The filename is what `scoped_to` reports, so a document named by id is still
+            # echoed back by name -- the id tells the user nothing they didn't just type.
+            filenames.append(record.filename or record.doc_id)
 
     return DocumentScope(doc_ids=doc_ids, filenames=filenames, unknown=unknown)

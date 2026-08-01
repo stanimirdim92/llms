@@ -30,7 +30,7 @@ from app.registry.db import list_document_records
 # CLAUDE.md's failure contracts. ruff only catches it when target-version is the real
 # floor (py313); on py314 PEP 649 defers the annotation and the bug is invisible.
 from app.registry.models import DocumentRecord
-from app.retrieval.document_scope import DocumentScope, mentions_a_filename, resolve_scope
+from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import QdrantStore
 
 configure_logging()
@@ -170,13 +170,14 @@ with st.expander("My documents", expanded=not st.session_state.uploaded_docs):
 question = st.text_input(
     "Question",
     placeholder="What cathode materials show the highest cycling stability?",
-    help="Name a file from the table above (extension included) to restrict the search to it.",
+    help="Name a document from the table above to restrict the search to it — the filename "
+    "with its extension, or its doc_id.",
 )
 
 if st.button("Ask", type="primary") and question:
     # Reuses the rows the expander above already fetched, so scoping costs no extra query
     # here -- unlike `/ask`, which has no such list at hand and gates the read on the regex.
-    scope = resolve_scope(question, records) if mentions_a_filename(question) else DocumentScope()
+    scope = resolve_scope(question, records) if mentions_a_document(question) else DocumentScope()
 
     if scope.names_nothing_owned:
         # Same contract as the API's 404: refuse rather than fall back to searching

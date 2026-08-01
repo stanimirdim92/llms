@@ -60,10 +60,20 @@ measurement to justify. Both halves are in:
   (`answer_service._chunk_title`), so the model can match a name it is actually shown. The
   production symptom without it was a model summarising a document's contents while stating
   it had no document by that name — the only label it had was a content-hash `doc_id`.
-- `app/retrieval/document_scope.py` reads filename-shaped tokens out of the question and
-  resolves them against the caller's own registry rows; the resulting `doc_ids` become a
-  `MatchAny` condition ANDed into `QdrantStore._build_filter`. A named document this tenant
-  does not own is a 404 naming it, not a silent unfiltered search.
+- `app/retrieval/document_scope.py` reads filename- *and* `doc_id`-shaped tokens out of the
+  question and resolves them against the caller's own registry rows; the resulting `doc_ids`
+  become a `MatchAny` condition ANDed into `QdrantStore._build_filter`. A named document this
+  tenant does not own is a 404 naming it, not a silent unfiltered search.
+
+  Filenames-only was the first cut and it shipped with a hole: a user who pasted
+  `doc_id=019fb3eb…` — the identifier the API itself hands back — matched nothing, so the
+  pre-check returned `False` and the search ran unscoped. Four of the five chunks that won
+  reranking came from that tenant's CV rather than the named advertisement, because the
+  question was mostly Pydantic field descriptions ("The name of the company or entity") and
+  those embed closer to a CV's contact and profile sections than to a sparse one-page flyer.
+  Both identifiers are now accepted. The lesson generalises past this fix: **the pre-check
+  gates the registry read, so any identifier it fails to recognise silently never scopes** —
+  a `False` there is indistinguishable from a question that named nothing.
 
 **Deliberately no model call** — the candidate set is a closed one (the tenant's own
 documents), so it is string matching, per rule 5. Matching requires the full filename
@@ -75,8 +85,19 @@ flyer", "my CV", "the German one". That needs a model, and it needs 2.3 to show 
 helps more than it hurts, since a wrong guess here produces a confident answer about the
 wrong document with nothing in the response indicating it.
 
-Two consequences to carry forward:
+Three consequences to carry forward:
 
+- **A schema is not a search query, and scoping alone does not fix that.** "Return this
+  Pydantic model, filled in from document X" is a *whole-document extraction* request: every
+  field has to be found, so ranking chunks by similarity to the schema text is the wrong
+  primitive even once the search is correctly narrowed. It worked in the observed case only
+  because the flyer is a single chunk. On a multi-chunk document, `rerank_top_n=5` would
+  silently drop the chunk holding one of the requested fields and the model would fill it with
+  `"unknown"` — a wrong answer with no error, and one the user cannot distinguish from the
+  field genuinely being absent. A scoped question whose `doc_ids` resolve to one document
+  should bypass ranking and pass **that document's chunks in document order**, up to the
+  context budget. That belongs with 2.4's corpus-level work (same map-reduce machinery, one
+  document instead of N) and needs 2.1's golden set to prove it, so it is not built here.
 - Scoped retrieval currently reuses the same `top_k`. Within one document that is a much
   larger fraction of the available chunks, so the scoped path wants its own recall@k line in
   2.1's golden set rather than being assumed equivalent.

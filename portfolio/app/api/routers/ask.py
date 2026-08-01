@@ -12,7 +12,7 @@ from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
 from app.registry.db import list_document_records
-from app.retrieval.document_scope import DocumentScope, mentions_a_filename, resolve_scope
+from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 
 router = APIRouter()
 
@@ -23,9 +23,9 @@ def _service() -> AnswerService:
 
 
 async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
-    """Resolve a filename named in the question against *this tenant's* documents.
+    """Resolve a filename or `doc_id` named in the question against *this tenant's* documents.
 
-    The registry read is gated on `mentions_a_filename` so the common case -- a question that
+    The registry read is gated on `mentions_a_document` so the common case -- a question that
     names nothing -- costs no query. The records passed to `resolve_scope` come from
     `list_document_records`, which filters on `tenant_id` in the WHERE clause, so a resolved
     `doc_id` is always one the caller owns. That is the ownership check required before any
@@ -33,7 +33,7 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     file share one, and matching on the id alone would resolve to the other tenant's document
     while looking entirely correct.
     """
-    if not mentions_a_filename(question):
+    if not mentions_a_document(question):
         return DocumentScope()
 
     await init_db()
@@ -49,11 +49,13 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     description="Retrieves relevant chunks, reranks them, and generates a cited answer grounded only "
     "in what was retrieved. Searches the shared corpus plus documents uploaded by the tenant the "
     "`x-api-key` header authenticates as -- never another tenant's. Requires a valid API key.\n\n"
-    "Naming one of your own documents by filename in the question -- 'give me the contents of "
-    "report.pdf' -- restricts the search to that document, and `scoped_to` in the response says "
-    "which. The filename must be written in full, extension included, exactly as "
-    "`GET /v1/documents` reports it. Naming a file you do not have returns 404 rather than "
-    "silently searching everything.",
+    "Naming one of your own documents in the question restricts the search to that document, "
+    "and `scoped_to` in the response says which. Either identifier works, both exactly as "
+    "`GET /v1/documents` reports them: the **filename** written in full with its extension "
+    "('give me the contents of report.pdf'), or the **doc_id**, bare or behind a `doc_id=` "
+    "marker. The marker is the only form that works for the shared corpus, whose ids are bare "
+    "arXiv numbers. Naming a document you do not have returns 404 rather than silently "
+    "searching everything.",
     response_description="A cited answer, its citations, and every chunk that was retrieved/reranked",
     dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
 )
@@ -64,7 +66,7 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
         # else -- that would be an existence oracle over content hashes. Naming the caller's
         # own documents back is safe and is the thing that makes the error actionable.
         named = ", ".join(scope.unknown)
-        raise APIError(f"No document named {named} in your documents. Check GET /v1/documents.", code=404)
+        raise APIError(f"No document matching {named} in your documents. Check GET /v1/documents.", code=404)
 
     result = await _service().answer(request.question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
     return AskResponse(

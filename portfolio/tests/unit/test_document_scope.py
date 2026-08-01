@@ -1,4 +1,4 @@
-"""Pins filename-based question scoping.
+"""Pins filename- and doc_id-based question scoping.
 
 Three failure modes matter here and they are not equally loud:
 
@@ -20,7 +20,7 @@ from __future__ import annotations
 from qdrant_client.models import FieldCondition, Filter
 
 from app.registry.models import DocumentRecord
-from app.retrieval.document_scope import mentions_a_filename, resolve_scope
+from app.retrieval.document_scope import mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import _build_filter
 
 TENANT = "t" * 32
@@ -142,8 +142,83 @@ def test_duplicate_mentions_scope_once() -> None:
 
 def test_pre_check_avoids_the_registry_read_for_ordinary_questions() -> None:
     """`/ask` is the hot path; the pre-check is what stops it querying Postgres per request."""
-    assert not mentions_a_filename("what cathode materials show the highest cycling stability?")
-    assert mentions_a_filename("what is in 3020072D.pdf")
+    assert not mentions_a_document("what cathode materials show the highest cycling stability?")
+    assert mentions_a_document("what is in 3020072D.pdf")
+
+
+# --- doc_ids ---------------------------------------------------------------------------
+#
+# A regression suite before it is a feature suite. Asked for structured output "for document
+# with id ... doc_id=019fb3eb...", the pre-check saw no filename, returned False, and the
+# search ran unscoped: four of the five chunks that won reranking came from the tenant's CV
+# rather than the named advertisement. Nothing errored -- the question was mostly Pydantic
+# field descriptions, which embed closer to a CV's contact and profile sections than to a
+# sparse one-page flyer.
+
+_REAL_DOC_ID = "019fb3ebbd2370d08626ac2aa1a23c14-64a6d182c9e2359e66ba6ffc3c339cd7"
+_ID_RECORDS = [_Record(_REAL_DOC_ID, "24383456-639402.pdf"), _Record("doc-cv", "Stanimir_Dimitrov_CV.pdf")]
+
+
+def test_the_question_that_shipped_unscoped_now_scopes() -> None:
+    """Verbatim shape of the real request, kept as the regression anchor."""
+    question = (
+        "This is the structured output i need for document with id class CompanyOutput(BaseModel): "
+        'name: str = Field(description="The name of the company or entity") '
+        f"doc_id={_REAL_DOC_ID}"
+    )
+
+    assert mentions_a_document(question), "the pre-check gates the registry read; False here means never scoped"
+    scope = resolve_scope(question, _ID_RECORDS)
+    assert scope.doc_ids == [_REAL_DOC_ID]
+    assert scope.filenames == ["24383456-639402.pdf"], "scoped_to reports the name, not the id back"
+
+
+def test_a_bare_doc_id_scopes_without_the_marker() -> None:
+    """Pasted straight out of `GET /v1/documents`, which reports the id with no `doc_id=`."""
+    assert resolve_scope(f"summarise {_REAL_DOC_ID}", _ID_RECORDS).doc_ids == [_REAL_DOC_ID]
+
+
+def test_the_marker_accepts_the_spellings_people_type() -> None:
+    for written in (f"doc_id={_REAL_DOC_ID}", f"doc id: {_REAL_DOC_ID}", f"docid = {_REAL_DOC_ID}"):
+        assert resolve_scope(f"contents of {written}", _ID_RECORDS).doc_ids == [_REAL_DOC_ID], written
+
+
+def test_the_marker_carries_an_id_shape_no_regex_could_find() -> None:
+    """The curated corpus uses bare arXiv ids. `2008.10896` is indistinguishable from a
+    decimal number in prose, so it only ever resolves behind an explicit marker -- which is
+    the whole reason the marker exists alongside the shape pattern.
+    """
+    records = [_Record("2008.10896", "2008.10896.pdf")]
+
+    assert resolve_scope("what does doc_id=2008.10896 conclude?", records).doc_ids == ["2008.10896"]
+    assert not mentions_a_document("the cell retained 2008.10896 mAh/g"), "a bare decimal must not scope"
+
+
+def test_an_unknown_doc_id_is_a_refusal_not_an_unscoped_search() -> None:
+    """Same contract as an unknown filename: the caller named one document, so answering from
+    a different one is worse than refusing.
+    """
+    scope = resolve_scope("doc_id=deadbeef" + "0" * 24 + "-" + "f" * 32, _ID_RECORDS)
+
+    assert scope.doc_ids == []
+    assert scope.names_nothing_owned
+
+
+def test_another_tenants_doc_id_does_not_resolve() -> None:
+    """The reason accepting a client-supplied id is safe. A `doc_id` embeds a tenant prefix and
+    so looks authoritative, but it is matched against this caller's rows only -- passing tenant
+    B's records means A's id resolves to nothing rather than to A's document.
+    """
+    scope = resolve_scope(f"doc_id={_REAL_DOC_ID}", [_Record("doc-b", "unrelated.pdf")])
+
+    assert scope.doc_ids == []
+    assert scope.names_nothing_owned
+
+
+def test_a_filename_and_an_id_naming_one_document_scope_once() -> None:
+    question = f"compare 24383456-639402.pdf with doc_id={_REAL_DOC_ID}"
+
+    assert resolve_scope(question, _ID_RECORDS).doc_ids == [_REAL_DOC_ID]
 
 
 def test_scoped_filter_keeps_the_tenant_condition() -> None:
