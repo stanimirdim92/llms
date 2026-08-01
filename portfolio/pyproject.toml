@@ -1,9 +1,9 @@
 [project]
-name = "documentio-ai"
+name = "portfolio-ai"
 version = "0.0.1"
-description = "AI services for documentio.ai"
+description = "AI services for portfolio.ai"
 authors = [
-    {name="Documentio AI", email="stanimirdim92@gmail.com"}
+    {name="Stanimir Dimitrov", email="stanimirdim92@gmail.com"}
 ]
 maintainers = [
     {name="Stanimir Dimitrov", email="stanimirdim92@gmail.com"}
