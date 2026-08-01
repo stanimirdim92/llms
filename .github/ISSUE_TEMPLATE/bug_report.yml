@@ -1,0 +1,103 @@
+name: Bug report
+description: Something behaves differently than documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Two classes of bug in this repo are **silent** — they produce a plausible answer instead
+        of an error. If yours is one of them, say so, because they need different evidence than
+        a crash does:
+
+        - **Wrong-but-confident retrieval.** An answer grounded in the wrong document reads
+          exactly like a correct one. Include the question, the answer, and `scoped_to` /
+          `citations` from the response.
+        - **A green run that tested less than it looks.** Service-backed suites *skip* when
+          Postgres or Redis is unreachable, so "all tests pass" and "no tests ran" print
+          almost the same thing. Paste the skip count.
+
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project
+      description: Four independent projects, no shared code and no shared tooling.
+      options:
+        - portfolio (RAG / eval / agent)
+        - fastai-dl
+        - transformers-course
+        - LLM Engineers Handbook
+        - repo-level (CI, dependabot, templates)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where it happens
+      options:
+        - FastAPI (/v1/ask, /v1/documents, /health)
+        - Streamlit UI
+        - worker (ingestion jobs)
+        - scripts/ (ingest, create_tenant)
+        - Docker stack / compose
+        - CI
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected instead
+      description: Both halves. "It didn't work" can't be reproduced.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Exact commands. For the stack, include the whole invocation — compose reads `${VAR}`
+        from the shell or a `.env` beside the compose file, never from `portfolio/.env`, so
+        `--env-file` being present or absent changes what actually ran.
+      placeholder: |
+        1. docker compose -f .docker/docker-compose.yml --env-file .env up
+        2. curl -X POST localhost:8000/v1/ask -H "x-api-key: ..." -d '{"question": "..."}'
+        3. Response scoped to the wrong document
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: gate
+    attributes:
+      label: Verification gate output
+      description: |
+        `uv run ruff check . && uv run ruff format --check . && uv run ty check && uv run pytest tests/unit`
+        **Paste the pytest summary line including the skip count.** A run with skips proves less
+        than it appears to; `N passed, 0 skipped` is the only fully green result.
+      render: shell
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: |
+        Redact API keys before pasting. This repository is public.
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: Commit
+      description: "`git rev-parse --short HEAD`"
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I checked `TECHNICAL_DECISIONS.md` in case this is a deliberate choice rather than a defect.
+        - label: I redacted every credential from the logs and commands above.
+          required: true

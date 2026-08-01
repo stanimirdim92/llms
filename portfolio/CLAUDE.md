@@ -31,10 +31,23 @@ Status lives on `DocumentRecord.status` (`pending`/`processing`/`ingested`/`fail
 owns `processing`/`failed`; `ingest_document` owns the terminal `ingested` write, because
 `scripts/ingest.py` and Streamlit call it directly and bypass the queue entirely.
 
-Docs: `README.md` describes the system as it is; `TECHNICAL_DECISIONS.md` says why each
-choice was made and what was rejected; `docs/IMPLEMENTATION_PLAN.md` is the original plan,
-kept as history and outdated on purpose. When a decision changes, update
-`TECHNICAL_DECISIONS.md` -- not the plan.
+## Docs, and which one to write in
+
+**Read `MEMORY.md` first in a new session.** It holds what this file deliberately does not:
+where the work actually is, the user's standing directives, open questions, measurements
+already taken, and a session log. Nothing else carries that across sessions. **Update it at
+the end of any session that changed something** -- the protocol is at the top of the file.
+
+- `README.md` -- the system as it is.
+- `PATTERNS.md` -- the recurring shapes and the failure each one prevents. Also lists what is
+  deliberately *absent*, so a reviewer doesn't "fix" it.
+- `TECHNICAL_DECISIONS.md` -- why each choice, and what was rejected. Update this when a
+  decision changes, **not** the plan.
+- `EPIC_*_PLAN.md` -- what is planned, in order.
+- `docs/IMPLEMENTATION_PLAN.md` -- the original plan, kept as history and outdated on purpose.
+
+A durable imperative rule goes *here*. Current state goes in `MEMORY.md`. Mixing them buries
+the rules in changelog.
 
 ## Skills
 

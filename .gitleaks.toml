@@ -1,0 +1,41 @@
+# gitleaks configuration. Consumed by `.github/workflows/security.yml`.
+#
+# The rules themselves come from gitleaks' bundled defaults -- this file only adds allowlists.
+# Writing custom detection rules here would silently *replace* the defaults rather than extend
+# them, which is the standard way a secret scanner ends up detecting three things well and
+# everything else not at all.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented placeholders and deliberately-invalid test fixtures"
+
+# A finding is only worth surfacing if it is a live credential. Everything below is a string
+# that *looks* like one to a regex and cannot be one in fact. Each entry is scoped as narrowly
+# as it can be: a broad `paths` entry that silences a whole directory is how a real key later
+# added to that directory goes unreported.
+
+paths = [
+  # Placeholders only, and pinned by a project rule that says so. The real `.env` is gitignored
+  # and must never be committed.
+  '''\.env\.example$''',
+  # This file: the regexes below necessarily contain the shapes they exempt.
+  '''\.gitleaks\.toml$''',
+]
+
+regexes = [
+  # Elided keys in documentation and skills -- `pf_live_...` is the literal ellipsis, not a key.
+  '''pf_live_\.\.\.''',
+  # `KEY_PREFIX = "pf_live_"` in app/auth/keys.py: the prefix constant, with no key after it.
+  '''KEY_PREFIX\s*=\s*"pf_live_"''',
+  # Deliberately-invalid values in tests/unit/test_auth.py, whose entire purpose is to be
+  # rejected before any database lookup. "sk-ant-something" is not an Anthropic key; it is a
+  # test asserting that a plausible-looking non-key is refused.
+  '''sk-ant-something''',
+]
+
+# Commits that have been reviewed and are known clean. Add a SHA here only after confirming the
+# finding is a false positive -- and if it is a real credential, the fix is to rotate it, not to
+# allowlist it. Removing a key from history does not un-publish it: assume anything pushed to a
+# public repository was scraped within minutes.
+commits = []

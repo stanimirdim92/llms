@@ -1,0 +1,76 @@
+name: Feature request
+description: Propose something the system should do and doesn't.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Most of the roadmap is already written down, with reasons. Before proposing, check
+        whether this is already planned — and if it is, say what should change about the plan
+        rather than restating it:
+
+        - `EPIC_2_PLAN.md` — eval framework, intent routing, retrieval techniques
+        - `EPIC_3_PLAN.md` — the curation agent and human-in-the-loop
+        - `EPIC_4_PLAN.md` — auth, queueing, observability, the app backend, the React UI
+        - `TECHNICAL_DECISIONS.md` — what was rejected, and why
+
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project
+      options:
+        - portfolio (RAG / eval / agent)
+        - fastai-dl
+        - transformers-course
+        - LLM Engineers Handbook
+        - repo-level (CI, dependabot, templates)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: |
+        What can't be done today, or what goes wrong. Describe the situation, not the solution —
+        the fix is often not the one first imagined.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: How would we know it worked?
+      description: |
+        Something checkable, not "it feels better". Retrieval changes especially: they cannot be
+        judged by reading one answer, because a worse retriever still returns fluent text.
+        Name the measurement, or say that it needs the eval harness (Epic 2) first.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: model_call
+    attributes:
+      label: Does this need a model call?
+      description: |
+        The project reserves the model for judgment calls — classification, extraction,
+        drafting — and uses plain code for deterministic work. A feature that can be `if`/`else`
+        should be, so it stays testable without API keys.
+      options:
+        - No — deterministic, plain code
+        - Yes — it's a genuine judgment call
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

@@ -1,0 +1,98 @@
+# Two scans the existing `portfolio CI` pipeline does not do.
+#
+# That pipeline audits *dependencies* for known CVEs, and only when something under
+# `portfolio/**` changes. Neither property is enough on its own:
+#
+#   - A CVE is disclosed against a dependency you are not touching. Nothing pushes, so nothing
+#     runs, and the vulnerable lockfile sits there looking green. Hence the weekly schedule.
+#   - A dependency audit says nothing about the code in this repository. Hence CodeQL.
+#   - Neither notices a committed credential. Hence gitleaks -- and this repository is public,
+#     so a key reaching a commit is disclosed the moment it is pushed, whether or not the
+#     commit is later reverted.
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Mondays 06:17 UTC. Off the hour on purpose: scheduled workflows across GitHub bunch up
+    # at :00 and get queued, and a security scan that runs late is a security scan you stop
+    # trusting the timing of.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # -----------------------------------------------------------------------------------------
+  # Static analysis of our own code. Free here because the repository is public; on a private
+  # repo this needs GitHub Advanced Security, so a fork of this workflow may need it removed.
+  # -----------------------------------------------------------------------------------------
+  codeql:
+    name: CodeQL (python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      # The one job here that needs more than read: results are uploaded to the Security tab
+      # as SARIF, which is a write.
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Initialise CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: python
+          # `security-and-quality` adds maintainability rules on top of the security ones.
+          # Deliberately not used: this repo already runs ruff and ty, so those findings would
+          # be duplicates arriving through a slower channel, and volume is how a security tab
+          # becomes something nobody reads.
+          queries: security-extended
+          config: |
+            paths:
+              - portfolio/app
+              - portfolio/scripts
+              - portfolio/streamlit_app
+            paths-ignore:
+              - portfolio/tests
+      # No autobuild/build step: Python needs none, and CodeQL resolves imports from source.
+
+      - name: Analyse
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:python"
+
+  # -----------------------------------------------------------------------------------------
+  # Credentials in git history.
+  #
+  # This is defence in depth, not the primary control. GitHub's own push protection (Settings →
+  # Code security) rejects a recognised secret *before* it lands and is the thing that actually
+  # prevents disclosure. This catches what push protection does not: credentials in formats it
+  # has no partner pattern for, and anything already in history from before it was enabled.
+  # -----------------------------------------------------------------------------------------
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history. The default shallow clone scans only the tip commit, which misses the
+          # case this job exists for -- a key committed and then removed in a later commit is
+          # still published, and still needs rotating.
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml

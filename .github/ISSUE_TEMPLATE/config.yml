@@ -1,0 +1,12 @@
+# `blank_issues_enabled: false` forces every issue through a form. The forms ask for the
+# things that make a report actionable here -- which of the four projects, and whether the
+# verification gate was run -- and a blank issue reliably arrives without them.
+blank_issues_enabled: false
+
+contact_links:
+  - name: How this repo is laid out
+    url: https://github.com/stanimirdim92/llms/blob/main/CLAUDE.md
+    about: Four independent projects with separate tooling. Read this before filing against the wrong one.
+  - name: portfolio — architecture and decisions
+    url: https://github.com/stanimirdim92/llms/blob/main/portfolio/TECHNICAL_DECISIONS.md
+    about: Why each choice was made and what was rejected. Check here before proposing a swap that was already considered.
