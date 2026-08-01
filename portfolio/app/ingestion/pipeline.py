@@ -46,7 +46,7 @@ def _parse_and_chunk(doc_id: str, file_path: Path, tenant_id: str) -> tuple[list
     figures = extract_figures(document, figure_dir)
     log.info("ingestion.figures_extracted", doc_id=doc_id, count=len(figures))
 
-    chunks = chunk_document(document, doc_id=doc_id, figures=figures, tenant_id=tenant_id)
+    chunks = chunk_document(document, doc_id=doc_id, figures=figures, tenant_id=tenant_id, filename=file_path.name)
     log.info("ingestion.chunked", doc_id=doc_id, tenant_id=tenant_id, count=len(chunks))
 
     content_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]

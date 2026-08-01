@@ -47,6 +47,27 @@ metadata questions.
 (assert on a store spy, not on the answer text), an out-of-scope question is refused, and
 the factual path is byte-identical to today's behaviour.
 
+### Scoping a question to one named document
+
+A related class the router should recognise: *"tell me about 24383456-639402.pdf"* -- a
+factual question **restricted to one document**. Half of this is already fixed: `filename`
+now rides in the chunk payload and leads the block title the model reads, so it can match a
+name it is shown. The missing half is retrieval-side filtering -- nothing narrows the search
+to that document, so the answer is assembled from whatever ranked highest across the whole
+tenant.
+
+That wants `filename` (or `doc_id`) as an optional condition in
+`QdrantStore._build_filter`, resolved from the registry rather than trusted from the
+question -- a filename in a question is user input, and matching it against
+`list_document_records` first means an unknown name gets an honest "no such document"
+instead of a silent unfiltered search. Sequenced here rather than in 2.0 because it is a
+retrieval change and belongs behind recall measurement, but it is the same user-facing
+complaint, so keep them together when scheduling.
+
+Note the payload-index consequence: filtering on `metadata.filename` at the 10k x 10 target
+needs its own keyword index, exactly like `metadata.tenant_id`
+(`TECHNICAL_DECISIONS.md` § "Scale target").
+
 ## Phase 2.1 — Golden set
 
 50+ grounded Q&A pairs in `data/eval/qa_dataset.jsonl`, committed. Each pair carries the

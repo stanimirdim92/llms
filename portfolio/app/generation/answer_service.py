@@ -46,9 +46,21 @@ class Answer:
 
 
 def _chunk_title(document: Document) -> str:
+    """The label the model sees for each document block -- and the only identifier it can
+    match a question against.
+
+    `filename` leads when present. With `doc_id` alone the model cannot answer "tell me
+    about 24383456-639402.pdf" even holding the right chunk, because a content-hash id looks
+    nothing like the name the user typed; it answers, correctly and unhelpfully, that it has
+    no such document. `doc_id` is kept alongside so citations stay traceable and so chunks
+    ingested before filenames were stored still render.
+    """
     meta = document.metadata
     location = f"page {meta.get('page_no')}" if meta.get("page_no") is not None else "unknown page"
-    return f"{meta.get('doc_id', 'unknown')} ({meta.get('chunk_type', 'text')}, {location})"
+    doc_id = meta.get("doc_id", "unknown")
+    name = meta.get("filename")
+    label = f"{name} [{doc_id}]" if name else doc_id
+    return f"{label} ({meta.get('chunk_type', 'text')}, {location})"
 
 
 def _build_document_blocks(documents: list[Document]) -> list[dict]:

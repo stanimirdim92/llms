@@ -21,17 +21,33 @@ def _table_to_markdown(table: TableItem, document: DoclingDocument) -> str:
     return table.export_to_markdown(document)
 
 
+def _base_metadata(filename: str) -> dict:
+    """Metadata every chunk kind carries. Empty when no filename is known (the corpus
+    script passes one; a caller that does not simply gets the old doc_id-only behaviour)
+    rather than storing an empty string that would render as a blank title.
+    """
+    return {"filename": filename} if filename else {}
+
+
 def chunk_document(
     document: DoclingDocument,
     doc_id: str,
     figures: list[ExtractedFigure],
     tenant_id: str = GLOBAL_TENANT,
+    filename: str = "",
 ) -> list[Chunk]:
     """Produce text, table, and figure chunks for one parsed document.
 
     Tables are always kept as a single atomic chunk (never split mid-row) and figures
     are represented by their Claude-generated caption so they are retrievable by
     semantic search alongside prose, not just embedded as opaque images.
+
+    `filename` is stamped onto every chunk's metadata, which is what carries it into the
+    Qdrant payload and from there into the title of each document block the model sees.
+    Without it the only label on a retrieved chunk is the 65-character `doc_id`, so a
+    question naming a file ("tell me about 24383456-639402.pdf") cannot be answered even
+    when the right chunk was retrieved -- the model correctly reports it has no document by
+    that name while summarising that document's content. Observed in production.
     """
     settings = get_settings()
     chunks: list[Chunk] = []
@@ -59,6 +75,7 @@ def chunk_document(
                 text=text,
                 page_no=page_no,
                 section_path=" > ".join(headings),
+                metadata=_base_metadata(filename),
                 tenant_id=tenant_id,
             )
         )
@@ -78,7 +95,7 @@ def chunk_document(
                 chunk_type="table",
                 text=text,
                 page_no=page_no,
-                metadata={"markdown": markdown},
+                metadata=_base_metadata(filename) | {"markdown": markdown},
                 tenant_id=tenant_id,
             )
         )
@@ -91,7 +108,7 @@ def chunk_document(
                 chunk_type="figure",
                 text=figure.caption,
                 page_no=figure.page_no,
-                metadata={"image_path": str(figure.image_path)},
+                metadata=_base_metadata(filename) | {"image_path": str(figure.image_path)},
                 tenant_id=tenant_id,
             )
         )
