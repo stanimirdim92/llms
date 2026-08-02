@@ -19,6 +19,7 @@ import uuid
 from typing import TYPE_CHECKING
 
 import pytest
+from fastapi import APIRouter
 from httpx import ASGITransport, AsyncClient
 
 from app.api import deps
@@ -64,8 +65,12 @@ def as_tenant_a() -> Iterator[None]:
     scopes, and `rate_limited` buckets on its `key_id`. Overriding the narrower dependency
     would leave those two resolving a real key and returning 401.
     """
+    # Hoisted out of the lambda deliberately: evaluated inside, it mints a new id per
+    # *request*, so a rate-limit test written on this fixture could never 429 -- a silent
+    # false-green of exactly the kind the fixed-id bug was.
+    key_id = _fresh_key_id()
     app.dependency_overrides[deps.current_principal] = lambda: Principal(
-        tenant_id=TENANT_A, key_id=_fresh_key_id(), scopes=UNRESTRICTED
+        tenant_id=TENANT_A, key_id=key_id, scopes=UNRESTRICTED
     )
     yield
     app.dependency_overrides.clear()
@@ -483,3 +488,83 @@ def test_the_key_header_is_not_also_a_bare_parameter() -> None:
     ask = app.openapi()["paths"]["/v1/ask"]["post"]
 
     assert "x-api-key" not in [parameter["name"] for parameter in ask.get("parameters", [])]
+
+
+async def test_an_unhandled_exception_becomes_a_structured_500() -> None:
+    """The catch-all handler, which shipped with no test at all.
+
+    Needs `raise_app_exceptions=False`: with the default transport `ServerErrorMiddleware`
+    re-raises after the handler runs, so the exception propagates into the test instead of a
+    response arriving. That is also why no *existing* test broke when the handler was added --
+    and why deleting the handler left the suite green.
+    """
+    router = APIRouter()
+
+    @router.get("/boom")
+    async def _boom() -> None:
+        msg = "postgres://user:hunter2@db/portfolio is unreachable"
+        raise RuntimeError(msg)
+
+    app.include_router(router)
+    try:
+        transport = ASGITransport(app=app, raise_app_exceptions=False)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get("/boom")
+    finally:
+        app.router.routes[:] = [route for route in app.router.routes if getattr(route, "path", None) != "/boom"]
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Internal server error"}
+    assert "hunter2" not in response.text, "an unanticipated exception's message can carry a credential"
+
+
+async def test_validation_errors_are_not_swallowed_by_the_catch_all(client: AsyncClient) -> None:
+    """Registering a handler for bare `Exception` must not shadow the narrower ones.
+
+    Starlette keeps `HTTPException` and `RequestValidationError` in `ExceptionMiddleware` and
+    lifts only the bare-`Exception` handler out to `ServerErrorMiddleware`, so 422s and
+    `APIError`s keep their own shapes -- asserted rather than assumed, because a regression
+    here turns every client-side validation failure into an opaque 500.
+    """
+    app.dependency_overrides[deps.current_principal] = lambda: Principal(
+        tenant_id=TENANT_A, key_id=_fresh_key_id(), scopes=UNRESTRICTED
+    )
+    try:
+        too_long = await client.post("/v1/ask", json={"question": "x" * 5000})
+        missing = await client.post("/v1/ask", json={})
+    finally:
+        app.dependency_overrides.clear()
+
+    assert too_long.status_code == 422
+    assert missing.status_code == 422
+    assert isinstance(too_long.json()["detail"], list), "FastAPI's 422 shape must survive"
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_a_question_over_the_length_bound_is_refused(client: AsyncClient) -> None:
+    """M16. Unbounded, a single request pushed arbitrary prose into an embedding call and a
+    generation call, with only nginx's body limit as a ceiling.
+    """
+    assert (await client.post("/v1/ask", json={"question": "x" * 4001})).status_code == 422
+    assert (await client.post("/v1/ask", json={"question": ""})).status_code == 422
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_document_reads_do_not_spend_the_ask_budget(client: AsyncClient) -> None:
+    """M3. The API's own docs tell a client to poll the status route while a document
+    ingests; each poll was costing the same budget as a retrieve+rerank+generate.
+
+    Asserted on the advertised limit rather than by exhausting a bucket, which keeps it fast
+    and does not depend on the configured numbers being different by luck.
+    """
+    settings = get_settings()
+    assert settings.rate_limit_documents != settings.rate_limit_ask, "the two buckets must be distinguishable"
+
+    # Only the document routes are exercised: `/ask` needs a live Qdrant, and the header is
+    # set by the dependency before the handler runs, so the document side alone is enough to
+    # catch a route left on the wrong bucket -- which is the regression this pins.
+    listed = await client.get("/v1/documents")
+    status = await client.get("/v1/documents/whatever")
+
+    assert listed.headers["x-ratelimit-limit"] == str(settings.rate_limit_documents)
+    assert status.headers["x-ratelimit-limit"] == str(settings.rate_limit_documents)

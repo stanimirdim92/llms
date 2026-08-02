@@ -9,6 +9,10 @@ is reachable by any key and nothing raises.
 
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
+from app import config
 from app.api.main import app
 from app.auth.scopes import (
     ALL_SCOPES,
@@ -23,6 +27,7 @@ from app.auth.scopes import (
     has_scope,
     unknown_scopes,
 )
+from app.config import MissingCredentialsError, get_settings
 
 EXPECTED_ROUTE_SCOPES = {
     ("/v1/ask", "POST"): (ASK,),
@@ -137,3 +142,39 @@ def test_requesting_nothing_never_looks_like_escalation() -> None:
     cannot see. `test_api_contract.py` covers the route; this pins why it has to.
     """
     assert exceeds([], [KEYS_WRITE]) == []
+
+
+def test_a_local_reranker_without_the_extra_is_refused_at_boot(monkeypatch: pytest.MonkeyPatch) -> None:
+    """H3. The README documents `RERANKER_BACKEND=local` as a no-API-key fallback, but no image
+    installs the extra -- so the container booted, passed readiness, took traffic, and then
+    raised `ModuleNotFoundError` on the first `/ask` and every one after.
+
+    The probe is patched rather than uninstalling a package: `find_spec` returning None is
+    exactly the state inside the image, and this has to fail the same way there.
+    """
+    monkeypatch.setattr(get_settings(), "reranker_backend", "local")
+    monkeypatch.setattr(config.util, "find_spec", lambda _name: None)
+
+    with pytest.raises(MissingCredentialsError, match="local-reranker"):
+        config.require_reranker_backend()
+
+
+def test_the_default_reranker_backend_needs_no_extra(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The check must stay silent on the Voyage path, or every container refuses to start."""
+    monkeypatch.setattr(get_settings(), "reranker_backend", "voyage")
+    monkeypatch.setattr(config.util, "find_spec", lambda _name: None)
+
+    config.require_reranker_backend()  # must not raise
+
+
+def test_a_typo_in_the_reranker_backend_fails_at_settings_construction(monkeypatch: pytest.MonkeyPatch) -> None:
+    """L11. As a bare `str`, `RERANKER_BACKEND=locl` fell through the `== "local"` test to
+    Voyage with no error and no log, so an operator could believe they had switched backends
+    and still be billing the API they thought they had turned off.
+    """
+    # Set through the environment, not as a keyword: that is how a typo actually arrives, and
+    # a literal keyword would be caught by the type checker rather than by pydantic.
+    monkeypatch.setenv("RERANKER_BACKEND", "locl")
+
+    with pytest.raises(ValidationError):
+        config.Settings()

@@ -84,6 +84,15 @@ _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 _DOC_ID_SHAPE = re.compile(r"\b(?:[0-9a-f]{32}|global)-[0-9a-f]{32}\b", re.IGNORECASE)
 
 
+_LOOSE_FILENAME = re.compile(rf"\S*\.(?:{_EXTENSION_ALTERNATION})(?!\w)", re.IGNORECASE)
+r"""A filename-ish run of non-space characters ending in a supported extension.
+
+Used to report what the caller *named but does not have*, so it has to admit everything the
+gate admits -- `\S*` rather than `[\w.\-]*`, because a name with a parenthesis or a quote is
+still a name. Over-matching here costs a 404 with a slightly untidy token in the message;
+under-matching costs a confident answer about the wrong documents.
+"""
+
 _EXTENSION_MENTION = re.compile(rf"\.(?:{_EXTENSION_ALTERNATION})(?!\w)", re.IGNORECASE)
 """Just "an extension appears here", with no constraint on what precedes it.
 
@@ -241,7 +250,12 @@ def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope
     # Anything still *looking* like a filename in the unmasked remainder names a document
     # this caller does not have. Reported rather than ignored: searching everything anyway is
     # the confident-wrong-answer failure this module exists to prevent.
-    unknown.extend(token for token in _FILENAME_TOKEN.findall(remaining) if token not in unknown)
+    # `_LOOSE_FILENAME`, not `_FILENAME_TOKEN`. The gate was widened to admit parenthesised
+    # names; leaving the *leftover* scan narrow just moved the asymmetry rather than closing
+    # it. An unowned `report(1).pdf` produced no token here, so `unknown` stayed empty and the
+    # question ran unscoped -- a confident answer assembled from every other document, which
+    # is the failure this module exists to prevent, arriving by a different route.
+    unknown.extend(token for token in _LOOSE_FILENAME.findall(remaining) if token not in unknown)
 
     return _classify(hits, unknown)
 

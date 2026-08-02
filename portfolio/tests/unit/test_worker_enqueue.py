@@ -321,6 +321,12 @@ async def test_concurrent_processes_can_initialise_the_schema() -> None:
     serializes coroutines inside one process, so an `asyncio.gather` version of this test passes
     even with the advisory lock removed. Confirmed by removing it.
     """
+    # Dropping the `db` fixture to get isolation also dropped its reachability check, so
+    # without Postgres this failed instead of skipping -- contradicting the module docstring
+    # and turning "no database here" into a red suite.
+    if not await _postgres_reachable(_test_database_url()):
+        pytest.skip("no Postgres reachable -- start it with docker compose")
+
     # A throwaway database of its own, not the shared `portfolio_test`. This test has to start
     # from an *empty* schema, and the only reliable way to get one is to drop everything --
     # procrastinate's schema.sql has 3 CREATE TYPE, 4 CREATE TABLE and 18 CREATE FUNCTION,
@@ -490,3 +496,26 @@ async def test_scope_candidates_still_exclude_other_tenants(db: SessionFactory) 
         candidates = await list_scope_candidates(session, tenant_id=TENANT_A)
 
     assert [record.doc_id for record in candidates] == ["a" * 32]
+
+
+async def test_the_shared_corpus_survives_a_tenant_with_more_documents_than_the_limit(
+    db: SessionFactory,
+) -> None:
+    """The corpus gets its own budget, not a share of the caller's.
+
+    One `IN (tenant, 'global') ORDER BY uploaded_at DESC LIMIT n` looks equivalent and is not:
+    the curated corpus is the *oldest* content in the table, so a tenant with more recent
+    uploads than the limit pushes every corpus row past the cut and gets H1's 404 back on
+    every curated paper -- silently, and only for the busiest tenants.
+    """
+    async with db() as session:
+        await save_document_record(session, _record(tenant_id=GLOBAL_TENANT, doc_id="c" * 32))
+    for index in range(6):
+        async with db() as session:
+            await save_document_record(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
+
+    async with db() as session:
+        candidates = await list_scope_candidates(session, tenant_id=TENANT_A, limit=3)
+
+    assert len(candidates) == 4, "3 of the tenant's own newest, plus the corpus on its own budget"
+    assert "c" * 32 in [record.doc_id for record in candidates], "the corpus was crowded out"

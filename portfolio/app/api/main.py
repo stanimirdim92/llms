@@ -88,7 +88,12 @@ async def portfolio_error_handler(request: Request, exc: PortfolioError) -> JSON
     # dropping them silently discards `Retry-After` on a 429 -- the response would tell a
     # client to back off without saying for how long.
     log.warning("api.error", path=request.url.path, status_code=exc.status_code, detail=exc.detail)
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers)
+    # `rate_limited` sets X-RateLimit-* on the route's sub-response, which never materialises
+    # on an error path -- this handler builds its own response. Re-attached here so a 404 or a
+    # 422 advertises the same budget a 200 does; `exc.headers` wins on a 429, which carries
+    # its own copy alongside Retry-After.
+    headers = {**getattr(request.state, "ratelimit_headers", {}), **(exc.headers or {})}
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=headers or None)
 
 
 @app.exception_handler(Exception)
@@ -105,8 +110,14 @@ async def unhandled_error_handler(request: Request, exc: Exception) -> JSONRespo
        trace of the one category of failure most worth tracing. That is rule 7 inverted.
     2. It breaks the `{"detail": ...}` contract every other error in this API honours,
        including FastAPI's own defaults -- a client's error handling has to special-case it.
-    3. `ServerErrorMiddleware` sits *outside* `CORSMiddleware`, so a browser client gets no
-       CORS headers on that response and sees an opaque network error rather than a 500.
+    **What it does not fix, stated because the obvious guess is wrong:** a 500 still carries no
+    CORS headers. Registering a handler for bare `Exception` does not put it inside
+    `CORSMiddleware` -- Starlette lifts it out of `ExceptionMiddleware` and installs it *as*
+    `ServerErrorMiddleware`'s handler (`starlette/applications.py`), which is the outermost
+    layer. Measured on this app: an unhandled error returns `access-control-allow-origin:
+    None` while a 401 on the same app returns `*`. A browser client therefore still sees an
+    opaque network error on a 500, and making that a real CORS response needs middleware
+    *inside* `CORSMiddleware`, not an exception handler.
 
     `exc_info=exc` so the traceback is captured, and the response body deliberately says
     nothing about `exc` -- an unanticipated exception's message is exactly the kind of thing

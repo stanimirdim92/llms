@@ -11,6 +11,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import get_args, get_type_hints
 
+import pytest
+
 from app.api.schemas import CreateKeyRequest
 from app.auth.expiry import DEFAULT_EXPIRY_DAYS, EXPIRY_CHOICES, deadline
 
@@ -53,3 +55,15 @@ def test_a_deadline_is_that_many_days_ahead_and_timezone_aware() -> None:
     assert result is not None
     assert result.tzinfo is not None
     assert 29.9 < (result - before).total_seconds() / 86400 < 30.1
+
+
+def test_zero_days_is_refused_rather_than_meaning_never() -> None:
+    """The falsy trap, pointing the wrong way: `deadline(0)` returned None, so the value that
+    reads as "expire immediately" minted an eternal key. Unreachable through the API and the
+    CLI, both of which offer a fixed choice set -- but `deadline` is a plain function and the
+    next caller need not come through either.
+    """
+    with pytest.raises(ValueError, match="positive number of days"):
+        deadline(0)
+    with pytest.raises(ValueError, match="positive number of days"):
+        deadline(-30)

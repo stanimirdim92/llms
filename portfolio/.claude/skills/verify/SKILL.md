@@ -13,7 +13,10 @@ The gate is five checks, and two of them lie by default. Read the traps before r
     uv run ty check
     uv run pytest tests/unit
     cd .docker && docker compose --env-file ../.env config -q     # after compose/Dockerfile edits
-    uv sync --locked                                              # after pyproject.toml edits
+    uv sync --extra dev --locked                                  # after pyproject.toml edits
+    # `--extra dev` is required, not optional: a bare `uv sync --locked` prunes the dev
+    # group and uninstalls pytest, so the next gate command fails with 'no module named
+    # pytest' and looks like a broken venv rather than a missing flag.
 
 `ty.toml` sets `error-on-warning`, so a warning is a failure. All five must pass before pushing.
 
@@ -23,7 +26,7 @@ The gate is five checks, and two of them lie by default. Read the traps before r
 service is unreachable. A run reporting `91 passed, 25 skipped` has not tested auth, rate
 limiting, or the job queue -- which is most of the security-relevant surface.
 
-**Always read the skip count.** The full suite is currently 116 tests and should report
+**Always read the skip count.** The full suite is currently 249 tests and should report
 `116 passed` with nothing skipped. If you see skips, start the services rather than shipping:
 
     pg_isready -h localhost -p 5433 -U portfolio || \

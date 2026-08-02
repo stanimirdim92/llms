@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
 
-from fastapi import Depends, Response
+from fastapi import Depends, Request, Response
 from fastapi.security import APIKeyHeader
 
 from app.auth.scopes import has_scope
@@ -111,7 +111,7 @@ class require_scopes:
         return principal
 
 
-def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Response], Awaitable[None]]:
+def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Request, Response], Awaitable[None]]:
     """A dependency enforcing the calling **key**'s budget for `scope`.
 
     Per key, not per tenant. Once keys differ in capability, a CI key hammering uploads should
@@ -129,8 +129,9 @@ def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Response],
     worse, share one bucket keyed on nothing.
 
     FastAPI caches dependency results per request, so the key resolves once even though both
-    this and the route handler ask for it. That's why nothing needs stashing on
-    `request.state` the way slowapi's `key_func(request)` signature would force.
+    this and the route handler ask for it -- the *principal* never needs stashing on
+    `request.state` the way slowapi's `key_func(request)` signature would force. The budget
+    headers do, but only so an error response can carry them; see below.
 
     `limit_name` is read from `Settings` at request time rather than captured at import, so
     limits stay configurable without the decorator freezing whatever value was loaded first.
@@ -143,7 +144,7 @@ def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Response],
     handler.
     """
 
-    async def _check(principal: CurrentPrincipal, response: Response) -> None:
+    async def _check(principal: CurrentPrincipal, request: Request, response: Response) -> None:
         limit = getattr(get_settings(), limit_name)
         try:
             budget = await check(scope, principal.key_id, limit)
@@ -154,6 +155,13 @@ def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Response],
                 headers={"Retry-After": str(exc.retry_after_seconds), **exc.budget.headers()},
             ) from exc
         if budget is not None:
+            # Also stashed on `request.state` so `api/main.py`'s error handler can re-attach
+            # them. Headers set on the injected sub-response are merged into the *route's*
+            # response, and an `APIError` never produces one -- the handler builds a fresh
+            # JSONResponse. Without this a 404 or a 422 silently drops the budget while the
+            # 429 keeps it, so a client polling a status route learns its remaining quota
+            # only on the requests that happened to succeed.
+            request.state.ratelimit_headers = budget.headers()
             # None means Redis was unreachable and the request passed unchecked. Emitting
             # nothing is deliberate -- see `rate_limit.check`; a fabricated full budget would
             # report the guardrail as intact while it is absent.

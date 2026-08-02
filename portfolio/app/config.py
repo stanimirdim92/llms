@@ -304,8 +304,9 @@ def require_reranker_backend() -> None:
         return
     missing = [name for name in ("sentence_transformers", "langchain_classic") if util.find_spec(name) is None]
     if missing:
+        verb = "is" if len(missing) == 1 else "are"
         msg = (
-            f"RERANKER_BACKEND=local needs {' and '.join(missing)}, which are not installed. "
+            f"RERANKER_BACKEND=local needs {' and '.join(missing)}, which {verb} not installed. "
             f"Install the extra (`uv sync --extra local-reranker`, or add it to the image build) "
             f"or set RERANKER_BACKEND=voyage."
         )
