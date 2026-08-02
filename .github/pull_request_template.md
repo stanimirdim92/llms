@@ -51,10 +51,10 @@ unsure about.
 - [ ] **No ingestion imports in the api.** Routers must not import `app.ingestion.*`; it costs
       ~2s of startup per process and `tests/unit/test_upload_formats.py` pins it.
 - [ ] **`uv.lock` regenerated and committed** if `pyproject.toml` changed (`uv lock`).
-- [ ] **Docs updated where they became false.** `TECHNICAL_DECISIONS.md` for a changed
-      decision, `CLAUDE.md` for a new invariant, `MEMORY.md` for state a future session needs.
-      `docs/IMPLEMENTATION_PLAN.md` is history and is deliberately not kept current.
+- [ ] **Docs updated where they became false.** `portfolio/docs/TECHNICAL_DECISIONS.md` for a changed
+      decision, `portfolio/CLAUDE.md` for a new invariant, `portfolio/docs/MEMORY.md` for state a future session needs.
+      `portfolio/docs/IMPLEMENTATION_PLAN.md` is history and is deliberately not kept current.
 
 ### Related
 
-<!-- Closes #N, or the EPIC_*_PLAN.md phase this implements. -->
+<!-- Closes #N, or the docs/EPIC_*_PLAN.md phase this implements. -->

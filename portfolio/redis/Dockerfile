@@ -1,6 +1,6 @@
 # Pinned, not `:latest`. A floating tag lets a rebuild cross a major version silently, and
 # this is the one service where that is more than a reproducibility complaint: the rate
-# limiter is a hand-rolled Lua script on `redis.asyncio` (see TECHNICAL_DECISIONS.md --
+# limiter is a hand-rolled Lua script on `redis.asyncio` (see docs/TECHNICAL_DECISIONS.md --
 # `limits[redis]` pins redis<8 against this project's client >=8, so there is no library to
 # fall back to). A server major arriving unannounced would change EVAL/sorted-set behaviour
 # underneath it. Dependabot watches this directory (`docker` ecosystem, weekly, grouped as

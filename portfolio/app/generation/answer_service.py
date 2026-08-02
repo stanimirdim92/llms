@@ -1,5 +1,5 @@
 """Retrieve -> rerank -> generate with forced citations. The Epic 1 answer path, deliberately a
-workflow (fixed pipeline), not an agent -- see ARCHITECTURE.md section 2.
+workflow (fixed pipeline), not an agent -- see docs/ARCHITECTURE.md section 2.
 
 Built on LangChain (ChatAnthropic) rather than the raw Anthropic SDK so it shares the same
 framework Epic 3's LangGraph agent runs on.

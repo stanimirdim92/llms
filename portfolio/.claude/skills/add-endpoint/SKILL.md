@@ -27,7 +27,7 @@ raises. That is the entire reason this checklist exists.
    hash, so two tenants uploading the same file share an id -- a lookup by `doc_id` alone returns
    the *other* tenant's row while looking entirely correct.
 5. **Validate any client-supplied id against ownership before it reaches a Qdrant filter.** A
-   `doc_ids` parameter (planned, `EPIC_4_PLAN.md` 5.4) is a fresh cross-tenant read otherwise:
+   `doc_ids` parameter (planned, `docs/EPIC_4_PLAN.md` 5.4) is a fresh cross-tenant read otherwise:
    the tenant condition is satisfied by the other clause and the filter happily returns someone
    else's chunks.
 6. **Return 404, not 403, for another tenant's resource.** Distinguishing "not yours" from

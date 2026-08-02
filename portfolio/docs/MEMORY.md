@@ -7,10 +7,11 @@ State that does not survive a new session otherwise. Read this first; update it 
 | File | Holds | Changes when |
 |---|---|---|
 | `CLAUDE.md` | Rules and invariants. Imperative, timeless. | A new way to break the system is found. |
-| `PATTERNS.md` | Recurring shapes and the failures they prevent. | The architecture changes. |
-| `TECHNICAL_DECISIONS.md` | Why each technology, and what was rejected. | A decision is revisited. |
-| `EPIC_*_PLAN.md` | What is planned and in what order. | Scope or sequencing moves. |
-| **`MEMORY.md`** (this file) | **Where we actually are.** Standing directives, open questions, session log, measurements taken. | Every working session. |
+| `docs/PATTERNS.md` | Recurring shapes and the failures they prevent. | The architecture changes. |
+| `docs/TECHNICAL_DECISIONS.md` | Why each technology, and what was rejected. | A decision is revisited. |
+| `docs/EPIC_*_PLAN.md` | What is planned and in what order. | Scope or sequencing moves. |
+| `docs/IDEAS.md` | The parking lot — unscheduled ideas, and rejected ones with their reason. | Any time something occurs to you. |
+| **`docs/MEMORY.md`** (this file) | **Where we actually are.** Standing directives, open questions, session log, measurements taken. | Every working session. |
 
 If a fact is durable and imperative it belongs in `CLAUDE.md`, not here — this file is the
 mutable part, and mixing the two means the rules get buried in changelog.
@@ -33,7 +34,7 @@ believed.
 5. If a new invariant was discovered, put it in `CLAUDE.md` and note here that you did.
 
 **Keep the log pruned.** Entries older than a few months whose content has been absorbed into
-`CLAUDE.md` / `TECHNICAL_DECISIONS.md` should be deleted, not archived — the pointer to the
+`CLAUDE.md` / `docs/TECHNICAL_DECISIONS.md` should be deleted, not archived — the pointer to the
 durable doc is the useful residue.
 
 **Do not** write anything into this file you have not verified. An unverified claim recorded
@@ -140,7 +141,7 @@ more discussion.
    — every field must be found, so ranking chunks against the schema text is the wrong
    primitive even when correctly scoped. Works today only because the test document is one
    chunk; on a longer document `rerank_top_n=5` would drop a field-bearing chunk and the model
-   would answer `"unknown"` with no error. Recorded in `EPIC_2_PLAN.md`; needs the golden set.
+   would answer `"unknown"` with no error. Recorded in `docs/EPIC_2_PLAN.md`; needs the golden set.
 
 ## Deferred, not dropped
 
@@ -168,7 +169,7 @@ looked at our own code or at committed credentials at all. `.gitleaks.toml` allo
 documented placeholders (`pf_live_...`, `KEY_PREFIX`, the deliberately-invalid
 `sk-ant-something` test fixture) narrowly rather than by silencing directories.
 
-Wrote `PATTERNS.md` (19 patterns, each verified against source, each naming the failure it
+Wrote `docs/PATTERNS.md` (19 patterns, each verified against source, each naming the failure it
 prevents) and this file.
 
 **Still to do by hand — I cannot set these:** enable **secret scanning + push protection** in

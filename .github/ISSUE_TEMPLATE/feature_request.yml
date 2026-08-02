@@ -9,10 +9,10 @@ body:
         whether this is already planned — and if it is, say what should change about the plan
         rather than restating it:
 
-        - `EPIC_2_PLAN.md` — eval framework, intent routing, retrieval techniques
-        - `EPIC_3_PLAN.md` — the curation agent and human-in-the-loop
-        - `EPIC_4_PLAN.md` — auth, queueing, observability, the app backend, the React UI
-        - `TECHNICAL_DECISIONS.md` — what was rejected, and why
+        - `docs/EPIC_2_PLAN.md` — eval framework, intent routing, retrieval techniques
+        - `docs/EPIC_3_PLAN.md` — the curation agent and human-in-the-loop
+        - `docs/EPIC_4_PLAN.md` — auth, queueing, observability, the app backend, the React UI
+        - `docs/TECHNICAL_DECISIONS.md` — what was rejected, and why
 
   - type: dropdown
     id: project

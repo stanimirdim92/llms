@@ -8,5 +8,5 @@ contact_links:
     url: https://github.com/stanimirdim92/llms/blob/main/CLAUDE.md
     about: Four independent projects with separate tooling. Read this before filing against the wrong one.
   - name: portfolio — architecture and decisions
-    url: https://github.com/stanimirdim92/llms/blob/main/portfolio/TECHNICAL_DECISIONS.md
+    url: https://github.com/stanimirdim92/llms/blob/main/portfolio/docs/TECHNICAL_DECISIONS.md
     about: Why each choice was made and what was rejected. Check here before proposing a swap that was already considered.

@@ -176,7 +176,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 #
 # This is a stopgap, not the destination: a 10-minute worker timeout means one stuck
 # request holds a worker for 10 minutes, and with GUNICORN_WORKERS=2 two of them stall
-# the service. Once ingestion moves behind a job queue (EPIC_4_PLAN.md Phase 5) the
+# the service. Once ingestion moves behind a job queue (docs/EPIC_4_PLAN.md Phase 5) the
 # upload request returns in milliseconds and this should come back down -- the value that
 # genuinely has to stay large is nginx's client_body_timeout, since the bytes still have
 # to arrive over the wire no matter what processes them afterwards.

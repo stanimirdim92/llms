@@ -5,7 +5,7 @@ human-in-the-loop curation layer.
 
 Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack), Epic 4
 Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs), and Phase 5.1
-(ingestion behind a Postgres-backed job queue) -- see `EPIC_4_PLAN.md` for the rest. Not
+(ingestion behind a Postgres-backed job queue) -- see `docs/EPIC_4_PLAN.md` for the rest. Not
 built: Epics 2 and 3, designed in `docs/IMPLEMENTATION_PLAN.md` only -- no eval framework,
 no agent. Don't assume code for them. The one exception is
 `app/retrieval/document_scope.py`, pulled out of Epic 2 early: naming a filename in an `/ask`
@@ -33,20 +33,23 @@ owns `processing`/`failed`; `ingest_document` owns the terminal `ingested` write
 
 ## Docs, and which one to write in
 
-**Read `MEMORY.md` first in a new session.** It holds what this file deliberately does not:
+**Read `docs/MEMORY.md` first in a new session.** It holds what this file deliberately does not:
 where the work actually is, the user's standing directives, open questions, measurements
 already taken, and a session log. Nothing else carries that across sessions. **Update it at
 the end of any session that changed something** -- the protocol is at the top of the file.
 
 - `README.md` -- the system as it is.
-- `PATTERNS.md` -- the recurring shapes and the failure each one prevents. Also lists what is
+- `docs/PATTERNS.md` -- the recurring shapes and the failure each one prevents. Also lists what is
   deliberately *absent*, so a reviewer doesn't "fix" it.
-- `TECHNICAL_DECISIONS.md` -- why each choice, and what was rejected. Update this when a
+- `docs/TECHNICAL_DECISIONS.md` -- why each choice, and what was rejected. Update this when a
   decision changes, **not** the plan.
-- `EPIC_*_PLAN.md` -- what is planned, in order.
+- `docs/EPIC_*_PLAN.md` -- what is planned, in order.
+- `docs/IDEAS.md` -- the parking lot: anything that might be worth doing but isn't scheduled,
+  plus a *considered and rejected* table so dead ideas don't come back. Add freely; an idea
+  that graduates moves into an epic plan and is deleted from there.
 - `docs/IMPLEMENTATION_PLAN.md` -- the original plan, kept as history and outdated on purpose.
 
-A durable imperative rule goes *here*. Current state goes in `MEMORY.md`. Mixing them buries
+A durable imperative rule goes *here*. Current state goes in `docs/MEMORY.md`. Mixing them buries
 the rules in changelog.
 
 ## Skills
@@ -70,8 +73,8 @@ eval work starts, rather than re-deriving either.
 One open finding from them: **no payload index exists on `metadata.tenant_id`**, and the
 multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents;
 **required** at the 10k-tenant x 10-document target (order 1M points, where an unindexed
-tenant filter degrades toward a scan). Details in `VENDORED.md`, verdict in
-`TECHNICAL_DECISIONS.md`.
+tenant filter degrades toward a scan). Details in `.claude/skills/VENDORED.md`, verdict in
+`docs/TECHNICAL_DECISIONS.md`.
 
 ## Verification gate
 

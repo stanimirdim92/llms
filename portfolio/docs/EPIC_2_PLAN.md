@@ -103,7 +103,7 @@ Three consequences to carry forward:
   2.1's golden set rather than being assumed equivalent.
 - If matching ever moves to filtering on `metadata.filename` directly instead of resolving to
   `doc_id` first, that field needs its own keyword payload index at the 10k x 10 target,
-  exactly like `metadata.tenant_id` (`TECHNICAL_DECISIONS.md` § "Scale target"). Resolving
+  exactly like `metadata.tenant_id` (`docs/TECHNICAL_DECISIONS.md` § "Scale target"). Resolving
   through the registry avoids that today.
 
 ## Phase 2.1 — Golden set
@@ -134,7 +134,7 @@ Written to `data/eval/runs/<run_id>.parquet`. Analysis is DuckDB over
 no migration. `pyarrow` and `pandas` are already in `uv.lock` as Streamlit transitives with
 `cp314` wheels, so this adds **no dependency**; DuckDB does need adding.
 
-Why not Postgres: see `ARCHITECTURE.md` § 2b. Short version — this is append-only
+Why not Postgres: see `docs/ARCHITECTURE.md` § 2b. Short version — this is append-only
 analytical data with an evolving schema, and the CI gate needs a *committed* baseline it can
 diff in a pull request, which a database row cannot provide.
 
@@ -168,7 +168,7 @@ failure output identifies the reranker as the cause rather than reporting a lowe
 
 The `aggregate` branch from 2.0. Design taken from `microsoft/graphrag`'s global search,
 with three of its four components replaced by parts this system already has — see
-`TECHNICAL_DECISIONS.md` § "Graph RAG" for the source reading and the licence position.
+`docs/TECHNICAL_DECISIONS.md` § "Graph RAG" for the source reading and the licence position.
 
 | Step | GraphRAG | Here |
 |---|---|---|
@@ -210,7 +210,7 @@ All of these are measured through 2.3 or they do not land.
   caption prompt by hand — but it needs the eval harness to show a generated prompt beats a
   written one. Revisit after 2.3.
 - **Anything O(corpus) per query.** At 100k documents a model call per document is 100k
-  calls. See `TECHNICAL_DECISIONS.md` § "Scale target".
+  calls. See `docs/TECHNICAL_DECISIONS.md` § "Scale target".
 
 ## Dependencies
 

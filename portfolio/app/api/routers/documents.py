@@ -40,7 +40,7 @@ async def upload_document(
     max_bytes = settings.max_upload_size_mb * 1024 * 1024
     # NOTE: reads the whole body before checking its size, so max_upload_size_mb bounds what
     # is *stored*, not what is buffered in memory. Streaming to disk with an incremental
-    # size check is tracked as EPIC_4_PLAN.md 1.6 and deliberately not bundled here.
+    # size check is tracked as docs/EPIC_4_PLAN.md 1.6 and deliberately not bundled here.
     file_bytes = await file.read()
     if len(file_bytes) > max_bytes:
         raise APIError(f"File exceeds the {settings.max_upload_size_mb}MB limit", code=413)

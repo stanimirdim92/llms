@@ -98,6 +98,6 @@ body:
     attributes:
       label: Before filing
       options:
-        - label: I checked `TECHNICAL_DECISIONS.md` in case this is a deliberate choice rather than a defect.
+        - label: I checked `docs/TECHNICAL_DECISIONS.md` in case this is a deliberate choice rather than a defect.
         - label: I redacted every credential from the logs and commands above.
           required: true

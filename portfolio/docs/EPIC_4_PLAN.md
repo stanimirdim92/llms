@@ -10,7 +10,7 @@ Phases 5 and 6 were previously one "blocked on a product decision" placeholder. 
 now the application layer — Phase 5 is the backend (users, conversations, document CRUD,
 async ingestion), Phase 6 is the React + TypeScript UI on top of it.
 
-Epics 2 and 3 now have their own plans -- `EPIC_2_PLAN.md` and `EPIC_3_PLAN.md` -- so the
+Epics 2 and 3 now have their own plans -- `docs/EPIC_2_PLAN.md` and `docs/EPIC_3_PLAN.md` -- so the
 blocked items below name a phase there rather than a whole epic.
 
 Already done ahead of this epic (not repeated below): the multi-stage Dockerfile and
@@ -201,7 +201,7 @@ Deferred: `/review` doesn't exist until Epic 3.
 
 ## Phase 3 — Documentation ✅ BUILT
 
-- `TECHNICAL_DECISIONS.md`: consolidate the rationale currently spread across README rows
+- `docs/TECHNICAL_DECISIONS.md`: consolidate the rationale currently spread across README rows
   and code comments — chunking, reranker, embeddings, Qdrant (incl. point-ID and delete-then-insert
   contracts), pool sizing, the tenant-scope collapse and why, tracing choice.
 - README rewrite: becomes a real project README (quickstart, architecture, what's built vs
@@ -218,8 +218,8 @@ Built as specified, plus:
   the 6-vs-45-paper corpus, the un-run Epic 1 spot-check, that no test exercises Qdrant,
   and that uploads buffer fully in memory before the size check.
 - Stale pointers fixed: `CLAUDE.md`, `app/api/deps.py`, and `app/registry/models.py` all
-  referenced "README" for content that is now in the plan or in `TECHNICAL_DECISIONS.md`.
-- `TECHNICAL_DECISIONS.md` is 16 sections, each with the rejected alternative and what
+  referenced "README" for content that is now in the plan or in `docs/TECHNICAL_DECISIONS.md`.
+- `docs/TECHNICAL_DECISIONS.md` is 16 sections, each with the rejected alternative and what
   would justify revisiting it. `CLAUDE.md` now states which doc to update when a decision
   changes, so the plan doesn't get edited back into being a live document.
 
@@ -289,7 +289,7 @@ Rejected, with reasons rather than a shrug:
 | `taskiq` | Ships `Development Status :: 3 - Alpha` in its own metadata. Not for a production framing |
 
 **Deviation to accept explicitly:** procrastinate ships its own SQL migrations, so
-"no Alembic for one table" (see `TECHNICAL_DECISIONS.md`) stops being the whole story —
+"no Alembic for one table" (see `docs/TECHNICAL_DECISIONS.md`) stops being the whole story —
 deploys gain a `procrastinate schema --apply` step. That's a real cost of the choice and it
 belongs in the decision record, not discovered at deploy time.
 
@@ -369,7 +369,7 @@ is genuinely large -- though at the 10k-tenant target it is more defensible than
 at 1k.
 
 Alternative if Keycloak is too much: **own it**, with `argon2-cffi` for password hashing
-(*not* the API keys' SHA-256 — opposite threat model, see `TECHNICAL_DECISIONS.md`),
+(*not* the API keys' SHA-256 — opposite threat model, see `docs/TECHNICAL_DECISIONS.md`),
 `itsdangerous` for signed session cookies, and a transactional-email provider. Budget for
 what that actually includes: verification tokens, reset tokens with single-use semantics,
 lockout, timing-safe comparison, and the tests to prove each one.
@@ -606,8 +606,8 @@ blocks Phases 5 or 6:
 |---|---|
 | `agent/nodes.py` structlog calls | Epic 3's agent |
 | Rate limit on `/review` | Epic 3's review endpoint |
-| `eval/agent_trace_assertions.py` + `tests/eval/` | Epic 3's agent **and** `EPIC_2_PLAN.md` Phase 2.3 |
-| Faithfulness SLO in `alerts.py` | `EPIC_2_PLAN.md` Phase 2.3 (RAGAS scores) |
+| `eval/agent_trace_assertions.py` + `tests/eval/` | Epic 3's agent **and** `docs/EPIC_2_PLAN.md` Phase 2.3 |
+| Faithfulness SLO in `alerts.py` | `docs/EPIC_2_PLAN.md` Phase 2.3 (RAGAS scores) |
 
 ## Prerequisite for load, not a phase
 
@@ -615,7 +615,7 @@ blocks Phases 5 or 6:
 system carries real traffic.** It was recorded as a deferred nicety while the target was 1k
 tenants x 2 documents; at 10k x 10 -- order 1M points -- an unindexed tenant filter on every
 query degrades toward a scan. One `create_payload_index` call at collection setup. Details in
-`.claude/skills/VENDORED.md`, verdict in `TECHNICAL_DECISIONS.md` § "Scale target".
+`.claude/skills/VENDORED.md`, verdict in `docs/TECHNICAL_DECISIONS.md` § "Scale target".
 
 Two sizing consequences of the same revision. Neither is an open question -- both have
 numbers -- but each needs a decision that has not been made:

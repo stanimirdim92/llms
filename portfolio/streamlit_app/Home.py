@@ -115,7 +115,7 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
                     # returns 202 and lets a worker do this. Streamlit blocks its own script
                     # run either way, so a queue would buy nothing here beyond a status-polling
                     # loop to write -- and this UI retires when the React app lands
-                    # (EPIC_4_PLAN.md Phase 6). It writes the row itself via ingest_document's
+                    # (docs/EPIC_4_PLAN.md Phase 6). It writes the row itself via ingest_document's
                     # terminal upsert, so the two paths agree on what a finished row looks like.
                     #
                     # Streamlit's script model has no event loop of its own, same reason

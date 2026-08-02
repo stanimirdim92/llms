@@ -4,7 +4,7 @@ Why this system is built the way it is. Each entry states the decision, the reas
 what was rejected — including the several choices that were reversed after contact with
 reality, since those are the ones worth reading.
 
-`ARCHITECTURE.md` covers the agentic design survey. `CLAUDE.md` holds the operational
+`docs/ARCHITECTURE.md` covers the agentic design survey. `CLAUDE.md` holds the operational
 failure contracts. This file is the decision record.
 
 ---
@@ -309,7 +309,7 @@ request body, and 32s kills real uploads from a phone on mobile data — a 408 t
 server fault. **It is the one timeout an async job queue will not make irrelevant**: the bytes
 still have to arrive over the wire regardless of what processes them afterwards. The 600s
 gunicorn timeout, by contrast, is a stopgap for synchronous ingestion and should come back
-down once uploads are jobs (`EPIC_4_PLAN.md` 5.1) — a 10-minute worker timeout means one
+down once uploads are jobs (`docs/EPIC_4_PLAN.md` 5.1) — a 10-minute worker timeout means one
 stuck request holds a worker for ten minutes.
 
 `client_max_body_size` derives from `MAX_UPLOAD_SIZE_MB` for a related reason: nginx enforces
@@ -504,7 +504,7 @@ because several decisions above were sized against the smaller number and one of
 changes verdict:
 
 - **The Qdrant payload index on `metadata.tenant_id` moves from deferred to required.**
-  `CLAUDE.md` and `EPIC_4_PLAN.md` call it "harmless at 6 documents". At ~100k documents and
+  `CLAUDE.md` and `docs/EPIC_4_PLAN.md` call it "harmless at 6 documents". At ~100k documents and
   roughly 10 chunks each -- order 1M points -- every tenant-filtered query without a keyword
   index on that field degrades toward a scan. The vendored `qdrant-multitenancy` skill
   specifies a keyword index with `is_tenant=true`; that is now a prerequisite for load, not

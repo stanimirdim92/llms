@@ -177,9 +177,9 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 Every row above has a reason, several of them counterintuitive (why Qdrant point IDs
 can't be chunk ids, why re-ingestion deletes before inserting, why SHA-256 rather than
 argon2, why the limiter fails open). Those are in
-[`TECHNICAL_DECISIONS.md`](TECHNICAL_DECISIONS.md), with the alternatives that were
+[`docs/TECHNICAL_DECISIONS.md`](docs/TECHNICAL_DECISIONS.md), with the alternatives that were
 rejected and what it would take to revisit each one.
-[`ARCHITECTURE.md`](ARCHITECTURE.md) covers the agentic-architecture survey behind
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) covers the agentic-architecture survey behind
 Epic 3's design.
 
 ## Status
@@ -204,12 +204,12 @@ Epic 3's design.
   observed defect rather than moving a metric). Naming a document you own in the question — by
   filename or by `doc_id` — narrows retrieval to it via a `doc_id` filter resolved from your
   registry rows; naming one you don't own is a 404. No model call — see
-  `app/retrieval/document_scope.py` for why, and `EPIC_2_PLAN.md` for what is deliberately
+  `app/retrieval/document_scope.py` for why, and `docs/EPIC_2_PLAN.md` for what is deliberately
   left out (semantic reference: "the flyer").
 
 **Not built.** These exist as designs only — there is no code for any of them, so don't
 infer any from a plan's directory layout. The buildable plans are
-[`EPIC_2_PLAN.md`](EPIC_2_PLAN.md) and [`EPIC_3_PLAN.md`](EPIC_3_PLAN.md);
+[`docs/EPIC_2_PLAN.md`](docs/EPIC_2_PLAN.md) and [`docs/EPIC_3_PLAN.md`](docs/EPIC_3_PLAN.md);
 [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) holds the original design and
 is deliberately not kept current:
 
@@ -230,7 +230,7 @@ is deliberately not kept current:
   generated from the OpenAPI schema. Streamlit retires when this ships.
 
 Phase-by-phase detail, including the rejected alternatives for the queue and the
-identity decision, is in [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
+identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 
@@ -247,7 +247,7 @@ identity decision, is in [`EPIC_4_PLAN.md`](EPIC_4_PLAN.md).
   unsubstituted `__PLACEHOLDER__`.
 - Uploads are read fully into memory before the size check, so `MAX_UPLOAD_SIZE_MB`
   bounds what is *stored*, not what is buffered. Streaming to disk is tracked as
-  `EPIC_4_PLAN.md` 1.6.
+  `docs/EPIC_4_PLAN.md` 1.6.
 - **A stuck job is detectable but not handled.** `updated_at` makes a worker that died
   mid-`processing` visible, and nothing yet sweeps or re-enqueues those.
 - nginx is HTTP-only. There is no domain yet to provision certificates against; the TLS
@@ -274,7 +274,7 @@ portfolio/
 ├── data/manifest.json                    # the pinned corpus
 ├── .docker/           Dockerfile, docker-compose.yml, nginx/
 ├── redis/             Dockerfile, redis.conf
-├── EPIC_2_PLAN.md, EPIC_3_PLAN.md        # buildable plans for the unbuilt epics
+├── docs/EPIC_2_PLAN.md, docs/EPIC_3_PLAN.md        # buildable plans for the unbuilt epics
 └── docs/IMPLEMENTATION_PLAN.md           # the original plan, kept as history
 ```
 

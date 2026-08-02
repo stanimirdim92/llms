@@ -5,7 +5,7 @@ failure it exists to prevent**. That last part is the point: a pattern justified
 good practice" gets dropped the first time it's inconvenient, and a pattern whose failure mode
 is named survives review.
 
-Related but different documents: `TECHNICAL_DECISIONS.md` says why a *technology* was chosen
+Related but different documents: `docs/TECHNICAL_DECISIONS.md` says why a *technology* was chosen
 over its alternatives. `CLAUDE.md` is the rule list — the short, imperative version of the
 non-negotiables below. This file explains the shapes those rules protect.
 

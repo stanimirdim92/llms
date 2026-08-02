@@ -136,7 +136,7 @@ flowchart TB
 The intent router in the read path does not exist yet; it is Epic 2's first item
 and the general fix for a defect already observed in production (a metadata
 question -- "list my documents" -- answered from whatever chunks were nearest in
-embedding space). See `EPIC_2_PLAN.md`.
+embedding space). See `docs/EPIC_2_PLAN.md`.
 
 ## 3. What This Deliberately Does Not Do
 

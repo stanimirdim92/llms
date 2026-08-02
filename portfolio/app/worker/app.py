@@ -9,7 +9,7 @@ Why procrastinate rather than the originally-planned `arq`: arq is in maintenanc
 upstream. Of the alternatives, procrastinate is async-native (matching `ingest_document` and
 the async SQLAlchemy engine, where Celery and RQ would each need `asyncio.run()` per job)
 and is backed by the Postgres already running, which is what makes `defer_document_ingest`
-below atomic. See TECHNICAL_DECISIONS.md for the full comparison, including the one real
+below atomic. See docs/TECHNICAL_DECISIONS.md for the full comparison, including the one real
 argument against it (rq's fork-per-job would contain a Docling segfault better).
 
 **This module deliberately does not import `tasks.py`, and the worker CLI is pointed at

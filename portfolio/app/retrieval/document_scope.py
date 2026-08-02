@@ -39,7 +39,7 @@ Two outcomes besides a match, both of which the caller must surface rather than 
 
 What this deliberately does *not* handle is a semantic reference -- "the flyer", "my CV",
 "the German one". That genuinely needs a model, and it needs the eval harness to show the
-guessing helps more than it hurts. See `EPIC_2_PLAN.md`.
+guessing helps more than it hurts. See `docs/EPIC_2_PLAN.md`.
 """
 
 from __future__ import annotations
