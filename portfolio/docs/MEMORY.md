@@ -105,14 +105,6 @@ nginx config's syntax (no nginx binary in the sandbox).
 
 ## Measurements taken
 
-- **slowapi vs the hand-rolled limiter** (2026-08-02, localhost Redis, steady state, best of
-  five). Per-check latency is a wash: 0.32 ms sync, 0.36 ms async. Under concurrency the sync
-  path blocks the event loop: 100 concurrent 21.4 ms vs 11.1 ms, 200 concurrent 65.5 ms vs
-  18.5 ms. slowapi 0.1.10 has no async storage path at all -- it imports `limits.storage` and
-  `limits.strategies`, the sync modules. Also: `uv add slowapi` unpinned does **not** error on
-  our `redis>=8.0.0`; it silently resolves `limits==1.6` / `slowapi==0.1.6`. Only
-  `limits[redis]>=5` reports unsatisfiable. Full write-up in `docs/TECHNICAL_DECISIONS.md`.
-
 Numbers that were actually measured. Re-derive rather than trust if the system has changed
 underneath them.
 
@@ -124,6 +116,14 @@ underneath them.
 | Answer latency | 11.2 s | Same trace. |
 | `max_tokens` headroom | **11 tokens of 1024** | `stop_reason: end_turn`, so it completed — but structured-output requests sit right against the ceiling. |
 | Prompt caching viability | Not viable in current shape | Stable prefix is the 693-char system prompt (~200 tokens), under Sonnet 5's 1,024-token minimum. Chunks vary per question, so there is no larger shared prefix. |
+
+- **slowapi vs the hand-rolled limiter** (2026-08-02, localhost Redis, steady state, best of
+  five). Per-check latency is a wash: 0.32 ms sync, 0.36 ms async. Under concurrency the sync
+  path blocks the event loop: 100 concurrent 21.4 ms vs 11.1 ms, 200 concurrent 65.5 ms vs
+  18.5 ms. slowapi 0.1.10 has no async storage path at all -- it imports `limits.storage` and
+  `limits.strategies`, the sync modules. Also: `uv add slowapi` unpinned does **not** error on
+  our `redis>=8.0.0`; it silently resolves `limits==1.6` / `slowapi==0.1.6`. Only
+  `limits[redis]>=5` reports unsatisfiable. Full write-up in `docs/TECHNICAL_DECISIONS.md`.
 
 ---
 
