@@ -47,9 +47,15 @@ uv run python scripts/create_tenant.py "My Org"      # prints the key once
 
 `scripts/` is deliberately not copied into the container, so this runs on the host and
 talks to the compose Postgres over its published `5432`. `--list` shows tenants and keys with
-their state, `--revoke <key_id>` revokes one, and `--expires-in DAYS` mints a key that stops
-working on its own. Without that flag the key never expires, and the command says so — a
-forever-key is a legitimate choice but not one to make by omission.
+their state, `--tenant <id> --revoke <key_id>` revokes one, and `--expires-in` takes
+`30`/`60`/`90`/`365`/`never`, defaulting to **30 days**. A forever-key is a legitimate choice
+but not one to make by omission, so it has to be asked for by name. Revocation needs both
+identifiers: key ids are opaque and adjacent in a listing, and revoking the wrong one locks
+out a tenant irreversibly, so two identifiers that must agree turn a mistyped id into an
+error rather than an outage.
+
+Keys minted this way are **unrestricted** — every scope. That is right for the bootstrap key
+and wrong for everything after it; narrower keys come from the API below.
 
 Then upload a document and ask about it:
 
@@ -82,6 +88,26 @@ curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "extract the contact details from doc_id=019fb3eb...-64a6d182..."}'
 ```
+
+Keys manage themselves from there, so rotating a credential doesn't need a shell on the
+database host:
+
+```bash
+# Mint a narrower key. Expires in 30 days unless you say otherwise (30/60/90/365, or null
+# for never), and you can only grant scopes your own key already holds -- more is a 403.
+curl -X POST http://localhost:8000/v1/keys \
+  -H "x-api-key: pf_live_..." -H "content-type: application/json" \
+  -d '{"name": "ci", "scopes": ["documents:write"], "expires_in_days": 90}'
+
+curl http://localhost:8000/v1/keys -H "x-api-key: pf_live_..."          # metadata, never keys
+curl -X DELETE http://localhost:8000/v1/keys/<key_id> -H "x-api-key: pf_live_..."
+```
+
+The scopes are `ask`, `documents:read`, `documents:write`, `keys:read`, `keys:write`. A key
+with an empty stored list holds **all** of them — that is what keys minted before scopes
+existed have, and reading it as "no permissions" would have revoked every one of them.
+Missing a scope is a **403** naming what is missing; touching another tenant's key is a 404,
+because "not yours" and "doesn't exist" must not be distinguishable.
 
 The answer comes back with `citations` (quoted text plus `chunk_id`/`doc_id`/`page_no`)
 and every chunk that survived reranking, so a wrong answer can be traced to whether
@@ -169,8 +195,8 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Generation | `ChatAnthropic` (Claude Sonnet 5) + Anthropic's native Citations API |
 | Document registry | Postgres + SQLModel, one row per document, with ingestion status |
 | Job queue | `procrastinate` on the same Postgres — transactional enqueue |
-| Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-512 hashed, individually revocable, optional expiry; declared as an OpenAPI security scheme |
-| Rate limiting | Per-tenant sliding window, one Lua script on `redis.asyncio` |
+| Auth | `x-api-key` → `tenant`/`apikey` tables, SHA-512 hashed, individually revocable, 30-day default expiry, per-key scopes; declared as an OpenAPI security scheme |
+| Rate limiting | Per-**key** sliding window, one Lua script on `redis.asyncio` |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
 | Health | `/health/live` static; `/health/ready` probes Postgres/Qdrant/Redis, 503 on a required outage |
 | Tracing | LangSmith (zero-code — every call is already a LangChain object) |

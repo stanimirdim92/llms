@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 # Runtime import on purpose -- see the note in ask.py: FastAPI resolves these annotations
 # when registering the route, so a TYPE_CHECKING-only import breaks dependency injection.
-from app.api.deps import CurrentTenant, rate_limited
+from app.api.deps import CurrentTenant, rate_limited, require_scopes
 from app.api.schemas import DocumentListResponse, DocumentStatusResponse, UploadAcceptedResponse
+from app.auth.scopes import DOCUMENTS_READ, DOCUMENTS_WRITE
 from app.config import get_settings
 from app.db import get_session, init_db
 from app.exceptions import APIError
@@ -27,7 +28,10 @@ router = APIRouter()
     "Every chunk is tagged with the tenant the `x-api-key` header authenticates as, so only that tenant's "
     "/ask calls can retrieve it. Poll GET /v1/documents/{doc_id} for progress. Requires a valid API key.",
     response_description="The tenant/document ids and the queued status",
-    dependencies=[Depends(rate_limited("upload", "rate_limit_upload"))],
+    dependencies=[
+        Depends(require_scopes(DOCUMENTS_WRITE)),
+        Depends(rate_limited("upload", "rate_limit_upload")),
+    ],
 )
 async def upload_document(
     file: Annotated[UploadFile, File()],
@@ -109,7 +113,10 @@ def _to_status(record: DocumentRecord) -> DocumentStatusResponse:
     "whatever text is nearest in embedding space, not from the document list. Excludes the shared "
     "curated corpus, which nobody uploaded.",
     response_description="This tenant's documents and how many were returned",
-    dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
+    dependencies=[
+        Depends(require_scopes(DOCUMENTS_READ)),
+        Depends(rate_limited("ask", "rate_limit_ask")),
+    ],
 )
 async def list_documents(
     tenant_id: CurrentTenant,
@@ -130,7 +137,10 @@ async def list_documents(
     description="Reports whether a queued document is still pending, being processed, finished, or failed "
     "(with the reason). Only returns documents owned by the tenant the `x-api-key` header authenticates as.",
     response_description="The document's current ingestion status",
-    dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
+    dependencies=[
+        Depends(require_scopes(DOCUMENTS_READ)),
+        Depends(rate_limited("ask", "rate_limit_ask")),
+    ],
 )
 async def get_document_status(doc_id: str, tenant_id: CurrentTenant) -> DocumentStatusResponse:
     await init_db()

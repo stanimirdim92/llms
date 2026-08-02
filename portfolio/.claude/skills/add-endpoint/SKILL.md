@@ -21,16 +21,23 @@ raises. That is the entire reason this checklist exists.
 3. **Add a rate limit**: `dependencies=[Depends(rate_limited("<scope>", "<settings_field>"))]`.
    Pick an existing scope or add a `rate_limit_*` field to `Settings`. Uploads get a far tighter
    budget than reads because they cost Docling CPU plus a vision call per figure plus an
-   embedding call per chunk.
-4. **Put `tenant_id` in the WHERE clause**, not in an `if` after the query. See
+   embedding call per chunk. Buckets are **per key**, not per tenant, so a tenant with N keys
+   has N times the budget -- fairness between clients, not a cost ceiling.
+4. **Declare the scope it needs**: `Depends(require_scopes(<SCOPE>))` from `app.auth.scopes`,
+   in the same `dependencies=[...]` list. A route without one is reachable by every key.
+   `tests/unit/test_scopes.py` walks the route table and fails on any `/v1` route with no
+   requirement -- add yours to `EXPECTED_ROUTE_SCOPES` there. Scope failures are **403** (the
+   caller is entitled to the tenant and merely lacks a capability); another tenant's resource
+   is still 404, see below.
+5. **Put `tenant_id` in the WHERE clause**, not in an `if` after the query. See
    `registry/db.py::get_document_record`. This matters more than it looks: `doc_id` is a content
    hash, so two tenants uploading the same file share an id -- a lookup by `doc_id` alone returns
    the *other* tenant's row while looking entirely correct.
-5. **Validate any client-supplied id against ownership before it reaches a Qdrant filter.** A
+6. **Validate any client-supplied id against ownership before it reaches a Qdrant filter.** A
    `doc_ids` parameter (planned, `docs/EPIC_4_PLAN.md` 5.4) is a fresh cross-tenant read otherwise:
    the tenant condition is satisfied by the other clause and the filter happily returns someone
    else's chunks.
-6. **Return 404, not 403, for another tenant's resource.** Distinguishing "not yours" from
+7. **Return 404, not 403, for another tenant's resource.** Distinguishing "not yours" from
    "doesn't exist" confirms to any caller that a given file has been uploaded by *somebody* --
    an existence oracle over content hashes.
 
@@ -57,9 +64,12 @@ In `tests/unit/test_api_contract.py`:
 2. **A cross-tenant test** if the route reads anything by id: tenant B must get 404 for tenant
    A's resource. `test_worker_enqueue.py` has the DB-level pattern.
 
-Authenticate with `app.dependency_overrides[deps.current_tenant]`, which works only because
-`current_tenant` is a dependency rather than middleware -- middleware can't be swapped per-test,
-which is one of the reasons it was chosen.
+Authenticate by overriding **`deps.current_principal`**, returning a `Principal`. Not
+`current_tenant` -- that is the narrower dependency, and overriding it leaves `require_scopes`
+and `rate_limited` resolving a real key, so every authenticated test gets a 401. The
+`as_tenant_a` fixture does this already; `as_a_key_holding(scopes)` is the variant for
+authorization cases. Overriding at all works only because auth is a dependency rather than
+middleware -- middleware can't be swapped per-test, which is one of the reasons it was chosen.
 
 ## Don't
 

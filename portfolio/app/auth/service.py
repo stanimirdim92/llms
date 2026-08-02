@@ -4,6 +4,7 @@ tested without FastAPI's dependency machinery.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
@@ -23,12 +24,47 @@ add a database write to every authenticated call for a field nobody reads in rea
 minute of staleness costs nothing and turns a per-request write into a rare one."""
 
 
+@dataclass(frozen=True)
+class Principal:
+    """Who is calling: the tenant, the specific key, and what that key may do.
+
+    The tenant alone was enough while every key was equivalent. It stopped being enough for
+    two reasons at once -- rate limits are now per *key*, so the bucket needs `key_id`, and
+    authorization is per *scope*, so the route needs `scopes`. Returning all three from one
+    lookup keeps that a single query; deriving them separately would mean authenticating the
+    same key two or three times per request.
+
+    `scopes` is stored verbatim, empty list included. Interpreting it is `auth/scopes.py`'s
+    job, because empty means *unrestricted* and that reading must live in exactly one place.
+    """
+
+    tenant_id: str
+    key_id: str
+    scopes: list[str]
+
+
 async def resolve_tenant(presented_key: str | None) -> str | None:
-    """Return the tenant a live key belongs to, or None.
+    """The tenant a live key belongs to, or None. Thin wrapper over `resolve_principal`.
+
+    Kept because most callers genuinely only want the retrieval scope -- Streamlit, and every
+    route whose only use of auth is `tenant_id`. Narrowing at the boundary means those places
+    cannot accidentally start depending on a key id or a scope list they were not asking for.
+    """
+    principal = await resolve_principal(presented_key)
+    return principal.tenant_id if principal else None
+
+
+async def resolve_principal(presented_key: str | None) -> Principal | None:
+    """Return the caller a live key identifies, or None.
 
     Returns None for every failure -- absent, malformed, unknown, revoked, and expired -- so
     callers cannot accidentally tell a client *which* of those happened. Distinguishing "no
     such key" from "revoked key" leaks whether a key was ever valid.
+
+    Note what is *not* here: scopes are returned, never enforced. Authorization is a decision
+    about a particular route, so it belongs at that route (`deps.require_scopes`), and folding
+    it in here would mean an authentication failure and an authorization failure came back as
+    the same `None` -- which have to be a 401 and a 403 respectively.
     """
     if not presented_key or not looks_like_key(presented_key):
         return None
@@ -52,8 +88,9 @@ async def resolve_tenant(presented_key: str | None) -> str | None:
         api_key = (await session.exec(statement)).first()
         if api_key is None:
             return None
+        principal = Principal(tenant_id=api_key.tenant_id, key_id=api_key.id, scopes=list(api_key.scopes))
         await _touch(session, api_key)
-        return api_key.tenant_id
+        return principal
 
 
 async def _touch(session: AsyncSession, api_key: ApiKey) -> None:

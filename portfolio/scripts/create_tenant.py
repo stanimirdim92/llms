@@ -2,11 +2,11 @@
 
 Until Phase 5 adds a registration UI, this is the only way to get a usable key.
 
-    python scripts/create_tenant.py "Acme Corp"                    # new tenant + first key
-    python scripts/create_tenant.py --tenant <id> --name ci        # extra key for a tenant
-    python scripts/create_tenant.py --tenant <id> --expires-in 90  # key that lapses in 90 days
+    python scripts/create_tenant.py "Acme Corp"                       # new tenant + first key
+    python scripts/create_tenant.py --tenant <id> --name ci           # extra key for a tenant
+    python scripts/create_tenant.py --tenant <id> --expires-in 90     # 30/60/90/365 or never
     python scripts/create_tenant.py --list
-    python scripts/create_tenant.py --revoke <key-id>
+    python scripts/create_tenant.py --tenant <id> --revoke <key-id>
 """
 
 import argparse
@@ -16,10 +16,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 
 from sqlmodel import select
 
+from app.auth.expiry import DEFAULT_EXPIRY_DAYS, EXPIRY_CHOICES, NEVER, deadline
 from app.auth.keys import display_prefix, generate_key, hash_key
 from app.auth.models import ApiKey, Tenant
 from app.db import get_session, init_db
@@ -31,7 +32,7 @@ async def _mint_key(tenant_id: str, name: str, expires_in_days: int | None) -> s
     only its hash is stored, so it cannot be recovered later, only revoked and replaced.
     """
     key = generate_key()
-    expires_at = datetime.now(UTC) + timedelta(days=expires_in_days) if expires_in_days else None
+    expires_at = deadline(expires_in_days)
     async with get_session() as session:
         session.add(
             ApiKey(
@@ -50,14 +51,16 @@ async def _mint_key(tenant_id: str, name: str, expires_in_days: int | None) -> s
 def _report_expiry(expires_in_days: int | None) -> None:
     """Say what was minted either way.
 
-    A key with no deadline is a legitimate choice, not a mistake -- but it is the choice
-    people make by omission rather than on purpose, so it gets said out loud. Silence here is
-    how a credential handed to CI in 2026 is still live in 2030.
+    A key with no deadline is a legitimate choice, not a mistake -- but it used to be the
+    choice people made by omission rather than on purpose, which is how a credential handed to
+    CI in 2026 is still live in 2030. The default is now 30 days, so silence means a deadline;
+    `--expires-in never` is the deliberate opt-out and gets said out loud.
     """
     if expires_in_days:
         print(f"expires  in {expires_in_days} days")
     else:
-        print("expires  never  (pass --expires-in DAYS to set a deadline)")
+        print("expires  never  (deliberate -- nothing will retire this key but you)")
+    print("scopes   unrestricted  (bootstrap key; mint narrower ones via POST /v1/keys)")
 
 
 async def create_tenant(tenant_name: str, key_name: str, expires_in_days: int | None) -> None:
@@ -118,11 +121,22 @@ async def list_all() -> None:
             print(f"    {key.id}  {key.prefix}...  {key.name:<12} {_state(key):<22} last used {_day(key.last_used_at)}")
 
 
-async def revoke(key_id: str) -> None:
+async def revoke(tenant_id: str, key_id: str) -> None:
+    """Revoke one key, identified by *both* its tenant and its id.
+
+    The tenant is required rather than looked up from the key, and that is not ceremony. Key
+    ids are opaque and adjacent in a list; revoking the wrong one silently locks out a
+    customer, and the mistake is unrecoverable because the plaintext cannot be reissued. Two
+    identifiers that must agree turns a mistyped id into an error instead of an outage.
+
+    It also keeps the CLI honest against the HTTP route, which filters on `tenant_id` for a
+    stronger reason -- there it is an authorization boundary, not a typo guard.
+    """
     async with get_session() as session:
-        api_key = await session.get(ApiKey, key_id)
+        statement = select(ApiKey).where(ApiKey.id == key_id, ApiKey.tenant_id == tenant_id)
+        api_key = (await session.exec(statement)).first()
         if api_key is None:
-            print(f"no such key: {key_id}", file=sys.stderr)
+            print(f"no key {key_id} in tenant {tenant_id}", file=sys.stderr)
             raise SystemExit(1)
         if api_key.revoked_at is not None:
             print("already revoked")
@@ -140,24 +154,32 @@ async def main() -> None:
     parser.add_argument("--name", default="default", help="Label for the key (default: 'default')")
     parser.add_argument(
         "--expires-in",
-        type=int,
-        metavar="DAYS",
-        help="Days until the key stops working. Omit for a key that never expires.",
+        default=str(DEFAULT_EXPIRY_DAYS),
+        choices=[*(str(days) for days in EXPIRY_CHOICES), NEVER],
+        metavar="{" + ",".join([*(str(d) for d in EXPIRY_CHOICES), NEVER]) + "}",
+        help=f"Days until the key stops working, or '{NEVER}' (default: {DEFAULT_EXPIRY_DAYS}).",
     )
     parser.add_argument("--list", action="store_true", help="List tenants and their keys")
-    parser.add_argument("--revoke", metavar="KEY_ID", help="Revoke a key by its id")
+    parser.add_argument("--revoke", metavar="KEY_ID", help="Revoke a key by its id -- requires --tenant")
     args = parser.parse_args()
+
+    expires_in: int | None = None if args.expires_in == NEVER else int(args.expires_in)
 
     await init_db()
 
     if args.list:
         await list_all()
     elif args.revoke:
-        await revoke(args.revoke)
+        if not args.tenant:
+            # Refused rather than inferred from the key. Looking the tenant up would make the
+            # flag decorative -- the point is that a mistyped id fails instead of revoking
+            # whichever key that id happens to name.
+            parser.error("--revoke requires --tenant: the key must be confirmed to belong to that tenant")
+        await revoke(args.tenant, args.revoke)
     elif args.tenant:
-        await add_key(args.tenant, args.name, args.expires_in)
+        await add_key(args.tenant, args.name, expires_in)
     elif args.tenant_name:
-        await create_tenant(args.tenant_name, args.name, args.expires_in)
+        await create_tenant(args.tenant_name, args.name, expires_in)
     else:
         parser.print_help()
 

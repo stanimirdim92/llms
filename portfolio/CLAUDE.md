@@ -4,13 +4,14 @@ RAG over scientific documents, plus an LLM eval framework and an agentic
 human-in-the-loop curation layer.
 
 Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack), Epic 4
-Phases 1-3 (API-key auth, tenant scoping, per-tenant rate limiting, docs), and Phase 5.1
-(ingestion behind a Postgres-backed job queue) -- see `docs/EPIC_4_PLAN.md` for the rest. Not
-built: Epics 2 and 3, designed in `docs/IMPLEMENTATION_PLAN.md` only -- no eval framework,
-no agent. Don't assume code for them. The one exception is
-`app/retrieval/document_scope.py`, pulled out of Epic 2 early: naming a filename in an `/ask`
-question scopes retrieval to that document. It is **not** the intent router, and there is
-still no golden set and no metric, so nothing measures whether an answer is good.
+Phases 1-3 (API-key auth with scopes, expiry, and CRUD; tenant scoping; per-key rate
+limiting; docs), and Phase 5.1 (ingestion behind a Postgres-backed job queue) -- see
+`docs/EPIC_4_PLAN.md` for the rest. Not built: Epics 2 and 3, designed in
+`docs/IMPLEMENTATION_PLAN.md` only -- no eval framework, no agent. Don't assume code for
+them. The one exception is `app/retrieval/document_scope.py`, pulled out of Epic 2 early:
+naming a filename in an `/ask` question scopes retrieval to that document. It is **not** the
+intent router, and there is still no golden set and no metric, so nothing measures whether
+an answer is good.
 
 ## Producer/consumer split
 
@@ -222,6 +223,17 @@ Things that look correct and aren't:
   Alembic, so a new column means dropping the table (fine while it holds nothing worth
   keeping) or writing the `ALTER TABLE` by hand. `ApiKey.expires_at` was added this way,
   against an empty table.
+- **An empty `ApiKey.scopes` list means EVERY scope, not none.** Same rule as `expires_at
+  IS NULL` meaning never: absent data must mean the pre-existing behaviour, or adding a
+  column becomes an outage for every key minted before it. `auth/scopes.py::granted` is the
+  one place that reading lives -- resist "fixing" a bare `if not key.scopes`. The consequence
+  is that an *omitted* scope list on `POST /v1/keys` is a privilege escalation the `exceeds`
+  guard cannot see (it is vacuously satisfied by an empty request), which is why
+  `auth/management.py` materialises it into the caller's own scopes before storing.
+- **Tests authenticate by overriding `deps.current_principal`, never `current_tenant`.**
+  `require_scopes` and `rate_limited` both depend on the principal, so overriding the
+  narrower dependency leaves them resolving a real key and every authenticated test gets a
+  401 -- which reads as a broken route rather than a broken fixture.
 - **`app/db.py::init_db` must import every model module.** `SQLModel.metadata` is
   populated as an import side effect, so a table whose module was never imported is
   silently skipped by `create_all` and only fails later as "relation does not exist".

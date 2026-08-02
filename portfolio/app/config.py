@@ -147,13 +147,18 @@ class Settings(BaseSettings):
     redis_username: str = Field(default="")
     redis_password: str = Field(default="")
 
-    # Per-tenant request budgets, per `rate_limit_window_seconds`. Uploads get a much
+    # Per-key request budgets, per `rate_limit_window_seconds`. Uploads get a much
     # tighter budget than questions because they cost far more: Docling parsing (CPU), one
     # Anthropic vision call per figure, and a Voyage embedding call per chunk. /ask is a
     # retrieve + rerank + one generation.
+    #
+    # Key management is tighter still, and not for cost -- it is three cheap queries. A
+    # legitimate client mints a key when a human asks it to, so anything faster than a few
+    # per minute is either a loop or someone walking the key space.
     rate_limit_window_seconds: int = Field(default=60)
     rate_limit_ask: int = Field(default=60)
     rate_limit_upload: int = Field(default=10)
+    rate_limit_keys: int = Field(default=10)
 
     @property
     def redis_url(self) -> str:

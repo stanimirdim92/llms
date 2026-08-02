@@ -72,9 +72,11 @@ looks wrong, say so once and proceed.
 
 - **Epic 1** — retrieve → rerank → generate with citations, multi-format ingestion (Docling),
   structure-aware chunking, Qdrant + Postgres registry, Streamlit UI, full Docker stack.
-- **Epic 4 Phase 1** — API-key auth, tenant scoping. Keys hashed at rest, shown once.
-- **Epic 4 Phase 2** — per-tenant rate limiting. Redis sliding window, atomic via Lua, fails
-  open.
+- **Epic 4 Phase 1** — API-key auth, tenant scoping. Keys hashed at rest (SHA-512), shown
+  once, base62 + CRC32 format, 30-day default expiry from a 30/60/90/365/never menu, per-key
+  scopes, and full CRUD at `/v1/keys` plus a Streamlit page.
+- **Epic 4 Phase 2** — rate limiting, now bucketed **per key** rather than per tenant. Redis
+  sliding window, atomic via Lua, fails open.
 - **Epic 4 Phase 3** — docs, health checks, CI.
 - **Epic 4 Phase 5.1** — ingestion behind a procrastinate job queue. `POST /v1/documents`
   returns 202; document row and job commit in one transaction.
@@ -154,6 +156,49 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-02 — scopes, per-key rate limits, key CRUD, 30-day default expiry
+
+Four asks in one turn: 30-day default expiry from a 30/60/90/365/never menu; scopes as
+"option B", a scope set checked per route; 403 for scope failures; rate limiting per key. Plus
+a mid-turn fix: `--revoke` looked keys up by id alone with no tenant check.
+
+**Shape.** `app/auth/scopes.py` holds the vocabulary and the pure comparison functions
+(`granted`/`has_scope`/`unknown_scopes`/`exceeds`). `Principal` (tenant, key id, scopes) came
+out of `resolve_principal`; `resolve_tenant` is now a thin wrapper, kept because most callers
+genuinely only want the retrieval scope. `require_scopes` in `deps.py` checks per route.
+
+**Three things that are easy to get wrong and are now pinned:**
+
+1. **An empty scope list means *every* scope.** Keys minted before the column existed have no
+   list. Reading `if not key.scopes` as a denial would have revoked all of them.
+2. **…which makes an omitted list on `POST /v1/keys` an escalation.** `exceeds([], holder)` is
+   vacuously empty, so the guard never fires, and storing `[]` means unrestricted — a
+   `keys:write`-only key could mint itself an unrestricted one. The route materialises an
+   omitted list into the caller's own scopes.
+3. **Overriding `current_tenant` in tests no longer authenticates anything.** `require_scopes`
+   and `rate_limited` both hang off `current_principal`, so the seam moved. Five contract
+   tests failed exactly this way; the `add-endpoint` skill was corrected.
+
+**`require_scopes` became a callable class**, purely so the route table is introspectable: a
+closure hides its requirement in a cell, and `test_scopes.py` walks every route and fails on
+any `/v1` route with no requirement — the assertion a newly added route silently falsifies.
+
+**Key CRUD lives in `app/auth/management.py`, not the router.** The Streamlit page
+(`streamlit_app/pages/1_API_keys.py`) manages keys in process, exactly as `Home.py` ingests in
+process, so the escalation guard and the tenant filter had to be one implementation. The router
+is now only the translation from refusal to status code. Same reasoning as
+`ingestion/uploads.py`, and it raises its own exceptions rather than `APIError` for the same
+reason.
+
+**Verified beyond the suite:** the Streamlit page driven end to end with `streamlit.testing.v1`
+against real Postgres (authenticate → list → mint with `["ask"]` and 90 days → the row in
+`psql` shows `{ask}` and 90 days), and all three CLI revoke paths (no `--tenant` refuses, wrong
+tenant refuses, right tenant revokes). The smoke tenant was deleted afterwards; `apikey` is
+empty again.
+
+Schema: `apikey.scopes varchar[] NOT NULL DEFAULT '{}'` added by hand-written `ALTER` on the
+dev database (`create_all` does not add columns — see the entry below).
 
 ### 2026-08-01 — key expiry, and the API key declared in OpenAPI
 

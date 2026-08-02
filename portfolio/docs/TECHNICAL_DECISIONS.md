@@ -170,10 +170,16 @@ branch that could later grow a distinguishing error message; and `func.now()` is
 several api processes, "expired" has to mean one thing. A test expires a key by one
 millisecond, which only a clock can reject.
 
-Expiry is **opt-in** (`--expires-in DAYS`), not the default. Defaulting to a deadline is the
-safer policy and is recorded in `docs/IDEAS.md` as a decision still to take; what shipped
-instead is that the CLI states the choice out loud either way, because a forever-key is the
-one people create by omission rather than on purpose.
+**Expiry defaults to 30 days, from a fixed menu of 30/60/90/365/never.** It shipped opt-in
+first, with the CLI merely stating the choice out loud; that was the wrong default, because a
+forever-key is the one people create by omission rather than on purpose. Both policies are
+defensible — only one of them is safe as the value you get by not thinking about it.
+
+The menu is a fixed set rather than a free integer, in both the API (`Literal[30, 60, 90,
+365] | None`) and the CLI (`choices` built from `EXPIRY_CHOICES`). An arbitrary
+`--expires-in 4000` is not a lifetime anyone chose; it is a typo that reads as a decision. The
+two spellings exist because a `Literal` is what puts a real enum in the OpenAPI schema, and
+`test_key_expiry.py` holds them together so they cannot drift.
 
 **The API key is declared as an OpenAPI security scheme, not just accepted as a header.** A
 plain `Header()` parameter authenticates identically, so nothing at runtime distinguishes the
@@ -217,8 +223,8 @@ constant-time comparison and then notes it does not apply when the comparison is
 database lookup — which is what this does; `hmac.compare_digest` would be required only if
 digests were ever compared in application code. Rotation with a grace period already works,
 because a tenant may hold several live keys: mint the new one, move clients over, revoke the
-old. The two genuine gaps they surfaced — **key expiry** and **scopes** — are in
-`docs/IDEAS.md` § Auth, not built.
+old. The two genuine gaps they surfaced — **key expiry** and **scopes** — have both since been
+built; see below.
 
 **SHA-512 rather than SHA-256 is margin, not a fix, and the function is now frozen.** What
 protects a stolen `key_hash` is the input entropy — 256 bits of CSPRNG output is not
@@ -255,9 +261,63 @@ so the FastAPI dependency never runs for it. It prompts for a key and resolves i
 same `auth.service.resolve_tenant` — one auth implementation, not two — rather than minting a
 tenant id as it originally did.
 
+## Scopes: a set on the key, checked per route
+
+**Decision.** Five strings — `ask`, `documents:read`, `documents:write`, `keys:read`,
+`keys:write` — stored as a Postgres `ARRAY` on `apikey`, checked by a `require_scopes(...)`
+dependency declared on each route.
+
+**Deliberately five.** A scope list you can hold in your head is one people use correctly; a
+taxonomy is one people paste from an example and stop reading. `keys:*` exist because key
+management is a capability like any other — without them any key could mint any other, and the
+whole vocabulary would be decorative.
+
+**An empty list means *every* scope, not none.** This is the load-bearing decision and the one
+most likely to be "corrected" by someone reading `if not key.scopes` as a denial. Keys minted
+before the column existed have no list; the other reading would have revoked all of them the
+moment it shipped. Same rule as `expires_at IS NULL` meaning never: absent data must mean the
+pre-existing behaviour, or adding a column becomes an outage. The cost, stated because it is
+real, is that "unrestricted" and "not yet configured" are the same value — acceptable while
+keys are minted by a human who sees the list, and fixable with a NOT NULL default if they ever
+aren't.
+
+**A `ARRAY` column, not a join table.** The set is tiny, fixed, and read on every authenticated
+request, so a second query to assemble a five-element list would be pure overhead. It is also
+never queried *by* scope — the question is always "what may this key do", never "which keys may
+do X" — and that query shape is the one that would justify normalising.
+
+**403 for a missing scope, 404 for another tenant's resource.** Everywhere else in this API an
+authorization failure is a 404, to avoid confirming that someone else's resource exists. Scopes
+are the deliberate exception: the caller *is* authenticated and *is* entitled to the tenant,
+they simply hold the wrong capability, so naming the missing scope tells them only about their
+own key. Hiding it produces a client retrying forever against a 404 it cannot fix.
+
+**Scopes hang off the key, not the tenant.** The tenant decides what data is reachable — that
+is the retrieval filter, and it is not negotiable per key. A scope decides what the holder may
+do with it.
+
+**A key may only grant scopes it already holds.** Without that guard, `keys:write` is
+equivalent to every scope: a narrow key mints a wide one and promotes itself. The subtle half
+is that an *omitted* scope list cannot be stored as-is — empty means unrestricted, and
+`exceeds([], holder)` is vacuously satisfied, so the guard never sees it. `POST /v1/keys`
+therefore materialises an omitted list into the caller's own scopes.
+
+**Declared per route, like `CurrentTenant`, with the same consequence:** a route that forgets
+one is reachable by any key and nothing raises. `require_scopes` attaches its requirement to
+the returned closure so `test_scopes.py` can walk the route table and fail on any `/v1` route
+with no requirement — the assertion a newly added route silently falsifies.
+
 ## Rate limiting: hand-rolled on `redis.asyncio`
 
-**Decision.** A sliding-window limiter in `app/rate_limit.py`, per tenant and per scope.
+**Decision.** A sliding-window limiter in `app/rate_limit.py`, per **key** and per scope.
+
+**Per key, not per tenant.** Once keys differ in capability, a CI key hammering uploads should
+not exhaust the budget of the dashboard key beside it — with one shared bucket that becomes a
+support ticket about the wrong component. **The consequence, stated because it is real:** a
+tenant holding N keys now has N times the budget, so this is a fairness device between clients
+and not a cost ceiling. Making it a ceiling means a second bucket keyed on `tenant_id` checked
+alongside this one — two Redis round trips instead of one, recorded in `docs/IDEAS.md` rather
+than built, because nothing here bills by request today.
 
 **`slowapi` was planned and cannot be used.** It stores counters through `limits`, and
 `limits[redis]` requires `redis<8.0.0` against this project's `redis>=8.0.1` — uv reports the

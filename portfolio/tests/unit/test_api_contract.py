@@ -23,10 +23,12 @@ from httpx import ASGITransport, AsyncClient
 from app.api import deps
 from app.api.main import app
 from app.api.routers import ask as ask_router, health
+from app.auth.scopes import ALL_SCOPES, DOCUMENTS_READ, UNRESTRICTED
+from app.auth.service import Principal
 from app.retrieval.document_scope import DocumentScope
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Iterator
+    from collections.abc import AsyncIterator, Callable, Iterator
 
 TENANT_A = "a" * 32
 TENANT_B = "b" * 32
@@ -40,9 +42,35 @@ async def client() -> AsyncIterator[AsyncClient]:
 
 @pytest.fixture
 def as_tenant_a() -> Iterator[None]:
-    """Authenticate every request as TENANT_A without a database or a real key."""
-    app.dependency_overrides[deps.current_tenant] = lambda: TENANT_A
+    """Authenticate every request as TENANT_A without a database or a real key.
+
+    Overrides `current_principal`, not `current_tenant`. It is the single seam every other
+    piece of auth hangs off -- `current_tenant` derives from it, `require_scopes` reads its
+    scopes, and `rate_limited` buckets on its `key_id`. Overriding the narrower dependency
+    would leave those two resolving a real key and returning 401.
+    """
+    app.dependency_overrides[deps.current_principal] = lambda: Principal(
+        tenant_id=TENANT_A, key_id="key-for-tenant-a", scopes=UNRESTRICTED
+    )
     yield
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def as_a_key_holding() -> Iterator[Callable[[list[str]], None]]:
+    """Authenticate as TENANT_A with an exact scope list, for the authorization cases.
+
+    Separate from `as_tenant_a` because that fixture is deliberately unrestricted: every test
+    written before scopes existed must keep passing unchanged, which is the same
+    back-compatibility rule `UNRESTRICTED` encodes.
+    """
+
+    def _authenticate(scopes: list[str]) -> None:
+        app.dependency_overrides[deps.current_principal] = lambda: Principal(
+            tenant_id=TENANT_A, key_id="key-for-tenant-a", scopes=scopes
+        )
+
+    yield _authenticate
     app.dependency_overrides.clear()
 
 
@@ -159,6 +187,97 @@ async def test_an_oversized_upload_is_413(client: AsyncClient, monkeypatch: pyte
     assert response.status_code == 413
 
 
+async def test_every_key_route_requires_a_key(client: AsyncClient) -> None:
+    """Key management is the highest-value route in the API -- an open one mints credentials."""
+    assert (await client.get("/v1/keys")).status_code == 401
+    assert (await client.post("/v1/keys", json={"name": "ci"})).status_code == 401
+    assert (await client.delete("/v1/keys/abc")).status_code == 401
+
+
+async def test_a_key_lacking_the_scope_is_403_and_told_which(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """403 rather than 404, and the missing scope is named.
+
+    Everywhere else an authorization failure is a 404 to avoid confirming that someone else's
+    resource exists. Here the caller is entitled to the tenant and merely holds the wrong
+    capability, so there is nothing to hide -- and hiding it produces a client that retries
+    forever against a 404 it cannot fix.
+    """
+    as_a_key_holding([DOCUMENTS_READ])
+
+    response = await client.post("/v1/keys", json={"name": "ci"})
+
+    assert response.status_code == 403
+    assert "keys:write" in response.json()["detail"]
+
+
+async def test_scopes_gate_ask_too(client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]) -> None:
+    """Asserted per route, not just on `require_scopes`: the dependency is declared per route,
+    so one added without it is reachable by any key and no existing test notices.
+    """
+    as_a_key_holding([DOCUMENTS_READ])
+
+    response = await client.post("/v1/ask", json={"question": "hi"})
+
+    assert response.status_code == 403
+
+
+async def test_an_unrestricted_key_passes_every_scope_check(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """The empty list means *every* scope. Pinned at the HTTP layer because reading
+    `if not key.scopes` as "denies everything" is the natural misreading, and it would revoke
+    every key minted before the column existed.
+    """
+    as_a_key_holding(UNRESTRICTED)
+
+    response = await client.post("/v1/keys", json={"name": "ci", "scopes": ["nonsense"]})
+
+    assert response.status_code == 400, "an unrestricted key must reach validation, not be denied"
+
+
+async def test_an_unknown_scope_is_rejected_rather_than_stored(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """A typo'd scope stored verbatim produces a key that authenticates fine and silently
+    cannot do the one thing it was created for -- discovered as a 403 much later.
+    """
+    as_a_key_holding(list(ALL_SCOPES))
+
+    response = await client.post("/v1/keys", json={"name": "ci", "scopes": ["documents:wrote"]})
+
+    assert response.status_code == 400
+    assert "documents:wrote" in response.json()["detail"]
+
+
+async def test_a_key_cannot_grant_a_scope_it_lacks(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """The privilege-escalation guard. Without it, `keys:write` is equivalent to every scope:
+    a narrow key mints a wide one and the vocabulary is decorative.
+    """
+    as_a_key_holding(["keys:write"])
+
+    response = await client.post("/v1/keys", json={"name": "escalated", "scopes": ["documents:write"]})
+
+    assert response.status_code == 403
+    assert "documents:write" in response.json()["detail"]
+
+
+async def test_an_expiry_outside_the_menu_is_refused(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """422 from the `Literal`, not a stored 4000-day key. An arbitrary integer is not a
+    lifetime anyone chose; it is a typo that reads as a decision.
+    """
+    as_a_key_holding(list(ALL_SCOPES))
+
+    response = await client.post("/v1/keys", json={"name": "ci", "expires_in_days": 4000})
+
+    assert response.status_code == 422
+
+
 async def test_liveness_needs_no_auth_and_no_dependencies(client: AsyncClient) -> None:
     """An orchestrator can't send an API key, and a liveness probe that checked Postgres would
     restart the process over a database blip.
@@ -271,6 +390,9 @@ def test_every_tenant_scoped_route_requires_the_scheme_and_probes_do_not() -> No
     assert security("/v1/documents", "post") == [{"ApiKeyAuth": []}]
     assert security("/v1/documents", "get") == [{"ApiKeyAuth": []}]
     assert security("/v1/documents/{doc_id}", "get") == [{"ApiKeyAuth": []}]
+    assert security("/v1/keys", "post") == [{"ApiKeyAuth": []}]
+    assert security("/v1/keys", "get") == [{"ApiKeyAuth": []}]
+    assert security("/v1/keys/{key_id}", "delete") == [{"ApiKeyAuth": []}]
     assert security("/health/live", "get") is None
     assert security("/health/ready", "get") is None
 

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, DateTime, func
+from sqlalchemy import ARRAY, Column, DateTime, String, func
 from sqlmodel import Field, SQLModel
 
 if TYPE_CHECKING:
@@ -60,6 +60,18 @@ class ApiKey(SQLModel, table=True):
     """Revocation is a timestamp, not a delete: an audit trail of which key was used when
     is worth more than a clean table, and a deleted row can't answer "was this leaked key
     ever used?"."""
+    scopes: list[str] = Field(
+        default_factory=list,
+        sa_column=Column(ARRAY(String), nullable=False, server_default="{}"),
+    )
+    """What the holder of this key may do. **An empty list means every scope, not none** --
+    see `auth/scopes.py::UNRESTRICTED` for why, and resist "fixing" it.
+
+    A Postgres `ARRAY` rather than a join table: the set is tiny, fixed, and read on every
+    authenticated request, so a second query to assemble a five-element list would be pure
+    overhead. It is also never queried *by* scope -- the question is always "what may this
+    key do", never "which keys may do X" -- which is the query shape that would justify
+    normalising."""
     expires_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), index=True))
     """When the key stops working on its own. `NULL` means never.
 

@@ -1,4 +1,4 @@
-"""Per-tenant sliding-window rate limiting on Redis.
+"""Per-key sliding-window rate limiting on Redis.
 
 Hand-rolled rather than `slowapi`, which the original plan named. Two reasons, both hard:
 
@@ -88,8 +88,13 @@ class RateLimitExceeded(Exception):
         super().__init__(f"Rate limit exceeded; retry in {retry_after_seconds}s")
 
 
-async def check(scope: str, tenant_id: str, limit: int) -> None:
-    """Consume one unit of `tenant_id`'s budget for `scope`, or raise.
+async def check(scope: str, subject: str, limit: int) -> None:
+    """Consume one unit of `subject`'s budget for `scope`, or raise.
+
+    `subject` is an **API key id**, not a tenant id -- so one key cannot exhaust the budget of
+    another key belonging to the same tenant. Deliberately typed as an opaque string and named
+    for what it is used as rather than what it currently holds: this function should not need
+    to change if the bucket is ever widened or narrowed.
 
     `scope` keeps endpoints in separate buckets, so exhausting the upload budget does not
     also block questions.
@@ -103,7 +108,7 @@ async def check(scope: str, tenant_id: str, limit: int) -> None:
     settings = get_settings()
     window_ms = settings.rate_limit_window_seconds * 1000
     now_ms = int(time.time() * 1000)
-    key = f"ratelimit:{scope}:{tenant_id}"
+    key = f"ratelimit:{scope}:{subject}"
 
     try:
         allowed, retry_after_ms = await _client().eval(
@@ -115,5 +120,5 @@ async def check(scope: str, tenant_id: str, limit: int) -> None:
 
     if not int(allowed):
         retry_after = max(1, -(-int(retry_after_ms) // 1000))  # ceil to whole seconds
-        log.info("rate_limit.exceeded", scope=scope, tenant_id=tenant_id, retry_after=retry_after)
+        log.info("rate_limit.exceeded", scope=scope, subject=subject, retry_after=retry_after)
         raise RateLimitExceeded(retry_after)

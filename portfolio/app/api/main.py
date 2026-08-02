@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
 from app.api.routers.health import router as health_router
+from app.api.routers.keys import router as keys_router
 from app.config import get_settings, require_provider_credentials
 from app.db import init_db
 from app.exceptions import PortfolioError
@@ -70,6 +71,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(ask_router, prefix="/v1")
 app.include_router(documents_router, prefix="/v1")
+app.include_router(keys_router, prefix="/v1")
 
 
 @app.exception_handler(PortfolioError)

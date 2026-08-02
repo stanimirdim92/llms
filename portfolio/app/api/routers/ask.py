@@ -6,8 +6,9 @@ from fastapi import APIRouter, Depends
 # it appears only in an annotation -- is read at runtime by FastAPI (get_type_hints, when the
 # route is registered) to find the Depends() marker inside it. If `rate_limited` ever leaves
 # this import, ruff will suggest moving the rest into a TYPE_CHECKING block; don't.
-from app.api.deps import CurrentTenant, rate_limited
+from app.api.deps import CurrentTenant, rate_limited, require_scopes
 from app.api.schemas import AskRequest, AskResponse, CitationResponse, RetrievedChunkResponse
+from app.auth.scopes import ASK
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
@@ -57,7 +58,7 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     "arXiv numbers. Naming a document you do not have returns 404 rather than silently "
     "searching everything.",
     response_description="A cited answer, its citations, and every chunk that was retrieved/reranked",
-    dependencies=[Depends(rate_limited("ask", "rate_limit_ask"))],
+    dependencies=[Depends(require_scopes(ASK)), Depends(rate_limited("ask", "rate_limit_ask"))],
 )
 async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
     scope = await _document_scope(request.question, tenant_id)

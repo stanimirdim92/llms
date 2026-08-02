@@ -1,6 +1,9 @@
 from datetime import datetime  # see the note below: must stay a runtime import
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from app.auth.expiry import DEFAULT_EXPIRY_DAYS
 
 # `datetime` must stay a runtime import. This module has no `from __future__ import
 # annotations`, so pydantic evaluates these annotations eagerly when it builds the model
@@ -100,3 +103,60 @@ class DocumentListResponse(BaseModel):
 
     documents: list[DocumentStatusResponse] = Field(description="This tenant's documents, newest first")
     count: int = Field(description="How many are returned (bounded by `limit`)")
+
+
+class CreateKeyRequest(BaseModel):
+    """`POST /v1/keys`. Carries no tenant field for the same reason `AskRequest` doesn't --
+    the tenant comes from the calling key, never from the body.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(
+        min_length=1,
+        max_length=64,
+        description='Human label for the key ("ci", "laptop"). Once minted, this and the prefix are '
+        "the only way to tell one key from another -- the secret itself is unrecoverable.",
+    )
+    scopes: list[str] = Field(
+        default_factory=list,
+        description="What the new key may do. Empty means *the same scopes you hold*, which for an "
+        "unrestricted key is everything. You can never grant a scope your own key lacks; trying "
+        "returns 403.",
+    )
+    expires_in_days: Literal[30, 60, 90, 365] | None = Field(
+        default=DEFAULT_EXPIRY_DAYS,
+        description="Lifetime in days. `null` means the key never expires -- allowed, but say it "
+        "explicitly rather than getting it by omission, which is why the default is 30 rather than "
+        "no deadline.",
+    )
+
+
+class ApiKeyResponse(BaseModel):
+    """A key's metadata. Deliberately cannot carry the secret: `CreatedKeyResponse` adds that
+    field exactly once, on the one response that is allowed to show it.
+    """
+
+    key_id: str = Field(description="Identifier for this key -- what `DELETE /v1/keys/{key_id}` takes")
+    name: str = Field(description="The label given at creation")
+    prefix: str = Field(description="The key's first few characters, enough to recognise it in a list")
+    scopes: list[str] = Field(
+        description="What this key may do. An unrestricted key reports the full scope list rather than "
+        "an empty one, so a client never has to know that empty means everything."
+    )
+    created_at: datetime | None = Field(description="When the key was minted")
+    expires_at: datetime | None = Field(description="When it stops working on its own. `null` means never")
+    last_used_at: datetime | None = Field(
+        description="Last authenticated request, accurate to about a minute -- it is refreshed at most "
+        "once per minute per key rather than on every call"
+    )
+    revoked_at: datetime | None = Field(description="When someone killed it. `null` means it was not revoked")
+
+
+class CreatedKeyResponse(ApiKeyResponse):
+    """The 201 from `POST /v1/keys`, and the only place the plaintext ever appears."""
+
+    key: str = Field(
+        description="The key itself, shown **once**. Only its hash is stored, so this response cannot "
+        "be reproduced -- a lost key is revoked and replaced."
+    )

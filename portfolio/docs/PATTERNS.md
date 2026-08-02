@@ -13,18 +13,24 @@ non-negotiables below. This file explains the shapes those rules protect.
 
 ## 1. Authorization is a dependency, not middleware
 
-`api/deps.py` exposes `CurrentTenant = Annotated[str, Depends(current_tenant)]`, and every
-route takes it as a parameter.
+`api/deps.py` resolves one `Principal` (tenant, key id, scopes) per request and exposes three
+things layered on it: `CurrentTenant` for the retrieval scope, `require_scopes(...)` for the
+capability check, and `rate_limited(...)` for the budget. Every route declares what it needs.
 
 Middleware was the obvious alternative and is worse on three counts: it can't be overridden
-per-test (`app.dependency_overrides[deps.current_tenant]` is what makes the auth suite run with
-no database), it doesn't appear in the OpenAPI schema the Phase 6 React client generates from,
-and it would have to reimplement path matching to know which routes to skip.
+per-test (`app.dependency_overrides[deps.current_principal]` is what makes the auth suite run
+with no database), it doesn't appear in the OpenAPI schema the Phase 6 React client generates
+from, and it would have to reimplement path matching to know which routes to skip.
+
+One principal, three consumers, one lookup: the key resolves once per request because FastAPI
+caches dependency results, so the scope check and the rate-limit bucket cost no extra query.
 
 **Prevents:** an untestable auth layer, and a security control invisible to API consumers.
 
 **Costs:** the boundary is re-declared per route, so a route added without it is unauthenticated
-and *nothing raises*. Paid down with a per-route 401 test — see `.claude/skills/add-endpoint`.
+— or authenticated but reachable by every key — and *nothing raises*. Paid down with a
+per-route 401 test and `tests/unit/test_scopes.py`, which walks the route table and fails on
+any `/v1` route with no scope requirement. See `.claude/skills/add-endpoint`.
 
 ## 2. No ambient authority — the tenant filter is re-established per query
 

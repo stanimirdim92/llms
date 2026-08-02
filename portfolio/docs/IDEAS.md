@@ -93,13 +93,14 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **A sweep for keys about to lapse.** *(S)* `expires_at` exists and is enforced, but nothing
   warns before the deadline -- the first signal is a 401 in production. `expires_at` is
   indexed for exactly this query; a cron and an email is the whole feature.
-- **Make expiry the default rather than the opt-in.** *(S, policy)* `--expires-in` is
-  available and the CLI says out loud when a key has no deadline, but omitting the flag still
-  mints a forever-key. Flipping the default is a one-line change and a decision about who it
-  inconveniences.
-- **Scopes.** *(M)* Every key can do everything its tenant can. A read-only key for a
-  dashboard, or an ingest-only key for a pipeline, is the obvious next cut — and it is
-  cheaper to add before there are keys in the wild than after.
+- **A per-tenant rate-limit ceiling alongside the per-key one.** *(S)* Buckets are keyed on
+  `key_id`, so a tenant holding N keys has N times the budget — fairness between clients, not
+  a cost ceiling. A second bucket on `tenant_id` checked beside the first makes it a ceiling,
+  at the cost of a second Redis round trip per request. Not built because nothing here bills
+  by request.
+- **Scope the CLI's bootstrap key.** *(S)* `scripts/create_tenant.py` mints unrestricted keys.
+  That is right for the first key of a tenant and wrong as a habit; a `--scopes` flag would
+  let the CLI mint narrow ones too, rather than requiring a round trip through the API.
 
 ## Product surface
 
@@ -149,4 +150,4 @@ Kept so they don't come back without new information.
 | An agentic answer path | Deliberately not. `/ask` is a fixed retrieve → rerank → generate sequence; adaptive judgment is Epic 3's job and would buy nondeterminism here for nothing. |
 | Making `/ask` scoping use a model to guess the document | Not yet. Deterministic matching handles explicit names; semantic reference ("the flyer", "my CV") genuinely needs a model **and** needs the eval harness to show the guessing helps more than it hurts. |
 | **HMAC-with-pepper instead of a plain digest for API keys** | Rejected — correct advice, wrong threat model. A pepper defeats *offline brute force*, which requires the hashed input to be guessable; an API key here is 256 bits of CSPRNG output, so a stolen `key_hash` is already useless without inverting the digest. It also cannot be rotated: re-deriving `HMAC(new_pepper, key)` needs the plaintext keys, which we deliberately do not store, so changing the pepper invalidates every key at once. That is a worse operational position than today, bought for no gain. Revisit only if key entropy is ever reduced. |
-| **Storing `key_hash` as `BYTEA` instead of hex** | Rejected. Saves 32 bytes/row — under 1 MB at the 10k-tenant target — against a real cost: the column stops being readable in `psql`, and there is no Alembic, so it is a hand-written migration on the auth table. The genuinely useful halves of that suggestion were already done (`unique=True, index=True`, plus `prefix`/`last_used_at`/`revoked_at`) or are now in **Auth** above (expiry, scopes). |
+| **Storing `key_hash` as `BYTEA` instead of hex** | Rejected. Saves 32 bytes/row — under 1 MB at the 10k-tenant target — against a real cost: the column stops being readable in `psql`, and there is no Alembic, so it is a hand-written migration on the auth table. The genuinely useful halves of that suggestion were already done (`unique=True, index=True`, plus `prefix`/`last_used_at`/`revoked_at`) or have since shipped (expiry, scopes). |
