@@ -10,7 +10,14 @@ import pytest
 from pydantic import ValidationError
 
 from app.api.schemas import AskRequest
-from app.auth.keys import KEY_PREFIX, display_prefix, generate_key, hash_key, looks_like_key
+from app.auth.keys import (
+    EXPECTED_KEY_LENGTH,
+    KEY_PREFIX,
+    display_prefix,
+    generate_key,
+    hash_key,
+    looks_like_key,
+)
 
 
 def test_generated_keys_are_unique_and_prefixed() -> None:
@@ -62,6 +69,32 @@ def test_malformed_values_are_rejected_before_any_lookup(value: str) -> None:
 
 def test_real_key_passes_the_shape_check() -> None:
     assert looks_like_key(generate_key())
+
+
+def test_expected_length_matches_what_generate_key_actually_produces() -> None:
+    """`EXPECTED_KEY_LENGTH` is computed from `_SECRET_BYTES` by a base64 formula that is easy
+    to write down slightly wrong -- and if it were wrong, `looks_like_key` would reject every
+    real key and authentication would fail closed for everyone. Measured, not asserted.
+    """
+    assert {len(generate_key()) for _ in range(200)} == {EXPECTED_KEY_LENGTH}
+
+
+def test_an_oversized_value_is_rejected_without_being_hashed() -> None:
+    """The reason the check is an exact length rather than a minimum.
+
+    A prefixed multi-megabyte body used to satisfy the old `len(value) > 16` test, so
+    `resolve_tenant` would SHA-256 the whole thing before discovering it matched nothing --
+    unbounded work per unauthenticated request. nginx bounds request headers at 8KB on the
+    proxied path, but Streamlit calls `resolve_tenant` in process with no such ceiling.
+    """
+    assert not looks_like_key(KEY_PREFIX + "A" * 10_000_000)
+
+
+def test_a_correct_length_non_ascii_value_is_rejected() -> None:
+    """The random part is base64url, so a non-ASCII character cannot be one of our keys."""
+    padding = "A" * (EXPECTED_KEY_LENGTH - len(KEY_PREFIX) - 1)
+
+    assert not looks_like_key(KEY_PREFIX + padding + "é")
 
 
 def test_ask_request_has_no_tenant_or_session_field() -> None:

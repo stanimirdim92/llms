@@ -15,6 +15,20 @@ rejected before touching the database."""
 _SECRET_BYTES = 32
 """256 bits from `secrets.token_urlsafe`. See `hash_key` for why the entropy matters."""
 
+_TOKEN_LENGTH = (4 * _SECRET_BYTES + 2) // 3
+"""Length of the random part: unpadded base64url of `_SECRET_BYTES`, so 43 for 32 bytes.
+Derived rather than hardcoded so it cannot drift from `_SECRET_BYTES`, and pinned by a test
+that generates keys and measures them -- the formula is easy to write down slightly wrong."""
+
+EXPECTED_KEY_LENGTH = len(KEY_PREFIX) + _TOKEN_LENGTH
+"""Every key this system issues is exactly this long (51).
+
+**Changing `_SECRET_BYTES` invalidates every key already in the database**, because stored
+digests are of the old length and presented keys of the new length would be rejected by
+`looks_like_key` before the lookup. Rotating key length is therefore a migration, not a
+constant edit: widen this check to accept both lengths, let the old keys age out, then
+narrow it again."""
+
 PREFIX_DISPLAY_LENGTH = len(KEY_PREFIX) + 8
 """How much of a key is safe to store for display. 8 random characters is enough to tell
 keys apart in a list while leaving the remaining ~35 unguessable."""
@@ -49,5 +63,20 @@ def display_prefix(key: str) -> str:
 
 
 def looks_like_key(value: str) -> bool:
-    """Cheap shape check so obvious non-keys never reach a database round-trip."""
-    return value.startswith(KEY_PREFIX) and len(value) > PREFIX_DISPLAY_LENGTH
+    """Cheap shape check so obvious non-keys never reach a database round-trip -- or a hash.
+
+    Exact length, not a minimum. A minimum accepts an arbitrarily large body as a candidate
+    key, and `resolve_tenant` would then SHA-256 all of it before finding nothing: unbounded
+    work per unauthenticated request. nginx caps request *headers* at 8KB, which bounds it on
+    the proxied path, but Streamlit calls `resolve_tenant` in process with no such ceiling.
+
+    `isascii()` because the random part is base64url and the prefix is ASCII, so anything else
+    cannot be one of our keys. It also makes `hash_key`'s `.encode()` total: for ASCII input,
+    UTF-8 and ASCII encode to identical bytes, so this narrows the input space without
+    changing any digest.
+
+    This stays a boolean at the caller rather than a `raise` inside `hash_key`. `hash_key` is
+    also called on freshly *generated* keys, where validating is pointless, and a raise there
+    would turn a malformed header into an unhandled 500 instead of the 401 it should be.
+    """
+    return value.isascii() and len(value) == EXPECTED_KEY_LENGTH and value.startswith(KEY_PREFIX)
