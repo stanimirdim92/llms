@@ -155,6 +155,27 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-01 — key format: base62 + CRC32 checksum
+
+Read three sources on API key design (GitHub's 2021 token-format post, Zuplo, jamdesk) and
+compared them line by line against what exists. **Most of what they recommend was already
+done** — CSPRNG entropy, prefix, hash-only storage, show-once, display prefix, indexed unique
+hash, `last_used_at`/`revoked_at`, per-key rate limiting, and the no-bcrypt reasoning that two
+of the three explicitly endorse. Confirmation, recorded in `docs/TECHNICAL_DECISIONS.md` so
+the next review doesn't redo the comparison.
+
+Three things changed, all free because `apikey` is still empty: base62 instead of base64url
+(`-` truncates a double-click selection, so a user copying a key gets a fragment and an opaque
+401), a 6-character CRC32 checksum, and a matching gitleaks rule. Key is now 57 characters.
+
+**The checksum is an integrity check, not a security control** — CRC32 is not cryptographic
+and anyone can compute a valid one. It buys offline rejection of typos and fabrications
+(1-in-2³² false accept), nothing more. A test pins that reading, because the dangerous
+misunderstanding is one upgrade in someone's head away.
+
+Still not built, and the only real gaps the review found: **key expiry** and **scopes**
+(`docs/IDEAS.md` § Auth).
+
 ### 2026-08-01 — API key review: shape check tightened, hash moved to SHA-512
 
 An external review of `app/auth/keys.py` produced three suggestions. One was taken (exact-

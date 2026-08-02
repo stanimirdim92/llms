@@ -104,12 +104,15 @@ has been imported. `registry/db.py::init_db` must import `app.auth.models` expli
 the tables silently never exist.
 
 **Hashing:** a plain digest (SHA-512), deliberately *not* argon2/bcrypt. Keys are 256 bits of
-`secrets.token_urlsafe(32)` — there is nothing to brute-force, and a slow KDF on every
+`secrets.randbits(256)` — there is nothing to brute-force, and a slow KDF on every
 request is self-inflicted latency. Argon2 becomes correct only in Phase 5's password login,
 where the secret is low-entropy.
 
-**Key format:** `pf_live_<43 url-safe chars>`. Prefixed so leaked keys are greppable and
-detectable; `prefix` stored separately so the UI can list keys without holding the secret.
+**Key format:** `pf_live_` + 43 base62 chars (256 bits) + a 6-char CRC32 = 57 characters.
+Prefixed so leaked keys are greppable and detectable; base62 so a `-` never truncates a
+double-click selection; checksummed so a mistyped or fabricated key is rejected offline.
+`prefix` stored separately so the UI can list keys without holding the secret. Rationale and
+the sources it is drawn from are in `docs/TECHNICAL_DECISIONS.md`.
 
 ### 1.2 Dependency — `app/api/deps.py` (new)
 

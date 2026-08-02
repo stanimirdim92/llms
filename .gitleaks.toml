@@ -7,6 +7,22 @@
 [extend]
 useDefault = true
 
+# Our own key format, which no bundled rule knows about: `pf_live_` + 43 base62 characters of
+# CSPRNG output + a 6-character CRC32. See `portfolio/app/auth/keys.py`.
+#
+# The format was designed so this rule can be exact rather than heuristic -- a fixed prefix, a
+# fixed length, and a single alphabet. gitleaks cannot verify the trailing checksum (it matches
+# patterns, it does not compute CRC32), so the residual false-positive risk is a 49-character
+# alphanumeric run that happens to follow `pf_live_`. In this repository that is only ever a
+# real key. Anything gitleaks flags here should be treated as leaked and **rotated**, not
+# argued with: removing a key from history does not un-publish it.
+[[rules]]
+id = "portfolio-api-key"
+description = "portfolio API key (pf_live_)"
+regex = '''pf_live_[0-9A-Za-z]{49}'''
+keywords = ["pf_live_"]
+entropy = 3.5
+
 [allowlist]
 description = "Documented placeholders and deliberately-invalid test fixtures"
 

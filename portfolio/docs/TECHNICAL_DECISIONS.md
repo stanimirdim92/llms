@@ -152,10 +152,45 @@ key's owner, so the server *derives* identity rather than trusting the client to
 
 **Keys are hashed with SHA-512, deliberately not argon2/bcrypt.** Slow KDFs exist to make
 brute-forcing *low-entropy* secrets expensive. An API key here is 256 bits of
-`secrets.token_urlsafe` output — there is no guessable structure to attack, so a KDF would add
+CSPRNG output — there is no guessable structure to attack, so a KDF would add
 latency to every authenticated request while buying nothing, and it would break the indexed
 single-row lookup by requiring a per-row salt and a scan. Passwords are the opposite case;
 Phase 5's login path must use argon2id.
+
+**Key format: `pf_live_` + 43 base62 chars + a 6-char CRC32.** Drawn from GitHub's 2021 token
+redesign and the Stripe prefix convention, and each part earns its place for a different
+reason.
+
+The *prefix* is the industry-standard move and the one with the biggest payoff: GitHub
+replaced 40-char hex tokens precisely because they were "indistinguishable from other encoded
+data like SHA hashes", and reported the prefix alone taking secret-scanning false positives
+down to 0.5%. `pf_live_` is what `.gitleaks.toml`'s rule matches on.
+
+*Base62 rather than base64url* is a smaller point but free: base64url's alphabet includes `-`,
+which terminates a double-click selection in most editors and terminals, so a user copying a
+key that way silently gets a fragment and an opaque 401. Underscore does not break the
+selection — GitHub's stated reason for choosing it as their separator.
+
+The *checksum* is the part worth arguing about. GitHub's rationale is secret-scanning
+precision, and that argument is weaker here: their problem was hex tokens no scanner could
+find, whereas `pf_live_` is already distinctive. What earns it a place is offline rejection —
+`looks_like_key` now refuses a mistyped or fabricated key without a database round-trip, with
+a 1-in-2³² false-accept rate. **It is an integrity check and never a security control.** CRC32
+is not cryptographic; anyone can compute a valid checksum for a string they chose. It says
+"not mistyped", never "issued by us", and a test pins that reading so nobody upgrades it in
+their head.
+
+Everything else those sources recommend was already in place and is worth recording as
+confirmation rather than change: CSPRNG entropy (they suggest 128 bits, this uses 256),
+hash-only storage, show-once, a stored display prefix, an indexed unique hash column,
+`last_used_at`/`revoked_at`, revocation as a timestamp rather than a delete, and per-key rate
+limiting. Two of the three explicitly endorse the no-bcrypt reasoning below. Zuplo raises
+constant-time comparison and then notes it does not apply when the comparison is an indexed
+database lookup — which is what this does; `hmac.compare_digest` would be required only if
+digests were ever compared in application code. Rotation with a grace period already works,
+because a tenant may hold several live keys: mint the new one, move clients over, revoke the
+old. The two genuine gaps they surfaced — **key expiry** and **scopes** — are in
+`docs/IDEAS.md` § Auth, not built.
 
 **SHA-512 rather than SHA-256 is margin, not a fix, and the function is now frozen.** What
 protects a stolen `key_hash` is the input entropy — 256 bits of CSPRNG output is not
