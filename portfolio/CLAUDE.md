@@ -328,9 +328,13 @@ rather than raising -- it fails silently, as cross-tenant data access.
 
 ## Rate limiting
 
-- Hand-rolled in `app/rate_limit.py`, deliberately not `slowapi`: `limits[redis]` requires
-  `redis<8.0.0` against this project's `redis>=8.0.1` (uv calls it unsatisfiable), and its
-  redis-py storage is synchronous, so every check would block the event loop.
+- Hand-rolled in `app/rate_limit.py`, deliberately not `slowapi`. Two reasons, both verified:
+  `limits[redis]>=5` requires `redis<8.0.0` against this project's `redis>=8.0.0`, which uv
+  calls unsatisfiable -- but asking for `slowapi` *unpinned* silently resolves `limits==1.6`
+  and `slowapi==0.1.6` instead of failing, so pin `limits>=5` in any probe or the answer is
+  a lie. And slowapi imports `limits`' **synchronous** storage and strategy modules, calling
+  `limiter.hit()` inline, so every check blocks the event loop; measured cost is in
+  `docs/TECHNICAL_DECISIONS.md`.
 - The check is a **Lua script** so it is atomic. A read-then-write version lets concurrent
   requests all observe a count under the limit and all proceed.
 - **Fails open**: unreachable Redis allows the request and logs a warning. A guardrail's

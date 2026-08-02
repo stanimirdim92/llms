@@ -1,14 +1,21 @@
 """Per-key sliding-window rate limiting on Redis.
 
-Hand-rolled rather than `slowapi`, which the original plan named. Two reasons, both hard:
+Hand-rolled rather than `slowapi`, which the original plan named. Re-examined in full in
+`docs/TECHNICAL_DECISIONS.md`; the short version, with the numbers measured rather than
+assumed:
 
-1. `slowapi` stores counters through `limits`, and `limits[redis]` requires `redis<8.0.0`
-   while this project depends on `redis>=8.0.1`. uv reports that as unsatisfiable, not as a
-   warning.
-2. Even resolved, `limits`' redis-py storage is *synchronous*, so every rate-limit check
-   would block the event loop -- the exact failure this codebase has repeatedly designed
-   around. Non-blocking would mean adding `coredis`, a third redis client alongside
-   `redis-py` and `aiocache[redis]`.
+1. `limits[redis]>=5` requires `redis>3,<8.0.0` against this project's
+   `redis[hiredis]>=8.0.0,<9.0.0`, and uv reports *that pair* as unsatisfiable. Careful:
+   asking for `slowapi` unpinned does **not** error -- uv satisfies it by silently
+   resolving `limits==1.6` and `slowapi==0.1.6`, releases from 2018 and 2022. Adopting
+   slowapi means downgrading redis-py to 7.x, which resolves cleanly at current versions.
+2. `slowapi` has no async storage path at all. `extension.py` imports `limits.storage`
+   and `limits.strategies` -- the synchronous modules -- and calls `self.limiter.hit(...)`
+   inline, so the Redis round trip blocks the event loop. Measured against localhost Redis:
+   at 100 concurrent checks, 21.4 ms wall versus 11.1 ms for the async version; at 200,
+   65.5 ms versus 18.5 ms. Single-request latency is a wash (0.32 ms vs 0.36 ms) -- the
+   cost is head-of-line blocking, and it scales with Redis RTT, so a managed Redis one
+   network hop away multiplies it.
 
 `redis-py` 8 already ships `redis.asyncio`, so the remaining work is one Lua script.
 

@@ -319,12 +319,61 @@ and not a cost ceiling. Making it a ceiling means a second bucket keyed on `tena
 alongside this one — two Redis round trips instead of one, recorded in `docs/IDEAS.md` rather
 than built, because nothing here bills by request today.
 
-**`slowapi` was planned and cannot be used.** It stores counters through `limits`, and
-`limits[redis]` requires `redis<8.0.0` against this project's `redis>=8.0.1` — uv reports the
-resolution as unsatisfiable, not a warning. Even resolved, its redis-py storage is
-*synchronous*, so every check would block the event loop; going non-blocking would mean adding
-`coredis`, a third redis client alongside `redis-py` and `aiocache[redis]`. `redis-py` 8
-already ships `redis.asyncio`, so the replacement is one Lua script and **no new dependency**.
+**`slowapi` was planned and was re-examined once the hand-rolled version was running**, on the
+fair objection that a battle-tested library beats 124 lines of ours. The re-examination did not
+change the decision, but it did correct two things this document previously got wrong, and the
+corrections matter more than the verdict.
+
+*What was wrong.* The claim was "uv reports the resolution as unsatisfiable". That holds only
+when `limits` is pinned: `limits[redis]>=5` requires `redis>3,<8.0.0` against this project's
+`redis[hiredis]>=8.0.0,<9.0.0`, and uv does refuse that pair. But asking for `slowapi`
+**unpinned** resolves happily — to `limits==1.6` and `slowapi==0.1.6`, releases from 2018 and
+2022. A silent decade-old downgrade is a worse outcome than an error, and it is what anyone
+casually running `uv add slowapi` would get. The stated pin was also wrong (`>=8.0.1`; it is
+`>=8.0.0`).
+
+*What the real cost is.* `slowapi` 0.1.10 has **no async storage path**. `extension.py` imports
+`limits.storage` and `limits.strategies` — the synchronous modules — and calls
+`self.limiter.hit(...)` inline in the request path. So the Redis round trip blocks the event
+loop. Measured against localhost Redis, steady state, best of five rounds:
+
+| concurrent checks | async (ours) | sync (slowapi's path) |
+|---|---|---|
+| 1 | 0.36 ms | 0.32 ms |
+| 10 | 1.20 ms | 3.42 ms |
+| 50 | 5.09 ms | 12.99 ms |
+| 100 | 11.05 ms | 21.41 ms |
+| 200 | 18.48 ms | 65.51 ms |
+
+Single-request latency is a wash — slowapi is marginally *faster*, having no event-loop
+overhead. The cost is head-of-line blocking, roughly 2–3.5× wall time under concurrency, and it
+scales with Redis RTT: on localhost the blocked interval is ~0.3 ms, on a managed Redis one hop
+away it is 1–5 ms per request, during which nothing else on that worker runs.
+
+*What slowapi would genuinely do better.* Three things, and they are real. It emits
+`X-RateLimit-Limit`/`-Remaining`/`-Reset` alongside `Retry-After` where we emit only
+`Retry-After` — though `headers_enabled` defaults to **False**, so out of the box its 429
+carries no headers at all. It has an `in_memory_fallback` mode, which degrades to partial
+protection when Redis dies rather than to none as our fail-open does. And its `limits` backend
+is far more exercised than ours, which is the whole of the argument for it.
+
+*What it would cost beyond the blocking.* A redis-py major downgrade to 7.x (everything else
+resolves at current versions). `key_func(request)` only sees the Request, so the principal
+would have to be stashed on `request.state` again — a mechanism deliberately removed when
+authorization moved into a dependency. Its default 429 body is `{"error": ...}` rather than
+this API's `{"detail": ...}`, so a custom handler is required to keep the contract. Only the
+decorator form can be used, not `SlowAPIMiddleware`, since middleware runs before dependencies
+resolve and there would be no principal yet.
+
+*Not a differentiator:* the algorithm. `limits`' sync Redis storage implements
+`moving-window` with its own Lua scripts, so `strategy="moving-window"` is semantically
+equivalent to ours. slowapi's default is `fixed-window`, which is the weaker choice — a caller
+can spend a full budget at the end of one window and again at the start of the next.
+
+*Verdict: keep the hand-rolled version.* One Lua script, no new dependency, no event-loop
+blocking, and 124 lines with a test suite that runs against real Redis. Revisit if the
+`X-RateLimit-*` headers are wanted (cheap to add directly) or if a Redis-outage fallback
+becomes worth more than the simplicity.
 
 **Sliding window, not fixed.** A fixed window lets a caller spend its entire budget at the end
 of one window and again at the start of the next — an observed burst of twice the configured
