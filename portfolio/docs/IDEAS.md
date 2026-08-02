@@ -43,6 +43,40 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **Per-document-type chunking.** *(M)* A CV, a one-page flyer, and a 30-page paper currently
   share one strategy. The flyer becoming a single chunk was luck, not design.
 
+## Model providers
+
+- **Pluggable generation provider: OpenAI and Ollama alongside Anthropic.** *(M)* Three
+  reasons, in order of weight. Ollama makes the whole stack runnable with **no API keys and
+  no spend** — a reviewer can clone and run it, which is worth more for a portfolio than any
+  README claim. OpenAI is the comparison anyone will ask for, and Epic 2's eval harness makes
+  "which model answers this corpus best" a measurable question rather than a preference.
+  Third, one-provider-only is a single point of failure.
+  The shape: a `generation_provider` setting selecting a factory, since `AnswerService`
+  already talks to a LangChain chat model and `langchain-openai`/`langchain-ollama` are
+  drop-in. What is *not* drop-in is the citation path — see the next entry, which is a
+  blocker, not a footnote. Three other Anthropic touchpoints have to be decided too rather
+  than discovered later: `figure_extractor`'s **vision captioning** (a figure's caption is
+  its only searchable text, so a weaker vision model degrades retrieval silently),
+  `require_provider_credentials` at boot, and the cost accounting, which currently assumes
+  one price table.
+- **A citation mechanism that does not depend on Anthropic's Citations API.** *(L, blocks the
+  entry above)* This is the real cost of going multi-provider, and it is easy to
+  underestimate. Today `_build_document_blocks` sends each chunk as a `document` block with
+  `citations: {enabled: True}` and the API returns `cited_text` spans **the model did not
+  author** — they are extracted from the source, so a citation cannot be hallucinated. That
+  guarantee is the product. Neither OpenAI nor Ollama has an equivalent, so a naive port
+  produces model-written quotes that look identical and are occasionally fabricated: strictly
+  worse than no citations, because it is a wrong answer wearing evidence.
+  Options, cheapest first: (a) ask for chunk indices only (`[3]`, never prose), then resolve
+  each index to real chunk text ourselves — the model chooses *which*, never *what*, so
+  nothing quoted can be invented, and an out-of-range index is a detectable failure;
+  (b) ask for verbatim quotes and **verify** each against the chunk it claims, dropping any
+  that do not match; (c) post-hoc attribution, embedding each answer sentence against the
+  retrieved chunks. (a) is the honest floor and probably where to start. Whatever ships must
+  keep `Citation(quoted_text, chunk_id, doc_id, page_no)` intact, since it is the API
+  contract, and should record which mechanism produced it so a consumer can tell an extracted
+  span from a verified one. Epic 2's eval set is what makes the comparison measurable.
+
 ## Cost and performance
 
 - **Record token usage per answer.** *(S, high value)* `answer_service.py` never reads
