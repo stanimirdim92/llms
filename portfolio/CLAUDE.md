@@ -53,6 +53,12 @@ the end of any session that changed something** -- the protocol is at the top of
 A durable imperative rule goes *here*. Current state goes in `docs/MEMORY.md`. Mixing them buries
 the rules in changelog.
 
+**The repo root `../CLAUDE.md` holds the general rules** -- the 15 numbered coding rules, the
+document-set split above, and the working agreements on secrets, lockfiles, and the gate. It is
+loaded alongside this file, so don't restate it here. What belongs *here* is anything true of
+only this project: the failure contracts below are the point, because each names a specific file
+and a specific way that file fails.
+
 ## Skills
 
 Ours, in `.claude/skills/`:
