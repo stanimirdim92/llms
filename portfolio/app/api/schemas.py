@@ -23,7 +23,20 @@ class AskRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    question: str = Field(description="The question to answer, grounded in the retrieved documents")
+    question: str = Field(
+        min_length=1,
+        max_length=4000,
+        description="The question to answer, grounded in the retrieved documents. Bounded at 4000 "
+        "characters -- roughly 1000 tokens, far more than any real question and well under the "
+        "context the retrieved chunks need.",
+    )
+    """Bounded, unlike every other free-text field's sibling in this file was not.
+
+    Unbounded, the only ceiling was nginx's upload-sized body limit, so a single request could
+    push a megabyte of prose straight into an embedding call and a generation call -- a cost
+    and latency amplifier with no guard, and one whose provider-side rejection would surface
+    as an opaque 500 rather than a 422 naming the problem.
+    """
 
 
 class CitationResponse(BaseModel):

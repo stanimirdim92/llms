@@ -115,7 +115,7 @@ def _to_status(record: DocumentRecord) -> DocumentStatusResponse:
     response_description="This tenant's documents and how many were returned",
     dependencies=[
         Depends(require_scopes(DOCUMENTS_READ)),
-        Depends(rate_limited("ask", "rate_limit_ask")),
+        Depends(rate_limited("documents", "rate_limit_documents")),
     ],
 )
 async def list_documents(
@@ -139,7 +139,7 @@ async def list_documents(
     response_description="The document's current ingestion status",
     dependencies=[
         Depends(require_scopes(DOCUMENTS_READ)),
-        Depends(rate_limited("ask", "rate_limit_ask")),
+        Depends(rate_limited("documents", "rate_limit_documents")),
     ],
 )
 async def get_document_status(doc_id: str, tenant_id: CurrentTenant) -> DocumentStatusResponse:

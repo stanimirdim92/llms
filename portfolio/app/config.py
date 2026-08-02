@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
+from importlib import util
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -47,7 +49,11 @@ class Settings(BaseSettings):
     langsmith_project: str = Field(default="portfolio-rag")
     langsmith_endpoint: str = Field(default="https://api.smith.langchain.com")
 
-    reranker_backend: str = Field(default="voyage")  # "voyage" | "local"
+    reranker_backend: Literal["voyage", "local"] = Field(default="voyage")
+    """Which reranker to use. A `Literal`, not a bare `str`: as a `str` a typo'd
+    `RERANKER_BACKEND=locl` fell through the `== "local"` test to Voyage with no error and no
+    log, so an operator could believe they had switched backends and be billing an API they
+    thought they had turned off. Now it fails at `Settings` construction."""
     voyage_rerank_model: str = Field(default="rerank-2.5")
     local_reranker_model: str = Field(default="BAAI/bge-reranker-v2-m3")
 
@@ -159,6 +165,11 @@ class Settings(BaseSettings):
     rate_limit_ask: int = Field(default=60)
     rate_limit_upload: int = Field(default=10)
     rate_limit_keys: int = Field(default=10)
+    # Document reads had been sharing the `ask` bucket, which inverts the cost-based split
+    # the rest of this design rests on: the API's own docs tell a client to *poll* the status
+    # route while a document ingests, and each poll was spending the same budget as a
+    # question (retrieve + rerank + generate) to do one indexed Postgres read.
+    rate_limit_documents: int = Field(default=120)
 
     @property
     def redis_url(self) -> str:
@@ -270,5 +281,32 @@ def require_provider_credentials() -> None:
         msg = (
             f"{' and '.join(missing)} not configured. Set them in portfolio/.env "
             f"(see .env.example). Ingestion and /ask cannot work without them."
+        )
+        raise MissingCredentialsError(msg)
+
+
+def require_reranker_backend() -> None:
+    """Fail at boot if `RERANKER_BACKEND=local` is set but the local model isn't installed.
+
+    The README documents the local cross-encoder as a supported no-API-key fallback, but the
+    single Dockerfile stage runs `uv sync` with no `--extra`, so `sentence-transformers` and
+    `langchain-classic` are absent from every container this project builds. The result was
+    the exact shape `require_provider_credentials` exists to prevent, one layer along: the
+    container boots, passes `/health/ready`, accepts traffic, and then raises
+    `ModuleNotFoundError` inside `_local_compressor()` on the first `/ask` -- and on every
+    `/ask` after it.
+
+    An import probe rather than a version check, because "installed" is precisely the
+    question: the extra may be present locally and absent in the image, which is how this
+    stayed invisible. `find_spec` does not execute the module, so it costs no model load.
+    """
+    if get_settings().reranker_backend != "local":
+        return
+    missing = [name for name in ("sentence_transformers", "langchain_classic") if util.find_spec(name) is None]
+    if missing:
+        msg = (
+            f"RERANKER_BACKEND=local needs {' and '.join(missing)}, which are not installed. "
+            f"Install the extra (`uv sync --extra local-reranker`, or add it to the image build) "
+            f"or set RERANKER_BACKEND=voyage."
         )
         raise MissingCredentialsError(msg)

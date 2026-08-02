@@ -12,7 +12,7 @@ from app.api.routers.ask import router as ask_router
 from app.api.routers.documents import router as documents_router
 from app.api.routers.health import router as health_router
 from app.api.routers.keys import router as keys_router
-from app.config import get_settings, require_provider_credentials
+from app.config import get_settings, require_provider_credentials, require_reranker_backend
 from app.db import init_db
 from app.exceptions import PortfolioError
 from app.logs import configure_logging
@@ -37,6 +37,9 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     round-trip per process rather than one per request.
     """
     require_provider_credentials()
+    # Same fail-fast reasoning one layer along: RERANKER_BACKEND=local with the extra
+    # missing boots fine, passes readiness, and then fails every /ask.
+    require_reranker_backend()
     await init_db()
     log.info("api.started")
     yield
@@ -88,6 +91,30 @@ async def portfolio_error_handler(request: Request, exc: PortfolioError) -> JSON
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers)
 
 
-@app.get("/")
-async def root() -> dict:
-    return {"message": "AI Engineer Portfolio API"}
+@app.exception_handler(Exception)
+async def unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Everything that is not already an `APIError`.
+
+    Without this, an unanticipated exception -- a provider SDK raising something new, a
+    `KeyError` off chunk metadata, a Postgres `IntegrityError`, an outright bug -- escapes
+    every route and is answered by Starlette's `ServerErrorMiddleware` with a bare
+    `PlainTextResponse("Internal Server Error")`. Three things break at once, and all three
+    are silent:
+
+    1. It never reaches the structured `api.error` log above, so there is no server-side
+       trace of the one category of failure most worth tracing. That is rule 7 inverted.
+    2. It breaks the `{"detail": ...}` contract every other error in this API honours,
+       including FastAPI's own defaults -- a client's error handling has to special-case it.
+    3. `ServerErrorMiddleware` sits *outside* `CORSMiddleware`, so a browser client gets no
+       CORS headers on that response and sees an opaque network error rather than a 500.
+
+    `exc_info=exc` so the traceback is captured, and the response body deliberately says
+    nothing about `exc` -- an unanticipated exception's message is exactly the kind of thing
+    that leaks a connection string or a file path.
+
+    Registering a handler for bare `Exception` is honoured by Starlette but does **not**
+    catch anything raised inside a background task or after the response has started
+    streaming; those still land in `ServerErrorMiddleware`.
+    """
+    log.exception("api.unhandled", path=request.url.path, exc_info=exc)
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})

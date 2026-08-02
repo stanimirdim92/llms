@@ -1,4 +1,10 @@
-FROM nginx:latest
+# Pinned, like every other base image in this stack, and for a specific reason rather than
+# tidiness: `dependabot.yml` tracks this build context on the stated assumption that it has
+# "its own pinned base". A floating `:latest` gives Dependabot nothing to version-bump, so
+# two builds months apart can pull different nginx majors -- in the one component that
+# terminates TLS and parses every inbound request -- with no PR, no diff, and no review.
+# Debian-based, not `-alpine`: the next line is `apt-get`, and alpine has `apk`.
+FROM nginx:1.29
 
 RUN apt-get update &&  \
     apt-get upgrade -y && \

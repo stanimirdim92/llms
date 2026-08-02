@@ -17,7 +17,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -56,6 +57,20 @@ async def _postgres_reachable(url: str) -> bool:
         await engine.dispose()
 
 
+async def _truncate(engine: AsyncEngine) -> None:
+    """Empty every SQLModel table without dropping it.
+
+    Row-level isolation is all these suites need, and unlike `drop_all` it cannot pull the
+    schema out from under a sibling suite. CASCADE because `apikey.tenant_id` is a real
+    foreign key, and RESTART IDENTITY so nothing carries a sequence across tests.
+    """
+    tables = ", ".join(f'"{table.name}"' for table in reversed(SQLModel.metadata.sorted_tables))
+    if not tables:
+        return
+    async with engine.begin() as conn:
+        await conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
+
+
 @pytest.fixture
 async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     url = _test_database_url()
@@ -64,8 +79,16 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
 
     engine = create_async_engine(url)
     async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
+        # `create_all` only, never `drop_all`. Three suites here build the schema on the same
+        # `portfolio_test` database, and a drop in one wipes the tables the next one relies on
+        # `init_db` having created -- which surfaces as `relation "documentrecord" does not
+        # exist` in a test that has nothing to do with whoever dropped it. Isolation comes from
+        # truncating rows below, which is what these tests actually need.
         await conn.run_sync(SQLModel.metadata.create_all)
+    # Truncate at *setup* as well as teardown. A test that errors mid-way skips its own
+    # teardown, and the next test's fixture then collides inserting the same seed rows --
+    # which reports as a setup ERROR in an innocent test and hides the original failure.
+    await _truncate(engine)
     factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     @asynccontextmanager
@@ -86,8 +109,7 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
         await session.commit()
 
     yield factory
-    async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
+    await _truncate(engine)
     await engine.dispose()
 
 

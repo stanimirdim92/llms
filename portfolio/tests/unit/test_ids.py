@@ -8,10 +8,15 @@ that makes these usable as primary keys. These tests fail on that substitution.
 
 from __future__ import annotations
 
+import threading
 import time
 import uuid
+from typing import TYPE_CHECKING
 
 from app import ids
+
+if TYPE_CHECKING:
+    import pytest
 
 
 def _uuid_from(hex_id: str) -> uuid.UUID:
@@ -71,3 +76,50 @@ def test_fallback_ids_are_unique_within_one_millisecond() -> None:
     minted = {ids._uuid7_fallback().hex for _ in range(1000)}
 
     assert len(minted) == 1000
+
+
+def test_ids_minted_in_the_same_millisecond_still_sort() -> None:
+    """The property uuid7 was chosen over uuid4 *for*, and the fallback did not have.
+
+    Without a counter the 74 bits after the timestamp are pure randomness, so ids minted
+    inside one millisecond sort arbitrarily -- which is index fragmentation on the hot tables,
+    the exact cost uuid4 was rejected to avoid. The pre-existing shape test only inspects the
+    leading 48 timestamp bits, so it passes either way.
+
+    5000 in a tight loop is comfortably more than one millisecond's worth on any machine, so
+    this exercises the same-timestamp branch rather than just the clock advancing.
+    """
+    minted = [ids.new_id() for _ in range(5000)]
+
+    assert len(set(minted)) == 5000, "duplicate id"
+    assert minted == sorted(minted), "ids minted in one millisecond did not sort in creation order"
+
+
+def test_concurrent_mints_do_not_collide() -> None:
+    """`ids.new_id()` is reachable from FastAPI's threadpool as well as the event loop, so the
+    counter needs a lock: without one two threads read the previous value before either
+    writes and both emit the same id, which is a primary-key collision on `apikey`/`tenant`.
+    """
+    minted: list[str] = []
+    threads = [threading.Thread(target=lambda: minted.extend(ids.new_id() for _ in range(500))) for _ in range(8)]
+
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert len(set(minted)) == len(minted) == 4000
+
+
+def test_a_clock_step_backwards_cannot_produce_a_smaller_id(monkeypatch: pytest.MonkeyPatch) -> None:
+    """NTP correction, or a VM resuming from a snapshot. RFC 9562 calls for clamping rather
+    than trusting the clock; without it an id sorts *before* one already issued, and a
+    time-ordered primary key stops being one.
+    """
+    before = ids.new_id()
+    now = time.time_ns()
+    monkeypatch.setattr(ids.time, "time_ns", lambda: now - 60 * 1_000_000_000)  # one minute back
+
+    after = ids.new_id()
+
+    assert after > before, "an id minted after a backward clock step sorted before its predecessor"

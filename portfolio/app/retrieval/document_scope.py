@@ -84,16 +84,34 @@ _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 _DOC_ID_SHAPE = re.compile(r"\b(?:[0-9a-f]{32}|global)-[0-9a-f]{32}\b", re.IGNORECASE)
 
 
+_EXTENSION_MENTION = re.compile(rf"\.(?:{_EXTENSION_ALTERNATION})(?!\w)", re.IGNORECASE)
+"""Just "an extension appears here", with no constraint on what precedes it.
+
+Deliberately looser than `_FILENAME_TOKEN`. This gate decides only whether a registry read is
+worth doing; `resolve_scope` decides what actually matches. Any asymmetry has to fall on the
+side of reading too often, because a token the *gate* misses can never be scoped no matter
+what the resolver can handle -- and that is not hypothetical. `_FILENAME_TOKEN` cannot cross a
+`(`, so after `resolve_scope` learned to match `report(1).pdf`, the gate still returned False
+for it and `/ask` ran an unscoped search without ever consulting the registry. The resolver
+test passed; the feature did not work.
+"""
+
+
 def mentions_a_document(question: str) -> bool:
     """Cheap pre-check so the hot path does not pay for a registry read it does not need.
 
     `/ask` is the highest-traffic route and most questions name no document at all, so
     fetching the tenant's rows unconditionally would add a query per request for nothing.
     This is three regexes over the question and touches no I/O; only a `True` justifies the
-    read. It must stay in sync with what `resolve_scope` looks for -- a token this misses is
-    a token that silently never scopes, which is how naming a `doc_id` came to be ignored.
+    read.
+
+    **It must be strictly weaker than what `resolve_scope` can match.** A token this misses is
+    a token that silently never scopes -- which is how naming a `doc_id` came to be ignored
+    once, and how a parenthesised filename came to be ignored a second time.
+    `test_document_scope.py::test_the_gate_admits_everything_the_resolver_can_match` pins the
+    relationship rather than trusting this comment.
     """
-    return any(pattern.search(question) for pattern in (_FILENAME_TOKEN, _DOC_ID_MARKER, _DOC_ID_SHAPE))
+    return any(pattern.search(question) for pattern in (_EXTENSION_MENTION, _DOC_ID_MARKER, _DOC_ID_SHAPE))
 
 
 @dataclass(frozen=True)
@@ -150,12 +168,17 @@ def _id_tokens(question: str) -> list[tuple[int, str]]:
 def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope:
     """Match filename- and doc_id-shaped tokens in `question` against `records`.
 
-    `records` must already be tenant-scoped -- pass the output of
-    `registry.db.list_document_records`. This function does no authorization of its own and
-    must never be handed the full table: it would happily scope a query to another tenant's
-    `doc_id`, and the Qdrant filter would then AND that against the tenant condition and
-    return nothing, which reads as "document is empty" rather than as a leak. Correct, but
-    only by accident -- keep the tenant filter upstream where it is legible.
+    `records` must already be scoped to what the caller may read -- pass the output of
+    `registry.db.list_scope_candidates`, which is the tenant's own documents plus the shared
+    corpus. **Not `list_document_records`**: that answers "my documents" and excludes the
+    corpus, and using it here is what made the documented `doc_id=<arXiv id>` form 404 on
+    every curated paper.
+
+    This function does no authorization of its own and must never be handed the full table:
+    it would happily scope a query to another tenant's `doc_id`, and the Qdrant filter would
+    then AND that against the tenant condition and return nothing, which reads as "document
+    is empty" rather than as a leak. Correct, but only by accident -- keep the entitlement
+    filter upstream where it is legible.
 
     A `doc_id` typed into a question is user input like any other and gets the same treatment
     as a filename: it resolves only if it is in this caller's own rows. That is what makes
@@ -184,11 +207,16 @@ def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope
         # regex's `\b` was there to stop. `(?!\w)` still permits a trailing period, so
         # "summarise report.pdf." works.
         pattern = re.compile(rf"(?<!\w){re.escape(record.filename)}(?!\w)", re.IGNORECASE)
-        span = pattern.search(remaining)
-        if span is None:
+        spans = list(pattern.finditer(remaining))
+        if not spans:
             continue
-        hits.append((span.start(), record, record.filename))
-        remaining = remaining[: span.start()] + " " * (span.end() - span.start()) + remaining[span.end() :]
+        hits.append((spans[0].start(), record, record.filename))
+        # Every occurrence, not just the first. Masking one left the second visible to the
+        # leftover scan below, which reported an owned document as `unknown` -- so "does
+        # queued.pdf mention X in queued.pdf" 404'd as a document the tenant does not have,
+        # and a repeated name matched the older duplicate too, undoing newest-wins.
+        for span in reversed(spans):
+            remaining = remaining[: span.start()] + " " * (span.end() - span.start()) + remaining[span.end() :]
 
     # Ids come from the *original* question: masking only removes filename spans, and an id
     # never overlaps one. Marker captures are stripped of trailing punctuation and quotes --

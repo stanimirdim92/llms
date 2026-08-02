@@ -68,10 +68,17 @@ async def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, tena
         # (`<!-- image -->` twice) with OCR off, so the document was searchable in name only.
         # The message names the likely cause, since a scanned PDF is the overwhelming reason a
         # parse succeeds and yields no text.
+        # The message must not name a knob to turn. It used to say "OCR must be enabled
+        # (DO_OCR)" -- there is no `DO_OCR` setting anywhere in this project, `parser.py`
+        # never passes `do_ocr=`, and Docling's own default is already `True` (verified
+        # against the installed package, not assumed). So the advice sent a user to change a
+        # setting that does not exist, to enable something already on, and the re-upload
+        # failed identically. Rule 11: refuse honestly rather than answer from the wrong
+        # material -- including in an error message.
         msg = (
-            f"{file_path.name} produced no searchable content. If it is a scanned or image-only "
-            f"PDF, it has no text layer to extract -- OCR must be enabled (DO_OCR) for it to be "
-            f"ingestible."
+            f"{file_path.name} produced no searchable content. OCR is already enabled, so if this "
+            f"is a scan, the page images are likely too low-resolution or too skewed to read. "
+            f"Re-scan at a higher DPI, or upload a version with a real text layer."
         )
         raise EmptyDocumentError(msg)
 

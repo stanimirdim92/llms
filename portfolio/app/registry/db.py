@@ -12,6 +12,11 @@ from sqlmodel import col, select
 from app.ingestion.models import GLOBAL_TENANT
 from app.registry.models import STATUS_FAILED, STATUS_PROCESSING, DocumentRecord
 
+_CORPUS_SCOPE_LIMIT = 500
+"""How many shared-corpus documents can be named in a question. Its own budget, separate
+from the caller's, so a tenant's uploads can never crowd the corpus out of the candidate
+set -- see `list_scope_candidates`."""
+
 if TYPE_CHECKING:
     from sqlalchemy.dialects.postgresql import Insert
     from sqlmodel.ext.asyncio.session import AsyncSession
@@ -99,14 +104,26 @@ async def list_scope_candidates(session: AsyncSession, *, tenant_id: str, limit:
     values, so no crafted id widens it. This is the same shape `QdrantStore._build_filter`
     uses for the retrieval filter, which is what makes the two agree about what is readable.
     """
-    statement = (
-        select(DocumentRecord)
-        .where(col(DocumentRecord.tenant_id).in_([tenant_id, GLOBAL_TENANT]))
-        .order_by(col(DocumentRecord.uploaded_at).desc())
-        .limit(limit)
-    )
-    result = await session.exec(statement)
-    return list(result.all())
+
+    # Two queries, each with its own limit, rather than one `IN` list with a shared one. A
+    # single `ORDER BY uploaded_at DESC LIMIT 200` looks equivalent and is not: the curated
+    # corpus is the *oldest* content in the table, so a tenant with 200 newer uploads would
+    # push every corpus row past the cut and get H1's 404 back on every curated paper --
+    # invisibly, and only for the busiest tenants. Worse, a truncated own-document could
+    # silently scope to a shorter filename that survived. The corpus is small and fixed, so
+    # it gets its own budget instead of competing for one.
+    async def _newest(owner: str, cap: int) -> list[DocumentRecord]:
+        statement = (
+            select(DocumentRecord)
+            .where(DocumentRecord.tenant_id == owner)
+            .order_by(col(DocumentRecord.uploaded_at).desc())
+            .limit(cap)
+        )
+        return list((await session.exec(statement)).all())
+
+    own = await _newest(tenant_id, limit)
+    corpus = [] if tenant_id == GLOBAL_TENANT else await _newest(GLOBAL_TENANT, _CORPUS_SCOPE_LIMIT)
+    return own + corpus
 
 
 async def list_document_records(session: AsyncSession, *, tenant_id: str, limit: int = 100) -> list[DocumentRecord]:

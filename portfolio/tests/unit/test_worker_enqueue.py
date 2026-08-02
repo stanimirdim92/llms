@@ -14,12 +14,13 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
+import uuid
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -82,6 +83,20 @@ def _record(*, tenant_id: str = TENANT_A, doc_id: str = DOC_ID, status: str = ST
     )
 
 
+async def _truncate(engine: AsyncEngine) -> None:
+    """Empty every SQLModel table without dropping it.
+
+    Row-level isolation is all these suites need, and unlike `drop_all` it cannot pull the
+    schema out from under a sibling suite. CASCADE because `apikey.tenant_id` is a real
+    foreign key, and RESTART IDENTITY so nothing carries a sequence across tests.
+    """
+    tables = ", ".join(f'"{table.name}"' for table in reversed(SQLModel.metadata.sorted_tables))
+    if not tables:
+        return
+    async with engine.begin() as conn:
+        await conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
+
+
 @pytest.fixture
 async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     url = _test_database_url()
@@ -104,8 +119,16 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     monkeypatch.setattr(worker_app, "app", procrastinate_app)
 
     async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
+        # `create_all` only, never `drop_all`. Three suites here build the schema on the same
+        # `portfolio_test` database, and a drop in one wipes the tables the next one relies on
+        # `init_db` having created -- which surfaces as `relation "documentrecord" does not
+        # exist` in a test that has nothing to do with whoever dropped it. Isolation comes from
+        # truncating rows below, which is what these tests actually need.
         await conn.run_sync(SQLModel.metadata.create_all)
+    # Truncate at *setup* as well as teardown. A test that errors mid-way skips its own
+    # teardown, and the next test's fixture then collides inserting the same seed rows --
+    # which reports as a setup ERROR in an innocent test and hides the original failure.
+    await _truncate(engine)
 
     # Check-then-apply, mirroring `app.db._apply_procrastinate_schema`, because
     # procrastinate's schema.sql uses bare `CREATE TABLE` and blows up on a second run. The
@@ -131,8 +154,8 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     async with procrastinate_app.open_async():
         yield factory
 
+    await _truncate(engine)
     async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.execute(text("TRUNCATE procrastinate_jobs, procrastinate_events RESTART IDENTITY CASCADE"))
     await engine.dispose()
 
@@ -284,7 +307,7 @@ async def test_marking_a_missing_document_does_nothing(db: SessionFactory) -> No
         assert await get_document_record(session, tenant_id=TENANT_A, doc_id="does-not-exist") is None
 
 
-async def test_concurrent_processes_can_initialise_the_schema(db: SessionFactory) -> None:
+async def test_concurrent_processes_can_initialise_the_schema() -> None:
     """`init_db` must survive several processes running it at once on an empty database.
 
     This is the failure that crashed a gunicorn worker on the first real boot: with
@@ -298,19 +321,43 @@ async def test_concurrent_processes_can_initialise_the_schema(db: SessionFactory
     serializes coroutines inside one process, so an `asyncio.gather` version of this test passes
     even with the advisory lock removed. Confirmed by removing it.
     """
-    url = _test_database_url()
-    async with db() as session:
-        connection = await session.connection()
-        # Drop and recreate the whole schema rather than enumerating objects. procrastinate's
-        # schema.sql contains 3 CREATE TYPE, 4 CREATE TABLE and 18 CREATE FUNCTION, none of them
-        # `OR REPLACE`, so a hand-written drop list silently misses things: an earlier version of
-        # this test dropped only the tables and `procrastinate_job_status`, left
-        # `procrastinate_job_event_type` behind, and every subprocess then failed on that -- which
-        # looked like the advisory lock not working.
-        await connection.execute(text("DROP SCHEMA public CASCADE"))
-        await connection.execute(text("CREATE SCHEMA public"))
-        await session.commit()
+    # A throwaway database of its own, not the shared `portfolio_test`. This test has to start
+    # from an *empty* schema, and the only reliable way to get one is to drop everything --
+    # procrastinate's schema.sql has 3 CREATE TYPE, 4 CREATE TABLE and 18 CREATE FUNCTION,
+    # none `OR REPLACE`, so a hand-written drop list silently misses objects (an earlier
+    # version left `procrastinate_job_event_type` behind and every subprocess failed on it,
+    # which looked like the advisory lock not working).
+    #
+    # Doing that to the shared database is what made the whole suite flaky: three subprocesses
+    # race to rebuild the schema, and whichever sibling suite ran next could observe it
+    # half-built and die on `relation "documentrecord" does not exist` -- a failure that names
+    # the registry and has nothing to do with it. Isolation, not ordering, is the fix.
+    async with _scratch_database() as url:
+        await _assert_concurrent_init_succeeds(url)
 
+
+@asynccontextmanager
+async def _scratch_database() -> AsyncIterator[str]:
+    """Create an empty database for the duration, and drop it afterwards.
+
+    `AUTOCOMMIT` because CREATE/DROP DATABASE cannot run inside a transaction block. The
+    maintenance connection goes to `postgres`, which always exists.
+    """
+    base, _, _name = _test_database_url().rpartition("/")
+    scratch = f"initdb_scratch_{uuid.uuid4().hex[:12]}"
+    admin = create_async_engine(f"{base}/postgres", isolation_level="AUTOCOMMIT")
+    try:
+        async with admin.connect() as conn:
+            await conn.execute(text(f'DROP DATABASE IF EXISTS "{scratch}" WITH (FORCE)'))
+            await conn.execute(text(f'CREATE DATABASE "{scratch}"'))
+        yield f"{base}/{scratch}"
+    finally:
+        async with admin.connect() as conn:
+            await conn.execute(text(f'DROP DATABASE IF EXISTS "{scratch}" WITH (FORCE)'))
+        await admin.dispose()
+
+
+async def _assert_concurrent_init_succeeds(url: str) -> None:
     code = "import asyncio, app.db; asyncio.run(app.db.init_db())"
     env = {**os.environ, "DATABASE_URL": url}
 
@@ -333,9 +380,12 @@ async def test_concurrent_processes_can_initialise_the_schema(db: SessionFactory
     failures = [(code_, err.strip().splitlines()[-1] if err.strip() else "") for code_, err in outcomes if code_ != 0]
     assert not failures, f"concurrent init_db failed: {failures}"
 
-    async with db() as session:
-        connection = await session.connection()
-        assert (await connection.execute(text("SELECT to_regclass('procrastinate_jobs')"))).scalar() is not None
+    engine = create_async_engine(url)
+    try:
+        async with engine.connect() as conn:
+            assert (await conn.execute(text("SELECT to_regclass('procrastinate_jobs')"))).scalar() is not None
+    finally:
+        await engine.dispose()
 
 
 async def test_status_transitions_stamp_updated_at(db: SessionFactory) -> None:

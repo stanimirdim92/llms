@@ -35,4 +35,14 @@ def deadline(days: int | None) -> datetime | None:
     is written once at creation, where a second of clock skew is meaningless. Enforcement is
     the opposite case and uses the database clock deliberately -- see `auth/service.py`.
     """
-    return datetime.now(UTC) + timedelta(days=days) if days else None
+    # `is None`, not a falsy test. `deadline(0)` used to mean "never expires" -- the same as
+    # omitting it -- which is the falsy trap rule 8 warns about, pointing the wrong way: the
+    # value that reads as "expire immediately" granted an eternal key. Unreachable through the
+    # API today because the schema is a fixed `Literal`, but `deadline` is a plain function
+    # and the next caller need not come through the schema.
+    if days is None:
+        return None
+    if days <= 0:
+        msg = f"expiry must be a positive number of days, got {days}; pass None for a key that never expires"
+        raise ValueError(msg)
+    return datetime.now(UTC) + timedelta(days=days)

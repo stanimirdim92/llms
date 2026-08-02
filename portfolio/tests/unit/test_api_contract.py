@@ -15,6 +15,7 @@ is only possible because `current_tenant` is a dependency rather than middleware
 from __future__ import annotations
 
 import contextlib
+import uuid
 from typing import TYPE_CHECKING
 
 import pytest
@@ -35,6 +36,19 @@ TENANT_A = "a" * 32
 TENANT_B = "b" * 32
 
 
+def _fresh_key_id() -> str:
+    """A distinct rate-limit subject per authentication.
+
+    `rate_limited` buckets on `key_id` against a **real** Redis whose counters outlive the
+    test, so a fixed id makes the eleventh request of the session a 429 -- surfacing as an
+    unrelated test failing, and only once enough tests exist to cross the limit. That is not
+    hypothetical: adding the `X-RateLimit-*` tests tipped this file over, and five tests
+    expecting 400/403 started returning 429 instead. `test_key_management.py`'s fixture was
+    already written this way; this file was the copy that wasn't.
+    """
+    return f"key-{uuid.uuid4().hex}"
+
+
 @pytest.fixture
 async def client() -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as http_client:
@@ -51,7 +65,7 @@ def as_tenant_a() -> Iterator[None]:
     would leave those two resolving a real key and returning 401.
     """
     app.dependency_overrides[deps.current_principal] = lambda: Principal(
-        tenant_id=TENANT_A, key_id="key-for-tenant-a", scopes=UNRESTRICTED
+        tenant_id=TENANT_A, key_id=_fresh_key_id(), scopes=UNRESTRICTED
     )
     yield
     app.dependency_overrides.clear()
@@ -67,8 +81,9 @@ def as_a_key_holding() -> Iterator[Callable[[list[str]], None]]:
     """
 
     def _authenticate(scopes: list[str]) -> None:
+        key_id = _fresh_key_id()
         app.dependency_overrides[deps.current_principal] = lambda: Principal(
-            tenant_id=TENANT_A, key_id="key-for-tenant-a", scopes=scopes
+            tenant_id=TENANT_A, key_id=key_id, scopes=scopes
         )
 
     yield _authenticate
@@ -319,6 +334,27 @@ async def test_exhausting_the_budget_returns_429_with_every_header(
     assert int(refused.headers["retry-after"]) >= 1
     assert refused.headers["x-ratelimit-limit"] == "1"
     assert refused.headers["x-ratelimit-remaining"] == "0"
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_naming_a_still_ingesting_document_is_409_through_http(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """409, distinct from the 404. Asserted at the HTTP layer because the dataclass tests
+    cover only `DocumentScope`; nothing executed the `APIError(..., code=409)` mapping.
+
+    "Not yours" and "not ready" are different answers, and answering from the rest of the
+    corpus instead would be a confident claim about a document nothing searched.
+    """
+
+    async def _pending(_question: str, _tenant_id: str) -> DocumentScope:
+        return DocumentScope(not_ready=["queued.pdf"])
+
+    monkeypatch.setattr(ask_router, "_document_scope", _pending)
+    response = await client.post("/v1/ask", json={"question": "summarise queued.pdf"})
+
+    assert response.status_code == 409
+    assert "queued.pdf" in response.json()["detail"]
 
 
 async def test_liveness_needs_no_auth_and_no_dependencies(client: AsyncClient) -> None:

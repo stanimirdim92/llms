@@ -116,6 +116,16 @@ with st.form("mint"):
 if submitted:
     if not name.strip():
         st.error("A key needs a name.")
+    elif not chosen:
+        # `create_key` reads an empty list as "copy the caller's own scopes", which is right
+        # for an API caller that omitted the field and exactly backwards here: unchecking
+        # every box is the natural gesture for "grant nothing", and it was minting a key with
+        # everything. Refused in the UI rather than reinterpreted, because the service-side
+        # meaning is load-bearing for the API and must not change to suit a widget.
+        st.error(
+            "Select at least one scope. Leaving the list empty would mint a key with **all** of "
+            "your scopes, which is the opposite of what an empty selection looks like."
+        )
     else:
         try:
             plaintext, record = asyncio.run(

@@ -364,3 +364,69 @@ def test_a_ready_document_alongside_an_unready_one_still_scopes() -> None:
     assert scope.doc_ids == ["doc-ok"]
     assert scope.not_ready == ["queued.pdf"]
     assert not scope.names_only_unready
+
+
+# --- The gate must never be narrower than the resolver (review finding on H2) -------------
+
+
+def test_the_gate_admits_everything_the_resolver_can_match() -> None:
+    """`mentions_a_document` is a cheap pre-check `/ask` early-returns on, so a name it misses
+    can never be scoped no matter what `resolve_scope` can handle.
+
+    This is the second time that asymmetry shipped. `resolve_scope` learned to match
+    `report(1).pdf`, its unit test passed -- and the gate still said False, so `/ask` ran an
+    unscoped search without reading the registry. Driving the two together is the only way
+    this stays honest.
+    """
+    records = [_Record("doc-paren", "report(1).pdf"), _Record("doc-draft", "Draft Report.pdf")]
+
+    for question in ("what is in report(1).pdf?", "summarize Draft Report.pdf"):
+        assert mentions_a_document(question), f"gate rejected {question!r} before the resolver saw it"
+        assert resolve_scope(question, records).doc_ids, f"resolver found nothing in {question!r}"
+
+
+def test_the_gate_still_refuses_a_question_naming_nothing() -> None:
+    """The loosened gate must not become "always True" -- that would put a registry read on
+    every question, which is the cost it exists to avoid.
+    """
+    assert not mentions_a_document("what cathode materials show the highest cycling stability?")
+    assert not mentions_a_document("the cell retained 2008.10896 mAh/g")
+
+
+# --- Repeated names (review findings on L9 and M12) ---------------------------------------
+
+
+def test_naming_one_owned_document_twice_is_not_a_missing_document() -> None:
+    """Masking only the first occurrence left the second visible to the leftover scan, which
+    reported an owned document as `unknown`. For a pending document that flipped the honest
+    409 into a 404 claiming the tenant does not have a file they do.
+    """
+    records = [_Record("doc-q", "queued.pdf", status=STATUS_PENDING)]
+
+    scope = resolve_scope("does queued.pdf mention X in queued.pdf", records)
+
+    assert scope.unknown == []
+    assert scope.not_ready == ["queued.pdf"]
+    assert scope.names_only_unready
+    assert not scope.names_nothing_owned
+
+
+def test_a_repeated_duplicate_name_still_resolves_to_the_newest_only() -> None:
+    """Newest-wins held only because the older record failed to find an unmasked occurrence.
+    A second mention handed it one, so `compare report.pdf with report.pdf` scoped to both the
+    new and the stale copy.
+    """
+    newest_first = [_Record("doc-new", "report.pdf"), _Record("doc-old", "report.pdf")]
+
+    assert resolve_scope("compare report.pdf with report.pdf", newest_first).doc_ids == ["doc-new"]
+
+
+def test_longest_first_matching_does_not_depend_on_the_record_order() -> None:
+    """The guard is the `key=len, reverse=True` sort, and the original fixture happened to be
+    written longest-first -- so removing the sort changed nothing and every test still passed.
+    Production order is `uploaded_at DESC`, so a tenant who uploads `Report.pdf` *after*
+    `Draft Report.pdf` gets exactly the order that breaks it.
+    """
+    shortest_first = [_Record("doc-report", "Report.pdf"), _Record("doc-draft", "Draft Report.pdf")]
+
+    assert resolve_scope("summarize Draft Report.pdf", shortest_first).doc_ids == ["doc-draft"]

@@ -19,12 +19,17 @@ nothing to do with vector similarity, and requiring a Voyage key would put this 
 from __future__ import annotations
 
 import uuid
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, cast
 
 import pytest
 from qdrant_client import QdrantClient, models
 
 from app.ingestion.models import GLOBAL_TENANT, Chunk, ChunkType
 from app.vectorstore.qdrant_store import QdrantStore, _build_filter, _chunk_metadata, _point_id
+
+if TYPE_CHECKING:
+    from langchain_qdrant import QdrantVectorStore
 
 VECTOR_SIZE = 4
 TENANT_A = "a" * 32
@@ -226,17 +231,17 @@ def test_the_delete_selector_carries_the_tenant(client: QdrantClient) -> None:
         _chunk(doc_id="collide", tenant_id=TENANT_B, index=1),
     )
 
-    client.delete(
-        "test",
-        points_selector=models.FilterSelector(
-            filter=models.Filter(
-                must=[
-                    models.FieldCondition(key="metadata.doc_id", match=models.MatchValue(value="collide")),
-                    models.FieldCondition(key="metadata.tenant_id", match=models.MatchValue(value=TENANT_A)),
-                ]
-            )
-        ),
-    )
+    # `QdrantStore.delete_document`, not a hand-built filter. An earlier version of this test
+    # constructed the same selector inline and called `client.delete` directly -- so it
+    # exercised qdrant-client and not the change, and passed with the tenant condition
+    # deleted from `qdrant_store.py`. Rule 15: a test that survives the feature's removal is
+    # documentation.
+    store = QdrantStore.__new__(QdrantStore)  # no __init__: it bills a probe embedding
+    # `cast` because the stand-in only needs the two attributes `delete_document` touches;
+    # a real QdrantVectorStore would need a live server and a billed probe embedding.
+    store._store = cast("QdrantVectorStore", SimpleNamespace(client=client, collection_name="test"))
+
+    store.delete_document("collide", TENANT_A)
 
     assert _search(client, _build_filter(None, TENANT_A)) == []
     assert _search(client, _build_filter(None, TENANT_B)) == ["collide-text-0001"]
