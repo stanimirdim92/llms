@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from app.api.schemas import AskRequest
 from app.auth.keys import (
     EXPECTED_KEY_LENGTH,
+    KEY_HASH_LENGTH,
     KEY_PREFIX,
     display_prefix,
     generate_key,
@@ -42,7 +43,23 @@ def test_hash_is_stable_and_key_specific() -> None:
 
     assert hash_key(key) == hash_key(key)
     assert hash_key(key) != hash_key(other)
-    assert len(hash_key(key)) == 64  # sha256 hex
+    assert len(hash_key(key)) == KEY_HASH_LENGTH
+
+
+def test_the_hash_function_is_frozen() -> None:
+    """A known key and its expected digest.
+
+    `hash_key` is effectively immutable: the plaintext keys are never stored, so no digest can
+    be recomputed, and swapping the function invalidates every row in `apikey` at once. A
+    length check alone would not catch a change to another 512-bit hash, so this pins the
+    exact bytes. If this test fails, the change is a re-key of every tenant -- not a refactor.
+    """
+    digest = hash_key(f"{KEY_PREFIX}{'A' * (EXPECTED_KEY_LENGTH - len(KEY_PREFIX))}")
+
+    assert digest == (
+        "bebd44bf61e2462ab702209f9ffb3baf1e0a81e1dda8cb73202270a53ceaa346"
+        "79c3de254d68eb7a97f5295243606757f0c3d1da97cc9b42fb7c5cb3c625a7d7"
+    )
 
 
 def test_hash_does_not_contain_the_key() -> None:
@@ -83,7 +100,7 @@ def test_an_oversized_value_is_rejected_without_being_hashed() -> None:
     """The reason the check is an exact length rather than a minimum.
 
     A prefixed multi-megabyte body used to satisfy the old `len(value) > 16` test, so
-    `resolve_tenant` would SHA-256 the whole thing before discovering it matched nothing --
+    `resolve_tenant` would hash the whole thing before discovering it matched nothing --
     unbounded work per unauthenticated request. nginx bounds request headers at 8KB on the
     proxied path, but Streamlit calls `resolve_tenant` in process with no such ceiling.
     """

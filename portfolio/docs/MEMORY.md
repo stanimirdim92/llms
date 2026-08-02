@@ -155,6 +155,24 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-01 — API key review: shape check tightened, hash moved to SHA-512
+
+An external review of `app/auth/keys.py` produced three suggestions. One was taken (exact-
+length shape check — the old `len > 16` let a prefixed multi-megabyte body reach the hash).
+Two were rejected with reasons now in `docs/IDEAS.md`: an HMAC pepper (right advice, wrong
+threat model — and it can never be rotated, because re-deriving digests needs the plaintext
+keys) and `BYTEA` storage (under 1 MB saved at target scale, against an unreadable column and
+a hand-written migration with no Alembic). The review's real value was the two gaps it
+surfaced in passing: **no key expiry and no scopes**, both now in `docs/IDEAS.md` § Auth.
+
+Then hashing moved SHA-256 → **SHA-512** at the user's request. Recorded here because the
+timing was the whole decision: the `apikey` table had **zero rows**, verified before changing
+anything, so this was free. At any other time it is a full re-key of every tenant — plaintext
+keys are never stored, so no digest can be recomputed. **`hash_key` is now frozen**, pinned by
+a test asserting a known key's exact digest. Reasoning and the two rejected alternatives
+(SHA-512/256, not in `hashlib`'s guaranteed set; SHA-3, slower for a property we don't use)
+are in `docs/TECHNICAL_DECISIONS.md`.
+
 ### 2026-08-01 — repo hygiene: templates, security workflows, pattern and memory docs
 
 Added `.github/` issue forms (bug, feature) and a PR template, all written around this repo's

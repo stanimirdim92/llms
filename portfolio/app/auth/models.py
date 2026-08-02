@@ -36,8 +36,9 @@ class ApiKey(SQLModel, table=True):
     id: str = Field(primary_key=True)
     tenant_id: str = Field(foreign_key="tenant.id", index=True)
     key_hash: str = Field(index=True, unique=True)
-    """SHA-256 hex of the full key. Indexed because authentication is a single lookup on
-    it -- see `keys.py` for why SHA-256 rather than a password KDF."""
+    """SHA-512 hex of the full key (128 chars). Indexed because authentication is a single lookup
+    on it -- see `keys.py` for why a plain digest rather than a password KDF, and why the
+    function is frozen once keys exist."""
     prefix: str
     """The key's first few characters, kept so a key can be *identified* in a list without
     storing anything that could authenticate as it."""

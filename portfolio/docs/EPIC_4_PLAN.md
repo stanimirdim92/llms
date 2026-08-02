@@ -91,7 +91,7 @@ class Tenant(SQLModel, table=True):
 class ApiKey(SQLModel, table=True):
     id: str = Field(primary_key=True)  # uuid7 hex
     tenant_id: str = Field(foreign_key="tenant.id", index=True)
-    key_hash: str = Field(index=True, unique=True)  # sha256 hex of the full key
+    key_hash: str = Field(index=True, unique=True)  # sha512 hex of the full key
     prefix: str  # first ~12 chars, for display only
     name: str  # human label ("ci", "laptop")
     created_at: datetime | None = ...
@@ -103,7 +103,7 @@ class ApiKey(SQLModel, table=True):
 has been imported. `registry/db.py::init_db` must import `app.auth.models` explicitly, or
 the tables silently never exist.
 
-**Hashing:** plain SHA-256, deliberately *not* argon2/bcrypt. Keys are 256 bits of
+**Hashing:** a plain digest (SHA-512), deliberately *not* argon2/bcrypt. Keys are 256 bits of
 `secrets.token_urlsafe(32)` — there is nothing to brute-force, and a slow KDF on every
 request is self-inflicted latency. Argon2 becomes correct only in Phase 5's password login,
 where the secret is low-entropy.
@@ -118,7 +118,7 @@ async def current_tenant(x_api_key: Annotated[str | None, Header()] = None) -> s
 ```
 
 - Missing header → 401.
-- `sha256(key)` → single indexed lookup on `key_hash` where `revoked_at IS NULL`. O(1).
+- `sha512(key)` → single indexed lookup on `key_hash` where `revoked_at IS NULL`. O(1).
 - Miss → 401 with an identical message and timing path to a revoked key (don't leak which).
 - Stash `request.state.tenant_id` for Phase 2's rate-limit `key_func`.
 - Return `tenant_id`.
@@ -369,7 +369,7 @@ is genuinely large -- though at the 10k-tenant target it is more defensible than
 at 1k.
 
 Alternative if Keycloak is too much: **own it**, with `argon2-cffi` for password hashing
-(*not* the API keys' SHA-256 — opposite threat model, see `docs/TECHNICAL_DECISIONS.md`),
+(*not* the API keys' plain digest — opposite threat model, see `docs/TECHNICAL_DECISIONS.md`),
 `itsdangerous` for signed session cookies, and a transactional-email provider. Budget for
 what that actually includes: verification tokens, reset tokens with single-use semantics,
 lockout, timing-safe comparison, and the tests to prove each one.

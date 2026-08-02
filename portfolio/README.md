@@ -167,7 +167,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Generation | `ChatAnthropic` (Claude Sonnet 5) + Anthropic's native Citations API |
 | Document registry | Postgres + SQLModel, one row per document, with ingestion status |
 | Job queue | `procrastinate` on the same Postgres — transactional enqueue |
-| Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-256 hashed, individually revocable |
+| Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-512 hashed, individually revocable |
 | Rate limiting | Per-tenant sliding window, one Lua script on `redis.asyncio` |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
 | Health | `/health/live` static; `/health/ready` probes Postgres/Qdrant/Redis, 503 on a required outage |
@@ -175,7 +175,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Lint/type/test | ruff, `ty`, pytest; CI on every PR touching `portfolio/**` |
 
 Every row above has a reason, several of them counterintuitive (why Qdrant point IDs
-can't be chunk ids, why re-ingestion deletes before inserting, why SHA-256 rather than
+can't be chunk ids, why re-ingestion deletes before inserting, why a plain digest rather than
 argon2, why the limiter fails open). Those are in
 [`docs/TECHNICAL_DECISIONS.md`](docs/TECHNICAL_DECISIONS.md), with the alternatives that were
 rejected and what it would take to revisit each one.

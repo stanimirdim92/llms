@@ -150,12 +150,29 @@ Real ids are `uuid7().hex`, so no tenant can ever be issued that value and claim
 FastAPI dependency. Modelled on the Anthropic Console: the tenant boundary belongs to the
 key's owner, so the server *derives* identity rather than trusting the client to assert it.
 
-**Keys are hashed with SHA-256, deliberately not argon2/bcrypt.** Slow KDFs exist to make
+**Keys are hashed with SHA-512, deliberately not argon2/bcrypt.** Slow KDFs exist to make
 brute-forcing *low-entropy* secrets expensive. An API key here is 256 bits of
 `secrets.token_urlsafe` output — there is no guessable structure to attack, so a KDF would add
 latency to every authenticated request while buying nothing, and it would break the indexed
 single-row lookup by requiring a per-row salt and a scan. Passwords are the opposite case;
 Phase 5's login path must use argon2id.
+
+**SHA-512 rather than SHA-256 is margin, not a fix, and the function is now frozen.** What
+protects a stolen `key_hash` is the input entropy — 256 bits of CSPRNG output is not
+invertible under either function — so the wider digest buys cryptanalytic reserve rather than
+closing a gap. It cost ~0.25 µs per authentication and 64 characters per row, both negligible,
+and it was taken while `apikey` was **empty**: because the plaintext keys are deliberately not
+stored, no digest can ever be recomputed, so changing the hash invalidates every key at once.
+Free at zero rows, a full re-key at any other time. `test_the_hash_function_is_frozen` pins a
+known key to its exact digest so the change cannot pass as a green suite.
+
+Two alternatives were rejected while making that choice. **SHA-512/256** is the better fit on
+paper — 256-bit output, immune to length extension — but is not in `hashlib.algorithms_
+guaranteed`; it comes from OpenSSL, so a rebuild against a trimmed OpenSSL would break
+authentication everywhere simultaneously. That is an unacceptable dependency for a persisted
+digest. **SHA-3** is guaranteed and sponge-based, but measurably slower here for a property we
+don't rely on: length extension requires an `H(secret ‖ message)` construction, and this
+hashes a whole key and compares digests.
 
 **Many keys per tenant, revoked individually.** Hence a separate table rather than a column on
 `Tenant`: one tenant holds a laptop key, a CI key, a prod key, and revoking one must not
