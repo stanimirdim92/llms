@@ -21,7 +21,7 @@ from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_uplo
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
 from app.logs import configure_logging
-from app.registry.db import list_document_records
+from app.registry.db import list_document_records, list_scope_candidates
 
 # Runtime import, not TYPE_CHECKING. This module has no `from __future__ import
 # annotations`, so `-> list[DocumentRecord]` on `_list_documents` is evaluated when the
@@ -53,6 +53,18 @@ def _service() -> AnswerService:
 @st.cache_resource
 def _store() -> QdrantStore:
     return QdrantStore()
+
+
+async def _scope_candidates(tenant_id: str) -> list[DocumentRecord]:
+    """What a question may be scoped to: this tenant's documents plus the shared corpus.
+
+    Separate from `_list_documents` on purpose -- see `registry.db.list_scope_candidates`.
+    Using the my-documents query for scoping is what made the documented `doc_id=` form 404
+    on the curated papers.
+    """
+    await init_db()
+    async with get_session() as session:
+        return await list_scope_candidates(session, tenant_id=tenant_id)
 
 
 async def _list_documents(tenant_id: str) -> list[DocumentRecord]:
@@ -177,12 +189,25 @@ question = st.text_input(
 if st.button("Ask", type="primary") and question:
     # Reuses the rows the expander above already fetched, so scoping costs no extra query
     # here -- unlike `/ask`, which has no such list at hand and gates the read on the regex.
-    scope = resolve_scope(question, records) if mentions_a_document(question) else DocumentScope()
+    # NOT the `records` the table above rendered: that list is "my documents" and excludes
+    # the shared corpus, so naming one of the six curated papers used to 404 here exactly as
+    # it did on `/ask`. Scoping and listing are different questions -- same fix, same file
+    # boundary, one scoping implementation rather than two.
+    scope = (
+        resolve_scope(question, asyncio.run(_scope_candidates(tenant_id)))
+        if mentions_a_document(question)
+        else DocumentScope()
+    )
 
     if scope.names_nothing_owned:
         # Same contract as the API's 404: refuse rather than fall back to searching
         # everything, which would answer confidently about a different document.
         st.error(f"No document named {', '.join(scope.unknown)} in your documents.")
+        st.stop()
+    if scope.names_only_unready:
+        # The API's 409. The document exists but has no chunks, so scoping to it returns a
+        # confident "not mentioned" about a document nothing searched.
+        st.warning(f"{', '.join(scope.not_ready)} is still ingesting or failed -- not searchable yet.")
         st.stop()
 
     with st.spinner("Retrieving, reranking, and generating..."):

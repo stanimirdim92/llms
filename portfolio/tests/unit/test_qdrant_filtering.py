@@ -24,7 +24,7 @@ import pytest
 from qdrant_client import QdrantClient, models
 
 from app.ingestion.models import GLOBAL_TENANT, Chunk, ChunkType
-from app.vectorstore.qdrant_store import _build_filter, _chunk_metadata, _point_id
+from app.vectorstore.qdrant_store import QdrantStore, _build_filter, _chunk_metadata, _point_id
 
 VECTOR_SIZE = 4
 TENANT_A = "a" * 32
@@ -183,3 +183,60 @@ def test_without_the_delete_step_stale_points_survive(client: QdrantClient) -> N
     _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0))  # upsert, no delete
 
     assert len(_search(client, _build_filter(None, TENANT_A))) == 3
+
+
+def test_upsert_refuses_a_batch_spanning_two_tenants() -> None:
+    """The write-side guard. Without it the delete selector is derived from `doc_ids.pop()`
+    alone, so a mixed batch erases whichever tenant's points happen to match -- a write path
+    with less protection than every read path in the same file.
+
+    Constructed without a live store: the guard runs before any client call, which is the
+    point -- it must fail before deleting, not after.
+    """
+    store = QdrantStore.__new__(QdrantStore)  # no __init__: it bills a probe embedding
+    mixed = [
+        _chunk(doc_id="shared-id", tenant_id=TENANT_A, index=0),
+        _chunk(doc_id="shared-id", tenant_id=TENANT_B, index=1),
+    ]
+
+    with pytest.raises(ValueError, match="exactly one tenant"):
+        store.upsert(mixed)
+
+
+def test_upsert_still_refuses_a_batch_spanning_two_documents() -> None:
+    """The pre-existing guard, kept under test so adding the tenant one didn't displace it."""
+    store = QdrantStore.__new__(QdrantStore)
+    mixed = [
+        _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0),
+        _chunk(doc_id="doc-b", tenant_id=TENANT_A, index=0),
+    ]
+
+    with pytest.raises(ValueError, match="exactly one document"):
+        store.upsert(mixed)
+
+
+def test_the_delete_selector_carries_the_tenant(client: QdrantClient) -> None:
+    """Two tenants holding the same `doc_id` -- unreachable today because `upload_doc_id`
+    salts with the tenant, but that is enforced in another module. Deleting one tenant's
+    document must not touch the other's, whatever the id scheme does later.
+    """
+    _insert(
+        client,
+        _chunk(doc_id="collide", tenant_id=TENANT_A, index=0),
+        _chunk(doc_id="collide", tenant_id=TENANT_B, index=1),
+    )
+
+    client.delete(
+        "test",
+        points_selector=models.FilterSelector(
+            filter=models.Filter(
+                must=[
+                    models.FieldCondition(key="metadata.doc_id", match=models.MatchValue(value="collide")),
+                    models.FieldCondition(key="metadata.tenant_id", match=models.MatchValue(value=TENANT_A)),
+                ]
+            )
+        ),
+    )
+
+    assert _search(client, _build_filter(None, TENANT_A)) == []
+    assert _search(client, _build_filter(None, TENANT_B)) == ["collide-text-0001"]

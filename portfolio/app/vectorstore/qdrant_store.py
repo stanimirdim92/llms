@@ -6,7 +6,6 @@ Epic 3's agent imports this module directly rather than constructing a second st
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING
 
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
@@ -15,9 +14,6 @@ from qdrant_client.models import FieldCondition, Filter, FilterSelector, MatchAn
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
 from app.ingestion.models import GLOBAL_TENANT, Chunk
-
-if TYPE_CHECKING:
-    from langchain_core.vectorstores.base import VectorStoreRetriever
 
 # Fixed, arbitrary namespace for deriving Qdrant point IDs from our own chunk_id strings
 # via uuid5 -- never regenerate this, or every existing point ID changes and re-ingesting
@@ -96,8 +92,16 @@ class QdrantStore:
             collection_name=collection_name or settings.qdrant_collection,
         )
 
-    def delete_document(self, doc_id: str) -> None:
-        """Remove every point belonging to `doc_id`, whatever its chunk ids were.
+    def delete_document(self, doc_id: str, tenant_id: str) -> None:
+        """Remove every point belonging to `doc_id` *within one tenant*, whatever its chunk
+        ids were.
+
+        `tenant_id` is required, not optional, and it is ANDed into the selector rather than
+        checked by the caller. Today `doc_id` is tenant-salted so a cross-tenant delete is
+        not reachable -- but that is a property of `upload_doc_id`, enforced in a different
+        module, and every read path in this file carries the tenant condition regardless.
+        A write that can erase data deserves at least the guard a read has: if the id scheme
+        ever changes, this fails closed instead of deleting a stranger's points.
 
         Upserting by id alone is NOT sufficient to make re-ingestion idempotent: chunk ids
         encode position (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything that
@@ -110,7 +114,12 @@ class QdrantStore:
         self._store.client.delete(
             collection_name=self._store.collection_name,
             points_selector=FilterSelector(
-                filter=Filter(must=[FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id))])
+                filter=Filter(
+                    must=[
+                        FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id)),
+                        FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id)),
+                    ]
+                )
             ),
         )
 
@@ -118,10 +127,14 @@ class QdrantStore:
         """Replace a document's points: delete-then-insert, not insert-by-id.
 
         See `delete_document` for why the delete is required rather than paranoid. All
-        chunks passed in one call must share a `doc_id` -- that's how every caller uses it
-        (`ingest_document` handles exactly one document), and the assert makes the
-        assumption fail loudly here rather than silently deleting the wrong document's
-        points if a future caller batches across documents.
+        chunks passed in one call must share a `doc_id` **and** a `tenant_id` -- that's how
+        every caller uses it (`ingest_document` handles exactly one document for one
+        tenant), and the guards make the assumption fail loudly here rather than silently
+        deleting the wrong document's points if a future caller batches across either.
+
+        The tenant guard is the one that was missing: without it a mixed batch would have
+        derived its delete selector from `doc_ids.pop()` alone and taken out whichever
+        tenant's points matched.
         """
         if not chunks:
             return
@@ -129,8 +142,12 @@ class QdrantStore:
         if len(doc_ids) != 1:
             msg = f"upsert() expects chunks from exactly one document, got {sorted(doc_ids)}"
             raise ValueError(msg)
+        tenant_ids = {chunk.tenant_id for chunk in chunks}
+        if len(tenant_ids) != 1:
+            msg = f"upsert() expects chunks from exactly one tenant, got {sorted(tenant_ids)}"
+            raise ValueError(msg)
 
-        self.delete_document(doc_ids.pop())
+        self.delete_document(doc_ids.pop(), tenant_ids.pop())
         documents = [_to_document(chunk) for chunk in chunks]
         self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id) for chunk in chunks])
 
@@ -150,8 +167,14 @@ class QdrantStore:
         where = _build_filter(chunk_types, tenant_id, doc_ids)
         return await self._store.asimilarity_search(query, k=top_k, filter=where)
 
-    def as_retriever(self, top_k: int) -> VectorStoreRetriever:
-        return self._store.as_retriever(search_kwargs={"k": top_k})
+    # There is deliberately no `as_retriever()`. One existed, returning
+    # `self._store.as_retriever(search_kwargs={"k": top_k})` -- no tenant filter, no doc
+    # filter, not even an empty one. It had no callers, which is the only reason it was a
+    # latent hazard rather than an incident: the first caller to use it for an answer would
+    # have read every tenant's uploads, from the one file whose entire job is to prevent
+    # exactly that. If a LangChain `Retriever` object is ever genuinely needed, it must take
+    # `tenant_id` as a required argument and go through `_build_filter` like `query` does,
+    # with a cross-tenant exclusion test alongside it in `test_qdrant_filtering.py`.
 
     def count(self) -> int:
         return self._store.client.count(self._store.collection_name, exact=True).count

@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlmodel import col, select
 
+from app.ingestion.models import GLOBAL_TENANT
 from app.registry.models import STATUS_FAILED, STATUS_PROCESSING, DocumentRecord
 
 if TYPE_CHECKING:
@@ -79,6 +80,33 @@ async def _set_status(session: AsyncSession, *, doc_id: str, status: str, error:
     record.error_message = error
     session.add(record)
     await session.commit()
+
+
+async def list_scope_candidates(session: AsyncSession, *, tenant_id: str, limit: int = 200) -> list[DocumentRecord]:
+    """Every document a question may be *scoped to*: this tenant's, plus the shared corpus.
+
+    Deliberately a different function from `list_document_records`, which answers "my
+    documents" and must keep excluding `GLOBAL_TENANT` -- listing documents nobody uploaded
+    would misrepresent what the tenant owns. Scoping is the opposite question: the corpus is
+    readable by everyone, so naming one of its papers has to resolve.
+
+    That difference was a real defect. `/ask`'s OpenAPI description and the README both said
+    the `doc_id=` marker "is the only form that works for the shared corpus" -- and it never
+    did, because the candidate set came from the my-documents query. Following the README's
+    own copy-pasteable example returned 404 for one of the six papers the project ships.
+
+    Still an authorization boundary, not a bypass: `IN (tenant, 'global')` is two named
+    values, so no crafted id widens it. This is the same shape `QdrantStore._build_filter`
+    uses for the retrieval filter, which is what makes the two agree about what is readable.
+    """
+    statement = (
+        select(DocumentRecord)
+        .where(col(DocumentRecord.tenant_id).in_([tenant_id, GLOBAL_TENANT]))
+        .order_by(col(DocumentRecord.uploaded_at).desc())
+        .limit(limit)
+    )
+    result = await session.exec(statement)
+    return list(result.all())
 
 
 async def list_document_records(session: AsyncSession, *, tenant_id: str, limit: int = 100) -> list[DocumentRecord]:

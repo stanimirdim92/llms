@@ -19,7 +19,8 @@ from __future__ import annotations
 
 from qdrant_client.models import FieldCondition, Filter
 
-from app.registry.models import DocumentRecord
+from app.ingestion.models import GLOBAL_TENANT
+from app.registry.models import STATUS_FAILED, STATUS_INGESTED, STATUS_PENDING, DocumentRecord
 from app.retrieval.document_scope import mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import _build_filter
 
@@ -40,7 +41,7 @@ def _condition_keys(where: Filter) -> list[str]:
     return [condition.key for condition in conditions if isinstance(condition, FieldCondition)]
 
 
-def _Record(doc_id: str, filename: str) -> DocumentRecord:
+def _Record(doc_id: str, filename: str, status: str = STATUS_INGESTED, tenant_id: str = TENANT) -> DocumentRecord:
     """A real `DocumentRecord`, not a stand-in.
 
     A local dataclass with just `doc_id`/`filename` would type-check against nothing and
@@ -49,7 +50,8 @@ def _Record(doc_id: str, filename: str) -> DocumentRecord:
     """
     return DocumentRecord(
         doc_id=doc_id,
-        tenant_id=TENANT,
+        tenant_id=tenant_id,
+        status=status,
         filename=filename,
         content_hash=doc_id,
         file_extension=".pdf",
@@ -187,8 +189,14 @@ def test_the_marker_carries_an_id_shape_no_regex_could_find() -> None:
     """The curated corpus uses bare arXiv ids. `2008.10896` is indistinguishable from a
     decimal number in prose, so it only ever resolves behind an explicit marker -- which is
     the whole reason the marker exists alongside the shape pattern.
+
+    The record is `GLOBAL_TENANT`, not a fake tenant id. With a fake one this test passed
+    while the real path 404'd on every corpus paper, because the candidate set came from the
+    my-documents query -- exactly the gap a convenient fixture can hide. See H1 and
+    `test_worker_enqueue.py::test_scope_candidates_include_the_shared_corpus` for the
+    integration half.
     """
-    records = [_Record("2008.10896", "2008.10896.pdf")]
+    records = [_Record("2008.10896", "2008.10896.pdf", tenant_id=GLOBAL_TENANT)]
 
     assert resolve_scope("what does doc_id=2008.10896 conclude?", records).doc_ids == ["2008.10896"]
     assert not mentions_a_document("the cell retained 2008.10896 mAh/g"), "a bare decimal must not scope"
@@ -238,3 +246,121 @@ def test_scoped_filter_keeps_the_tenant_condition() -> None:
 def test_unscoped_filter_is_unchanged() -> None:
     """No doc_ids must produce exactly the filter that shipped before scoping existed."""
     assert _condition_keys(_build_filter(None, "tenant-a")) == ["metadata.tenant_id"]
+
+
+# --- Filenames the token regex could never span (finding H2) ------------------------------
+
+_SPACED = [
+    _Record("doc-draft", "Draft Report.pdf"),
+    _Record("doc-report", "Report.pdf"),
+    _Record("doc-paren", "report(1).pdf"),
+]
+
+
+def test_a_filename_with_a_space_scopes_to_itself_not_to_its_suffix() -> None:
+    r"""The worst bug this module can have, and it was live: `[\\w.\\-]+` cannot cross a space,
+    so "Draft Report.pdf" yielded only the token `Report.pdf` -- a *different real document*.
+    The answer came back confidently scoped to the wrong file, `scoped_to` and all.
+    """
+    scope = resolve_scope("summarize Draft Report.pdf", _SPACED)
+
+    assert scope.doc_ids == ["doc-draft"]
+    assert scope.filenames == ["Draft Report.pdf"]
+    assert scope.unknown == []
+
+
+def test_a_filename_with_a_parenthesis_is_recognised_at_all() -> None:
+    """A browser's duplicate-download naming. The old class broke on `(`, so the token never
+    matched anything and the question ran fully unscoped with no signal it had been tried.
+    """
+    scope = resolve_scope("what is in report(1).pdf?", _SPACED)
+
+    assert scope.doc_ids == ["doc-paren"]
+
+
+def test_a_shorter_filename_does_not_also_fire_inside_a_longer_one() -> None:
+    """Matching known names as substrings introduces this risk in exchange for fixing H2:
+    `Report.pdf` is a substring of `Draft Report.pdf`. Longest-first with the matched span
+    masked out is what keeps one named document from scoping to two.
+    """
+    assert resolve_scope("summarize Draft Report.pdf", _SPACED).doc_ids == ["doc-draft"]
+    assert resolve_scope("summarize Report.pdf", _SPACED).doc_ids == ["doc-report"]
+
+
+def test_a_filename_is_not_matched_inside_a_longer_word() -> None:
+    r"""The boundary the token regex's `\\b` used to provide. Substring matching has none by
+    default, so `report.pdf` would match inside both `myreport.pdf` and `report.pdfx`.
+    """
+    assert resolve_scope("about myreport.pdf", [_Record("d", "report.pdf")]).doc_ids == []
+    assert resolve_scope("about report.pdfx", [_Record("d", "report.pdf")]).doc_ids == []
+
+
+def test_a_trailing_period_still_leaves_the_filename_matchable() -> None:
+    """The flip side of the boundary above: a sentence-ending period must not break it."""
+    assert resolve_scope("summarise Report.pdf.", _SPACED).doc_ids == ["doc-report"]
+
+
+# --- Marker hygiene (finding M11) ---------------------------------------------------------
+
+
+def test_the_marker_ignores_trailing_punctuation_and_quotes() -> None:
+    r"""`[^\\s,;]+` swallows a sentence-ending period and closing quotes into the id, so a
+    document that exists 404s. Fails closed, but on the one mechanism the README documents as
+    *required* for the shared corpus.
+    """
+    corpus = [_Record("2008.10896", "attention.pdf")]
+
+    assert resolve_scope("summarise doc_id=2008.10896.", corpus).doc_ids == ["2008.10896"]
+    assert resolve_scope('summarise doc_id="2008.10896"', corpus).doc_ids == ["2008.10896"]
+    assert resolve_scope("summarise (doc_id=2008.10896)", corpus).doc_ids == ["2008.10896"]
+
+
+def test_a_marker_with_no_id_after_it_is_not_reported_as_a_missing_document() -> None:
+    assert resolve_scope("what is a doc_id=.", _RECORDS).unknown == []
+
+
+# --- Duplicate names (finding M12) --------------------------------------------------------
+
+
+def test_a_duplicate_filename_resolves_to_the_newest_upload() -> None:
+    """`records` arrives newest-first. Building the lookup with plain assignment let each
+    older duplicate overwrite the newer one, so re-uploading a revised `report.pdf` without
+    deleting the original scoped questions to the *stale* copy -- the opposite of intent, with
+    nothing in the response signalling the ambiguity.
+    """
+    newest_first = [_Record("doc-new", "report.pdf"), _Record("doc-old", "report.pdf")]
+
+    assert resolve_scope("summarise report.pdf", newest_first).doc_ids == ["doc-new"]
+
+
+# --- Ingestion status (finding L9) --------------------------------------------------------
+
+
+def test_naming_a_still_pending_document_is_not_a_successful_scope() -> None:
+    """Scoping to a document with no chunks yet "succeeds" and returns an empty, confident
+    non-answer. The caller has to be able to say *pending*, not *no such document*.
+    """
+    scope = resolve_scope("summarise queued.pdf", [_Record("doc-q", "queued.pdf", status=STATUS_PENDING)])
+
+    assert scope.doc_ids == []
+    assert scope.not_ready == ["queued.pdf"]
+    assert scope.names_only_unready
+    assert not scope.names_nothing_owned, "it exists -- reporting it as missing would be a lie"
+
+
+def test_naming_a_failed_document_reports_it_as_unready_not_missing() -> None:
+    scope = resolve_scope("summarise broken.pdf", [_Record("doc-b", "broken.pdf", status=STATUS_FAILED)])
+
+    assert scope.not_ready == ["broken.pdf"]
+    assert scope.unknown == []
+
+
+def test_a_ready_document_alongside_an_unready_one_still_scopes() -> None:
+    """One pending document must not sink a question that also names a searchable one."""
+    records = [_Record("doc-ok", "ready.pdf"), _Record("doc-q", "queued.pdf", status=STATUS_PENDING)]
+
+    scope = resolve_scope("compare ready.pdf and queued.pdf", records)
+
+    assert scope.doc_ids == ["doc-ok"]
+    assert scope.not_ready == ["queued.pdf"]
+    assert not scope.names_only_unready

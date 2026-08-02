@@ -49,6 +49,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS
+from app.registry.models import STATUS_INGESTED
 
 if TYPE_CHECKING:
     from app.registry.models import DocumentRecord
@@ -69,6 +70,12 @@ _FILENAME_TOKEN = re.compile(rf"[\w.\-]+\.(?:{_EXTENSION_ALTERNATION})\b", re.IG
 # ids, which are unmatchable on shape alone. Accepts what people actually type: `doc_id=x`,
 # `doc id: x`, `docid = x`.
 _DOC_ID_MARKER = re.compile(r"\bdoc[_\s-]?id\s*[=:]\s*([^\s,;]+)", re.IGNORECASE)
+
+# Trailing characters the capture above swallows that are never part of an id: a
+# sentence-ending period, a closing quote or bracket. Without this, `doc_id=2008.10896.` and
+# `doc_id="2008.10896"` both fail to match a stored id and 404 on a document that exists --
+# fails closed, but on the one mechanism the README documents as *required* for the corpus.
+_ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 
 # The shape `upload_doc_id` generates: `{tenant_id}-{sha256[:32]}`, where tenant_id is a
 # `uuid7().hex` or the literal `global` for the shared corpus. Matched bare so an id pasted
@@ -102,6 +109,14 @@ class DocumentScope:
     doc_ids: list[str] = field(default_factory=list)
     filenames: list[str] = field(default_factory=list)
     unknown: list[str] = field(default_factory=list)
+    not_ready: list[str] = field(default_factory=list)
+    """Documents the caller owns that are named in the question but are not `ingested`.
+
+    Distinguished from `unknown` because the honest answer is different: the document exists,
+    it just has no chunks yet (or failed). Scoping to it "succeeds" and returns an empty,
+    confident non-answer -- so the caller must say *pending* or *failed*, not *no such
+    document*, and certainly not answer from the rest of the corpus.
+    """
 
     @property
     def is_scoped(self) -> bool:
@@ -111,6 +126,25 @@ class DocumentScope:
     def names_nothing_owned(self) -> bool:
         """The question named only documents this tenant does not have."""
         return bool(self.unknown) and not self.doc_ids
+
+    @property
+    def names_only_unready(self) -> bool:
+        """Everything named is owned but not yet searchable."""
+        return bool(self.not_ready) and not self.doc_ids and not self.unknown
+
+
+def _id_tokens(question: str) -> list[tuple[int, str]]:
+    """Every `doc_id`-ish token in the question, with where it started.
+
+    The position is what lets `resolve_scope` report matches in the order the user wrote
+    them. Marker captures are stripped of `_ID_EDGE_NOISE`; an empty remainder (someone wrote
+    a bare `doc_id=.`) is dropped rather than reported as an unknown document.
+    """
+    tokens = [
+        *((match.start(1), match.group(1).strip(_ID_EDGE_NOISE)) for match in _DOC_ID_MARKER.finditer(question)),
+        *((match.start(), match.group()) for match in _DOC_ID_SHAPE.finditer(question)),
+    ]
+    return [(position, token) for position, token in tokens if token]
 
 
 def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope:
@@ -128,32 +162,76 @@ def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope
     accepting it safe, since a `doc_id` embeds a tenant prefix and would otherwise look
     authoritative enough to trust.
     """
-    # Both id patterns are non-capturing except the marker's single group, so `findall`
-    # yields the token itself in every case.
-    tokens = [
-        *_FILENAME_TOKEN.findall(question),
-        *_DOC_ID_MARKER.findall(question),
-        *_DOC_ID_SHAPE.findall(question),
-    ]
-    if not tokens:
-        return DocumentScope()
+    # Filenames are matched by *substring against the real names*, not by pulling
+    # filename-shaped tokens out of the prose. The token regex cannot span a space or a
+    # parenthesis, so `Draft Report.pdf` used to yield only `Report.pdf` -- which resolved to
+    # a different, real document and answered confidently about the wrong file. Matching the
+    # known names against the question inverts that: whatever characters a filename contains,
+    # it is found, because the candidate set is closed and small.
+    #
+    # Longest first, and each match is masked out of the remaining text, so `Report.pdf` does
+    # not also fire inside `Draft Report.pdf` and scope to two documents.
+    remaining = question
+    # (position in the question, record, label) so results come back in the order the user
+    # named them rather than in match order -- `scoped_to` echoes this straight back, and
+    # longest-first is an implementation detail the caller should never see.
+    hits: list[tuple[int, DocumentRecord, str]] = []
 
-    by_name = {record.filename.casefold(): record for record in records if record.filename}
-    # doc_id wins on collision, but the keyspaces cannot overlap in practice: every filename
-    # match carries a supported extension and no doc_id shape ends in one.
-    by_id = {record.doc_id.casefold(): record for record in records}
+    named = sorted((r for r in records if r.filename), key=lambda r: len(r.filename), reverse=True)
+    for record in named:
+        # Boundaries on both sides: without them `report.pdf` matches inside `myreport.pdf`
+        # and inside `report.pdfx`, which is the same class of false positive the token
+        # regex's `\b` was there to stop. `(?!\w)` still permits a trailing period, so
+        # "summarise report.pdf." works.
+        pattern = re.compile(rf"(?<!\w){re.escape(record.filename)}(?!\w)", re.IGNORECASE)
+        span = pattern.search(remaining)
+        if span is None:
+            continue
+        hits.append((span.start(), record, record.filename))
+        remaining = remaining[: span.start()] + " " * (span.end() - span.start()) + remaining[span.end() :]
 
-    doc_ids: list[str] = []
-    filenames: list[str] = []
+    # Ids come from the *original* question: masking only removes filename spans, and an id
+    # never overlaps one. Marker captures are stripped of trailing punctuation and quotes --
+    # see `_ID_EDGE_NOISE`.
+    # Newest wins on a duplicate name or id: `records` arrives newest-first, so the *first*
+    # occurrence is kept rather than being overwritten by each older one in turn. A tenant who
+    # re-uploads a revised `report.pdf` means the new one.
+    by_id: dict[str, DocumentRecord] = {}
+    for record in records:
+        by_id.setdefault(record.doc_id.casefold(), record)
+
     unknown: list[str] = []
-    for token in dict.fromkeys(tokens):  # de-duplicate, preserve order
-        record = by_id.get(token.casefold()) or by_name.get(token.casefold())
+    for position, token in _id_tokens(question):
+        if token in unknown:
+            continue
+        record = by_id.get(token.casefold())
         if record is None:
             unknown.append(token)
+        else:
+            hits.append((position, record, record.filename or record.doc_id))
+
+    # Anything still *looking* like a filename in the unmasked remainder names a document
+    # this caller does not have. Reported rather than ignored: searching everything anyway is
+    # the confident-wrong-answer failure this module exists to prevent.
+    unknown.extend(token for token in _FILENAME_TOKEN.findall(remaining) if token not in unknown)
+
+    return _classify(hits, unknown)
+
+
+def _classify(hits: list[tuple[int, DocumentRecord, str]], unknown: list[str]) -> DocumentScope:
+    """Split matched records into searchable and not-yet-searchable, in question order.
+
+    Sorted by position so `scoped_to` echoes the order the user named things; longest-first
+    matching is an implementation detail the caller should never see.
+    """
+    doc_ids: list[str] = []
+    filenames: list[str] = []
+    not_ready: list[str] = []
+    for _, record, label in sorted(hits, key=lambda hit: hit[0]):
+        if record.status != STATUS_INGESTED:
+            if label not in not_ready:
+                not_ready.append(label)
         elif record.doc_id not in doc_ids:
             doc_ids.append(record.doc_id)
-            # The filename is what `scoped_to` reports, so a document named by id is still
-            # echoed back by name -- the id tells the user nothing they didn't just type.
             filenames.append(record.filename or record.doc_id)
-
-    return DocumentScope(doc_ids=doc_ids, filenames=filenames, unknown=unknown)
+    return DocumentScope(doc_ids=doc_ids, filenames=filenames, unknown=unknown, not_ready=not_ready)

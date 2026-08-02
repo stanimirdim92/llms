@@ -12,7 +12,7 @@ from app.auth.scopes import ASK
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
-from app.registry.db import list_document_records
+from app.registry.db import list_scope_candidates
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 
 router = APIRouter()
@@ -24,22 +24,26 @@ def _service() -> AnswerService:
 
 
 async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
-    """Resolve a filename or `doc_id` named in the question against *this tenant's* documents.
+    """Resolve a filename or `doc_id` named in the question against what this caller may read.
 
     The registry read is gated on `mentions_a_document` so the common case -- a question that
-    names nothing -- costs no query. The records passed to `resolve_scope` come from
-    `list_document_records`, which filters on `tenant_id` in the WHERE clause, so a resolved
-    `doc_id` is always one the caller owns. That is the ownership check required before any
-    id reaches a Qdrant filter: `doc_id` is a content hash, so two tenants uploading the same
-    file share one, and matching on the id alone would resolve to the other tenant's document
-    while looking entirely correct.
+    names nothing -- costs no query. The records come from `list_scope_candidates`, which
+    puts `tenant_id IN (caller, 'global')` in the WHERE clause, so a resolved `doc_id` is
+    always one the caller is entitled to. That is the ownership check required before any id
+    reaches a Qdrant filter: matching on a client-supplied id alone would resolve to another
+    tenant's document while looking entirely correct.
+
+    **Not `list_document_records`.** That one answers "my documents" and excludes the shared
+    corpus by design, which silently made the documented `doc_id=<arXiv id>` form 404 for
+    every one of the six curated papers. Scoping and listing are different questions; using
+    the listing query for scoping is what broke the feature.
     """
     if not mentions_a_document(question):
         return DocumentScope()
 
     await init_db()
     async with get_session() as session:
-        records = await list_document_records(session, tenant_id=tenant_id)
+        records = await list_scope_candidates(session, tenant_id=tenant_id)
     return resolve_scope(question, records)
 
 
@@ -55,8 +59,10 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     "`GET /v1/documents` reports them: the **filename** written in full with its extension "
     "('give me the contents of report.pdf'), or the **doc_id**, bare or behind a `doc_id=` "
     "marker. The marker is the only form that works for the shared corpus, whose ids are bare "
-    "arXiv numbers. Naming a document you do not have returns 404 rather than silently "
-    "searching everything.",
+    "arXiv numbers.\n\nNaming a document you do not have returns **404** rather than silently "
+    "searching everything; naming one of yours that is still ingesting (or that failed) returns "
+    "**409**, because answering from a document with no chunks yet would be a confident lie about "
+    "a document nothing searched.",
     response_description="A cited answer, its citations, and every chunk that was retrieved/reranked",
     dependencies=[Depends(require_scopes(ASK)), Depends(rate_limited("ask", "rate_limit_ask"))],
 )
@@ -68,6 +74,16 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
         # own documents back is safe and is the thing that makes the error actionable.
         named = ", ".join(scope.unknown)
         raise APIError(f"No document matching {named} in your documents. Check GET /v1/documents.", code=404)
+    if scope.names_only_unready:
+        # 409, not 404: the document exists, it just has no chunks yet. Answering anyway
+        # would scope to nothing and return a confident "the document does not mention that",
+        # which is a lie about a document that was never searched.
+        named = ", ".join(scope.not_ready)
+        raise APIError(
+            f"{named} is not searchable yet -- ingestion has not finished or it failed. "
+            "Check GET /v1/documents/{doc_id} for its status.",
+            code=409,
+        )
 
     result = await _service().answer(request.question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
     return AskResponse(
