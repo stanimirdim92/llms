@@ -127,6 +127,12 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **A sweep for keys about to lapse.** *(S)* `expires_at` exists and is enforced, but nothing
   warns before the deadline -- the first signal is a 401 in production. `expires_at` is
   indexed for exactly this query; a cron and an email is the whole feature.
+- **A Redis-outage fallback for the limiter.** *(S)* Today an unreachable Redis fails open —
+  no protection at all, loudly logged. `slowapi` has an `in_memory_fallback` that degrades to
+  per-process counters instead, which is partial protection rather than none. With
+  `GUNICORN_WORKERS` processes the effective limit becomes `workers x limit`, so it is a
+  guardrail not a guarantee — but it is strictly better than nothing during exactly the
+  incident where load may be why Redis is struggling.
 - **A per-tenant rate-limit ceiling alongside the per-key one.** *(S)* Buckets are keyed on
   `key_id`, so a tenant holding N keys has N times the budget — fairness between clients, not
   a cost ceiling. A second bucket on `tenant_id` checked beside the first makes it a ceiling,

@@ -370,10 +370,61 @@ resolve and there would be no principal yet.
 equivalent to ours. slowapi's default is `fixed-window`, which is the weaker choice — a caller
 can spend a full budget at the end of one window and again at the start of the next.
 
-*Verdict: keep the hand-rolled version.* One Lua script, no new dependency, no event-loop
-blocking, and 124 lines with a test suite that runs against real Redis. Revisit if the
-`X-RateLimit-*` headers are wanted (cheap to add directly) or if a Redis-outage fallback
-becomes worth more than the simplicity.
+*The library that should have been evaluated instead of slowapi: `limits` on its own.* slowapi
+is a thin FastAPI wrapper over `limits`; `limits` is the engine (98 releases, also behind
+flask-limiter) and it is the part that is actually well exercised. Evaluated properly, it turns
+out **`limits` runs fully async on redis-py 8** — the blocker attributed to it was slowapi's,
+not its own:
+
+```python
+RedisStorage("async+redis://...", implementation="redispy")  # not the coredis default
+```
+
+`limits.aio.storage.redis` ships four bridges (`coredis`, `redispy`, `valkey`, cluster) and the
+redis-py one requires `redis>=5.2.0` **with no upper bound** — the `<8.0.0` pin is on the
+*synchronous* `redis` extra only. So no downgrade, no coredis, no third redis client. Verified
+against live Redis with `MovingWindowRateLimiter`, and the performance is a dead heat with ours:
+
+| concurrent | ours | `limits` async (redispy) |
+|---|---|---|
+| 1 | 0.36 ms | 0.45 ms |
+| 10 | 1.20 ms | 1.23 ms |
+| 50 | 5.09 ms | 5.02 ms |
+| 100 | 11.05 ms | 11.11 ms |
+| 200 | 18.48 ms | **`MaxConnectionsError`** |
+
+Two real costs. `hit()` and `get_window_stats()` are **two** round trips, where our script
+returns `allowed`, `remaining`, and `reset` from one — and two calls means the header describes
+a different instant than the decision. And at 200 concurrent the default pool for the basic
+redispy bridge raised `MaxConnectionsError: Too many connections` rather than queueing
+(`max_connections=1000` is the *cluster* default only); ours completed. Configurable, but it is
+the kind of ceiling you find in production rather than in the docs. Everything HTTP-shaped —
+the dependency, the 429, the headers — is still ours to write either way, which is most of what
+`deps.rate_limited` already is.
+
+*The rest of the survey.* `fastapi-limiter` 0.2.0 (2026-02) is the only other maintained,
+async-native, redis-8-compatible option: it delegates to `pyrate-limiter` 4.x, which has a real
+Lua-backed Redis bucket. It was rejected on two specifics. Its default 429 is a bare
+`HTTPException(429, "Too Many Requests")` — no `Retry-After`, no `X-RateLimit-*`, and
+`try_acquire_async` returns a bool, so a custom callback has nothing to compute them from. And
+its bucket key is `f"{rate_key}:{route_index}:{dep_index}"` where `route_index` is the
+**position of the route in `app.routes`**, found by a linear scan on every request: inserting a
+route above `/v1/ask` silently changes the identity of every existing bucket.
+
+Everything else was dead or inapplicable: `asgi-ratelimit` (last release 2022), `ratelimit`
+(2018), `aiolimiter` (in-process only, so useless across gunicorn workers), `throttled-py`
+(active, but pins `redis<8.0.0` exactly as `limits[redis]` does). There is no commercial Python
+package in this space — the "enterprise" answer is a *gateway*: Kong, Zuplo, AWS API Gateway
+usage plans, or Cloudflare, all of which rate-limit ahead of the app and none of which know
+about API-key scopes. `redis-cell` (a GCRA Redis module) would move the algorithm into Redis
+itself, at the cost of a non-default module in the image.
+
+*Verdict: keep the hand-rolled version.* One Lua script, no new dependency, and a test
+suite that runs against real Redis — and against `limits` specifically, one round trip instead
+of two for the same information, with no pool ceiling to discover. The `X-RateLimit-*` headers
+that were the strongest argument for a library have since been added directly. Revisit if a
+Redis-outage fallback becomes worth more than the simplicity, or if the limiter ever needs
+something `limits` has and we do not: cluster support, sentinel, or GCRA.
 
 **Sliding window, not fixed.** A fixed window lets a caller spend its entire budget at the end
 of one window and again at the start of the next — an observed burst of twice the configured

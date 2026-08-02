@@ -25,6 +25,7 @@ from app.api.main import app
 from app.api.routers import ask as ask_router, health
 from app.auth.scopes import ALL_SCOPES, DOCUMENTS_READ, UNRESTRICTED
 from app.auth.service import Principal
+from app.config import get_settings
 from app.retrieval.document_scope import DocumentScope
 
 if TYPE_CHECKING:
@@ -276,6 +277,48 @@ async def test_an_expiry_outside_the_menu_is_refused(
     response = await client.post("/v1/keys", json={"name": "ci", "expires_in_days": 4000})
 
     assert response.status_code == 422
+
+
+async def test_a_successful_response_advertises_the_remaining_budget(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """Headers on success, not only on the 429.
+
+    This is the whole point of adding them: with headers only on rejection, a client discovers
+    its budget by exceeding it. Asserted at the HTTP layer because `rate_limited` sets them on
+    an injected sub-response and relies on FastAPI merging that into the real one -- unit tests
+    on `Budget.headers()` would pass even if the merge never happened.
+    """
+    as_a_key_holding(list(ALL_SCOPES))
+
+    response = await client.get("/v1/keys")
+
+    # No assertion on the status: `rate_limited` runs as a dependency, before the handler, so
+    # the headers are there whether or not the read itself succeeded. Asserting 200 here would
+    # make this test also a Postgres-availability test.
+    assert response.headers["x-ratelimit-limit"] == str(get_settings().rate_limit_keys)
+    assert int(response.headers["x-ratelimit-remaining"]) >= 0
+    assert int(response.headers["x-ratelimit-reset"]) > 0
+
+
+async def test_exhausting_the_budget_returns_429_with_every_header(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`Retry-After` plus `X-RateLimit-*` on the refusal, and `remaining: 0`.
+
+    The limit is monkeypatched to 1 rather than sending 11 requests, so this stays fast and
+    does not depend on the configured budget.
+    """
+    monkeypatch.setattr(get_settings(), "rate_limit_keys", 1)
+    as_a_key_holding(list(ALL_SCOPES))
+
+    await client.post("/v1/keys", json={"name": "first", "scopes": ["nonsense"]})
+    refused = await client.post("/v1/keys", json={"name": "second", "scopes": ["nonsense"]})
+
+    assert refused.status_code == 429
+    assert int(refused.headers["retry-after"]) >= 1
+    assert refused.headers["x-ratelimit-limit"] == "1"
+    assert refused.headers["x-ratelimit-remaining"] == "0"
 
 
 async def test_liveness_needs_no_auth_and_no_dependencies(client: AsyncClient) -> None:

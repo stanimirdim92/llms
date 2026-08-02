@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Response
 from fastapi.security import APIKeyHeader
 
 from app.auth.scopes import has_scope
@@ -111,7 +111,7 @@ class require_scopes:
         return principal
 
 
-def rate_limited(scope: str, limit_name: str) -> Callable[[Principal], Awaitable[None]]:
+def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Response], Awaitable[None]]:
     """A dependency enforcing the calling **key**'s budget for `scope`.
 
     Per key, not per tenant. Once keys differ in capability, a CI key hammering uploads should
@@ -134,17 +134,29 @@ def rate_limited(scope: str, limit_name: str) -> Callable[[Principal], Awaitable
 
     `limit_name` is read from `Settings` at request time rather than captured at import, so
     limits stay configurable without the decorator freezing whatever value was loaded first.
+
+    **`X-RateLimit-*` goes on every response, not just the 429.** Headers only on rejection
+    make the limit undiscoverable: a client learns its budget by exceeding it, which is the
+    one moment it wanted to avoid. `response: Response` is an injected sub-response whose
+    headers FastAPI merges into the real one, which is the only way a *dependency* can set
+    headers on a success -- returning them from the route would put the concern back in every
+    handler.
     """
 
-    async def _check(principal: CurrentPrincipal) -> None:
+    async def _check(principal: CurrentPrincipal, response: Response) -> None:
         limit = getattr(get_settings(), limit_name)
         try:
-            await check(scope, principal.key_id, limit)
+            budget = await check(scope, principal.key_id, limit)
         except RateLimitExceeded as exc:
             raise APIError(
                 str(exc),
                 code=429,
-                headers={"Retry-After": str(exc.retry_after_seconds)},
+                headers={"Retry-After": str(exc.retry_after_seconds), **exc.budget.headers()},
             ) from exc
+        if budget is not None:
+            # None means Redis was unreachable and the request passed unchecked. Emitting
+            # nothing is deliberate -- see `rate_limit.check`; a fabricated full budget would
+            # report the guardrail as intact while it is absent.
+            response.headers.update(budget.headers())
 
     return _check

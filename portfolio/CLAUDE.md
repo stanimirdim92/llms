@@ -337,6 +337,15 @@ rather than raising -- it fails silently, as cross-tenant data access.
   `docs/TECHNICAL_DECISIONS.md`.
 - The check is a **Lua script** so it is atomic. A read-then-write version lets concurrent
   requests all observe a count under the limit and all proceed.
+- **`remaining`/`reset` come back from the same script call that decides `allowed`.** A second
+  ZCARD afterwards would describe a different instant, so the advertised budget would disagree
+  with what the next request is actually granted -- a client pacing itself on that header does
+  the wrong thing. This is also why `limits` was not adopted: its `hit()` + `get_window_stats()`
+  is two round trips.
+- **`X-RateLimit-*` goes on successes too, not just 429s**, or the budget is only discoverable
+  by exceeding it. Set via the injected `response: Response` in `rate_limited`. When Redis is
+  unreachable `check` returns None and **no headers are emitted** -- a fabricated full budget
+  would report the guardrail as intact while it is absent.
 - **Fails open**: unreachable Redis allows the request and logs a warning. A guardrail's
   outage must not become the API's outage. `docker-compose.yml` therefore has `api` wait on
   redis being healthy, so the gap isn't silently open at startup.

@@ -99,9 +99,13 @@ async def test_concurrent_requests_cannot_exceed_the_budget() -> None:
         *(rate_limit.check(scope, TENANT_A, limit=limit) for _ in range(attempts)),
         return_exceptions=True,
     )
-    allowed = sum(1 for r in results if r is None)
+    granted = [r for r in results if isinstance(r, rate_limit.Budget)]
 
-    assert allowed == limit, f"expected exactly {limit} to pass, {allowed} did"
+    assert len(granted) == limit, f"expected exactly {limit} to pass, {len(granted)} did"
+    # Every grant reports a distinct `remaining`, counting down to zero. A duplicate would
+    # mean two callers were told the same slot was theirs -- the read-then-write race, showing
+    # up in the headers even where the count happened to come out right.
+    assert sorted(b.remaining for b in granted) == list(range(limit))
 
 
 async def test_window_expiry_is_set_so_buckets_do_not_leak() -> None:
@@ -150,3 +154,55 @@ async def test_error_handler_forwards_retry_after() -> None:
 
     assert response.status_code == 429
     assert response.headers["retry-after"] == "42"
+
+
+async def test_the_budget_reports_what_is_left_and_when_it_resets() -> None:
+    """The numbers behind `X-RateLimit-*`. Asserted here rather than only through HTTP because
+    they come out of the Lua script, and an off-by-one in `limit - used - 1` is the kind of
+    thing a client only notices as a 429 it thought it had budget for.
+    """
+    scope = _scope("budget")
+    window = get_settings().rate_limit_window_seconds
+
+    first = await rate_limit.check(scope, TENANT_A, limit=3)
+    second = await rate_limit.check(scope, TENANT_A, limit=3)
+    third = await rate_limit.check(scope, TENANT_A, limit=3)
+
+    assert first is not None
+    assert second is not None
+    assert third is not None
+    assert [first.remaining, second.remaining, third.remaining] == [2, 1, 0]
+    assert all(budget.limit == 3 for budget in (first, second, third))
+    # A full window from the first request, not from now: the window slides off the *oldest*
+    # entry, so a client polling this must not see it creep forward with every call.
+    assert 0 < third.reset_seconds <= window
+    assert third.reset_seconds <= first.reset_seconds
+
+
+async def test_a_refusal_carries_the_budget_too() -> None:
+    """So the 429 can advertise `remaining: 0` alongside `Retry-After` rather than leaving a
+    client to infer it.
+    """
+    scope = _scope("refused-budget")
+    await rate_limit.check(scope, TENANT_A, limit=1)
+
+    with pytest.raises(rate_limit.RateLimitExceeded) as excinfo:
+        await rate_limit.check(scope, TENANT_A, limit=1)
+
+    budget = excinfo.value.budget
+    assert budget.remaining == 0
+    assert budget.limit == 1
+    assert budget.headers()["X-RateLimit-Remaining"] == "0"
+
+
+async def test_reset_is_a_delta_not_an_epoch_timestamp() -> None:
+    """Pinned because the header name is ambiguous -- GitHub's `X-RateLimit-Reset` is epoch
+    seconds. A delta needs no agreement between the client's clock and ours, and switching to
+    epoch silently would make every client's backoff calculation absurd rather than wrong by a
+    little.
+    """
+    scope = _scope("reset-delta")
+    budget = await rate_limit.check(scope, TENANT_A, limit=1)
+
+    assert budget is not None
+    assert budget.reset_seconds <= get_settings().rate_limit_window_seconds

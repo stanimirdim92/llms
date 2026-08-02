@@ -103,6 +103,14 @@ curl http://localhost:8000/v1/keys -H "x-api-key: pf_live_..."          # metada
 curl -X DELETE http://localhost:8000/v1/keys/<key_id> -H "x-api-key: pf_live_..."
 ```
 
+Every rate-limited response carries `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and
+`X-RateLimit-Reset` — on success as well as on a 429, so a client learns its budget without
+having to exhaust it. **`X-RateLimit-Reset` is seconds-until-reset, not an epoch timestamp**
+(GitHub's is epoch; a delta needs no agreement between your clock and ours). A 429 adds
+`Retry-After`. Buckets are per key, so the numbers describe the key you authenticated with. If
+Redis is down the headers are **absent** rather than optimistic — the limit is not being
+enforced at all at that point, and saying `remaining: 60` would claim otherwise.
+
 The scopes are `ask`, `documents:read`, `documents:write`, `keys:read`, `keys:write`. A key
 with an empty stored list holds **all** of them — that is what keys minted before scopes
 existed have, and reading it as "no permissions" would have revoked every one of them.
@@ -198,7 +206,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Document registry | Postgres + SQLModel, one row per document, with ingestion status |
 | Job queue | `procrastinate` on the same Postgres — transactional enqueue |
 | Auth | `x-api-key` → `tenant`/`apikey` tables, SHA-512 hashed, individually revocable, 30-day default expiry, per-key scopes; declared as an OpenAPI security scheme |
-| Rate limiting | Per-**key** sliding window, one Lua script on `redis.asyncio` |
+| Rate limiting | Per-**key** sliding window, one Lua script on `redis.asyncio`, `X-RateLimit-*` on every response |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
 | Health | `/health/live` static; `/health/ready` probes Postgres/Qdrant/Redis, 503 on a required outage |
 | Tracing | LangSmith (zero-code — every call is already a LangChain object) |

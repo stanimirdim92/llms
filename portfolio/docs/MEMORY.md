@@ -124,6 +124,19 @@ underneath them.
   `limits.strategies`, the sync modules. Also: `uv add slowapi` unpinned does **not** error on
   our `redis>=8.0.0`; it silently resolves `limits==1.6` / `slowapi==0.1.6`. Only
   `limits[redis]>=5` reports unsatisfiable. Full write-up in `docs/TECHNICAL_DECISIONS.md`.
+- **`limits` used directly is viable and was the thing worth evaluating** (2026-08-02).
+  `RedisStorage("async+redis://...", implementation="redispy")` runs fully async on **redis-py
+  8** -- the `<8.0.0` pin is on the *sync* extra only, and the redispy bridge wants
+  `redis>=5.2.0` with no ceiling. Performance is a dead heat with ours (0.45/1.23/5.02/11.11 ms
+  at 1/10/50/100 concurrent vs 0.36/1.20/5.09/11.05), **but** it raised
+  `MaxConnectionsError` at 200 concurrent where ours completed in 18.5 ms, and `hit()` +
+  `get_window_stats()` is two round trips where our script returns allowed/remaining/reset from
+  one. Kept ours; the trade is documented rather than assumed.
+- **`fastapi-limiter` 0.2.0** is the only other live async option (delegates to
+  `pyrate-limiter` 4.x, redis-8 compatible). Rejected on specifics: its 429 is a bare
+  `HTTPException(429)` with no `Retry-After` or `X-RateLimit-*` and `try_acquire_async` returns
+  a bool so a callback cannot compute them, and its bucket key embeds the route's **index in
+  `app.routes`**, so inserting a route renames every existing bucket.
 
 ---
 
