@@ -11,7 +11,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
 
-from fastapi import Depends, Header
+from fastapi import Depends
+from fastapi.security import APIKeyHeader
 
 from app.auth.service import resolve_tenant
 from app.config import get_settings
@@ -22,15 +23,35 @@ if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
 
 
-async def current_tenant(x_api_key: Annotated[str | None, Header()] = None) -> str:
+_api_key_header = APIKeyHeader(
+    name="x-api-key",
+    scheme_name="ApiKeyAuth",
+    description="A key from `scripts/create_tenant.py`. Format `pf_live_` + 49 characters.",
+    # `auto_error=False` so a missing header returns None here instead of FastAPI raising its
+    # own 403 with its own wording. Every failure mode has to reach the same 401 below --
+    # with auto_error on, an absent key would be distinguishable from an invalid one by
+    # status code alone, which is exactly the leak `resolve_tenant` is careful to avoid.
+    auto_error=False,
+)
+"""Declares the scheme in OpenAPI rather than just accepting a header.
+
+A plain `Header()` parameter authenticates identically but describes itself as an ordinary
+input: no `securitySchemes` entry, no `security` requirement on each operation, and no
+Authorize button in `/docs`. That difference is not cosmetic -- an OpenAPI generator turns a
+security scheme into a client-level credential and a bare header into a parameter every call
+site must remember to pass, and the Phase 6 React client is generated from this schema.
+"""
+
+
+async def current_tenant(x_api_key: Annotated[str | None, Depends(_api_key_header)] = None) -> str:
     """The authenticated tenant id, or 401.
 
     This return value is the sole input to retrieval scoping. Nothing from the request body
     or query string may reach `_build_filter` -- if a caller could supply the scope, it could
     read another tenant's documents, which is exactly the hole this closes.
 
-    One message for every failure mode (absent, malformed, unknown, revoked) so the response
-    never reveals whether a key exists or once did.
+    One message for every failure mode (absent, malformed, unknown, revoked, expired) so the
+    response never reveals whether a key exists or once did.
     """
     tenant_id = await resolve_tenant(x_api_key)
     if tenant_id is None:

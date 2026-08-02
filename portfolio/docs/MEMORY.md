@@ -155,6 +155,29 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-01 — key expiry, and the API key declared in OpenAPI
+
+`ApiKey.expires_at` added, `NULL` = never. Checked in the `WHERE` clause beside the revocation
+check, using `func.now()` — the *database's* clock, so a skewed api process cannot honour a key
+past its deadline. Expired reads as unknown, same as revoked. CLI gained `--expires-in DAYS`
+and a `_state()` column; it now says out loud when a key has no deadline.
+
+**Deliberately opt-in, not the default.** Defaulting to a deadline is the safer policy and is
+recorded in `docs/IDEAS.md` as a decision still to take.
+
+**Operational trap worth remembering — now in `CLAUDE.md`:** `create_all` creates missing
+*tables*, never missing *columns*. Adding a field to an existing model changes nothing;
+`init_db` reports success and the next query fails with `column ... does not exist`. With no
+Alembic, a new column means dropping the table or hand-writing the `ALTER`. `apikey` was empty,
+so it was dropped and recreated.
+
+Also, from a mid-session question: the key is now an `APIKeyHeader` security scheme rather than
+a bare `Header()` parameter, so `/docs` has an Authorize button and a generated client models
+it as a credential instead of a per-call argument. `auto_error=False`, or FastAPI's own 403
+would make an absent key distinguishable from an invalid one. Three contract tests pin it.
+
+Tests were mutation-checked: deleting the expiry clause fails 3 of them.
+
 ### 2026-08-01 — key format: base62 + CRC32 checksum
 
 Read three sources on API key design (GitHub's 2021 token-format post, Zuplo, jamdesk) and

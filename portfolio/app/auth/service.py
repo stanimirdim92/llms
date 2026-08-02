@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from sqlalchemy import func, or_
 from sqlmodel import col, select
 
 if TYPE_CHECKING:
@@ -25,9 +26,9 @@ minute of staleness costs nothing and turns a per-request write into a rare one.
 async def resolve_tenant(presented_key: str | None) -> str | None:
     """Return the tenant a live key belongs to, or None.
 
-    Returns None for every failure -- absent, malformed, unknown, and revoked -- so callers
-    cannot accidentally tell a client *which* of those happened. Distinguishing "no such
-    key" from "revoked key" leaks whether a key was ever valid.
+    Returns None for every failure -- absent, malformed, unknown, revoked, and expired -- so
+    callers cannot accidentally tell a client *which* of those happened. Distinguishing "no
+    such key" from "revoked key" leaks whether a key was ever valid.
     """
     if not presented_key or not looks_like_key(presented_key):
         return None
@@ -36,7 +37,18 @@ async def resolve_tenant(presented_key: str | None) -> str | None:
     async with get_session() as session:
         # `col()` because at class level SQLModel types the attribute as its Python value
         # (`datetime | None`), which has no `.is_()`; col() surfaces the SQLAlchemy column.
-        statement = select(ApiKey).where(ApiKey.key_hash == digest, col(ApiKey.revoked_at).is_(None))
+        #
+        # Liveness is expressed in the WHERE clause rather than checked in Python after the
+        # fetch, for two reasons. It keeps a dead key indistinguishable from an unknown one --
+        # both simply return no row, so there is no branch that could grow a different error
+        # message later. And `func.now()` is the *database's* clock, so a skewed application
+        # server cannot honour a key past its deadline; with several api processes, "expired"
+        # has to mean one thing.
+        statement = select(ApiKey).where(
+            ApiKey.key_hash == digest,
+            col(ApiKey.revoked_at).is_(None),
+            or_(col(ApiKey.expires_at).is_(None), col(ApiKey.expires_at) > func.now()),
+        )
         api_key = (await session.exec(statement)).first()
         if api_key is None:
             return None

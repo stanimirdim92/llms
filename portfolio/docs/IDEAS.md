@@ -90,14 +90,16 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 
 ## Auth
 
-- **Key expiry.** *(S)* `ApiKey` has `created_at`, `last_used_at`, and `revoked_at` but no
-  `expires_at`. A key that is never explicitly revoked is valid forever, which is the wrong
-  default for a credential handed to CI.
+- **A sweep for keys about to lapse.** *(S)* `expires_at` exists and is enforced, but nothing
+  warns before the deadline -- the first signal is a 401 in production. `expires_at` is
+  indexed for exactly this query; a cron and an email is the whole feature.
+- **Make expiry the default rather than the opt-in.** *(S, policy)* `--expires-in` is
+  available and the CLI says out loud when a key has no deadline, but omitting the flag still
+  mints a forever-key. Flipping the default is a one-line change and a decision about who it
+  inconveniences.
 - **Scopes.** *(M)* Every key can do everything its tenant can. A read-only key for a
   dashboard, or an ingest-only key for a pipeline, is the obvious next cut — and it is
   cheaper to add before there are keys in the wild than after.
-- **Surface `last_used_at` in `create_tenant.py --list`.** *(S)* It is already recorded and
-  already the input to "which of these keys can I safely revoke".
 
 ## Product surface
 

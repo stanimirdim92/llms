@@ -46,8 +46,10 @@ uv run python scripts/create_tenant.py "My Org"      # prints the key once
 ```
 
 `scripts/` is deliberately not copied into the container, so this runs on the host and
-talks to the compose Postgres over its published `5432`. `--list` shows tenants and keys,
-`--revoke <key_id>` revokes one.
+talks to the compose Postgres over its published `5432`. `--list` shows tenants and keys with
+their state, `--revoke <key_id>` revokes one, and `--expires-in DAYS` mints a key that stops
+working on its own. Without that flag the key never expires, and the command says so — a
+forever-key is a legitimate choice but not one to make by omission.
 
 Then upload a document and ask about it:
 
@@ -167,7 +169,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Generation | `ChatAnthropic` (Claude Sonnet 5) + Anthropic's native Citations API |
 | Document registry | Postgres + SQLModel, one row per document, with ingestion status |
 | Job queue | `procrastinate` on the same Postgres — transactional enqueue |
-| Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-512 hashed, individually revocable |
+| Auth | `x-api-key` → `tenants`/`api_keys` tables, SHA-512 hashed, individually revocable, optional expiry; declared as an OpenAPI security scheme |
 | Rate limiting | Per-tenant sliding window, one Lua script on `redis.asyncio` |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
 | Health | `/health/live` static; `/health/ready` probes Postgres/Qdrant/Redis, 503 on a required outage |

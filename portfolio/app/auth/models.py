@@ -60,3 +60,16 @@ class ApiKey(SQLModel, table=True):
     """Revocation is a timestamp, not a delete: an audit trail of which key was used when
     is worth more than a clean table, and a deleted row can't answer "was this leaked key
     ever used?"."""
+    expires_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), index=True))
+    """When the key stops working on its own. `NULL` means never.
+
+    Separate from `revoked_at` on purpose, and the distinction is not cosmetic: revocation is
+    a decision someone made, expiry is a deadline that was always going to arrive. Collapsing
+    them into one column would make "did a human kill this key?" unanswerable, which is the
+    first question asked after an incident.
+
+    Indexed so a future sweep for keys about to lapse is a range scan rather than a table
+    scan. Authentication itself doesn't need the index -- that lookup is already anchored on
+    the unique `key_hash` -- but the column has to be *checked* there, which is the point:
+    `NULL` was chosen as "never" so that keys minted before this column existed keep working
+    rather than all expiring at once the moment it was added."""

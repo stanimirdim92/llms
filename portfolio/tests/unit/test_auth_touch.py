@@ -80,7 +80,7 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     await engine.dispose()
 
 
-async def _seed(factory: SessionFactory, *, revoked: bool = False) -> str:
+async def _seed(factory: SessionFactory, *, revoked: bool = False, expires_at: datetime | None = None) -> str:
     """Insert a tenant and one key for it.
 
     The tenant is committed *before* the key, in a separate transaction, because
@@ -103,6 +103,7 @@ async def _seed(factory: SessionFactory, *, revoked: bool = False) -> str:
                 prefix=display_prefix(key),
                 name="test",
                 revoked_at=datetime.now(UTC) if revoked else None,
+                expires_at=expires_at,
             )
         )
         await session.commit()
@@ -203,3 +204,68 @@ async def test_stale_last_used_at_is_refreshed(db: SessionFactory) -> None:
         assert stored is not None
         assert stored.last_used_at is not None
         assert stored.last_used_at > datetime.now(UTC) - timedelta(minutes=1)
+
+
+# --- expiry ------------------------------------------------------------------------------
+#
+# Every case below has to come back as plain `None`, identical to an unknown key. A response
+# that distinguished "expired" from "never existed" would confirm to any caller that a given
+# key was once real -- the same reason revoked and unknown are already indistinguishable.
+
+
+async def test_a_key_with_no_expiry_still_works(db: SessionFactory) -> None:
+    """`NULL` means never, and it has to keep meaning that: every key minted before the
+    column existed has `NULL`, so any other reading would have expired all of them at once.
+    """
+    key = await _seed(db, expires_at=None)
+
+    assert await service.resolve_tenant(key) == TENANT_ID
+
+
+async def test_a_key_expiring_in_the_future_works(db: SessionFactory) -> None:
+    key = await _seed(db, expires_at=datetime.now(UTC) + timedelta(days=30))
+
+    assert await service.resolve_tenant(key) == TENANT_ID
+
+
+async def test_an_expired_key_is_refused(db: SessionFactory) -> None:
+    key = await _seed(db, expires_at=datetime.now(UTC) - timedelta(seconds=1))
+
+    assert await service.resolve_tenant(key) is None
+
+
+async def test_expiry_is_evaluated_against_the_database_clock(db: SessionFactory) -> None:
+    """The comparison is `func.now()` in the WHERE clause, not `datetime.now()` in Python.
+
+    With several api processes, a skewed application server must not be able to honour a key
+    past its deadline -- "expired" has to mean one thing. Exercised by expiring a key a
+    hair's breadth in the past: it can only be rejected by a clock, and the only clock in the
+    statement is Postgres's.
+    """
+    key = await _seed(db, expires_at=datetime.now(UTC) - timedelta(milliseconds=1))
+
+    assert await service.resolve_tenant(key) is None
+
+
+async def test_an_expired_key_is_not_touched(db: SessionFactory) -> None:
+    """A refused key must leave no trace in `last_used_at`.
+
+    Otherwise the column stops meaning "last authenticated" and starts meaning "last
+    presented" -- and the audit question it exists to answer, *was this leaked key ever
+    used?*, gets a misleading yes.
+    """
+    key = await _seed(db, expires_at=datetime.now(UTC) - timedelta(days=1))
+    await service.resolve_tenant(key)
+
+    async with db() as session:
+        stored = (await session.exec(select(ApiKey).where(ApiKey.key_hash == hash_key(key)))).first()
+
+    assert stored is not None
+    assert stored.last_used_at is None
+
+
+async def test_a_revoked_and_expired_key_is_refused(db: SessionFactory) -> None:
+    """Both conditions are ANDed, so neither one masks the other."""
+    key = await _seed(db, revoked=True, expires_at=datetime.now(UTC) - timedelta(days=1))
+
+    assert await service.resolve_tenant(key) is None

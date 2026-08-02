@@ -92,6 +92,7 @@ class ApiKey(SQLModel, table=True):
     id: str = Field(primary_key=True)  # uuid7 hex
     tenant_id: str = Field(foreign_key="tenant.id", index=True)
     key_hash: str = Field(index=True, unique=True)  # sha512 hex of the full key
+    expires_at: datetime | None  # NULL = never; checked in the WHERE clause, DB clock
     prefix: str  # first ~12 chars, for display only
     name: str  # human label ("ci", "laptop")
     created_at: datetime | None = ...

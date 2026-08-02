@@ -235,3 +235,50 @@ async def test_readiness_reports_every_dependency_by_name(client: AsyncClient, m
 
     assert response.status_code == 200
     assert set(response.json()["dependencies"]) == {"postgres", "qdrant", "redis"}
+
+
+def test_the_api_key_is_declared_as_a_security_scheme() -> None:
+    """Not merely accepted as a header.
+
+    A plain `Header()` parameter authenticates identically, so nothing at runtime would catch
+    a regression here -- but the two describe themselves very differently. A `securitySchemes`
+    entry becomes a client-level credential in a generated client and an Authorize button in
+    `/docs`; a bare header becomes a parameter every call site has to remember to pass. The
+    Phase 6 React client is generated from this schema, so the distinction is the contract.
+    """
+    schema = app.openapi()
+
+    scheme = schema["components"]["securitySchemes"]["ApiKeyAuth"]
+    assert scheme["type"] == "apiKey"
+    assert scheme["in"] == "header"
+    assert scheme["name"] == "x-api-key"
+
+
+def test_every_tenant_scoped_route_requires_the_scheme_and_probes_do_not() -> None:
+    """Authorization is declared per route here, so a new route that forgets `CurrentTenant`
+    is simply open and nothing raises. This asserts on the generated schema, which is the one
+    artefact that sees all the routes at once.
+
+    Health endpoints are asserted *unauthenticated* on purpose -- an orchestrator cannot send
+    an API key, so putting a probe behind auth takes the service out of rotation.
+    """
+    paths = app.openapi()["paths"]
+
+    def security(path: str, verb: str) -> object:
+        return paths[path][verb].get("security")
+
+    assert security("/v1/ask", "post") == [{"ApiKeyAuth": []}]
+    assert security("/v1/documents", "post") == [{"ApiKeyAuth": []}]
+    assert security("/v1/documents", "get") == [{"ApiKeyAuth": []}]
+    assert security("/v1/documents/{doc_id}", "get") == [{"ApiKeyAuth": []}]
+    assert security("/health/live", "get") is None
+    assert security("/health/ready", "get") is None
+
+
+def test_the_key_header_is_not_also_a_bare_parameter() -> None:
+    """Declaring it both ways would make a generated client send it twice -- once as the
+    configured credential and once as an explicit argument.
+    """
+    ask = app.openapi()["paths"]["/v1/ask"]["post"]
+
+    assert "x-api-key" not in [parameter["name"] for parameter in ask.get("parameters", [])]

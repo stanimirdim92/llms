@@ -216,6 +216,12 @@ Things that look correct and aren't:
   assumption (`test_stored_timestamps_come_back_timezone_aware`) so a schema change that
   drops `timezone=True` fails loudly. Substituting SQLite in tests would hide exactly this
   class of bug.
+- **`create_all` creates missing *tables*, never missing *columns*.** Adding a field to an
+  existing model changes nothing on a database that already has the table -- `init_db`
+  reports success and the next query fails with `column ... does not exist`. There is no
+  Alembic, so a new column means dropping the table (fine while it holds nothing worth
+  keeping) or writing the `ALTER TABLE` by hand. `ApiKey.expires_at` was added this way,
+  against an empty table.
 - **`app/db.py::init_db` must import every model module.** `SQLModel.metadata` is
   populated as an import side effect, so a table whose module was never imported is
   silently skipped by `create_all` and only fails later as "relation does not exist".

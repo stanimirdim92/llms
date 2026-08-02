@@ -157,6 +157,34 @@ latency to every authenticated request while buying nothing, and it would break 
 single-row lookup by requiring a per-row salt and a scan. Passwords are the opposite case;
 Phase 5's login path must use argon2id.
 
+**Expiry is a separate column from revocation, and `NULL` means never.** Collapsing the two
+into one timestamp would make "did a human kill this key, or did it just lapse?" unanswerable,
+and that is the first question asked after an incident. `NULL` had to mean *never* rather than
+*immediately*, or adding the column would have expired every key minted before it existed.
+
+The check lives in the `WHERE` clause next to the revocation check, not in Python after the
+fetch. Two reasons, both about failure modes rather than performance: a dead key stays
+indistinguishable from an unknown one, because both simply return no row and there is no
+branch that could later grow a distinguishing error message; and `func.now()` is the
+*database's* clock, so a skewed application server cannot honour a key past its deadline. With
+several api processes, "expired" has to mean one thing. A test expires a key by one
+millisecond, which only a clock can reject.
+
+Expiry is **opt-in** (`--expires-in DAYS`), not the default. Defaulting to a deadline is the
+safer policy and is recorded in `docs/IDEAS.md` as a decision still to take; what shipped
+instead is that the CLI states the choice out loud either way, because a forever-key is the
+one people create by omission rather than on purpose.
+
+**The API key is declared as an OpenAPI security scheme, not just accepted as a header.** A
+plain `Header()` parameter authenticates identically, so nothing at runtime distinguishes the
+two — but an `APIKeyHeader` emits a `securitySchemes` entry and a per-operation `security`
+requirement, which is what turns the key into a client-level credential in a generated client
+and an Authorize button in `/docs`. A bare header becomes a parameter every call site must
+remember to pass. The Phase 6 React client is generated from this schema, so the difference is
+the contract, and three tests pin it. `auto_error=False` because FastAPI's built-in rejection
+is a 403 with its own wording; every failure mode has to reach the same 401, or an absent key
+becomes distinguishable from an invalid one by status code alone.
+
 **Key format: `pf_live_` + 43 base62 chars + a 6-char CRC32.** Drawn from GitHub's 2021 token
 redesign and the Stripe prefix convention, and each part earns its place for a different
 reason.
