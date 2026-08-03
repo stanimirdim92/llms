@@ -223,10 +223,50 @@ were wrong on checking (`libssl3` "a few hundred KB" -- it is already in the bas
 dependency claims.
 
 **Standing gaps this session did not close:** whether Anthropic truncates the *citation list*
-along with the text under `max_tokens` is asserted in three places and unverified; the nginx
+along with the text under `max_tokens` is asserted in three places and unverified; and the nginx
 image's `apt-get` layer cannot build behind this sandbox's proxy (the config itself is proven to
-parse via `nginx -t` inside `nginx:1.29`); and `api`/`streamlit` still publish on `0.0.0.0` while
-the three data services were moved to `127.0.0.1`.
+parse via `nginx -t` inside `nginx:1.29`).
+
+**`streamlit` publishes on `0.0.0.0` on purpose** -- `api` and the three data services were moved
+to `127.0.0.1`, and an earlier version of this entry listed `streamlit` with them as an open gap.
+It is not one: nginx proxies only `portfolio_api`, so loopback-binding 8501 would make the UI
+SSH-tunnel-only, and the page renders nothing before a key is pasted. The reasoning now lives on
+the `ports:` block itself. What *is* still open is fronting it with nginx, so it inherits the
+timeouts, body-size cap and security headers the api gets only by sitting behind the proxy.
+
+**The smoke job had never actually run its assertions, and hid a real stack bug.** Worth reading as
+one story, because the first cause masked the second:
+
+1. Two runs died at `Bring the stack up` in ~5 seconds on
+   `Post "https://auth.docker.io/token": read: connection reset by peer` -- an anonymous Docker Hub
+   token flake pulling `python:3.14-slim`, not our code. It reds the one job that builds the images
+   and skips every assertion below it, so the step is now retried three times, then `::error::`.
+   Verified against a stub `docker`: 1 invocation on success, 3 then exit 0 when the first two
+   fail, 3 then exit 1 when all three do.
+2. With that noise gone the run got 7m41s in and failed for real:
+   `failed to mkdir /var/lib/docker/volumes/portfolio_model_cache/_data/torch: file exists`.
+   **The Dockerfile pre-created `huggingface/` and `torch/` inside the `model_cache` mount point.**
+   Content at a mount point is copied into a fresh named volume during container *create* (not
+   start), and `api`, `worker` and `streamlit` all mount that one volume, so their creates raced
+   the copy. The mount point itself must stay -- Docker applies its ownership to the volume root,
+   and a root-owned mount point leaves appuser unable to cache anything -- but its *contents* must
+   not: `huggingface_hub` and `torch.hub` both `makedirs(exist_ok=True)`, so pre-creating them
+   bought nothing.
+
+Both reproduced rather than reasoned about. Six concurrent `docker create` on a fresh volume with
+two empty dirs at the mount point → EEXIST; with the mount point empty → 48 concurrent creates,
+zero errors, `_data` still `appuser:app`, `mkdir -p torch/hub` still works from inside.
+
+**The race fired once in eight rounds**, which is the part that matters for CI: a green bring-up
+would not have told us a re-added `mkdir` was safe. So the guard is not the bring-up -- it is a
+deterministic step asserting `/home/appuser/.cache` is empty in the built api image, red against
+the pre-fix image and green against the fixed one.
+
+**And this is what the smoke job is for.** Four commits of fixes went in while the only job that
+builds the images had failed at step 6 every time. Nothing else in the gate can see a
+compose/Dockerfile interaction -- `docker compose config` parses compose, and unit tests never
+build an image. A red job whose cause was dismissed as "just a registry flake" is rule 12 wearing
+different clothes.
 
 ### 2026-08-02 — an external review of 51 findings, and two rounds of fixing it
 

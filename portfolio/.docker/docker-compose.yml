@@ -208,8 +208,13 @@ services:
       # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container
       # recreates (~1 min of cold-start downloads otherwise). Named volume, not a bind
       # mount, so it inherits the image's appuser ownership -- see the Dockerfile's
-      # XDG_CACHE_HOME block. Shared with `streamlit`: both run the same ingestion code,
-      # so they'd otherwise each download their own copy.
+      # XDG_CACHE_HOME block. Shared with `worker` and `streamlit`: all three run the same
+      # ingestion code, so they'd otherwise each download their own copy.
+      #
+      # All three mounting one volume is also why the Dockerfile must leave `.cache` empty.
+      # Docker copies the image's content at that path into a fresh volume during container
+      # *create*, and three concurrent creates race that copy -- `mkdir _data/torch: file
+      # exists`, which failed this stack outright. Keep the mount point empty in the image.
       - model_cache:/home/appuser/.cache
     security_opt:
       - no-new-privileges:true
@@ -310,6 +315,14 @@ services:
       target: streamlit
     restart: unless-stopped
     ports:
+      # Published on all interfaces, unlike `api` and the three data services, and deliberately:
+      # nginx fronts only `portfolio_api` (see nginx/conf.d/default.conf), so loopback-binding
+      # this would leave the UI reachable over an SSH tunnel and nowhere else. What makes that
+      # acceptable is that the page does nothing until a key is pasted -- Home.py returns at
+      # `if not api_key` and 1_API_keys.py resolves a Principal before rendering anything -- so
+      # what is exposed is a login form, not a tenant's documents. Front it with nginx before
+      # putting this on a public box, because then it also gets the timeouts, the body-size cap
+      # and the security headers that the api service only has by sitting behind the proxy.
       - "8501:8501"
     env_file:
       - ../.env

@@ -265,7 +265,47 @@ jobs:
         # --env-file is mandatory: compose resolves ${VAR} from the project directory (.docker/),
         # never from ../.env, so without it PORT/GUNICORN_TIMEOUT/MAX_UPLOAD_SIZE_MB reach the
         # containers but not the port mappings or the nginx build args.
-        run: cd .docker && docker compose --env-file ../.env up --build -d
+        #
+        # Retried because the failure it catches is not in this repo. Two runs on 2026-08-03 died
+        # here in ~5 seconds with
+        #   failed to authorize: failed to fetch oauth token:
+        #   Post "https://auth.docker.io/token": read: connection reset by peer
+        # pulling python:3.14-slim anonymously. Everything below this step -- readiness, the nginx
+        # upstream, auth through the proxy, the worker's queue -- is the only coverage the image
+        # builds and Dockerfiles get, so a registry blip reds the job while asserting nothing, and
+        # a manual rerun is the only recovery. Three attempts, no docker login (that would need a
+        # Hub credential the project does not have). A real Dockerfile break still fails all three
+        # and the ::error:: below says the retries were exhausted, so a flake never reads as a pass.
+        run: |
+          cd .docker
+          for attempt in 1 2 3; do
+            if docker compose --env-file ../.env up --build -d; then exit 0; fi
+            echo "::warning::stack bring-up attempt ${attempt} failed"
+            if [ "$attempt" -lt 3 ]; then sleep 15; fi
+          done
+          echo "::error::stack bring-up failed 3 times -- this is not a registry flake"
+          exit 1
+
+      - name: The model-cache mount point is empty in the image
+        # Deterministic guard for what failed this job on 2026-08-03. Anything inside
+        # /home/appuser/.cache in the image is content Docker copies into the fresh
+        # `model_cache` volume at container-create time, and api/worker/streamlit create
+        # concurrently against that one volume, so the copies collide:
+        #   failed to mkdir /var/lib/docker/volumes/portfolio_model_cache/_data/torch: file exists
+        # See the XDG_CACHE_HOME block in .docker/Dockerfile for why the directory itself must
+        # still exist and be appuser-owned. This check exists because the collision is a *race*
+        # -- it reproduced once in eight rounds at six concurrent creates -- so a green
+        # bring-up does not mean a re-added `mkdir` is safe. This does.
+        run: |
+          cd .docker
+          image=$(docker inspect -f '{{.Image}}' "$(docker compose --env-file ../.env ps -q api)")
+          contents=$(docker run --rm --entrypoint sh "$image" -c 'ls -A /home/appuser/.cache')
+          if [ -n "$contents" ]; then
+            echo "::error::/home/appuser/.cache is not empty in the api image; it will race the volume copy"
+            printf '%s\n' "$contents"
+            exit 1
+          fi
+          echo "mount point empty in the image -- nothing for Docker to copy into the volume"
 
       - name: Wait for readiness
         # Polls the real readiness endpoint, which probes Postgres, Qdrant and Redis. This is the

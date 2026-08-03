@@ -131,14 +131,28 @@ ENV HOME=/home/appuser
 # All three env vars point inside one directory so a single volume mount
 # (docker-compose.yml mounts `model_cache` here) persists every cache at once:
 # HF_HOME covers HuggingFace, TORCH_HOME covers torch.hub, and XDG_CACHE_HOME is the
-# fallback RapidOCR and other libs respect. Pre-created with appuser ownership so the
-# named volume inherits it -- a volume mounted over a root-owned path would leave the
-# non-root process unable to write, and the downloads would silently fail to cache.
+# fallback RapidOCR and other libs respect.
+#
+# `.cache` is created and chowned; **its subdirectories deliberately are not.** The mount
+# point has to exist and be appuser-owned -- Docker applies its ownership to a fresh named
+# volume's root, and a volume mounted over a root-owned path leaves the non-root process
+# unable to write, so the downloads silently fail to cache. But anything *inside* it is
+# content Docker must copy into the volume at container-create time, and three services
+# (api, worker, streamlit) mount this one volume, so their creates race that copy:
+#
+#   Container portfolio-api-1  Error response from daemon: failed to mkdir
+#   /var/lib/docker/volumes/portfolio_model_cache/_data/torch: file exists
+#
+# which failed the whole stack on 2026-08-03 and took every smoke assertion with it.
+# Reproduced deliberately (6 concurrent `docker create` on a fresh volume, mount point
+# holding two empty dirs -> EEXIST) and confirmed gone with the mount point empty: 48
+# concurrent creates, zero errors, `_data` still owned by appuser, `mkdir -p torch/hub`
+# still works from inside. huggingface_hub and torch.hub both makedirs(exist_ok=True)
+# their own trees, so pre-creating them bought nothing and cost the race.
 ENV XDG_CACHE_HOME=/home/appuser/.cache \
     HF_HOME=/home/appuser/.cache/huggingface \
     TORCH_HOME=/home/appuser/.cache/torch
-RUN mkdir -p /home/appuser/.cache/huggingface /home/appuser/.cache/torch \
-    && chown -R appuser:app /home/appuser/.cache
+RUN mkdir -p /home/appuser/.cache && chown -R appuser:app /home/appuser/.cache
 
 WORKDIR /app
 COPY --from=builder --chown=appuser:app /opt/venv /opt/venv
