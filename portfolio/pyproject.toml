@@ -125,7 +125,7 @@ repository = "https://github.com/cs83/smartico-ai"
 documentation = "https://github.com/cs83/smartico-ai"
 
 [build-system]
-requires = ["uv_build>=0.11.32,<0.12"]
+requires = ["uv_build>=0.12.0,<0.13"]
 build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"
