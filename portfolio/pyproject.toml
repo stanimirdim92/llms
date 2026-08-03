@@ -23,68 +23,32 @@ dependencies = [
     #    "joblib",
     "aiocache[redis]>=0.12.3,<1.0.0",
     "aiofiles>=25.1.0,<26.0.0",
-    "attrs>=26.1.0",
-    "python-dotenv>=1.2.2,<2.0.0",
-    "langchain>=1.3.14,<2.0.0",
-    "langchain-core>=1.5.1,<2.0.0",
-    "langchain-community>=0.4.2,<0.5.0",
-    "langchain-openai>=1.4.1,<2.0.0",
-    "langchain-text-splitters>=1.1.2,<2.0.0",
-    "langsmith>=0.10.10,<1.2.0",
-    "langgraph>=1.2.9,<2.0.0",
-    # unstructured with extra + python marker
-    #    "unstructured[pdf]>=0.22.0,<0.40.0; python_version >= '3.12' and python_version < '4.0'",
-    #    "pydantic>2",
-    #    "pydantic-extra-types>2.11",
     "gunicorn[http2]>=26.0.0,<30.0.0",
-    "orjson>=3.11.9,<4.0.0",
-    "aiomysql>=0.3.2,<0.4.0",
     "pillow>=12.3.0,<13.0.0",
-    "beautifulsoup4>=4.15.0,<5.0.0",
-    "pyzbar>=0.1.9,<1.0.0",
-    "tf-playwright-stealth>=1.2.0,<2.0.0",
-    "playwright>=1.61.0,<2.0.0",
-    "hiredis>=3.4.0,<4.0.0",
-    # redis with extra
     "redis[hiredis]>=8.0.0,<9.0.0",
     "cachetools>=7.1.6,<8.1.0",
     "fastapi[standard]>=0.140.13,<0.150.0",
     "uvicorn>=0.51.0,<0.60.0",
-    "sse-starlette>=3.4.6,<4.0.0",
     "sqlmodel>=0.0.39,<0.0.50",
-    "googlemaps>=4.10.0,<5.0.0",
-    "uvloop>=0.22.1,<0.24.0",
-    "lxml>=6.1.1,<7.0.0",
-    "cssutils>=2.15.0,<3.0.0",
     "cryptography>=49.0.0,<50.0.0",
-    "openai>=2.48.0,<3.0.0",
-    "openai-agents>=0.18.3,<0.20",
-    # html-to-markdown with extra
-    "html-to-markdown>=3.9.0,<4.0.0",
-    "ijson>=3.5.1,<4.0.0",
-    "brightdata-sdk>=2.4.1,<3.0.0",
-    "cairosvg>=2.9.0,<3.0.0",
-    "scikit-learn>=1.9.0,<2.0.0",
-    "numpy>=2.5.1,<3.0.0",
-    "pyahocorasick>=2.3.1,<3.0.0",
-    "poppler-utils>=0.1.0,<0.2.0",
-    #langchain-cli = "^0" # FOR LATER
-    #langchain-groq = "^1.1" # FOR LATER
-    #langchain-google-community = "^3.0"  # FOR LATER
-    #opencv-python  = "^4"
     #celery = {extras = ["redis"], version = "^5.5"}
-    "pyrefly>=1.1.1",
+
     # AI Engineer Portfolio (track) — RAG / eval / agent additions.
     # Generation, embeddings, vector store, and reranking all go through LangChain's
     # integration packages (not the raw provider SDKs) so Epic 1 is built on the same
     # framework Epic 3's LangGraph agent runs on, per the original plan.
+    "langchain>=1.3.14,<2.0.0",
+    "langchain-core>=1.5.1,<2.0.0",
+    "langchain-community>=0.4.2,<0.5.0",
+    "langchain-openai>=1.4.1,<2.0.0",
+    "langgraph-checkpoint-postgres>=3.1.1",
+    "langgraph>=1.2.9,<2.0.0",
     "langchain-anthropic>=1.5.2,<2.0.0",
     "langchain-voyageai>=0.4.0,<1.0.0",
     "langchain-qdrant>=1.1.0,<2.0.0",
     "qdrant-client>=1.18.0,<2.0.0",
     "psycopg[binary]>=3.3.4,<4.0.0",
     # Postgres, not the sqlite checkpointer: this project runs one database engine.
-    "langgraph-checkpoint-postgres>=3.1.0,<4.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
     "docling>=2.115.0,<3.0.0",
     "arxiv>=4.0.0,<5.0.0",
@@ -101,6 +65,7 @@ dev = [
   "ty>=0.0.63",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9.1.1,<10",
+  "pyrefly>=1.2",
   # Auth is the one path where a silent regression means cross-tenant data access, so it
   # gets database-backed tests. They run against a real Postgres (see tests/db/) and skip
   # when none is reachable, rather than substituting SQLite -- testing on an engine the
@@ -120,9 +85,9 @@ local-reranker = [
 
 
 [project.urls]
-homepage = "https://github.com/cs83/smartico-ai"
-repository = "https://github.com/cs83/smartico-ai"
-documentation = "https://github.com/cs83/smartico-ai"
+homepage = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
+repository = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
+documentation = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
 
 [build-system]
 requires = ["uv_build>=0.11.32,<0.12"]
