@@ -30,7 +30,7 @@ dependencies = [
     "langchain-community>=0.4.2,<0.5.0",
     "langchain-openai>=1.4.1,<2.0.0",
     "langchain-text-splitters>=1.1.2,<2.0.0",
-    "langsmith>=0.10.10,<1.2.0",
+    "langsmith>=0.10.14,<1.2.0",
     "langgraph>=1.2.9,<2.0.0",
     # unstructured with extra + python marker
     #    "unstructured[pdf]>=0.22.0,<0.40.0; python_version >= '3.12' and python_version < '4.0'",
@@ -62,7 +62,7 @@ dependencies = [
     # html-to-markdown with extra
     "html-to-markdown>=3.9.0,<4.0.0",
     "ijson>=3.5.1,<4.0.0",
-    "brightdata-sdk>=2.4.1,<3.0.0",
+    "brightdata-sdk>=2.5.0,<3.0.0",
     "cairosvg>=2.9.0,<3.0.0",
     "scikit-learn>=1.9.0,<2.0.0",
     "numpy>=2.5.1,<3.0.0",
@@ -84,11 +84,11 @@ dependencies = [
     "qdrant-client>=1.18.0,<2.0.0",
     "psycopg[binary]>=3.3.4,<4.0.0",
     # Postgres, not the sqlite checkpointer: this project runs one database engine.
-    "langgraph-checkpoint-postgres>=3.1.0,<4.0.0",
+    "langgraph-checkpoint-postgres>=3.1.1,<4.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
     "docling>=2.115.0,<3.0.0",
     "arxiv>=4.0.0,<5.0.0",
-    "requests>=2.33.1,<2.34.0", # arxiv==4.0.0 itself pins requests<2.34,>=2.32
+    "requests>=2.34.2,<2.35.0", # arxiv==4.0.0 itself pins requests<2.34,>=2.32
     "structlog>=26.1.0,<27.0.0",
     "streamlit>=1.60.0,<2.0.0",
     "procrastinate>=3.9",
@@ -97,7 +97,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "devtools>=0.12.2",
-  "ruff>=0.16.0",
+  "ruff>=0.16.1",
   "ty>=0.0.63",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9.1.1,<10",
