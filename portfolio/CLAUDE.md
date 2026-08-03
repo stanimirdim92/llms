@@ -368,12 +368,18 @@ rather than raising -- it fails silently, as cross-tenant data access.
   what the next request is granted. That precision was real and is gone; it is the price of the
   swap, not an oversight, and the concurrency test says so where it used to assert distinct
   `remaining` values.
-- **Never advertise `X-RateLimit-Reset: 0`.** `limits` stores the counter with a TTL of *twice*
-  the window and derives the reset as `current_expires_in % expiry`, which is correct inside the
-  window but yields `120 % 60 == 0` at the instant one opens -- so the first request against a
-  fresh key was told "retry now" while holding a spent budget. `_reset_seconds` clamps it to a
-  full window; `test_reset_is_never_zero_while_the_window_holds_a_request` goes red if that is
-  removed.
+- **`MovingWindowRateLimiter`, never `SlidingWindowCounterRateLimiter`.** The counter shipped for
+  one day and its failure is subtle enough to re-choose by accident: it **does not honour its own
+  `Retry-After`**. On a 10-request/2-second budget it advertises `reset in 2.00s`, identical to the
+  exact strategy, then grants **2 of 10** to a caller that waited 2.2 s, with the full budget back
+  only at 4.2 s. It weights the previous window's count instead of expiring individual requests, so
+  obeying the header is not enough and the natural client reaction is a tight retry loop. It also
+  reports `X-RateLimit-Reset: 0` on the first request of a fresh window (`120 % 60 == 0` against a
+  2x-window TTL), which needed a clamp that the exact strategy makes unnecessary. Two tests hold
+  the line, both red in 5 of 5 mutation runs: the full-budget-returns test and the 1x-vs-2x TTL
+  bound in the expiry test. It costs 1464 bytes per key against the counter's 120 -- ~29 MB at
+  10k tenants x 2 scopes, which is nothing on 16 GB. `FixedWindowRateLimiter` is cheaper again and
+  wrong: a caller straddles the boundary and spends two budgets back to back.
 - **Pass `max_connections`.** `limits` defaults it to 100 and its pool raises
   `MaxConnectionsError` rather than queueing, so the default turns burst load into 500s.
 - **`X-RateLimit-*` goes on successes too, not just 429s**, or the budget is only discoverable

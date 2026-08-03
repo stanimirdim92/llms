@@ -143,18 +143,30 @@ underneath them.
   the memory numbers below were on the table. Full accounting in
   `docs/TECHNICAL_DECISIONS.md`.
 - **Redis cost per rate-limit key** (2026-08-03, `MEMORY USAGE` after 60 requests on one key).
-  `limits` `SlidingWindowCounter` **120 bytes** (a string); `limits` `MovingWindow` 1464 (a
-  list); the old hand-rolled ZSET 3120 (32-char uuid members). At 10k tenants × 2 scopes that
-  is ~2.4 MB against ~62 MB. This 26× is what decided the swap; note more than half of it was
-  the uuid member rather than the algorithm.
+  `limits` `SlidingWindowCounter` **120 bytes** (a string); `limits` `MovingWindow` **1464** (a
+  list); the old hand-rolled ZSET 3120 (32-char uuid members). **In use: MovingWindow**, so
+  ~29 MB at 10k tenants × 2 scopes, against ~62 MB for the ZSET. The 120-vs-3120 "26×" was the
+  number that first justified the swap and it was a bad comparison — `limits`' cheapest strategy
+  against our implementation. Like for like the figure is 2×, and the 26× bought a strategy that
+  did not honour its own `Retry-After` (next entry).
+- **The sliding-window *counter* does not honour its own `Retry-After`** (2026-08-03). Spend a
+  10-request budget in a 2-second window; both strategies advertise `reset in 2.00 s`. After
+  waiting 2.2 s, `MovingWindow` grants **10/10** and `SlidingWindowCounter` grants **2/10**, with
+  the full budget back only at 4.2 s — twice the window. This is why the strategy changed the
+  same day it shipped. Guard reliability, measured by reinstating the counter:
+  `test_the_full_budget_returns_after_the_advertised_reset` red 5/5,
+  `test_window_expiry_is_set_so_buckets_do_not_leak` red 5/5,
+  `test_a_fresh_window_advertises_a_full_window_not_zero` red only 8/10.
 - **`limits` defaults `max_connections` to 100** (2026-08-03) and its pool raises
   `MaxConnectionsError` rather than queueing — which is the 200-concurrent ceiling recorded
   above, now explained rather than observed. Reproduced with both the moving window and the
   counter, so it belongs to the storage bridge, not the strategy. `redis_max_connections` in
   `Settings` overrides it.
-- **`limits` retains a counter for 2× the window** (2026-08-03, measured 119999 ms for a 60 s
-  window). Inherent to the algorithm: the current window's count must outlive its own window to
-  be weighted as the next one's "previous".
+- **Window retention differs by strategy** (2026-08-03). `SlidingWindowCounter` keeps a key for
+  **2× the window** (measured 119999 ms at a 60 s window) because the current count must outlive
+  its own window to be weighted as the next one's "previous". `MovingWindow`, in use, keeps it for
+  **1×** (59999 ms). The test bound is `1×` deliberately — `2×` would still pass and would stop
+  that test noticing a strategy change.
 - **`fastapi-limiter` 0.2.0** is the only other live async option (delegates to
   `pyrate-limiter` 4.x, redis-8 compatible). Rejected on specifics: its 429 is a bare
   `HTTPException(429)` with no `Retry-After` or `X-RateLimit-*` and `try_acquire_async` returns
@@ -241,6 +253,30 @@ written from the memory measurement, and the same measurement then argued for ad
 which deleted the ZSET. Left struck through as an example rather than silently removed.
 
 Gate: 372 passed / 0 skipped, three consecutive runs.
+
+**Then the strategy was wrong, and reading the `limits` docs is what caught it.** The user asked
+whether we should change strategy. `SlidingWindowCounterRateLimiter` had been chosen hours earlier
+purely on memory (120 bytes/key against 1464 for the exact one) — and an approximation adopted to
+save 27 MB on a 16 GB box should have been suspicious on its face. Measured properly, the counter
+**does not honour its own `Retry-After`**: spend a 10-request/2-second budget, both strategies say
+"reset in 2.00 s", and after waiting 2.2 s the exact one grants 10/10 while the counter grants
+**2/10**, not recovering fully until 4.2 s. A client that does exactly what the header says still
+gets a 429, and the natural reaction is a tight retry loop — the precise failure the sliding
+window exists to prevent. Switched to `MovingWindowRateLimiter`; the `X-RateLimit-Reset: 0` clamp
+became dead code and was deleted rather than left looking defensive.
+
+Three things worth carrying forward from that:
+
+1. **The 26× memory headline was a bad comparison** and I wrote it into four files. It put
+   `limits`' *cheapest* strategy against *our* implementation. Like for like it is 2×, and the
+   26× is what bought the wrong strategy. Corrected everywhere.
+2. **A test with `limit=1` cannot tell "some budget returned" from "all budget returned".** The
+   first version of the window test used a single slot, which the counter also returns — so it
+   passed while the strategy was broken. It now spends four and asserts all four come back.
+3. **Guard reliability is itself measurable.** Reinstating the counter:
+   full-budget-returns red 5/5, the 1×-vs-2× TTL bound red 5/5, the fresh-window-reset test red
+   only **8/10** (the modulo lands on zero only within a millisecond of the window opening). The
+   third is documented as a hint, not a guard, rather than being counted as one.
 
 **And the "run it three times" agreement was retired the same day**, because the user asked what
 the third run was actually doing and the answer was "the same thing as the first". pytest orders

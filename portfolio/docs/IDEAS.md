@@ -112,9 +112,11 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   `limits`' counter) turned into the argument for adopting `limits` outright rather than
   optimising ours — so there is no ZSET left to shrink. Kept as a struck-through line for one
   reason: this entry was stale within the hour, which is the failure mode the doc split exists
-  to prevent. Per-key cost is now **120 bytes**, so ~2.4 MB at 10k tenants × 2 scopes.
-  Retention is 2× the window, since the counter must outlive its own window to weight as
-  "previous". Delete this line at the next prune.
+  to prevent. Delete this line at the next prune.
+  (And the follow-on: the 120-bytes-per-key figure that briefly replaced it was the *counter*
+  strategy, which was itself replaced hours later for not honouring its own `Retry-After`. Actual
+  per-key cost is **1464 bytes**, ~29 MB at 10k tenants × 2 scopes. Two stale numbers from one
+  measurement, which is the real lesson here.)
 
 ## Developer experience
 

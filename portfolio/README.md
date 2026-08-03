@@ -116,8 +116,9 @@ enforced at all at that point, and saying `remaining: 60` would claim otherwise.
 
 Treat `X-RateLimit-Remaining` as a close estimate rather than a reservation: it is read just
 after the request is counted, so under concurrent traffic on the same key it can differ by a
-request or two from what the next call is actually granted. `Retry-After` errs long, never
-short, so a client that obeys it is never refused for having waited too little.
+request or two from what the next call is actually granted. `Retry-After` is safe to obey
+literally — wait the advertised time and your full budget is available, verified by test rather
+than asserted.
 
 The scopes are `ask`, `documents:read`, `documents:write`, `keys:read`, `keys:write`. A key
 with an empty stored list holds **all** of them — that is what keys minted before scopes

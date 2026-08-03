@@ -450,10 +450,15 @@ itself, at the cost of a non-default module in the image.
 
 *Verdict, superseded: `limits` was adopted on 2026-08-03.* The reasoning above is kept because
 every fact in it still holds — what changed is the weighting, and by the user's call after the
-tradeoff was laid out. The memory measurement is what moved it: 120 bytes per key against 3120
-is a 26× difference at a 10k-tenant target, and "one round trip instead of two" is a latency
-argument on a path that was never the bottleneck. Shedding ~45 lines of Lua and a sorted-set
-expiry contract onto a library with 98 releases is worth two round trips.
+tradeoff was laid out. "One round trip instead of two" is a latency argument on a path that was
+never the bottleneck, and shedding ~45 lines of Lua plus a sorted-set expiry contract onto a
+library with 98 releases is worth two round trips.
+
+**The memory argument that first justified it was framed wrongly, and is corrected below.** It
+compared `limits`' *cheapest* strategy (120 bytes/key) against *our* implementation (3120) and
+called it 26×. Like for like — exact against exact — `limits`' `MovingWindowRateLimiter` costs
+1464 bytes, so the honest figure is **2× cheaper than the ZSET**, not 26×. That mattered, because
+the 26× bought a strategy that was wrong.
 
 *What adoption actually cost, since "use the battle-tested library" undersells it.* `limits`
 supplies the counting and has no opinion about anything else, so all of the following stayed
@@ -481,14 +486,48 @@ ours and every one of them had to be re-established rather than inherited:
 5. **Precision genuinely lost.** `remaining` now comes from a second round trip, so under
    concurrency it can disagree with what the next request is granted. The concurrency test used
    to assert the grants reported distinct `remaining` values counting down to zero; that
-   assertion is deleted, not weakened, and the reason is written where it was. `Retry-After`
-   became conservative rather than tight — never shorter, which is the safe direction.
+   assertion is deleted, not weakened, and the reason is written where it was.
+6. **The strategy had to be chosen twice.** `SlidingWindowCounterRateLimiter` shipped first, on
+   the memory number, and was replaced by `MovingWindowRateLimiter` the same day — see the next
+   section. An earlier version of this list closed by saying `Retry-After` had merely become
+   "conservative rather than tight — never shorter, which is the safe direction". That was
+   **false** under the counter, and it took measuring to find out.
 
-The window is also now an *approximation*: `SlidingWindowCounterRateLimiter` weights the
-previous window's count instead of tracking individual requests. It keeps the property that
-actually matters — unlike a fixed window it cannot be straddled to spend two budgets back to
-back — and the exact variant is one line away (`MovingWindowRateLimiter`) at 1464 bytes per key
-if that ever proves too loose.
+### The strategy: `MovingWindowRateLimiter`, chosen the second time
+
+`SlidingWindowCounterRateLimiter` was used for one day, on the memory argument, and the entry
+above should have been suspicious of an approximation adopted to save 27 MB on a 16 GB box. It
+was replaced once the approximation was measured rather than reasoned about, and the measurement
+is worth keeping because the failure is invisible from the API's shape:
+
+| after spending a 10-request / 2-second budget | told to wait | granted after waiting 2.2 s |
+|---|---|---|
+| `MovingWindowRateLimiter` | 2.00 s | **10 / 10** |
+| `SlidingWindowCounterRateLimiter` | 2.00 s | **2 / 10** |
+
+Both advertise the same `Retry-After`. Only one honours it. The counter weights the *previous*
+window's count instead of expiring individual requests, so a client that waits exactly as long as
+it was told still gets a 429 — and does not recover its full budget until 4.2 s, twice the
+window. The natural client-side reaction to "I waited and was refused anyway" is a tight retry
+loop, which is the specific failure the sliding-window choice exists to prevent in the first
+place.
+
+It also reported `X-RateLimit-Reset: 0` on the first request against a fresh key
+(`current_expires_in % expiry` = `120 % 60`, against a TTL of twice the window), which needed a
+clamp in `_reset_seconds`. The exact strategy reports a full window there, so the clamp was
+deleted rather than kept as defensive-looking dead code.
+
+**Two tests hold the line, both measured red in 5 of 5 mutation runs** with the counter
+reinstated: `test_the_full_budget_returns_after_the_advertised_reset`, and the `1x`-vs-`2x` TTL
+bound in `test_window_expiry_is_set_so_buckets_do_not_leak` (the counter must retain a window
+twice as long, to weight it as "previous"). A third,
+`test_a_fresh_window_advertises_a_full_window_not_zero`, is red in only **8 of 10** — the modulo
+lands on zero only when the first hit falls within a millisecond of the window opening — so it is
+documented as a hint, not a guard.
+
+The cost is 1464 bytes per key against the counter's 120: ~29 MB against ~2.4 MB at 10k tenants ×
+2 scopes. `FixedWindowRateLimiter` is cheaper again and wrong for the original reason — a caller
+straddles the boundary and spends two budgets back to back.
 
 *Net:* the counting is a library's problem now, the policy is still ours and is where all four
 historical bugs lived, and two of the five items above were bugs found *during* the swap that
