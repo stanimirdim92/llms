@@ -121,8 +121,9 @@ def rate_limited(scope: str, limit_name: str) -> Callable[[Principal, Request, R
     **The consequence, stated because it is real:** a tenant holding N keys now has N times
     the budget, so this is a fairness device between clients and not a cost ceiling. If it
     ever needs to be a ceiling, the fix is a second bucket keyed on `tenant_id` checked
-    alongside this one -- two Redis round trips instead of one. Recorded in `docs/IDEAS.md`
-    rather than built, because nothing here bills by request today.
+    alongside this one -- which now doubles four Redis round trips to eight, not two to four:
+    `limits` needs a separate `get_window_stats` per bucket to report anything. Recorded in
+    `docs/IDEAS.md` rather than built, because nothing here bills by request today.
 
     Depends on `current_principal`, so an unauthenticated request is rejected with 401 before
     any budget is consumed -- otherwise anonymous traffic could exhaust a key's limit, or

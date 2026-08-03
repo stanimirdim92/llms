@@ -107,14 +107,14 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   timeouts. Determines whether processed artefacts can stay on local disk at target scale.
 - **Object storage for uploads.** *(L)* Local disk doesn't survive a multi-instance deployment.
   Not needed until there is more than one api host.
-- **Shorten the rate-limit ZSET member.** *(S)* Measured 2026-08-03: one rate-limit key costs
-  **3120 bytes** after 60 requests, against 1464 for `limits`' equivalent exact moving window and
-  120 for its approximate counter. The gap is mostly the 32-char uuid per member, so at 10k
-  tenants × 2 scopes this is ~62 MB of Redis where ~30 MB would do — for a member that only has
-  to be unique within one window. Cheaper than adopting `limits`, which would also cost a second
-  round trip and a hand-written fail-open wrapper (see `docs/TECHNICAL_DECISIONS.md`). Needs the
-  concurrency test to stay green, since uniqueness is what stops two same-millisecond requests
-  from collapsing into one ZSET member and under-counting.
+- ~~**Shorten the rate-limit ZSET member.**~~ **Done differently, same day it was written.**
+  The measurement that prompted it (3120 bytes per key for 60 requests, against 120 for
+  `limits`' counter) turned into the argument for adopting `limits` outright rather than
+  optimising ours — so there is no ZSET left to shrink. Kept as a struck-through line for one
+  reason: this entry was stale within the hour, which is the failure mode the doc split exists
+  to prevent. Per-key cost is now **120 bytes**, so ~2.4 MB at 10k tenants × 2 scopes.
+  Retention is 2× the window, since the counter must outlive its own window to weight as
+  "previous". Delete this line at the next prune.
 
 ## Developer experience
 
@@ -136,7 +136,8 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   warns before the deadline -- the first signal is a 401 in production. `expires_at` is
   indexed for exactly this query; a cron and an email is the whole feature.
 - **A Redis-outage fallback for the limiter.** *(S)* Today an unreachable Redis fails open —
-  no protection at all, loudly logged. `slowapi` has an `in_memory_fallback` that degrades to
+  no protection at all, loudly logged. `limits` ships a `MemoryStorage` that could back the same
+  idea, and `slowapi` wires it as an `in_memory_fallback` that degrades to
   per-process counters instead, which is partial protection rather than none. With
   `GUNICORN_WORKERS` processes the effective limit becomes `workers x limit`, so it is a
   guardrail not a guarantee — but it is strictly better than nothing during exactly the
@@ -216,7 +217,7 @@ Kept so they don't come back without new information.
 | Neo4j / a graph database for document relationships | Rejected. `microsoft/graphrag` — the reference implementation — uses **no** graph database: networkx in memory, parquet on disk. Adding a fourth datastore buys nothing we can't do with what we have. `docs/TECHNICAL_DECISIONS.md`. |
 | Import `microsoft/graphrag` as a dependency | Not possible. All 8 of its packages pin `requires-python >=3.11,<3.14`. Anything worth taking gets reimplemented. |
 | SQLite for tests | Rejected after trying it. It surfaced a real tz bug, but testing on an engine the app never runs is how backend-specific bugs hide. The assumption is now pinned by an explicit test instead. |
-| `slowapi` for rate limiting | Unsatisfiable: `limits[redis]` pins `redis<8` against this project's `redis>=8.0.1`, and its storage is synchronous, so every check would block the event loop. |
+| `slowapi` for rate limiting | Its storage and strategy imports are `limits`' **synchronous** modules and `extension.py:514` calls `hit()` inline, so every check blocks the event loop -- 65.5 ms vs 18.5 ms at 200 concurrent. `limits` itself **was** adopted (2026-08-03) via `limits.aio` + `implementation="redispy"`; the `redis<8` pin that this row used to cite as the blocker is on the *synchronous* `limits[redis]` extra only. |
 | An agentic answer path | Deliberately not. `/ask` is a fixed retrieve → rerank → generate sequence; adaptive judgment is Epic 3's job and would buy nondeterminism here for nothing. |
 | Making `/ask` scoping use a model to guess the document | Not yet. Deterministic matching handles explicit names; semantic reference ("the flyer", "my CV") genuinely needs a model **and** needs the eval harness to show the guessing helps more than it hurts. |
 | **HMAC-with-pepper instead of a plain digest for API keys** | Rejected — correct advice, wrong threat model. A pepper defeats *offline brute force*, which requires the hashed input to be guessable; an API key here is 256 bits of CSPRNG output, so a stolen `key_hash` is already useless without inverting the digest. It also cannot be rotated: re-deriving `HMAC(new_pepper, key)` needs the plaintext keys, which we deliberately do not store, so changing the pepper invalidates every key at once. That is a worse operational position than today, bought for no gain. Revisit only if key entropy is ever reduced. |

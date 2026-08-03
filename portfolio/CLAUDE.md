@@ -348,20 +348,34 @@ rather than raising -- it fails silently, as cross-tenant data access.
 
 ## Rate limiting
 
-- Hand-rolled in `app/rate_limit.py`, deliberately not `slowapi`. Two reasons, both verified:
-  `limits[redis]>=5` requires `redis<8.0.0` against this project's `redis>=8.0.0`, which uv
-  calls unsatisfiable -- but asking for `slowapi` *unpinned* silently resolves `limits==1.6`
-  and `slowapi==0.1.6` instead of failing, so pin `limits>=5` in any probe or the answer is
-  a lie. And slowapi imports `limits`' **synchronous** storage and strategy modules, calling
-  `limiter.hit()` inline, so every check blocks the event loop; measured cost is in
-  `docs/TECHNICAL_DECISIONS.md`.
-- The check is a **Lua script** so it is atomic. A read-then-write version lets concurrent
-  requests all observe a count under the limit and all proceed.
-- **`remaining`/`reset` come back from the same script call that decides `allowed`.** A second
-  ZCARD afterwards would describe a different instant, so the advertised budget would disagree
-  with what the next request is actually granted -- a client pacing itself on that header does
-  the wrong thing. This is also why `limits` was not adopted: its `hit()` + `get_window_stats()`
-  is two round trips.
+- **`limits` does the counting; `app/rate_limit.py` is the policy.** The library is battle-tested
+  at the part that was never the problem here -- atomic counting in Redis. Which subject, which
+  bucket, what happens when Redis dies, and what the client is told are all ours, because
+  `limits` has no opinion about any of them and each one has cost a bug before. Was hand-rolled
+  Lua until 2026-08-03; `docs/TECHNICAL_DECISIONS.md` has the full comparison and the numbers.
+- **Import from `limits.aio`, never `limits.storage`/`limits.strategies`.** The synchronous
+  modules are what `slowapi` imports (`extension.py:514` is a bare `self.limiter.hit(...)`), so
+  every check there blocks the event loop -- 65.5 ms versus 18.5 ms at 200 concurrent checks.
+  Use `implementation="redispy"` so it runs on the `redis[hiredis]>=8` already here: the
+  `redis>3,<8.0.0` pin belongs to the *synchronous* `limits[redis]` extra only, and
+  `limits[async-redis]` would add coredis for nothing.
+- **`limits` fails CLOSED; `check` must keep failing open.** An unreachable Redis raises
+  `redis.exceptions.ConnectionError` straight out of `hit()`. Both `hit` and `get_window_stats`
+  sit inside one `try` -- narrowing it to just `hit` would 500 a caller whose budget was already
+  spent. Two tests pin this, including the failure *between* the calls.
+- **`remaining` is a second observation, not part of the decision** -- `hit()` returns a bool and
+  the numbers come from `get_window_stats()` afterwards. Under concurrency it can disagree with
+  what the next request is granted. That precision was real and is gone; it is the price of the
+  swap, not an oversight, and the concurrency test says so where it used to assert distinct
+  `remaining` values.
+- **Never advertise `X-RateLimit-Reset: 0`.** `limits` stores the counter with a TTL of *twice*
+  the window and derives the reset as `current_expires_in % expiry`, which is correct inside the
+  window but yields `120 % 60 == 0` at the instant one opens -- so the first request against a
+  fresh key was told "retry now" while holding a spent budget. `_reset_seconds` clamps it to a
+  full window; `test_reset_is_never_zero_while_the_window_holds_a_request` goes red if that is
+  removed.
+- **Pass `max_connections`.** `limits` defaults it to 100 and its pool raises
+  `MaxConnectionsError` rather than queueing, so the default turns burst load into 500s.
 - **`X-RateLimit-*` goes on successes too, not just 429s**, or the budget is only discoverable
   by exceeding it. Set via the injected `response: Response` in `rate_limited`. When Redis is
   unreachable `check` returns None and **no headers are emitted** -- a fabricated full budget

@@ -188,6 +188,14 @@ class Settings(BaseSettings):
     redis_db: int = Field(default=0)
     redis_username: str = Field(default="")
     redis_password: SecretStr = Field(default=SecretStr(""))
+    # Passed to the `limits` Redis storage explicitly because **`limits` defaults it to 100**
+    # (measured against 5.8.0, not read off a doc page), and its pool raises
+    # `MaxConnectionsError: Too many connections` rather than queueing -- so the failure mode is
+    # 500s under exactly the concurrency rate limiting exists to absorb. This is per *process*,
+    # so the real ceiling is this times GUNICORN_WORKERS; sized above the gunicorn worker's own
+    # concurrency rather than tuned, because an idle pooled connection costs almost nothing and
+    # an exhausted pool costs a request.
+    redis_max_connections: int = Field(default=512)
 
     # Per-key request budgets, per `rate_limit_window_seconds`. Uploads get a much
     # tighter budget than questions because they cost far more: Docling parsing (CPU), one

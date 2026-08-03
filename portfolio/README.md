@@ -114,6 +114,11 @@ having to exhaust it. **`X-RateLimit-Reset` is seconds-until-reset, not an epoch
 Redis is down the headers are **absent** rather than optimistic — the limit is not being
 enforced at all at that point, and saying `remaining: 60` would claim otherwise.
 
+Treat `X-RateLimit-Remaining` as a close estimate rather than a reservation: it is read just
+after the request is counted, so under concurrent traffic on the same key it can differ by a
+request or two from what the next call is actually granted. `Retry-After` errs long, never
+short, so a client that obeys it is never refused for having waited too little.
+
 The scopes are `ask`, `documents:read`, `documents:write`, `keys:read`, `keys:write`. A key
 with an empty stored list holds **all** of them — that is what keys minted before scopes
 existed have, and reading it as "no permissions" would have revoked every one of them.
@@ -215,7 +220,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Document registry | Postgres + SQLModel, one row per document, with ingestion status |
 | Job queue | `procrastinate` on the same Postgres — transactional enqueue |
 | Auth | `x-api-key` → `tenant`/`apikey` tables, SHA-512 hashed, individually revocable, 30-day default expiry, per-key scopes; declared as an OpenAPI security scheme |
-| Rate limiting | Per-**key** sliding window, one Lua script on `redis.asyncio`, `X-RateLimit-*` on every response |
+| Rate limiting | Per-**key** sliding window via `limits` on `redis.asyncio`, `X-RateLimit-*` on every response |
 | Serving | gunicorn + `UvicornWorker`, `--preload`, behind nginx |
 | Health | `/health/live` static; `/health/ready` probes Postgres/Qdrant/Redis, 503 on a required outage |
 | Tracing | LangSmith (zero-code — every call is already a LangChain object) |
@@ -240,7 +245,7 @@ Epic 3's design.
 - **Epic 4 Phase 1 — API-key auth and tenant scoping.** Database-backed keys modelled on
   the Anthropic Console: shown once, hashed at rest, revocable individually. Tenant
   identity derived from the key.
-- **Epic 4 Phase 2 — Per-tenant rate limiting.** Sliding window in Redis, atomic via Lua,
+- **Epic 4 Phase 2 — Per-tenant rate limiting.** Sliding window in Redis via `limits`,
   separate budgets per scope so exhausting uploads doesn't block questions, failing open
   when Redis is down.
 - **Epic 4 Phase 5.1 — Async ingestion.** `POST /v1/documents` returns 202 and a

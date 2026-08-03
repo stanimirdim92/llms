@@ -448,12 +448,53 @@ usage plans, or Cloudflare, all of which rate-limit ahead of the app and none of
 about API-key scopes. `redis-cell` (a GCRA Redis module) would move the algorithm into Redis
 itself, at the cost of a non-default module in the image.
 
-*Verdict: keep the hand-rolled version.* One Lua script, no new dependency, and a test
-suite that runs against real Redis — and against `limits` specifically, one round trip instead
-of two for the same information, with no pool ceiling to discover. The `X-RateLimit-*` headers
-that were the strongest argument for a library have since been added directly. Revisit if a
-Redis-outage fallback becomes worth more than the simplicity, or if the limiter ever needs
-something `limits` has and we do not: cluster support, sentinel, or GCRA.
+*Verdict, superseded: `limits` was adopted on 2026-08-03.* The reasoning above is kept because
+every fact in it still holds — what changed is the weighting, and by the user's call after the
+tradeoff was laid out. The memory measurement is what moved it: 120 bytes per key against 3120
+is a 26× difference at a 10k-tenant target, and "one round trip instead of two" is a latency
+argument on a path that was never the bottleneck. Shedding ~45 lines of Lua and a sorted-set
+expiry contract onto a library with 98 releases is worth two round trips.
+
+*What adoption actually cost, since "use the battle-tested library" undersells it.* `limits`
+supplies the counting and has no opinion about anything else, so all of the following stayed
+ours and every one of them had to be re-established rather than inherited:
+
+1. **Fail-open.** `limits` fails *closed* — an unreachable Redis raises
+   `redis.exceptions.ConnectionError` out of `hit()`. Without the `except` in `check`, a Redis
+   blip becomes a 500 on every request. Both `hit` and `get_window_stats` are inside one `try`,
+   and there is a test for a failure *between* them: `hit` succeeding then stats failing would
+   otherwise 500 a caller whose budget was already spent.
+2. **`X-RateLimit-Reset` had to be corrected, not just forwarded.** `limits` stores the counter
+   with a TTL of twice the window and derives the reset as `current_expires_in % expiry`. That
+   is right inside the window — at t seconds in, `(2w - t) % w == w - t` — and **wrong at the
+   instant one opens**, where `120 % 60 == 0`. So the first request against a fresh key was told
+   `X-RateLimit-Reset: 0`: retry now, with a budget already spent. For a low-traffic key that is
+   the common request. `_reset_seconds` clamps it; a test pins the clamp and goes red without it.
+3. **`max_connections` had to be set.** `limits` defaults it to **100** and its pool raises
+   `MaxConnectionsError` rather than queueing — the ceiling this document already recorded at
+   200 concurrent, now explained rather than just observed. Reproduced with both the moving
+   window and the counter, so it is the storage bridge, not the strategy.
+4. **Per-event-loop storage.** Every `limits` example is a module-level
+   `storage_from_string(...)`. That binds a `redis.asyncio` pool to whichever loop imported it,
+   which this project has already been bitten by: Streamlit's script model and per-test loops
+   both produce a client attached to a closed loop.
+5. **Precision genuinely lost.** `remaining` now comes from a second round trip, so under
+   concurrency it can disagree with what the next request is granted. The concurrency test used
+   to assert the grants reported distinct `remaining` values counting down to zero; that
+   assertion is deleted, not weakened, and the reason is written where it was. `Retry-After`
+   became conservative rather than tight — never shorter, which is the safe direction.
+
+The window is also now an *approximation*: `SlidingWindowCounterRateLimiter` weights the
+previous window's count instead of tracking individual requests. It keeps the property that
+actually matters — unlike a fixed window it cannot be straddled to spend two budgets back to
+back — and the exact variant is one line away (`MovingWindowRateLimiter`) at 1464 bytes per key
+if that ever proves too loose.
+
+*Net:* the counting is a library's problem now, the policy is still ours and is where all four
+historical bugs lived, and two of the five items above were bugs found *during* the swap that
+the old implementation did not have. Revisit if the approximation ever shows up as a real
+over- or under-count, or if cluster/sentinel/GCRA is needed — all of which `limits` now brings
+for free.
 
 **Sliding window, not fixed.** A fixed window lets a caller spend its entire budget at the end
 of one window and again at the start of the next — an observed burst of twice the configured

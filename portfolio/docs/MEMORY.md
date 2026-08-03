@@ -84,7 +84,7 @@ looks wrong, say so once and proceed.
   once, base62 + CRC32 format, 30-day default expiry from a 30/60/90/365/never menu, per-key
   scopes, and full CRUD at `/v1/keys` plus a Streamlit page.
 - **Epic 4 Phase 2** — rate limiting, now bucketed **per key** rather than per tenant. Redis
-  sliding window, atomic via Lua, fails open.
+  sliding window via `limits` (hand-rolled Lua until 2026-08-03), fails open.
 - **Epic 4 Phase 3** — docs, health checks, CI.
 - **Epic 4 Phase 5.1** — ingestion behind a procrastinate job queue. `POST /v1/documents`
   returns 202; document row and job commit in one transaction.
@@ -139,7 +139,22 @@ underneath them.
   at 1/10/50/100 concurrent vs 0.36/1.20/5.09/11.05), **but** it raised
   `MaxConnectionsError` at 200 concurrent where ours completed in 18.5 ms, and `hit()` +
   `get_window_stats()` is two round trips where our script returns allowed/remaining/reset from
-  one. Kept ours; the trade is documented rather than assumed.
+  one. **Kept ours on 2026-08-02, then adopted `limits` on 2026-08-03** — the user's call once
+  the memory numbers below were on the table. Full accounting in
+  `docs/TECHNICAL_DECISIONS.md`.
+- **Redis cost per rate-limit key** (2026-08-03, `MEMORY USAGE` after 60 requests on one key).
+  `limits` `SlidingWindowCounter` **120 bytes** (a string); `limits` `MovingWindow` 1464 (a
+  list); the old hand-rolled ZSET 3120 (32-char uuid members). At 10k tenants × 2 scopes that
+  is ~2.4 MB against ~62 MB. This 26× is what decided the swap; note more than half of it was
+  the uuid member rather than the algorithm.
+- **`limits` defaults `max_connections` to 100** (2026-08-03) and its pool raises
+  `MaxConnectionsError` rather than queueing — which is the 200-concurrent ceiling recorded
+  above, now explained rather than observed. Reproduced with both the moving window and the
+  counter, so it belongs to the storage bridge, not the strategy. `redis_max_connections` in
+  `Settings` overrides it.
+- **`limits` retains a counter for 2× the window** (2026-08-03, measured 119999 ms for a 60 s
+  window). Inherent to the algorithm: the current window's count must outlive its own window to
+  be weighted as the next one's "previous".
 - **`fastapi-limiter` 0.2.0** is the only other live async option (delegates to
   `pyrate-limiter` 4.x, redis-8 compatible). Rejected on specifics: its 429 is a bare
   `HTTPException(429)` with no `Retry-After` or `X-RateLimit-*` and `try_acquire_async` returns
@@ -185,6 +200,47 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-03 (later) — the rate limiter moved onto `limits`
+
+The user asked why a battle-tested library was not being used, was given the tradeoff, and
+called it: switch. Done, and the interesting part is what the switch cost, because "use the
+library" undersells it.
+
+**`limits` supplies counting and has no opinion about anything else.** Fail-open, the headers,
+the per-loop client, and the settings-driven limits all stayed ours — and those are where all
+four of this project's historical rate-limit bugs lived. The library replaced the ~45 lines that
+had never broken.
+
+**Two bugs were found during the swap that the old code did not have**, both from trusting
+`limits`' output rather than checking it:
+
+1. `get_window_stats` derives the reset as `current_expires_in % expiry` against a TTL of *twice*
+   the window. Correct inside the window; at the instant one opens it computes `120 % 60 == 0`,
+   so the **first request against a fresh key advertised `X-RateLimit-Reset: 0`** — retry now,
+   with the budget already spent. For a low-traffic key that is the common request. Clamped in
+   `_reset_seconds`, with a mutation-tested guard.
+2. `limits` fails **closed**. An unreachable Redis raises out of `hit()`, so the `except` in
+   `check` is now load-bearing in a way it was not before, and there is a second test for a
+   failure *between* `hit` and `get_window_stats` — that window would otherwise 500 a caller
+   whose budget was already spent.
+
+**One test was deleted rather than weakened.** The concurrency test asserted that grants report
+distinct `remaining` values counting down to zero. That held when one Lua call returned the
+decision and the numbers together; it cannot now, because `remaining` is a second round trip.
+The assertion is gone and the reason is written where it was. Under concurrency the advertised
+`remaining` can disagree with what the next request is granted — a real regression, accepted.
+
+**One test changed shape.** The window-boundary test injected a clock, which worked while the
+trim was arithmetic we wrote. `limits` rolls on Redis key expiry, so a time-injected version
+would pass with the mechanism entirely broken. It now uses a real one-second window and really
+waits (~1.2 s of suite time) — one point on the line instead of the exact boundary.
+
+**And an IDEAS entry went stale within the hour.** "Shorten the rate-limit ZSET member" was
+written from the memory measurement, and the same measurement then argued for adopting `limits`,
+which deleted the ZSET. Left struck through as an example rather than silently removed.
+
+Gate: 372 passed / 0 skipped, three consecutive runs.
 
 ### 2026-08-03 — the remaining 21 review findings, and three rounds of agent review
 
