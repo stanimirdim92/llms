@@ -313,8 +313,11 @@ Things that look correct and aren't:
   `AttributeError` on 3.13 and the floor permits 3.13. Use `app.ids.new_id()`.
   This matters locally: on a 3.14 *pre-release* pydantic fails to build models
   (`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`), so a 3.14-floored
-  project could not run its own suite. Build the dev venv on 3.13
-  (`uv venv --python 3.13 && uv sync --extra dev`) and the whole problem disappears.
+  project could not run its own suite. **`.python-version` pins local dev at 3.13** so
+  `uv venv` lands there without a flag; keep it, and keep it out of the image
+  (`.dockerignore`), because `python:3.14-slim` has no 3.13 and `UV_PYTHON_DOWNLOADS=0`
+  forbids fetching one. CI overrides the pin per matrix leg and then asserts the interpreter
+  it actually got -- a pin that silently won would make the 3.14 leg a second 3.13 run.
 
 ## The tenant boundary
 

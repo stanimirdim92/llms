@@ -50,14 +50,20 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> i
     succeeds moves failed -> processing -> ingested. Status always describes the latest
     attempt rather than the worst one, which is what a UI should show.
     """
-    await init_db()
     path = Path(file_path)
-
-    async with get_session() as session:
-        await mark_document_processing(session, doc_id=doc_id)
-
     log.info("worker.ingest_start", doc_id=doc_id, tenant_id=tenant_id)
     try:
+        # `init_db` and the `processing` write are inside the try, not ahead of it. They were
+        # ahead of it, and that left one path with no `failed` row at all: anything raised
+        # while marking the row -- a pool timeout, a schema not yet applied, procrastinate's
+        # own `DuplicateObject` on a racing boot -- skipped the handler below, so the document
+        # stayed `pending` forever while procrastinate exhausted its retries and gave up.
+        # `pending` is indistinguishable from "queued, worker busy", so the UI shows a
+        # spinner that never resolves and nothing anywhere says why.
+        await init_db()
+        async with get_session() as session:
+            await mark_document_processing(session, doc_id=doc_id)
+
         # Inside the try, and after the row is marked, so a missing key lands in
         # `error_message` like any other failure -- the person who uploaded the document reads
         # "ANTHROPIC_API_KEY not configured" instead of watching it sit in `pending`.
@@ -69,8 +75,17 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> i
         # Broad on purpose: any failure must be visible in the row, and the specific
         # exception types span Docling, Anthropic, Voyage, Qdrant and psycopg.
         log.exception("worker.ingest_failed", doc_id=doc_id, tenant_id=tenant_id)
-        async with get_session() as session:
-            await mark_document_failed(session, doc_id=doc_id, error=f"{type(exc).__name__}: {exc}")
+        try:
+            async with get_session() as session:
+                await mark_document_failed(session, doc_id=doc_id, error=f"{type(exc).__name__}: {exc}")
+        except Exception:
+            # The recording of a failure must not replace the failure. Now that the database
+            # writes above are inside the try, the commonest reason to arrive here at all is
+            # that Postgres is unreachable -- in which case this write fails too, and without
+            # this guard the exception that propagates (and lands in the worker log as the
+            # cause) is the *second* database error, with the real one demoted to a chained
+            # __context__ nobody reads. The original is re-raised below either way.
+            log.exception("worker.status_write_failed", doc_id=doc_id, tenant_id=tenant_id)
         raise
 
     log.info("worker.ingest_done", doc_id=doc_id, tenant_id=tenant_id, chunk_count=chunk_count)

@@ -165,16 +165,25 @@ async def main() -> None:
 
     expires_in: int | None = None if args.expires_in == NEVER else int(args.expires_in)
 
+    if args.revoke and not args.tenant:
+        # Refused rather than inferred from the key. Looking the tenant up would make the flag
+        # decorative -- the point is that a mistyped id fails instead of revoking whichever key
+        # that id happens to name.
+        parser.error("--revoke requires --tenant: the key must be confirmed to belong to that tenant")
+
+    if not (args.list or args.revoke or args.tenant or args.tenant_name):
+        parser.print_help()
+        return
+
+    # After argument validation and after the help path, both of which must work with no
+    # database: `init_db` used to run first, so `create_tenant.py` with no arguments could not
+    # print its own usage without a reachable Postgres -- and the error it printed instead
+    # (a psycopg connection failure) told a first-time reader nothing about how to invoke it.
     await init_db()
 
     if args.list:
         await list_all()
     elif args.revoke:
-        if not args.tenant:
-            # Refused rather than inferred from the key. Looking the tenant up would make the
-            # flag decorative -- the point is that a mistyped id fails instead of revoking
-            # whichever key that id happens to name.
-            parser.error("--revoke requires --tenant: the key must be confirmed to belong to that tenant")
         await revoke(args.tenant, args.revoke)
     elif args.tenant:
         await add_key(args.tenant, args.name, expires_in)

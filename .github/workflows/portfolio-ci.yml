@@ -135,6 +135,23 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra dev --locked
 
+      - name: Assert the interpreter is the one this matrix leg claims
+        # `portfolio/.python-version` pins 3.13 so a fresh clone's `uv venv` lands on the
+        # version local dev is supported on. `setup-uv`'s `python-version` input is measured to
+        # win over that file -- but if it ever stops winning, the 3.14 leg would silently run
+        # 3.13 and report green, so the matrix would claim to test two versions while testing
+        # one. That is the same shape as a skipped test passing, and it gets the same treatment:
+        # asserted, not assumed.
+        run: |
+          uv run python - <<'PY'
+          import sys
+          expected = "${{ matrix.python-version }}"
+          actual = ".".join(str(part) for part in sys.version_info[:2])
+          if actual != expected:
+              sys.exit(f"::error::matrix asked for {expected}, uv resolved {actual}")
+          print(f"running on {actual}")
+          PY
+
       - name: Import the full app (catches import-time errors ty/ruff can't)
         run: |
           uv run python -c "import app.api.main; import app.ingestion.pipeline; import app.retrieval.reranker"

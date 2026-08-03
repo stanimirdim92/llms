@@ -5,6 +5,9 @@ has no delete path, so if this numbering ever shifts for an unchanged document, 
 re-ingest writes *new* points and silently leaves the old ones behind -- still matching
 the session filter, still retrievable, now stale. These tests exist so that regression
 fails here instead of in production retrieval.
+
+The caption cache is here for the same reason: it is keyed on `figure_id`, so the numbering
+above is exactly what decides whether a re-ingest reuses a caption or pays for a new one.
 """
 
 from __future__ import annotations
@@ -18,7 +21,7 @@ from PIL import Image
 from app.ingestion import figure_extractor
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from collections.abc import Callable, Iterator, Sequence
     from pathlib import Path
 
 
@@ -204,3 +207,103 @@ def test_a_real_caption_is_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     figures = figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
 
     assert [f.caption for f in figures] == [good]
+
+
+# ---------------------------------------------------------------------------------------------
+# The caption cache, which is keyed on the figure_id above -- hence its living in this module.
+# ---------------------------------------------------------------------------------------------
+
+
+def _counting_captioner(calls: list[int]) -> Callable[[list[bytes]], list[str]]:
+    def _caption(images: list[bytes]) -> list[str]:
+        calls.append(len(images))
+        return [_plausible_caption(index) for index in range(len(images))]
+
+    return _caption
+
+
+def test_a_second_pass_over_the_same_document_makes_no_vision_call(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Re-ingest is not rare -- a re-upload of the same file is the *same* document (`doc_id` is
+    a content hash), every retry of a failed job re-enters here, and every corpus rebuild does
+    too. Docling work was already cached; the vision calls were not, so a 30-figure paper paid
+    30 of them each time to arrive at the same captions.
+    """
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _counting_captioner(calls))
+    items = [_Renderable(self_ref=f"#/pictures/{index}") for index in range(3)]
+
+    first = figure_extractor.extract_figures(_document_yielding(items), tmp_path)
+    second = figure_extractor.extract_figures(_document_yielding(items), tmp_path)
+
+    assert calls == [3], "the second pass must not reach the vision model at all"
+    assert [figure.caption for figure in second] == [figure.caption for figure in first]
+
+
+def test_refusals_are_cached_too_so_they_are_not_re_billed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The **raw** model output is cached, before the usability filter. Caching only the
+    captions that survived would re-bill exactly the figures the model had already declined to
+    describe -- the icons and rules, which are also the most numerous. Those are dropped after
+    the cache read, so the document still yields no figures either time.
+    """
+    calls: list[int] = []
+
+    def _refuse(images: list[bytes]) -> list[str]:
+        calls.append(len(images))
+        return ["NO_USEFUL_CONTENT"] * len(images)
+
+    monkeypatch.setattr(figure_extractor, "_caption_all", _refuse)
+    items = [_Renderable(self_ref="#/pictures/0")]
+
+    assert figure_extractor.extract_figures(_document_yielding(items), tmp_path) == []
+    assert figure_extractor.extract_figures(_document_yielding(items), tmp_path) == []
+    assert calls == [1]
+
+
+def test_only_the_uncached_figures_are_sent(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A document that grows a figure must pay for that figure only. Asserting on the batch
+    *size* rather than the output, because the cost is what is being tested.
+    """
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _counting_captioner(calls))
+
+    figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
+    figure_extractor.extract_figures(
+        _document_yielding([_Renderable(self_ref="#/pictures/0"), _Renderable(self_ref="#/pictures/1")]), tmp_path
+    )
+
+    assert calls == [1, 1]
+
+
+def test_a_shifted_index_misses_the_cache_rather_than_reusing_a_stranger(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The safety property of keying on `figure_id`. Anything that changes which regions Docling
+    finds -- an upgrade, a different render -- shifts the index, so the cache misses and the
+    figure is described afresh. Keying on position-in-batch instead would hand figure 1 the
+    caption written for what used to be figure 1 and is now something else entirely.
+    """
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _counting_captioner(calls))
+
+    # First pass: one picture, at index 0.
+    figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
+    # Second pass: a picture appears *before* it, so the original is now index 1.
+    figures = figure_extractor.extract_figures(
+        _document_yielding([_Renderable(self_ref="#/pictures/9"), _Renderable(self_ref="#/pictures/0")]), tmp_path
+    )
+
+    assert calls == [1, 1], "index 01 is new to the cache; index 00 is not"
+    assert [figure.figure_id for figure in figures] == ["fig-000-00", "fig-000-01"]
+
+
+def test_the_cache_entry_sits_beside_the_image_it_describes(tmp_path: Path) -> None:
+    """Same directory, same stem. It is `data/processed/<doc_id>/figures/`, which is already
+    wiped by deleting that document's processed directory -- so there is no second cache to
+    remember to clear.
+    """
+    figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
+
+    assert (tmp_path / "fig-000-00.png").exists()
+    assert (tmp_path / "fig-000-00.txt").read_text(encoding="utf-8") == _plausible_caption(0)

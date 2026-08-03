@@ -18,6 +18,13 @@ data/eval/results/
 .env.*
 !.env.example
 
+# Pins the *local dev* interpreter at 3.13; the image runs 3.14. Today the builder only
+# `COPY`s pyproject.toml and uv.lock so this file could not reach it -- excluded anyway,
+# because a later `COPY . .` would make uv look for a 3.13 that isn't in python:3.14-slim,
+# and with UV_PYTHON_DOWNLOADS=0 it cannot fetch one. The build would fail on the sync step
+# naming an interpreter, which reads as a broken base image.
+.python-version
+
 # Agent tooling -- 332KB of markdown (mostly the vendored qdrant-* skills) that the image
 # never COPYs. Excluded so it isn't shipped to the daemon as build context on every build.
 .claude/

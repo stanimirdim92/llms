@@ -122,6 +122,55 @@ def _caption_all(images: list[bytes]) -> list[str]:
     return [_response_text(response) for response in responses]
 
 
+def _caption_path(output_dir: Path, figure_id: str) -> Path:
+    """Where a figure's caption is cached, beside the PNG it describes."""
+    return output_dir / f"{figure_id}.txt"
+
+
+def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_dir: Path) -> list[str]:
+    """Captions for every rendered figure, calling the vision model only for the uncached ones.
+
+    Re-ingesting a document was free of Docling work -- `_parse_and_chunk` caches the parsed
+    JSON -- but not free of Anthropic work: every figure was re-captioned on every ingest, and
+    re-ingest is not rare. It happens on a re-upload of the same file (`doc_id` is a content
+    hash, so it is the *same* document), on any retry of a failed job, and on every corpus
+    rebuild. A 30-figure paper therefore paid 30 vision calls each time to arrive at the same
+    captions.
+
+    The cache key is the `figure_id`, which encodes page number and picture index, and the
+    entry lives in the same directory as the image. That is safe against the drift that
+    matters: anything changing which regions Docling finds (an upgrade, a different render)
+    shifts the index and therefore misses the cache rather than reusing a caption for a
+    different picture. It is *not* safe against the same document being re-uploaded under the
+    same `doc_id` with different content -- which cannot happen, because `doc_id` is derived
+    from the content.
+
+    The **raw** model output is cached, before `_is_unusable_caption` runs. Caching only the
+    captions that survived would re-bill exactly the figures the model had already refused to
+    describe -- the icons and rules, which are also the most numerous.
+    """
+    captions: list[str] = []
+    fresh_indices: list[int] = []
+    for index, (figure_id, *_) in enumerate(rendered):
+        path = _caption_path(output_dir, figure_id)
+        if path.exists():
+            captions.append(path.read_text(encoding="utf-8"))
+        else:
+            captions.append("")
+            fresh_indices.append(index)
+
+    if len(fresh_indices) < len(rendered):
+        log.info("figures.caption_cache_hit", count=len(rendered) - len(fresh_indices), total=len(rendered))
+    if not fresh_indices:
+        return captions
+
+    new_captions = _caption_all([rendered[index][3] for index in fresh_indices])
+    for index, caption in zip(fresh_indices, new_captions, strict=True):
+        captions[index] = caption
+        _caption_path(output_dir, rendered[index][0]).write_text(caption, encoding="utf-8")
+    return captions
+
+
 def _is_too_small(image: Image.Image) -> bool:
     """True for images no larger than a glyph in either dimension.
 
@@ -187,7 +236,7 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
     if not rendered:
         return []
 
-    captions = _caption_all([image_bytes for *_, image_bytes in rendered])
+    captions = _cached_or_captioned(rendered, output_dir)
 
     figures: list[ExtractedFigure] = []
     dropped: list[str] = []

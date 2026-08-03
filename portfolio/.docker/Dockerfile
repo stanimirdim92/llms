@@ -8,16 +8,20 @@
 #
 # System-package notes (checked against what pyproject.toml actually declares, not
 # copied wholesale from wherever this Dockerfile started as a template):
-# - libzbar0 (runtime): pyzbar loads it via ctypes at import time -- pure-Python
-#   wheel, but non-functional without the shared library present.
-# - libcairo2 (runtime): cairosvg (via cairocffi) loads it the same way.
+# - libzbar0 and libcairo2: REMOVED, along with the `pyzbar` and `cairosvg` they
+#   existed for. Both were inherited from the project this manifest was copied from
+#   and neither was ever imported here. Note the shape of the mistake, because it is
+#   the reason these notes are checked rather than trusted: a shared library whose
+#   only consumer is gone is invisible -- nothing fails, the image is just bigger and
+#   the comment explaining it is now a lie about what the code does.
 # - libssl3 (runtime): defensive -- see the cryptography note below.
 # - build-essential/libssl-dev/libffi-dev/pkg-config/rustc/cargo (builder-only):
 #   only needed if `cryptography` has no prebuilt wheel for this exact Python
 #   version/arch and uv has to build it from source; harmless to include since the
 #   whole builder stage is discarded and never reaches the runtime image.
-# - poppler-utils (the PyPI package, not the apt one): ships its own precompiled
-#   binaries, so no system `poppler-utils` package is needed.
+# - poppler: nothing here shells out to `pdftoppm`/`pdftotext`, and the PyPI
+#   `poppler-utils` pin that used to suggest otherwise is gone. Docling parses PDFs
+#   through docling-parse, not poppler.
 # - tesseract-ocr and friends: NOT included. They'd only matter for the commented-out
 #   `unstructured[pdf]` dependency; docling's own OCR path is RapidOCR (onnxruntime),
 #   not tesseract. Add them back if `unstructured[pdf]` gets uncommented.
@@ -33,9 +37,9 @@
 # - gnupg/openssl (the CLIs): were needed for the old Dockerfile's
 #   `curl | python3 -` Poetry bootstrap. We install uv by copying the binary
 #   (below), so there's no script-piping step that needs them.
-# - Fonts (liberation/noto/emoji): matter once Playwright or cairosvg actually
-#   render pages/text to images. Nothing in this codebase does that yet (Epic 3's
-#   scraper isn't built), so they're deferred rather than paid for speculatively.
+# - Fonts (liberation/noto/emoji): would matter to something that rasterises text.
+#   Nothing here does, and the `playwright`/`cairosvg` pins that made it look
+#   imminent are gone -- Epic 3's scraper is designed, not built. Deferred.
 
 FROM python:3.14-slim AS builder
 
@@ -100,8 +104,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     libgl1 \
     libglib2.0-0 \
-    libzbar0 \
-    libcairo2 \
     libssl3 \
     curl \
     && rm -rf /var/lib/apt/lists/* \

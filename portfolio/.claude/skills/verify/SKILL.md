@@ -43,21 +43,26 @@ overrides. CI provides both and asserts none of the three suites skipped.
 
 ## Trap 2: build the dev venv on 3.13, not 3.14
 
-`requires-python` is `>=3.13` while Docker and CI run 3.14. **Build the local venv on 3.13:**
+`requires-python` is `>=3.13` while Docker and CI run 3.14. **`.python-version` pins the local
+venv at 3.13**, so the plain commands are now correct:
 
-    uv venv --python 3.13 && uv sync --extra dev --locked
+    uv venv && uv sync --extra dev --locked
 
-On a 3.14 *pre-release* -- which is the only 3.14 some environments offer -- pydantic cannot
-build models:
+Keep that file. Without it, which interpreter you get depends on PATH order -- and on a 3.14
+*pre-release*, which is the only 3.14 some environments offer, pydantic cannot build models:
 
     TypeError: _eval_type() got an unexpected keyword argument 'prefer_fwd_module'
 
 That is the interpreter, not the code: ruff, ty, and `docker compose config` still pass while
-pytest and any `import app.api.main` fail. Since `uv` prefers the newest interpreter satisfying
-the floor, a venv created without `--python 3.13` may land on the pre-release and appear
-broken. Check which one you are on before believing a failure:
+pytest and any `import app.api.main` fail. So before believing any failure that looks like
+that, check what you are on:
 
     uv run python -V
+
+`uv venv --python 3.13` still works and overrides nothing that matters -- reach for it if the
+pin has been removed. CI overrides the pin deliberately (`setup-uv`'s `python-version` input
+sets `UV_PYTHON`, which is measured to win) and then *asserts* the interpreter matches the
+matrix leg, so a change in that precedence fails loudly instead of testing 3.13 twice.
 
 This used to require temporarily editing `requires-python` and regenerating `uv.lock`
 afterwards. It no longer does -- the floor is 3.13 for real. If you find that editing

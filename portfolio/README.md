@@ -141,8 +141,8 @@ uploads are readable only by the tenant whose key uploaded them.
 Needs a reachable Qdrant, Postgres, and Redis (`QDRANT_URL`, `DB_HOST`/`DB_PORT`,
 `REDIS_HOST`/`REDIS_PORT` in `.env` — the defaults assume all three on localhost).
 Python 3.13 is the floor, though Docker and CI run 3.14. Nothing requires 3.14 since
-`app/ids.py` took over `uuid7` with an RFC 9562 fallback — build the dev venv on 3.13
-(`uv venv --python 3.13`), because pydantic fails to build models on a 3.14 *pre-release*.
+`app/ids.py` took over `uuid7` with an RFC 9562 fallback. `.python-version` pins the local
+venv at 3.13, because pydantic fails to build models on a 3.14 *pre-release*.
 
 ```bash
 uv sync --extra dev
