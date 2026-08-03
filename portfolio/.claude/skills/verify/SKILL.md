@@ -14,6 +14,23 @@ The gate is five checks, and two of them lie by default. Read the traps before r
     uv run pytest tests/unit
     cd .docker && docker compose --env-file ../.env config -q     # after compose/Dockerfile edits
     uv sync --extra dev --locked                                  # after pyproject.toml edits
+
+**One pass, in a random order.** `pytest-randomly` is installed, so every run reorders the
+suite and reseeds `random` per test. This replaced an instruction to run the suite three
+times, which was weaker than it read: pytest orders tests identically every run, so three
+passes could only catch timing races and state surviving *between* runs -- never a test that
+passes because another ran first. Verified the plugin is actually doing it rather than sitting
+inert (two seeds produce different collection orders) and that the suite survives it (five
+seeds, 372 passed each).
+
+When a randomised run goes red, reproduce it before debugging:
+
+    uv run pytest tests/unit --randomly-seed=last     # replay the order that just failed
+    uv run pytest tests/unit -p no:randomly           # was it order, or the test itself?
+
+**`-q` hides the seed.** The header line `Using --randomly-seed=NNN` only prints without it, so
+`-q` runs are reproducible via `last` and not from the log. CI runs `-v` deliberately for this;
+if a CI run is red, the seed is in its log.
     # `--extra dev` is required, not optional: a bare `uv sync --locked` prunes the dev
     # group and uninstalls pytest, so the next gate command fails with 'no module named
     # pytest' and looks like a broken venv rather than a missing flag.

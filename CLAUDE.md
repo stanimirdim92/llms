@@ -160,7 +160,11 @@ Three habits that make the set work:
 - **Run the project's full gate before pushing**, from its own `CLAUDE.md` or
   its `verify` skill rather than from memory. Report what actually ran,
   including anything that was skipped.
-- **Run a suite three times before calling it green.** One pass cannot tell a
-  deterministic pass from a flake, and a flaky suite makes every later green
-  meaningless -- shared-database fixtures and rate-limit counters that outlive a
-  test are the two that bit here.
+- **Randomise test order; don't run the suite three times.** This replaced a rule to run it
+  three times, which sounded stronger than it was: pytest orders tests identically on every
+  run, so three identical passes can only catch timing races and state leaking *between*
+  runs -- never a test that passes solely because another ran first, which is the flake the
+  rule was reaching for. `pytest-randomly` reorders every run and reseeds `random` per test.
+  One randomised pass beats three ordered ones, and the seed is printed (`-v`, or
+  `--randomly-seed=last` to replay) so a red run stays reproducible. Shared-database
+  fixtures and counters that outlive a test are what bit here, and order is how they bite.

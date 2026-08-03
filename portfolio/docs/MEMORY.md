@@ -242,6 +242,18 @@ which deleted the ZSET. Left struck through as an example rather than silently r
 
 Gate: 372 passed / 0 skipped, three consecutive runs.
 
+**And the "run it three times" agreement was retired the same day**, because the user asked what
+the third run was actually doing and the answer was "the same thing as the first". pytest orders
+tests identically every run, so three passes can catch timing races and state leaking *between*
+runs, and nothing about a test that passes only because another ran first -- which is the flake
+the rule existed for. Worse, the two flakes that originally motivated it (a shared test database
+and a `DROP SCHEMA` race) were both order flakes, found by reading the failure rather than by
+repetition. Replaced with `pytest-randomly`: one pass, random order, `random` reseeded per test.
+Verified it is not inert (two seeds give different collection orders) and that the suite survives
+it (five seeds, 372 passed each). CI runs `-v` on purpose -- `-q` suppresses the seed line, and
+without the seed a randomised failure cannot be reproduced. Locally, `--randomly-seed=last`
+replays and `-p no:randomly` answers "was it the order or the test?".
+
 ### 2026-08-03 — the remaining 21 review findings, and three rounds of agent review
 
 All 51 findings from the 2026-08-02 external review are now closed. The batches, and the
@@ -361,7 +373,10 @@ unchanged tree. Two causes: M4 (one fixed key id bucketed against real Redis, so
 `DROP SCHEMA public CASCADE` on the shared test database while three subprocesses raced to
 rebuild it. That test now gets a throwaway database of its own; the other three DB suites
 truncate instead of dropping, at setup as well as teardown. **Five consecutive runs: 249
-passed, 0 skipped.** Do not trust a single green run in this repo -- run it three times.
+passed, 0 skipped.** (The "run it three times" advice that closed this entry was replaced on
+2026-08-03 by `pytest-randomly` -- see that day's log entry. Those two flakes were *order*
+flakes, which is exactly what three identically-ordered runs could not have found; they were
+caught by reading the failure, not by repetition.)
 
 **Found while fixing, not in the report:** `X-RateLimit-*` vanished on every `APIError` path
 (404/422), because the handler builds a fresh response and only the 429 passed its own copy.
