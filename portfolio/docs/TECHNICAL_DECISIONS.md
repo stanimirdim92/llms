@@ -402,6 +402,35 @@ the kind of ceiling you find in production rather than in the docs. Everything H
 the dependency, the 429, the headers — is still ours to write either way, which is most of what
 `deps.rate_limited` already is.
 
+*Where `limits` wins, measured 2026-08-03 and not part of the original comparison.* The above
+benchmarked `MovingWindowRateLimiter`, matching our exact semantics. `limits` also ships
+`SlidingWindowCounterRateLimiter`, an *approximation* — it weights the previous window's count
+rather than tracking individual requests — and it is dramatically cheaper in Redis. Per key,
+after 60 requests, `MEMORY USAGE`:
+
+| implementation | Redis type | bytes |
+|---|---|---|
+| `limits` SlidingWindowCounter | string | **120** |
+| `limits` MovingWindow | list | 1464 |
+| ours | zset, 32-char uuid members | **3120** |
+
+At 10k tenants × 2 scopes with keys near their limits that is ~62 MB against ~2.4 MB — on a
+16 GB box it is not fatal, but it is the first argument for `limits` that our own numbers
+support. Note where the 26× actually comes from: `limits`' own *exact* moving window costs
+1464 bytes for the same 60 requests, so more than half our overhead is the uuid member, not
+the algorithm. A shorter unique member is a cheaper fix than a rewrite and keeps one round
+trip, exact windows, fail-open and the headers. Parked in `docs/IDEAS.md`.
+
+*Also re-confirmed at the same time, since a decision is only as good as its facts.*
+`slowapi` 0.1.10 (2026-06-13) still imports `limits.storage`/`limits.strategies` and still
+calls a bare `self.limiter.hit(...)` at `extension.py:514` — checked in the published wheel.
+`limits[async-redis]>=5` and `redis[hiredis]>=8,<9` **do** resolve together (coredis 5.7.0
+alongside redis 8.1.0), and with `implementation="redispy"` coredis is not needed at all. The
+`MaxConnectionsError` ceiling reproduces with the counter strategy too, so it is a property of
+the storage bridge and not of the strategy. And `limits` fails **closed**: an unreachable
+Redis raises `redis.exceptions.ConnectionError` straight out of `hit()`, so adopting it means
+writing the fail-open wrapper ourselves — the opposite of the usual "the library handles it".
+
 *The rest of the survey.* `fastapi-limiter` 0.2.0 (2026-02) is the only other maintained,
 async-native, redis-8-compatible option: it delegates to `pyrate-limiter` 4.x, which has a real
 Lua-backed Redis bucket. It was rejected on two specifics. Its default 429 is a bare

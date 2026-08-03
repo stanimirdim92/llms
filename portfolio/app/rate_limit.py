@@ -1,23 +1,35 @@
 """Per-key sliding-window rate limiting on Redis.
 
 Hand-rolled rather than `slowapi`, which the original plan named. Re-examined in full in
-`docs/TECHNICAL_DECISIONS.md`; the short version, with the numbers measured rather than
-assumed:
+`docs/TECHNICAL_DECISIONS.md` -- read that before reopening this, because the obvious
+alternative is *not* the one this rejects. The short version:
 
-1. `limits[redis]>=5` requires `redis>3,<8.0.0` against this project's
-   `redis[hiredis]>=8.0.0,<9.0.0`, and uv reports *that pair* as unsatisfiable. Careful:
-   asking for `slowapi` unpinned does **not** error -- uv satisfies it by silently
-   resolving `limits==1.6` and `slowapi==0.1.6`, releases from 2018 and 2022. Adopting
-   slowapi means downgrading redis-py to 7.x, which resolves cleanly at current versions.
-2. `slowapi` has no async storage path at all. `extension.py` imports `limits.storage`
-   and `limits.strategies` -- the synchronous modules -- and calls `self.limiter.hit(...)`
-   inline, so the Redis round trip blocks the event loop. Measured against localhost Redis:
-   at 100 concurrent checks, 21.4 ms wall versus 11.1 ms for the async version; at 200,
-   65.5 ms versus 18.5 ms. Single-request latency is a wash (0.32 ms vs 0.36 ms) -- the
-   cost is head-of-line blocking, and it scales with Redis RTT, so a managed Redis one
-   network hop away multiplies it.
+1. **`slowapi`** has no async storage path. `extension.py` imports `limits.storage` and
+   `limits.strategies` -- the synchronous modules -- and line 514 is a bare
+   `self.limiter.hit(...)`, so the Redis round trip blocks the event loop. Still true of
+   0.1.10 (2026-06-13), checked in the wheel rather than remembered. Measured against
+   localhost Redis: 21.4 ms wall at 100 concurrent checks versus 11.1 ms async, 65.5 ms
+   versus 18.5 ms at 200. Single-request latency is a wash (0.32 vs 0.36 ms) -- the cost is
+   head-of-line blocking, and it scales with Redis RTT.
+2. **`limits` on its own is a genuine alternative, and no dependency conflict stands in the
+   way.** Do not repeat the mistake this comment used to make: the `redis>3,<8.0.0` pin is
+   on the *synchronous* `limits[redis]` extra only. `limits.aio.storage` reached via
+   `storage_from_string("async+redis://...", implementation="redispy")` runs on the
+   `redis[hiredis]>=8` this project already has -- no coredis, no downgrade, no new package.
+   Verified by resolving both pinned and by running it against live Redis.
 
-`redis-py` 8 already ships `redis.asyncio`, so the remaining work is one Lua script.
+So the reason this module exists is not "the library does not fit". It is one round trip
+instead of two (`hit()` + `get_window_stats()` describe two different instants, and the
+header would disagree with the decision), no `MaxConnectionsError` ceiling at 200 concurrent
+where the redispy bridge's default pool has one, and fail-open behaviour that `limits` does
+not provide -- an unreachable Redis raises `redis.exceptions.ConnectionError` out of `hit()`.
+
+**Where `limits` is measurably better, and this is not yet acted on:** its
+`SlidingWindowCounterRateLimiter` keeps one string per key -- 120 bytes after 60 requests,
+against 3120 for the ZSET below. Most of that 26x is the 32-char uuid member, not the
+algorithm (`limits`' own exact moving window costs 1464), so a shorter member closes much of
+the gap without giving up exact windows. At 10k tenants it is the difference between ~62 MB
+of Redis and ~2.4 MB. Recorded in `docs/IDEAS.md`.
 
 Sliding window, not a fixed window: a fixed window lets a caller spend its whole budget at
 the end of one window and again at the start of the next, so the observed burst is twice the

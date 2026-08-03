@@ -107,6 +107,14 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   timeouts. Determines whether processed artefacts can stay on local disk at target scale.
 - **Object storage for uploads.** *(L)* Local disk doesn't survive a multi-instance deployment.
   Not needed until there is more than one api host.
+- **Shorten the rate-limit ZSET member.** *(S)* Measured 2026-08-03: one rate-limit key costs
+  **3120 bytes** after 60 requests, against 1464 for `limits`' equivalent exact moving window and
+  120 for its approximate counter. The gap is mostly the 32-char uuid per member, so at 10k
+  tenants × 2 scopes this is ~62 MB of Redis where ~30 MB would do — for a member that only has
+  to be unique within one window. Cheaper than adopting `limits`, which would also cost a second
+  round trip and a hand-written fail-open wrapper (see `docs/TECHNICAL_DECISIONS.md`). Needs the
+  concurrency test to stay green, since uniqueness is what stops two same-millisecond requests
+  from collapsing into one ZSET member and under-counting.
 
 ## Developer experience
 
