@@ -62,7 +62,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "devtools>=0.12.2",
-  "ruff>=0.16.0",
+  "ruff>=0.16.1",
   "ty>=0.0.63",
   "memory-profiler>=0.61.0,<1",
   "pytest>=9.1.1,<10",
