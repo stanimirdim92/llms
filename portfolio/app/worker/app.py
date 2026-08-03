@@ -53,7 +53,7 @@ def _conninfo() -> str:
     """Procrastinate talks to psycopg directly, so it needs a libpq DSN -- not SQLAlchemy's
     `postgresql+psycopg://` URL, whose driver suffix libpq doesn't understand.
     """
-    return get_settings().database_url.replace("postgresql+psycopg://", "postgresql://")
+    return get_settings().database_url.get_secret_value().replace("postgresql+psycopg://", "postgresql://")
 
 
 # No `import_paths`: that would make `configure_task` below import `tasks.py` (it calls

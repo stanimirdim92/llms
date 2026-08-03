@@ -219,6 +219,15 @@ if st.button("Ask", type="primary") and question:
     if scope.filenames:
         st.caption(f"Scoped to {', '.join(scope.filenames)} — the rest of your corpus was not searched.")
     st.write(result.text)
+    if result.truncated:
+        # Above the citations, not below, because the citation list is the *other* thing this
+        # cuts short: blocks are emitted as the text is generated, so a truncated answer's
+        # sources are incomplete too. Without this the reader sees a confident answer that
+        # happens to stop mid-sentence and has no way to tell why.
+        st.warning(
+            "This answer hit the model's token limit and stopped early — the text is cut off and "
+            "some sources are missing. Ask a narrower question rather than re-asking this one."
+        )
 
     if result.citations:
         st.subheader("Citations")

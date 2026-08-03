@@ -68,6 +68,13 @@ class AskResponse(BaseModel):
     retrieved_chunks: list[RetrievedChunkResponse] = Field(
         description="Every chunk retrieved and reranked for this question, cited or not"
     )
+    truncated: bool = Field(
+        default=False,
+        description="True when the answer was cut off by the model's token ceiling rather than "
+        "finished. The text ends mid-sentence and `citations` is short, because citation blocks "
+        "arrive as the text is generated -- so a client must not present a truncated answer as a "
+        "complete one. Re-ask a narrower question rather than retrying the same one.",
+    )
 
 
 class UploadAcceptedResponse(BaseModel):

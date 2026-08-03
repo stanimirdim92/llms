@@ -39,7 +39,7 @@ TENANT_ID = "a" * 32
 
 def _test_database_url() -> str:
     """The configured database with `_test` appended -- never the development database."""
-    url = get_settings().database_url
+    url = get_settings().database_url.get_secret_value()
     base, _, name = url.rpartition("/")
     return f"{base}/{name}_test"
 

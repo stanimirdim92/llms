@@ -163,6 +163,19 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   three requires matching on `doc_id` and timestamps by eye.
 - **Alert on `failed` ingestion rate.** *(S)* Failures land in `error_message` and nobody looks
   unless a user complains.
+- **Check `Cross-Origin-Embedder-Policy: require-corp` against the Streamlit UI in a real
+  browser.** *(S)* nginx sets it on every response. On the JSON API it is inert (COEP is a
+  document policy) and `Cross-Origin-Resource-Policy: same-origin` provably does not affect a
+  CORS-mode `fetch` — the Fetch standard runs that check only when the response tainting or type
+  is `"opaque"`, so the React client is unaffected and the headers must not be removed to
+  "unblock" it. What is **untested** is COEP on the Streamlit *document*: it requires every
+  cross-origin subresource to carry CORP itself. Streamlit bundles its assets today, so this
+  holds; a version that reaches for a CDN font would break in a browser and nowhere else — no
+  test, no log, no error server-side. Needs one Playwright load of the page behind nginx with
+  the console captured.
+- **Rate-limit at nginx as well as in the app.** *(M)* `app/rate_limit.py` is per API key, which
+  means an unauthenticated flood reaches gunicorn and is only stopped by the 401. `limit_req` on
+  the `/v1/` locations would shed that at the edge. Not urgent while the API is not public.
 
 ## Portfolio and presentation
 

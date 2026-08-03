@@ -6,10 +6,24 @@
 # Debian-based, not `-alpine`: the next line is `apt-get`, and alpine has `apk`.
 FROM nginx:1.29
 
-RUN apt-get update &&  \
-    apt-get upgrade -y && \
-    apt-get install -y \
-    logrotate
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
+# No logrotate, and it is worth saying why it is absent rather than leaving the next reader to
+# re-add it. This image used to install it and copy a `/etc/logrotate.d/nginx` that rotated
+# `/var/log/nginx/*.log` daily. Two measured facts made that both dead and dangerous:
+#
+#   docker run --rm nginx:1.29 ls -l /var/log/nginx
+#     access.log -> /dev/stdout
+#     error.log  -> /dev/stderr
+#   docker run --rm nginx:1.29 sh -c 'command -v cron || command -v crond'
+#     (absent)
+#
+# So there is no scheduler to invoke logrotate -- it could never have run -- and the files it
+# was aimed at are the official image's symlinks to stdout/stderr. Rotation is Docker's job
+# (`--log-opt max-size`/`max-file`, or whatever the host's log driver is configured with).
+# Dangerous because the config carried `create 644 www-data root`: had a scheduler ever been
+# added, the first rotation would have replaced those symlinks with ordinary files and silently
+# cut nginx's logs off from `docker logs` -- an observability outage with no error anywhere.
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
@@ -37,11 +51,5 @@ ARG MAX_UPLOAD_MB=20
 RUN sed -i "s/__REQUEST_TIMEOUT__/${REQUEST_TIMEOUT}/g" /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf && \
     sed -i "s/__MAX_UPLOAD_MB__/${MAX_UPLOAD_MB}/g" /etc/nginx/nginx.conf && \
     ! grep -rn '__[A-Z_]*__' /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf
-
-# Create 'messages' file used from 'logrotate'
-RUN touch /var/log/messages
-
-# Copy 'logrotate' config file
-COPY logrotate/nginx /etc/logrotate.d/
 
 EXPOSE 80 443

@@ -55,7 +55,7 @@ DOC_ID = "d" * 32
 
 
 def _test_database_url() -> str:
-    url = get_settings().database_url
+    url = get_settings().database_url.get_secret_value()
     base, _, name = url.rpartition("/")
     return f"{base}/{name}_test"
 

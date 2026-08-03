@@ -67,7 +67,14 @@ services:
     image: qdrant/qdrant:v1.18.3
     restart: unless-stopped
     ports:
-      - "6333:6333"
+      # Loopback only. `- "6333:6333"` binds 0.0.0.0 on the host, and Docker inserts its
+      # forwarding rules into the DOCKER chain *ahead* of the filter rules ufw and firewalld
+      # write -- so a published port on a cloud VM is reachable from the internet even with
+      # the host firewall reporting the port as blocked. Nothing outside this network needs
+      # any of these three; the api/worker/streamlit services reach them by service name.
+      # The mapping is kept, rather than deleted, because `psql`, `redis-cli` and Qdrant's
+      # dashboard from the host are how this stack gets debugged.
+      - "127.0.0.1:6333:6333"
     volumes:
       - qdrant_data:/qdrant/storage
     security_opt:
@@ -87,7 +94,8 @@ services:
     image: postgres:18-alpine
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      # Loopback only -- see the qdrant service for why `0.0.0.0` is what you get otherwise.
+      - "127.0.0.1:5432:5432"
     # POSTGRES_USER/PASSWORD/DB come from ../.env via env_file, the same way api/
     # streamlit already load it -- not the `${POSTGRES_USER:-portfolio}` compose-time
     # substitution this used to use. That substitution resolves against the shell env or
@@ -150,7 +158,13 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
+      # Loopback only, and this is the service where it matters most: `redis.conf` sets
+      # `protected-mode no` with no `requirepass`, so anything that can open the port has
+      # unauthenticated access to the rate-limit counters and to `CONFIG SET` -- which is a
+      # known remote-code-execution path (write a module or a cron file via `CONFIG SET dir`).
+      # Published on 0.0.0.0, as it was, that is an open Redis on any host with a public
+      # interface. Internet-wide scans for exactly this take minutes, not days.
+      - "127.0.0.1:${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     security_opt:
       - no-new-privileges:true
     cap_drop:

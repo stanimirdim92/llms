@@ -104,4 +104,5 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
             )
             for doc in result.retrieved_chunks
         ],
+        truncated=result.truncated,
     )

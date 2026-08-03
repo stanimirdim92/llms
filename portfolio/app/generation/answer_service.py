@@ -43,6 +43,31 @@ class Answer:
     text: str
     citations: list[Citation]
     retrieved_chunks: list[Document] = field(default_factory=list)
+    truncated: bool = False
+    """True when the model hit `max_tokens` rather than finishing.
+
+    A truncated answer is not a shorter answer -- it stops mid-sentence, and because citation
+    blocks are emitted as the text is generated, the citation list stops with it. Both the text
+    and the sources are therefore incomplete while looking exactly like a complete answer, so
+    the one thing this must not be is silent. `False` by default so an `Answer` built anywhere
+    else (tests, a future eval harness) does not have to know about it.
+    """
+
+
+_MAX_ANSWER_TOKENS = 1024
+"""Named rather than inlined so the truncation warning can report the ceiling it hit.
+
+Not a `Settings` field: raising it is a cost decision that should be made with the truncation
+rate in front of you, and that rate did not exist until it was logged.
+"""
+
+_TRUNCATED_STOP_REASON = "max_tokens"
+"""Anthropic's `stop_reason` when generation was cut off by the token ceiling.
+
+Read from `response_metadata`, which is where `langchain_anthropic` puts the raw API fields --
+its own docstring shows `response_metadata={'id': ..., 'stop_reason': 'tool_use', ...}`. Any
+other value (`end_turn`, `stop_sequence`) means the model chose to stop.
+"""
 
 
 def _chunk_title(document: Document) -> str:
@@ -88,7 +113,12 @@ def _extract_citations(content_blocks: AnthropicContent, documents: list[Documen
             continue
         for citation in block.get("citations") or []:
             doc_index = citation.get("document_index")
-            if doc_index is None or doc_index >= len(documents):
+            # `not 0 <= doc_index`, not just the upper bound. A negative index is the one
+            # out-of-range value Python *resolves*: `documents[-1]` is a real document, so the
+            # citation rendered normally while attributing the quote to whichever chunk happened
+            # to be reranked last -- a wrong source carrying a right quote, which reads as
+            # correct at every point of use.
+            if doc_index is None or not 0 <= doc_index < len(documents):
                 continue
             source = documents[doc_index]
             citations.append(
@@ -117,7 +147,7 @@ class AnswerService:
         self._llm = ChatAnthropic(
             model=settings.answer_model,
             api_key=settings.anthropic_api_key,
-            max_tokens=1024,
+            max_tokens=_MAX_ANSWER_TOKENS,
             thinking={"type": "disabled"},
         )
 
@@ -141,6 +171,12 @@ class AnswerService:
         citations = _extract_citations(response.content, top_documents)
         latency_ms = (perf_counter() - start) * 1000
 
+        stop_reason = response.response_metadata.get("stop_reason")
+        truncated = stop_reason == _TRUNCATED_STOP_REASON
+        # `.get`, not indexing: `usage_metadata` is None on some providers and on a cached
+        # response, and an answer must not fail because its cost could not be reported.
+        usage = response.usage_metadata or {}
+
         log.info(
             "answer_service.answered",
             question=question,
@@ -149,6 +185,25 @@ class AnswerService:
             reranked=len(top_documents),
             citation_count=len(citations),
             latency_ms=round(latency_ms, 1),
+            # Logged on every answer, not only when something is wrong. Token counts are the
+            # only record of what this path costs -- there is no billing hook -- and a
+            # `stop_reason` that is *usually* `end_turn` is only informative if the normal
+            # value is also on record.
+            stop_reason=stop_reason,
+            input_tokens=usage.get("input_tokens"),
+            output_tokens=usage.get("output_tokens"),
         )
+        if truncated:
+            # A separate warning, because the info line above is what a dashboard aggregates
+            # and this is what a human needs to see. `max_tokens` here is not a tuning nit: the
+            # answer is cut off mid-sentence and its citation list is short, and the caller
+            # cannot tell either from the text.
+            log.warning(
+                "answer_service.truncated",
+                question=question,
+                tenant_id=tenant_id,
+                output_tokens=usage.get("output_tokens"),
+                max_tokens=_MAX_ANSWER_TOKENS,
+            )
 
-        return Answer(text=text, citations=citations, retrieved_chunks=top_documents)
+        return Answer(text=text, citations=citations, retrieved_chunks=top_documents, truncated=truncated)

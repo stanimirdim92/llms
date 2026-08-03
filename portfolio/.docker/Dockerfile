@@ -14,11 +14,17 @@
 #   the reason these notes are checked rather than trusted: a shared library whose
 #   only consumer is gone is invisible -- nothing fails, the image is just bigger and
 #   the comment explaining it is now a lie about what the code does.
-# - libssl3 (runtime): defensive -- see the cryptography note below.
+# - libssl3 (runtime): kept. It used to be justified by `cryptography`, which is now
+#   gone -- nothing imported it -- so the honest reason today is that `psycopg[binary]`
+#   and the TLS clients want a system libssl present, and it is a few hundred KB.
 # - build-essential/libssl-dev/libffi-dev/pkg-config/rustc/cargo (builder-only):
-#   only needed if `cryptography` has no prebuilt wheel for this exact Python
-#   version/arch and uv has to build it from source; harmless to include since the
-#   whole builder stage is discarded and never reaches the runtime image.
+#   a fallback for any dependency with no prebuilt wheel for this exact Python
+#   version/arch, which uv would then build from source. `cryptography` was the one
+#   that made this concrete; with it removed nothing here is known to need compiling,
+#   but a 3.14 wheel gap in a future bump would fail the build with a compiler error
+#   rather than a resolution error, and that is a bad afternoon. Kept because the whole
+#   builder stage is discarded and never reaches the runtime image, so it costs build
+#   time only. Drop it if you are willing to prove the build stays green without it.
 # - poppler: nothing here shells out to `pdftoppm`/`pdftotext`, and the PyPI
 #   `poppler-utils` pin that used to suggest otherwise is gone. Docling parses PDFs
 #   through docling-parse, not poppler.
@@ -26,10 +32,8 @@
 #   `unstructured[pdf]` dependency; docling's own OCR path is RapidOCR (onnxruntime),
 #   not tesseract. Add them back if `unstructured[pdf]` gets uncommented.
 # - redis (the server, as an apt package): deliberately not installed in this image.
-#   redis[hiredis]/aiocache[redis] are *clients* -- they connect to a Redis server,
-#   they don't need to run one. When Epic 3 actually needs Redis, it belongs as its
-#   own service in docker-compose.yml (e.g. the official `redis:alpine` image), not
-#   bundled into the app container.
+#   `redis[hiredis]` is a *client* -- it connects to a Redis server, it does not need to
+#   run one. Redis is its own service in docker-compose.yml, not bundled in here.
 # - libgl1/libglib2.0-0 (runtime): docling's table-structure model pulls in
 #   opencv-python transitively (via docling-ibm-models), which dlopens libGL/glib
 #   at import time regardless of the "headless" framing -- without these, ingesting

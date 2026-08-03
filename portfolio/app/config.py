@@ -6,7 +6,7 @@ from importlib import util
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -15,9 +15,27 @@ DATA_DIR = PACKAGE_ROOT / "data"
 
 
 class Settings(BaseSettings):
+    """Every credential is a `SecretStr`, not a `str`.
+
+    Not defence in depth for its own sake -- it closes a specific, easy accident. `Settings` is
+    one object holding a live Anthropic key, a Voyage key, a LangSmith key and the Postgres
+    password, and anything that renders it renders all four: a `log.info(..., settings=settings)`
+    while debugging, a `repr()` in a traceback frame that a crash reporter serialises, an
+    exception from `model_validator` that quotes the model. `SecretStr` makes all of those print
+    `**********`, and this repository is public, so a key that reaches a log someone pastes is
+    disclosed. The cost is that the two places genuinely needing the characters --
+    `redis_url`/`database_url` assembly, and the LangSmith env bridge -- say
+    `.get_secret_value()`, which is a readable marker of exactly where a secret escapes.
+
+    The provider clients need no change: `ChatAnthropic.anthropic_api_key`,
+    `VoyageAIEmbeddings.voyage_api_key` and `VoyageAIRerank.voyage_api_key` are all declared
+    `SecretStr` themselves (verified against the installed packages), so passing these through
+    stops one coercion from happening rather than adding one.
+    """
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    anthropic_api_key: str = Field(default="")
+    anthropic_api_key: SecretStr = Field(default=SecretStr(""))
     answer_model: str = Field(default="claude-sonnet-5")
     figure_caption_model: str = Field(default="claude-sonnet-5")
     # Figure captions are one Anthropic call per figure and were the sequential stage of
@@ -41,10 +59,10 @@ class Settings(BaseSettings):
         default=40, description="Captions shorter than this are treated as unusable and dropped."
     )
 
-    voyage_api_key: str = Field(default="")
+    voyage_api_key: SecretStr = Field(default=SecretStr(""))
     voyage_model: str = Field(default="voyage-4")
 
-    langsmith_api_key: str = Field(default="")
+    langsmith_api_key: SecretStr = Field(default=SecretStr(""))
     langsmith_tracing: bool = Field(default=False)
     langsmith_project: str = Field(default="portfolio-rag")
     langsmith_endpoint: str = Field(default="https://api.smith.langchain.com")
@@ -76,10 +94,10 @@ class Settings(BaseSettings):
     db_host: str = Field(default="localhost")
     db_port: int = Field(default=5432)
     postgres_user: str = Field(default="portfolio")
-    postgres_password: str = Field(default="portfolio")
+    postgres_password: SecretStr = Field(default=SecretStr("portfolio"))
     postgres_db: str = Field(default="portfolio")
-    database_url: str = Field(
-        default="",
+    database_url: SecretStr = Field(
+        default=SecretStr(""),
         description="Full DSN override. If unset, built from db_host/db_port/db_driver/postgres_user/password/db.",
     )
 
@@ -151,7 +169,7 @@ class Settings(BaseSettings):
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
     redis_username: str = Field(default="")
-    redis_password: str = Field(default="")
+    redis_password: SecretStr = Field(default=SecretStr(""))
 
     # Per-key request budgets, per `rate_limit_window_seconds`. Uploads get a much
     # tighter budget than questions because they cost far more: Docling parsing (CPU), one
@@ -175,7 +193,7 @@ class Settings(BaseSettings):
     def redis_url(self) -> str:
         credentials = ""
         if self.redis_password:
-            credentials = f"{self.redis_username}:{self.redis_password}@"
+            credentials = f"{self.redis_username}:{self.redis_password.get_secret_value()}@"
         return f"redis://{credentials}{self.redis_host}:{self.redis_port}/{self.redis_db}"
 
     @model_validator(mode="after")
@@ -212,14 +230,19 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _assemble_database_url(self) -> Settings:
         if not self.database_url:
-            self.database_url = URL.create(
-                drivername=self.db_driver,
-                username=self.postgres_user,
-                password=self.postgres_password,
-                host=self.db_host,
-                port=self.db_port,
-                database=self.postgres_db,
-            ).render_as_string(hide_password=False)
+            # `SecretStr`, and this is the field that made masking `postgres_password` alone
+            # theatre: the assembled DSN embeds the password in plain text and sat two lines
+            # away from it in every repr. Caught by the masking test, not by review.
+            self.database_url = SecretStr(
+                URL.create(
+                    drivername=self.db_driver,
+                    username=self.postgres_user,
+                    password=self.postgres_password.get_secret_value(),
+                    host=self.db_host,
+                    port=self.db_port,
+                    database=self.postgres_db,
+                ).render_as_string(hide_password=False)
+            )
         return self
 
 
@@ -232,7 +255,7 @@ def _configure_langsmith(settings: Settings) -> None:
     if not (settings.langsmith_tracing and settings.langsmith_api_key):
         return
     os.environ["LANGSMITH_TRACING"] = "true"
-    os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key
+    os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key.get_secret_value()
     os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
     os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
 
@@ -275,7 +298,11 @@ def require_provider_credentials() -> None:
             ("ANTHROPIC_API_KEY", settings.anthropic_api_key),
             ("VOYAGE_API_KEY", settings.voyage_api_key),
         )
-        if not value.strip()
+        # `.get_secret_value()` because the check is on the *content*, and a `SecretStr` is
+        # truthy by length -- so a key of three spaces would pass a bare truthiness test and
+        # then fail every request with a 401 from the provider. `.strip()` keeps the original
+        # behaviour: whitespace is not a credential.
+        if not value.get_secret_value().strip()
     ]
     if missing:
         msg = (
