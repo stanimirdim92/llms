@@ -58,8 +58,9 @@ def content_digest(file_bytes: bytes) -> str:
     """A digest of the bytes themselves, with no tenant salt.
 
     Deliberately *not* `upload_doc_id`, and this column had been written both ways: the router
-    stored the tenant-salted 32-char `doc_id` on the pending row and `ingest_document` overwrote
-    it with a plain 16-char sha256 on the terminal write. Same column, two values with different
+    stored the tenant-salted 65-character `doc_id` (a 32-char tenant id, a hyphen, and 32 hex of
+    digest) on the pending row and `ingest_document` overwrote it with a plain 16-char sha256 on
+    the terminal write. Same column, two values with different
     meanings and different lengths, reconciled only by whichever write happened last. Harmless
     while nothing reads the field -- and that is exactly the state in which a column quietly
     becomes unusable, because the first reader inherits both conventions.

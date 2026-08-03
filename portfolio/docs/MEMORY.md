@@ -163,11 +163,11 @@ more discussion.
 3. **Payload index on `metadata.tenant_id`.** The vendored `qdrant-multitenancy` skill calls
    for a keyword index with `is_tenant=true`. Harmless at 6 documents; **required** at 100k
    (order 1M points, where an unindexed tenant filter degrades toward a scan). Not built.
-4. **Usage is not recorded anywhere.** `answer_service.py` never reads `response.usage`, so the
-   cost numbers above were only obtainable because LangSmith happened to be tracing — and that
-   project is on the `shortlived` (14-day) tier. Epic 2 Phase 2.2's parquet schema already
-   specifies `input_tokens` / `output_tokens` / `cost_usd`; capturing them on the `/ask` path
-   is a smaller, independent step.
+4. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03.** Every answer now logs
+   `stop_reason`, `input_tokens` and `output_tokens` structurally, and `Answer.truncated` reaches
+   `AskResponse` and the Streamlit page. What is still missing is `cost_usd` — the per-model price
+   table Epic 2 Phase 2.2's parquet schema wants. Kept in the list rather than deleted so the
+   half that shipped is not mistaken for the whole.
 5. **Whole-document extraction.** "Fill this schema from document X" is not a similarity query
    — every field must be found, so ranking chunks against the schema text is the wrong
    primitive even when correctly scoped. Works today only because the test document is one
@@ -185,6 +185,48 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-03 — the remaining 21 review findings, and three rounds of agent review
+
+All 51 findings from the 2026-08-02 external review are now closed. The batches, and the
+verification each survived, are in the commit bodies (`35f9c3d`, `4731f2c`, `a2b91d1`, `4ed76b5`,
+`360fb1f` and the follow-up). What belongs here is what the *reviews of my own fixes* found,
+because the pattern repeated three times and is the transferable part:
+
+**Every round of agent review found a defect in the previous round's fixes, including one
+critical.** Not diminishing returns -- round 3 was the most valuable. In order:
+
+1. My M8 caption cache was keyed on `figure_id` and therefore **collided** rather than missed: a
+   newly-inserted figure was handed the caption written for whatever used to sit at its index. My
+   docstring asserted the opposite in as many words, and the test *named* for that property
+   asserted only call counts and ids, which a collision satisfies. Now content-addressed.
+2. Then the content-addressed version deduplicated only against the cache on disk, not within a
+   batch -- so a logo on ten pages still cost ten calls on the first ingest and got ten
+   *different* captions. My test pre-warmed the cache, so it could not see it. Same construction
+   flaw as (1), one commit later.
+3. My table-caption dedup compared `caption in markdown`, and docling's serializer escapes `_` as
+   `\_` and HTML-escapes `&`/`<`/`>` -- so three of six realistic scientific captions still
+   doubled. The test counted raw occurrences, which stays 1 when the second copy is escaped.
+4. `truncated` was forwarded to `AskResponse` by one line that no test covered: deleting it left
+   the whole suite green while every truncated answer reported as complete.
+5. Unifying the two `_state` renderers averaged a real difference (the Streamlit page has its own
+   date columns) instead of surfacing it -- rule 6, in a commit whose message cited rule 6.
+
+**The transferable lesson:** a test that asserts *cost* (call counts) or *shape* (ids, lengths)
+passes under a correctness bug. Assert content, and make the fixture able to distinguish wrong
+content from right -- captions derived from the input, not from batch position.
+
+**Also learned about the tooling:** four of the ~40 numbers I wrote into comments this session
+were wrong on checking (`libssl3` "a few hundred KB" -- it is already in the base image;
+"six transitive packages" -- two; "32-char doc_id" -- 65; "hangs with no timeout" --
+`huggingface_hub` sets a 10s ETag timeout). Rule 13 applies to prose in comments, not just to
+dependency claims.
+
+**Standing gaps this session did not close:** whether Anthropic truncates the *citation list*
+along with the text under `max_tokens` is asserted in three places and unverified; the nginx
+image's `apt-get` layer cannot build behind this sandbox's proxy (the config itself is proven to
+parse via `nginx -t` inside `nginx:1.29`); and `api`/`streamlit` still publish on `0.0.0.0` while
+the three data services were moved to `127.0.0.1`.
 
 ### 2026-08-02 — an external review of 51 findings, and two rounds of fixing it
 

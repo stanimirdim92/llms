@@ -70,7 +70,7 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
     scope = await _document_scope(request.question, tenant_id)
     if scope.names_nothing_owned:
         # 404, not 403, and deliberately without saying whether the file exists for anyone
-        # else -- that would be an existence oracle over content hashes. Naming the caller's
+        # else -- that would confirm a leaked id belongs to somebody. Naming the caller's
         # own documents back is safe and is the thing that makes the error actionable.
         named = ", ".join(scope.unknown)
         raise APIError(f"No document matching {named} in your documents. Check GET /v1/documents.", code=404)

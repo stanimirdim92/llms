@@ -54,7 +54,7 @@ def test_malformed_tenant_ids_never_become_paths(tenant_id: str) -> None:
         tenant_upload_dir(get_settings().upload_dir, tenant_id)
 
 
-def test_the_content_digest_is_the_same_value_both_writers_store() -> None:
+def test_the_content_digest_is_unsalted_and_shorter_than_the_doc_id() -> None:
     """`content_hash` had two incompatible meanings in one column.
 
     The router stored the tenant-salted 32-char `doc_id` on the pending row; `ingest_document`
@@ -72,7 +72,10 @@ def test_the_content_digest_is_the_same_value_both_writers_store() -> None:
 
     assert digest == content_digest(payload), "deterministic"
     assert digest != upload_doc_id(_VALID_TENANT, payload), "the id is salted; this is not"
-    assert digest == content_digest(payload), "and it does not depend on the tenant"
+    # Length is the load-bearing part of the L4 story: the bug stored the 65-char `doc_id` in a
+    # column the other writer filled with a 16-char digest.
+    assert len(digest) == 16
+    assert len(upload_doc_id(_VALID_TENANT, payload)) == 65
 
 
 def test_two_tenants_uploading_the_same_bytes_share_a_content_digest_but_not_an_id() -> None:

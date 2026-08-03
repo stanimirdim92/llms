@@ -99,6 +99,9 @@ curl -X POST http://localhost:8000/v1/keys \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"name": "ci", "scopes": ["documents:write"], "expires_in_days": 90}'
 
+# Omitting `scopes`, sending `[]`, and sending `null` all mean "the same scopes I hold" --
+# generated clients serialise unset optionals as null, so all three have to agree.
+
 curl http://localhost:8000/v1/keys -H "x-api-key: pf_live_..."          # metadata, never keys
 curl -X DELETE http://localhost:8000/v1/keys/<key_id> -H "x-api-key: pf_live_..."
 ```
@@ -120,6 +123,12 @@ because "not yours" and "doesn't exist" must not be distinguishable.
 The answer comes back with `citations` (quoted text plus `chunk_id`/`doc_id`/`page_no`)
 and every chunk that survived reranking, so a wrong answer can be traced to whether
 retrieval or generation caused it.
+
+It also carries **`truncated`**. True means the model hit its token ceiling rather than
+finishing: the text stops mid-sentence and `citations` is short, because citation blocks arrive
+as the text is generated. A client must not present that as a complete answer — ask something
+narrower rather than retrying the same question. Every answer logs `stop_reason` and its token
+counts, so the truncation *rate* is visible in the logs rather than only per request.
 
 `/docs` has the full OpenAPI schema. The Streamlit app at `:8501` does the same two
 operations through a UI, authenticating with the same key.

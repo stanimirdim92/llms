@@ -179,7 +179,13 @@ jobs:
         # These suites skip when their service is unreachable, so broken service wiring would
         # look identical to a pass in the summary. Assert they actually ran.
         run: |
-          for suite in tests/unit/test_auth_touch.py tests/unit/test_rate_limit.py tests/unit/test_worker_enqueue.py; do
+          # All five suites that skip on an unreachable service. It guarded three, so
+          # test_key_management.py and test_create_tenant.py could skip silently in CI -- and
+          # test_key_management.py holds the only proof that `{"scopes": null}` mints a
+          # correctly-scoped key rather than an unrestricted one.
+          for suite in tests/unit/test_auth_touch.py tests/unit/test_rate_limit.py \
+                       tests/unit/test_worker_enqueue.py tests/unit/test_key_management.py \
+                       tests/unit/test_create_tenant.py; do
             uv run pytest "$suite" -q --no-header -rN | tee /dev/stderr | grep -q "skipped" \
               && { echo "::error::$suite skipped -- service wiring is broken"; exit 1; }
           done

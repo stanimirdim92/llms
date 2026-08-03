@@ -22,12 +22,19 @@ The gate is five checks, and two of them lie by default. Read the traps before r
 
 ## Trap 1: skipped tests look identical to passing ones
 
-`test_auth_touch.py`, `test_rate_limit.py`, and `test_worker_enqueue.py` **skip** when their
-service is unreachable. A run reporting `91 passed, 25 skipped` has not tested auth, rate
-limiting, or the job queue -- which is most of the security-relevant surface.
+Five suites **skip** when their service is unreachable: `test_auth_touch.py`,
+`test_rate_limit.py`, `test_worker_enqueue.py`, `test_key_management.py` and
+`test_create_tenant.py`. A run reporting `288 passed, 59 skipped` has not tested auth, rate
+limiting, the job queue, key management or the bootstrap CLI -- most of the security-relevant
+surface. (It was three for a while, and CI asserted only those three, so the two newer ones could
+skip silently -- including the only test of `{"scopes": null}`.)
 
-**Always read the skip count.** The full suite is currently 249 tests and should report
-`116 passed` with nothing skipped. If you see skips, start the services rather than shipping:
+**Always read the skip count.** The full suite should report **`370 passed, 0 skipped`**. (Treat
+the number as a floor that drifts upward, not a checksum — what matters is the *skip* count being
+zero. An earlier version of this line said "249 tests ... `116 passed`", two numbers that already
+disagreed with each other, which is what a hand-maintained count does.) With no services reachable
+the suite reports `308 passed, 59 skipped` across those five files, so a green run then has tested
+almost none of the security-relevant surface. Start them rather than shipping:
 
     pg_isready -h localhost -p 5433 -U portfolio || \
       su postgres -c '/usr/lib/postgresql/16/bin/pg_ctl -D /tmp/pgtest -o "-p 5433" -l /tmp/pgtest/server.log start'
@@ -39,7 +46,7 @@ They die repeatedly in a long session (idle reclamation), so re-check before *ea
 once at the start. `pg_ctl` refuses to run as root -- hence the `su postgres`.
 
 Outside this container, the compose Postgres/Redis serve the same purpose and need no port
-overrides. CI provides both and asserts none of the three suites skipped.
+overrides. CI provides both and asserts none of the five suites skipped.
 
 ## Trap 2: build the dev venv on 3.13, not 3.14
 
@@ -85,6 +92,18 @@ Twelve collection errors that read as a broken project. The cause is a missing
 
 If that succeeds while pytest reports the modules missing, pytest is running from somewhere
 else. Sync dev extras and re-run.
+
+## Why it takes ~25 seconds
+
+Almost none of it is the tests. Measured with `--durations`: the slowest is 6.75s
+(`test_the_api_import_graph_does_not_pull_in_the_ingestion_stack`, which spawns a subprocess on
+purpose), then 1.65s (three real subprocesses racing to initialise the schema), and everything else
+is under half a second. The rest is **import cost** -- `import docling.chunking` alone takes 4.8s,
+and three test modules need it at module scope.
+
+So don't go looking for a slow test. And note the consequence for mutation testing: every
+`pytest <one file>` invocation pays that import again, which is why a twelve-mutation sweep costs
+minutes rather than seconds. Scope the `-k` tightly and expect it.
 
 ## What green does NOT mean
 

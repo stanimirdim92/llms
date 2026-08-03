@@ -109,9 +109,10 @@ by execution, in CI, with no server and no API keys. What remains untested is th
 over the wire -- which is where the point-ID constraint escaped to production -- so don't say
 "Qdrant is tested" without that qualifier.
 
-The auth, rate-limit, and worker/registry suites hit a real Postgres or Redis and *skip* when
-unreachable, so a green local run may have tested less than it looks; CI provides both services
-and asserts none of the three skipped.
+Five suites hit a real Postgres or Redis and *skip* when unreachable -- auth-touch, rate-limit,
+worker/registry, key-management and the `create_tenant` CLI -- so a green local run may have
+tested far less than it looks (59 tests' worth). CI provides both services and asserts none of
+the five skipped. It asserted three for a while, which let the two newer ones skip in CI silently.
 
 ## Health checks
 
@@ -307,6 +308,16 @@ Things that look correct and aren't:
 - **`POSTGRES_USER`/`PASSWORD`/`DB` is one set serving two consumers**: the postgres
   image, and `app/config.py`'s `Settings`, which assembles `DATABASE_URL` from them.
   Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME`.
+- **Every credential in `Settings` is a `SecretStr`**, and `.get_secret_value()` marks each
+  point where one escapes (eight, across `config.py`, `db.py` and `worker/app.py`). One object
+  holds the Anthropic, Voyage and LangSmith keys plus the Postgres password, so anything that
+  renders it renders all four -- and this repository is public. `database_url` is a `SecretStr`
+  too: it embeds the password, so masking the password alone was theatre.
+  **A `SecretStr` is truthy by length**, so a credential check must read
+  `.get_secret_value().strip()` -- a bare `if not value` accepts three spaces as a key and then
+  fails every request at the provider, which reads as a revoked key rather than an unset one.
+  `tests/unit/test_secrets.py` sweeps every field whose name ends in `_key`/`_password`/
+  `_secret`/`_token`, so a new credential added as a plain `str` fails the suite.
 - **`requires-python` is `>=3.13`**, while Docker and CI run 3.14 -- deliberately. The
   floor is what the code requires; nothing requires 3.14 since `app/ids.py` took over
   `uuid7` with an RFC 9562 fallback. **Never call `uuid.uuid7()` directly** -- it raises

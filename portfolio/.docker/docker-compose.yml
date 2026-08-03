@@ -182,7 +182,13 @@ services:
       target: api
     restart: unless-stopped
     ports:
-      - "${PORT:-8000}:${PORT:-8000}"
+      # Loopback, like the three data services. nginx is the intended front door -- it is what
+      # carries `client_max_body_size`, the timeouts and the security headers -- so a publicly
+      # published `api` bypasses all of it, and `docs/IDEAS.md` now proposes edge rate limiting
+      # there too. `http://localhost:8000` from the host, as the README documents, still works.
+      # **nginx itself is deliberately NOT loopback-bound** (80/443 below): it is the one service
+      # that is supposed to be reachable.
+      - "127.0.0.1:${PORT:-8000}:${PORT:-8000}"
     env_file:
       - ../.env
     environment:

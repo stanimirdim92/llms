@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
@@ -18,6 +19,17 @@ from app.registry.models import STATUS_PENDING, DocumentRecord
 from app.worker.app import defer_document_ingest
 
 router = APIRouter()
+
+
+def _write_upload(tenant_dir: Path, file_path: Path, file_bytes: bytes) -> None:
+    """Create the tenant's directory and write the file. Both syscalls, one offload.
+
+    `mkdir` is here rather than left inline because it was the only blocking filesystem call still
+    sitting in an `async def` after the `write_bytes` offload -- cheap, but the comment at the call
+    site explains why the write moved and would have read as though the function were clean.
+    """
+    tenant_dir.mkdir(parents=True, exist_ok=True)
+    file_path.write_bytes(file_bytes)
 
 
 @router.post(
@@ -60,7 +72,6 @@ async def upload_document(
     except ValueError as exc:
         raise APIError(str(exc)) from exc
 
-    tenant_dir.mkdir(parents=True, exist_ok=True)
     file_path = tenant_dir / filename
     # Written before the transaction below, and the ordering is deliberate: the worker is a
     # separate process that reads this path, so the file has to exist by the time the job
@@ -75,7 +86,7 @@ async def upload_document(
     # API's own docs tell clients to make -- waits behind one upload's disk I/O. Same reasoning
     # and same mechanism as `ingest_document`'s offload of Docling and the Qdrant upsert; no new
     # dependency (`aiofiles` would be a second answer to a question this project already answers).
-    await asyncio.to_thread(file_path.write_bytes, file_bytes)
+    await asyncio.to_thread(_write_upload, tenant_dir, file_path, file_bytes)
 
     await init_db()
     record = DocumentRecord(
@@ -157,7 +168,7 @@ async def get_document_status(doc_id: str, tenant_id: CurrentTenant) -> Document
 
     # 404 rather than 403 for another tenant's document, deliberately. `doc_id` is a content
     # hash, so answering "exists but not yours" would confirm to any caller that a given file
-    # has been uploaded by *somebody* -- an existence oracle over content.
+    # has been uploaded by *somebody* -- a confirmed account for every leaked id.
     if record is None:
         raise APIError("Document not found", code=404)
 

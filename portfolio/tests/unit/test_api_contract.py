@@ -247,10 +247,17 @@ async def test_holding_one_required_scope_is_not_enough_when_a_route_needs_anoth
 ) -> None:
     """A key holding a mixture of held and not-held scopes, in one request.
 
-    Every other scope test grants nothing the route wants, so all of them would still pass if
-    `require_scopes` returned on the *first* satisfied scope instead of collecting the missing
-    ones. This one holds `documents:read` -- real, and useless here -- alongside not holding
-    `keys:write`, so a short-circuit reads as success.
+    Honest about its own limits, because the first version of this docstring was not: it claimed to
+    catch `require_scopes` short-circuiting on the first satisfied scope. It cannot, and neither can
+    any test here -- **every route in this project declares exactly one scope**, so "collect all
+    missing" and "return on the first satisfied" are indistinguishable through the HTTP surface.
+    Verified by mutating `deps.py` to short-circuit: the full suite stayed green.
+
+    What this *does* pin is the realistic shape of a narrow key -- holding some real scopes and not
+    the one this route wants -- and that the 403 message names only what is missing, not what the
+    caller has. The collect-vs-short-circuit distinction becomes testable the day a route needs two
+    scopes; `test_scopes.py::test_a_key_cannot_confer_what_it_does_not_hold` covers the pure
+    function meanwhile.
     """
     as_a_key_holding([DOCUMENTS_READ, ASK])
 
@@ -424,6 +431,62 @@ async def test_readiness_is_503_when_a_required_dependency_is_down(
     assert body["ready"] is False
     assert body["dependencies"]["postgres"]["status"] == "down"
     assert "ConnectionError" in body["dependencies"]["postgres"]["detail"]
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_a_truncated_answer_is_reported_as_truncated_over_http(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The API half of the truncation fix, which nothing pinned.
+
+    `AskResponse.truncated` defaults to `False`, so a route that simply forgets to forward
+    `result.truncated` reports every truncated answer as complete -- and deleting that one line
+    from `ask.py` left the whole suite green. The dataclass-level test proves detection; this
+    proves the client is told.
+    """
+    from app.api.routers import ask as ask_router  # noqa: PLC0415
+    from app.generation.answer_service import Answer  # noqa: PLC0415
+
+    class _Truncating:
+        async def answer(self, _question: str, **_kwargs: object) -> Answer:
+            return Answer(text="the answer stops mid-sen", citations=[], retrieved_chunks=[], truncated=True)
+
+    truncating = _Truncating()
+    monkeypatch.setattr(ask_router, "_service", lambda: truncating)
+    monkeypatch.setattr(ask_router, "_document_scope", _no_scope)
+
+    response = await client.post("/v1/ask", json={"question": "why?"})
+
+    assert response.status_code == 200
+    assert response.json()["truncated"] is True
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_a_complete_answer_is_not_reported_as_truncated_over_http(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The other half: a flag that is always true trains the client to ignore it."""
+    from app.api.routers import ask as ask_router  # noqa: PLC0415
+    from app.generation.answer_service import Answer  # noqa: PLC0415
+
+    class _Complete:
+        async def answer(self, _question: str, **_kwargs: object) -> Answer:
+            return Answer(text="a whole answer.", citations=[], retrieved_chunks=[], truncated=False)
+
+    complete = _Complete()
+    monkeypatch.setattr(ask_router, "_service", lambda: complete)
+    monkeypatch.setattr(ask_router, "_document_scope", _no_scope)
+
+    response = await client.post("/v1/ask", json={"question": "why?"})
+
+    assert response.json()["truncated"] is False
+
+
+async def _no_scope(_question: str, _tenant_id: str) -> object:
+    """No document named, so `/ask` needs no registry read -- these tests have no Postgres."""
+    from app.retrieval.document_scope import DocumentScope  # noqa: PLC0415
+
+    return DocumentScope()
 
 
 async def test_readiness_is_503_when_qdrant_is_down(client: AsyncClient, monkeypatch: pytest.MonkeyPatch) -> None:

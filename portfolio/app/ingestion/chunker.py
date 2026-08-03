@@ -87,15 +87,22 @@ def chunk_document(
         page_no = item.prov[0].page_no if item.prov else None
         markdown = _table_to_markdown(item, document)
         caption = item.caption_text(document)
-        # Prepended only when the markdown does not already carry it. It usually does:
+        # Prepended only when the markdown does not already carry a caption. It usually does:
         # `TableItem.export_to_markdown(doc)` delegates to docling-core's `MarkdownDocSerializer`,
-        # which emits the caption above the grid (verified against the installed package, not
-        # assumed). Prepending unconditionally therefore embedded every captioned table's caption
-        # *twice* -- harmless-looking, but the caption is the wording a question actually matches,
-        # so duplicating it skews the chunk's embedding toward the heading and away from the data.
-        # The condition is kept rather than dropping the prepend outright so that a serializer
-        # change in the other direction cannot silently remove the caption from the embedded text.
-        text = markdown if not caption or caption in markdown else f"{caption}\n\n{markdown}".strip()
+        # which emits the caption above the grid. Prepending unconditionally embedded every
+        # captioned table's caption *twice* -- harmless-looking, but the caption is the wording a
+        # question actually matches, so duplicating it skews the chunk's embedding toward the
+        # heading and away from the data.
+        #
+        # The test is **structural**, not `caption in markdown`. That substring test was the first
+        # attempt and it fails on any caption the serializer escapes -- measured against
+        # docling-core: `F_1` is emitted as `F\_1`, and `&`/`<`/`>` are HTML-escaped, so
+        # "Table 2: capacity (mAh g-1) & efficiency (%)" does not appear in its own markdown and
+        # got prepended anyway. Three of six realistic scientific captions doubled that way, in two
+        # differently-escaped copies. Anything before the first table row is a caption line,
+        # whatever escaping it carries; an empty head means the serializer emitted none.
+        head, _, _ = markdown.partition("\n|")
+        text = markdown if not caption or head.strip() else f"{caption}\n\n{markdown}".strip()
         chunks.append(
             Chunk(
                 chunk_id=f"{doc_id}-table-{table_index:04d}",

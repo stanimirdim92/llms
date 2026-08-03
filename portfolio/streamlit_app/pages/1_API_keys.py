@@ -55,7 +55,9 @@ def _rows(keys: list[ApiKey]) -> list[dict[str, object]]:
             "key_id": key.id,
             "prefix": f"{key.prefix}…",
             "scopes": ", ".join(key.scopes) or "all",
-            "state": describe_state(revoked_at=key.revoked_at, expires_at=key.expires_at),
+            # `with_dates=False`: the dataframe below already has `expires` and `last used`
+            # columns, so the CLI's date-bearing wording would print the same date twice.
+            "state": describe_state(revoked_at=key.revoked_at, expires_at=key.expires_at, with_dates=False),
             "expires": key.expires_at,
             "last used": key.last_used_at,
         }

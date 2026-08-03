@@ -100,6 +100,54 @@ def test_the_redis_url_omits_credentials_entirely_when_none_are_set() -> None:
     assert _settings(redis_password="", redis_host="localhost", redis_port=6379).redis_url == "redis://localhost:6379/0"
 
 
+def test_a_set_redis_password_reaches_the_url() -> None:
+    """The mutation nothing caught: replacing `.get_secret_value()` here with the `SecretStr`
+    itself renders `**********` into the DSN, and redis-py then authenticates with ten asterisks.
+
+    Rate limiting fails open, so in a password-protected deployment that degrades *invisibly* --
+    every check silently unenforced, no error anywhere. Only the empty-password case was covered,
+    which is the one where the substitution makes no difference.
+    """
+    url = _settings(redis_password="hunter2", redis_host="localhost", redis_port=6379).redis_url
+
+    assert url == "redis://:hunter2@localhost:6379/0"
+
+
+_CREDENTIAL_SUFFIXES = ("_key", "_password", "_secret", "_token")
+"""Singular suffixes, deliberately. A substring match on "key"/"token" also catches
+`rate_limit_keys` (routes, not credentials) and `chunk_max_tokens` (LLM tokens) -- both plural,
+both harmless, and both of which failed the first version of the sweep below. The suffix form is
+what a new credential would actually be named."""
+
+_CREDENTIAL_FIELDS = sorted(
+    [name for name in Settings.model_fields if name.endswith(_CREDENTIAL_SUFFIXES)]
+    # Named explicitly: a credential by *content* rather than by name -- the assembled DSN embeds
+    # `postgres_password`, which is what made masking the password alone theatre.
+    + ["database_url"]
+)
+
+
+@pytest.mark.parametrize("field_name", _CREDENTIAL_FIELDS)
+def test_every_credential_shaped_field_is_a_secret(field_name: str) -> None:
+    """A sweep, not a list, because a list only guards the fields that exist today.
+
+    The tests above name four credentials explicitly. Adding `some_api_key: str = ""` to `Settings`
+    tomorrow reintroduces exactly the accident this module documents as closed, with the suite
+    green -- the class docstring's "every credential is a `SecretStr`" would become aspirational.
+    Rule 15: the guard has to fail when the thing it protects is removed, including by addition.
+    """
+    annotation = Settings.model_fields[field_name].annotation
+
+    assert annotation is SecretStr, f"{field_name} looks like a credential but is typed {annotation}"
+
+
+def test_the_sweep_above_is_actually_looking_at_something() -> None:
+    """A parametrised test over an empty list passes. This is the guard on the guard."""
+    assert len(_CREDENTIAL_FIELDS) >= 5, f"expected at least the five known credentials, found {_CREDENTIAL_FIELDS}"
+    assert "anthropic_api_key" in _CREDENTIAL_FIELDS
+    assert "database_url" in _CREDENTIAL_FIELDS
+
+
 def test_a_whitespace_only_key_counts_as_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     """The reason the check calls `.get_secret_value().strip()` rather than testing truthiness.
     `SecretStr("   ")` is truthy -- it has length -- so a bare `if not value` would let a key

@@ -23,6 +23,7 @@ from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.worker import tasks
 
 if TYPE_CHECKING:
+    from app.registry.models import DocumentRecord
     from app.vectorstore.qdrant_store import QdrantStore
 
 if TYPE_CHECKING:
@@ -350,3 +351,69 @@ async def test_a_missing_pdf_counts_as_a_failure(corpus: ModuleType, monkeypatch
 
     with pytest.raises(SystemExit):
         await corpus.main()
+
+
+def test_the_parse_stage_computes_the_shared_content_digest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Where `content_hash`'s terminal value is actually produced.
+
+    The first version of this test stubbed `_parse_and_chunk` and then asserted the digest it had
+    itself supplied -- so reintroducing a second inline `hashlib.sha256(...)[:32]` in the real
+    function left it green. Docling and the vision call are stubbed; the digest line is not.
+    """
+    from app.ingestion.uploads import content_digest  # noqa: PLC0415
+
+    payload = b"%PDF-1.4 the parsed bytes"
+    file_path = tmp_path / "paper.pdf"
+    file_path.write_bytes(payload)
+    monkeypatch.setattr(pipeline, "parse_document", lambda _path: object())
+    monkeypatch.setattr(pipeline, "save_parsed_document", lambda _doc, _path: None)
+    monkeypatch.setattr(pipeline, "extract_figures", lambda _doc, _dir: [])
+    monkeypatch.setattr(pipeline, "chunk_document", lambda *_args, **_kwargs: [object()])
+    monkeypatch.setattr(pipeline.get_settings(), "processed_dir", tmp_path)
+
+    _chunks, content_hash, file_size = pipeline._parse_and_chunk(DOC_ID, file_path, TENANT)
+
+    assert content_hash == content_digest(payload)
+    assert len(content_hash) == 16
+    assert file_size == len(payload)
+
+
+async def test_the_terminal_write_records_the_same_content_digest_as_the_router(
+    store: _RecordingStore, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The other half of the `content_hash` unification, and the half that decides what the column
+    actually holds -- `ingest_document`'s write is the one that wins on a successful ingest.
+
+    Reintroducing a second inline `hashlib.sha256(...)[:32]` here left the whole suite green, so
+    only the router side was pinned. `test_worker_enqueue.py` covers the router; this covers the
+    terminal write, and both assert against the same `content_digest`.
+    """
+    from app.ingestion.uploads import content_digest  # noqa: PLC0415
+
+    payload = b"%PDF-1.4 the ingested bytes"
+    file_path = tmp_path / "paper.pdf"
+    file_path.write_bytes(payload)
+    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: ([object()], content_digest(payload), 27))
+
+    recorded: list[DocumentRecord] = []
+
+    @asynccontextmanager
+    async def _session() -> AsyncIterator[object]:
+        yield object()
+
+    async def _save(_session: object, record: DocumentRecord) -> None:
+        recorded.append(record)
+
+    monkeypatch.setattr(pipeline, "get_session", _session)
+    monkeypatch.setattr(pipeline, "save_document_record", _save)
+    monkeypatch.setattr(pipeline, "init_db", _noop)
+
+    await ingest_document(doc_id=DOC_ID, file_path=file_path, store=cast("QdrantStore", store), tenant_id=TENANT)
+
+    assert recorded, "the terminal registry write must happen"
+    assert recorded[0].content_hash == content_digest(payload)
+    assert len(recorded[0].content_hash) == 16
+
+
+async def _noop() -> None:
+    return None

@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 import pytest
 from langchain_core.documents import Document
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.retrieval import reranker as reranker_module
 from app.retrieval.reranker import rerank
 
@@ -61,12 +61,26 @@ def _factory(name: str, calls: list[tuple[str, int]]) -> Callable[[], _StubCompr
     return lambda: _StubCompressor(name, calls)
 
 
-async def test_the_default_backend_is_voyage(backends: list[tuple[str, int]], monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_the_voyage_backend_is_used_when_selected(
+    backends: list[tuple[str, int]], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Named for what it tests. It was `test_the_default_backend_is_voyage`, which overstated it:
+    the test sets `reranker_backend="voyage"` itself, so flipping the *default* in `Settings` to
+    `"local"` left it green. The default is pinned where defaults belong -- on the field.
+    """
     monkeypatch.setattr(get_settings(), "reranker_backend", "voyage")
 
     await rerank("why?", _documents(3))
 
     assert [name for name, _ in backends] == ["voyage"]
+
+
+def test_the_configured_default_is_voyage() -> None:
+    """The actual default, read off the field rather than off a monkeypatched instance. Voyage is
+    the paid path, so a default flipped to `local` would silently require an extra no image
+    installs -- which `config.require_reranker_backend` then refuses to boot on.
+    """
+    assert Settings(_env_file=None).reranker_backend == "voyage"
 
 
 async def test_the_local_backend_is_used_when_selected(

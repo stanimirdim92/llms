@@ -223,6 +223,24 @@ Recurring across three unrelated components:
 **Prevents:** the worst failure mode this system has — a fluent, confident, wrong answer, which
 is indistinguishable from a correct one at the point of use.
 
+## 15b. Content-addressed caches, never position-addressed
+
+The figure-caption cache keys on a sha256 of the rendered PNG, not on `figure_id`. `figure_id` is
+`fig-{page}-{index}` over every picture item, so inserting a picture earlier in a document shifts
+every later index down onto an id an earlier figure already held — and nothing deletes stale
+entries, so that is a **collision**, not a miss. Measured before the fix: a newly inserted figure
+was handed the caption written for whatever used to sit at index 0.
+
+The same shape applies to `content_hash` in the registry (a digest of the bytes, answering "did
+the content change under a stable id") and, in the negative, to Qdrant point ids — which *are*
+derived from position (`{doc_id}-text-0000`) and are only safe because `upsert` deletes every
+point for the document first. Two conventions, one of them safe for a different reason; see
+"Never remove the delete step" in `CLAUDE.md`.
+
+**Prevents:** a cache entry describing something other than what asked for it — which reads as
+perfectly good content at every point of use. Also, deduplicate *within* a batch and not only
+against the cache, or the first pass pays per duplicate and gets a different answer for each.
+
 ## 16. 404 over 403 for another tenant's resource
 
 Distinguishing "not yours" from "doesn't exist" confirms to any caller that a given id belongs

@@ -288,7 +288,9 @@ async def test_success_after_failure_ends_ingested_with_no_error(db: SessionFact
 
 
 async def test_status_is_not_readable_by_another_tenant(db: SessionFactory) -> None:
-    """`doc_id` is a content hash, so two tenants uploading the same file share an id. A
+    """`doc_id` arrives from the client, so one tenant can paste another's -- out of a log, a
+    screenshot, a support thread. (Not because ids collide: `upload_doc_id` salts with
+    `tenant_id`.) A
     lookup keyed on `doc_id` alone would leak tenant A's filename, size and status to tenant
     B while looking entirely correct -- hence `tenant_id` in the WHERE clause.
     """

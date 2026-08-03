@@ -14,6 +14,8 @@ from __future__ import annotations
 import base64
 import hashlib
 import io
+import os
+import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -95,6 +97,20 @@ def _response_text(response: BaseMessage) -> str:
     return "".join(block.get("text", "") for block in text_blocks).strip()
 
 
+_CAPTION_MAX_TOKENS = 300
+"""Ceiling for one caption. A caption is short by construction -- 2-4 sentences."""
+
+_TRUNCATED_STOP_REASON = "max_tokens"
+"""Anthropic's `stop_reason` when the ceiling above cut generation off.
+
+The same finding that produced `Answer.truncated` for `/ask` applies here and was missed the first
+time: a caption cut at `max_tokens` is still well past `figure_min_caption_chars`, so
+`_is_unusable_caption` keeps it, and a figure's caption is its *only* searchable text. It is also
+cached now, so one truncated caption is re-served on every later ingest of that image. Treated as
+unusable rather than stored, which is the same call the module already makes for a model refusal.
+"""
+
+
 def _caption_all(images: list[bytes]) -> list[str]:
     """Caption every figure concurrently, returning captions in the same order.
 
@@ -113,14 +129,24 @@ def _caption_all(images: list[bytes]) -> list[str]:
     llm = ChatAnthropic(
         model=settings.figure_caption_model,
         api_key=settings.anthropic_api_key,
-        max_tokens=300,
+        max_tokens=_CAPTION_MAX_TOKENS,
         thinking={"type": "disabled"},
     )
     responses = llm.batch(
         [[_caption_message(image_bytes)] for image_bytes in images],
         config={"max_concurrency": settings.figure_caption_concurrency},
     )
-    return [_response_text(response) for response in responses]
+    captions = []
+    for response in responses:
+        if response.response_metadata.get("stop_reason") == _TRUNCATED_STOP_REASON:
+            # Returned empty, which `_is_unusable_caption` drops -- see `_TRUNCATED_STOP_REASON`.
+            # A mid-sentence caption is worse than no figure: it becomes the figure's whole
+            # retrievable text and reads like a real description.
+            log.info("figures.caption_truncated", max_tokens=_CAPTION_MAX_TOKENS)
+            captions.append("")
+            continue
+        captions.append(_response_text(response))
+    return captions
 
 
 def _caption_path(output_dir: Path, image_bytes: bytes) -> Path:
@@ -176,15 +202,28 @@ def _store_caption(path: Path, caption: str) -> None:
     """Write a caption to the cache atomically, and never fail the ingest over it.
 
     Temp file plus `replace`, so a reader never observes a partial write -- see `_cached_caption`
-    for what a truncated entry costs. `OSError` is swallowed because this is a cache: a read-only
-    or full disk should make the next ingest slower, not fail this one.
+    for what a truncated entry costs.
+
+    The temp name carries the pid and a random suffix, **not** `path.with_suffix(".tmp")`, which
+    was the first version. That name is a function of the digest alone, so two writers of the same
+    image share it -- and they are reachable: two uploads of identical bytes by one tenant derive
+    the same `doc_id`, defer two jobs (see the duplicate-enqueue entry in `docs/IDEAS.md`), and
+    `WORKER_CONCURRENCY` defaults to 2. Both would write the same temp path and one would `replace`
+    a file the other was still writing, which is the exact failure the temp file exists to prevent.
+
+    `OSError` is swallowed because this is a cache: a full disk should make the next ingest slower,
+    not fail this one. Note the narrower truth than the first version of this docstring claimed --
+    on a *read-only* mount the document fails earlier anyway, at `output_dir.mkdir` or at the PNG
+    write, neither of which is guarded. This guard covers the disk filling up between those and
+    here.
     """
-    temporary = path.with_suffix(".tmp")
+    temporary = path.with_suffix(f".{os.getpid()}.{uuid.uuid4().hex}.tmp")
     try:
         temporary.write_text(caption, encoding="utf-8")
         temporary.replace(path)
     except OSError:
         log.warning("figures.caption_cache_write_failed", path=str(path))
+        temporary.unlink(missing_ok=True)
 
 
 def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_dir: Path) -> list[str]:
@@ -193,7 +232,8 @@ def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_di
     Re-ingesting a document was free of Docling work -- `_parse_and_chunk` caches the parsed
     JSON -- but not free of Anthropic work: every figure was re-captioned on every ingest, and
     re-ingest is not rare. It happens on a re-upload of the same file (`doc_id` is a content
-    hash, so it is the *same* document), on any retry of a failed job, and on every corpus
+    hash of the tenant and the bytes, so the same tenant re-uploading identical content lands on
+    the *same* document), on any retry of a failed job, and on every corpus
     rebuild. A 30-figure paper therefore paid 30 vision calls each time to arrive at the same
     captions.
 
@@ -216,10 +256,28 @@ def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_di
     if not fresh_indices:
         return captions
 
-    new_captions = _caption_all([rendered[index][3] for index in fresh_indices])
-    for index, caption in zip(fresh_indices, new_captions, strict=True):
-        captions[index] = caption
-        _store_caption(_caption_path(output_dir, rendered[index][3]), caption)
+    # Deduplicated by digest *within* this batch, not only against the cache on disk. The first
+    # version collected every miss and sent them all, so a logo repeated on ten pages cost ten
+    # vision calls on the document's first ingest -- while the docstring and a test both claimed
+    # one. Worse than the cost: ten independent captions for one image, since the model is
+    # non-deterministic, so ten chunks described the same picture differently and a later
+    # re-ingest collapsed them onto whichever was written last.
+    first_index_of: dict[Path, int] = {}
+    for index in fresh_indices:
+        first_index_of.setdefault(_caption_path(output_dir, rendered[index][3]), index)
+
+    distinct = list(first_index_of.items())
+    new_captions = _caption_all([rendered[index][3] for _path, index in distinct])
+    fresh_by_path: dict[Path, str] = {}
+    for (path, _index), caption in zip(distinct, new_captions, strict=True):
+        fresh_by_path[path] = caption
+        _store_caption(path, caption)
+    # Fanned out from memory, so every duplicate gets the one caption that was paid for -- and
+    # deliberately not by re-reading the cache, which would lose the caption entirely whenever the
+    # write failed. `_store_caption` swallows `OSError` precisely so a cache problem does not
+    # affect this document; reading back would have undone that.
+    for index in fresh_indices:
+        captions[index] = fresh_by_path[_caption_path(output_dir, rendered[index][3])]
     return captions
 
 

@@ -42,19 +42,28 @@ on the host's terms rather than an error we would see in a traceback.
 """
 
 _ATTEMPTS = 3
-"""Total tries per paper, also matching the old client. Transient 5xx and connection resets are
-the common case on a large corpus build, and the alternative is failing the whole run for one.
+"""Total tries per paper for a *transient* failure -- a 5xx, a reset, a timeout.
+
+In the same range as the `arxiv` client's `num_retries=3`, and deliberately not described as
+"matching" it: that client retried 4 times in total (`_try_index < num_retries` starting at 0) and
+those retries covered the Atom *metadata* request, never the PDF fetch, which had none.
 """
 
 
 def _download(client: httpx.Client, arxiv_id: str) -> bytes:
     """The PDF bytes, retrying transient failures.
 
-    Only `httpx.HTTPError` is retried, and deliberately not `httpx.InvalidURL`: an unusable URL
-    is permanent, so retrying it burns three attempts and two 3-second sleeps to reach the same
-    answer. It propagates to the caller's per-paper handler on the first try instead -- which is
-    also why that handler has to name it: `InvalidURL` is **not** a subclass of `HTTPError`
-    (checked against httpx 0.28.1), so a mistyped id used to escape and stop the whole build.
+    Retries only what can succeed on a second try. Two kinds of failure are permanent and are
+    raised on the first attempt instead:
+
+    - **A 4xx**, which is what a withdrawn or *mistyped* id actually produces -- an ordinary typo
+      is a perfectly valid URL and a 404 from arXiv. The first version of this function retried
+      those three times with two 3-second sleeps, directly against the rationale written here.
+    - **`httpx.InvalidURL`**, which is **not** a subclass of `HTTPError` (checked against httpx
+      0.28.1), so it also has to be named in the caller's per-paper handler or it escapes and stops
+      the build. Reachable only from a *non-printable* character -- a stray newline in
+      `manifest.json`. `httpx.URL` accepts `abc`, `2008 10896` and `../../etc/passwd` without
+      complaint, so the earlier claim that this guard catches a mistyped id was wrong.
     """
     last: httpx.HTTPError | None = None
     for attempt in range(_ATTEMPTS):
@@ -63,8 +72,13 @@ def _download(client: httpx.Client, arxiv_id: str) -> bytes:
         try:
             response = client.get(_PDF_URL.format(arxiv_id=arxiv_id))
             response.raise_for_status()
-        except httpx.HTTPError as exc:
+        except httpx.HTTPStatusError as exc:
+            if exc.response.is_client_error:
+                raise  # permanent: a withdrawn or mistyped id, not a blip
             last = exc
+            continue
+        except httpx.HTTPError as exc:
+            last = exc  # transport-level: a reset, a timeout, a DNS hiccup
             continue
         return response.content
     raise last if last else RuntimeError("unreachable")

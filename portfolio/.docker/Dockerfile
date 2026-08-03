@@ -14,9 +14,13 @@
 #   the reason these notes are checked rather than trusted: a shared library whose
 #   only consumer is gone is invisible -- nothing fails, the image is just bigger and
 #   the comment explaining it is now a lie about what the code does.
-# - libssl3 (runtime): kept. It used to be justified by `cryptography`, which is now
-#   gone -- nothing imported it -- so the honest reason today is that `psycopg[binary]`
-#   and the TLS clients want a system libssl present, and it is a few hundred KB.
+# - libssl3 (runtime): a no-op, kept as belt-and-braces. Its original justification was
+#   `cryptography`, which is gone. The replacement justification ("psycopg needs it") was
+#   also wrong and is worth recording as a caught mistake: `psycopg[binary]` vendors its
+#   own (`psycopg_binary.libs/libssl-*.so.3`), and `python:3.14-slim` already ships
+#   `libssl3t64`, which Provides: libssl3 -- so this line installs an already-installed
+#   package and costs zero KB, not "a few hundred". It stays only against a base-image
+#   change that drops it. Two unverified justifications in a row for one line; rule 13.
 # - build-essential/libssl-dev/libffi-dev/pkg-config/rustc/cargo (builder-only):
 #   a fallback for any dependency with no prebuilt wheel for this exact Python
 #   version/arch, which uv would then build from source. `cryptography` was the one

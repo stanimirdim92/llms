@@ -58,13 +58,21 @@ def day_or_never(value: datetime | None) -> str:
     return f"{value:%Y-%m-%d}" if value else "never"
 
 
-def describe_state(*, revoked_at: datetime | None, expires_at: datetime | None) -> str:
+def describe_state(*, revoked_at: datetime | None, expires_at: datetime | None, with_dates: bool = True) -> str:
     """One phrase answering "can this key authenticate right now, and if not why not".
 
     Lives here, in the module that owns the expiry vocabulary, because it had been implemented
-    twice -- once in `scripts/create_tenant.py` and once in the Streamlit key page -- with
-    different wording. Both were correct; both were free to drift on the next edit to either,
-    and the two are read side by side by the same person debugging the same key.
+    twice -- once in `scripts/create_tenant.py` and once in the Streamlit key page. Both were
+    correct; both were free to drift on the next edit to either, and the two are read side by side
+    by the same person debugging the same key.
+
+    **`with_dates` exists because the two implementations differed in content, not only in
+    wording**, and the first version of this function flattened that difference. The CLI embeds
+    dates (`revoked 2026-08-01`) because a fixed-width text table has nowhere else to put them;
+    the Streamlit page returned bare `revoked`/`expired`/`active` because its dataframe already has
+    `expires` and `last used` as separate columns. Unifying on the CLI wording printed the expiry
+    date twice per row and put a shouty `EXPIRED` inside a dataframe cell. Rule 6: the conflict was
+    real, so it is surfaced as a parameter rather than averaged away.
 
     Takes the two timestamps rather than an `ApiKey`, so nothing in `app/auth/` has to import a
     table model to render a string, and so a caller holding an API *response* (which has the
@@ -81,9 +89,9 @@ def describe_state(*, revoked_at: datetime | None, expires_at: datetime | None) 
     processes.
     """
     if revoked_at:
-        return f"revoked {day_or_never(revoked_at)}"
+        return f"revoked {day_or_never(revoked_at)}" if with_dates else "revoked"
     if expires_at is None:
         return "active"
     if expires_at <= datetime.now(UTC):
-        return f"EXPIRED {day_or_never(expires_at)}"
-    return f"active until {day_or_never(expires_at)}"
+        return f"EXPIRED {day_or_never(expires_at)}" if with_dates else "expired"
+    return f"active until {day_or_never(expires_at)}" if with_dates else "active"

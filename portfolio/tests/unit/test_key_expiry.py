@@ -113,3 +113,22 @@ def test_a_missing_timestamp_renders_as_never_not_none() -> None:
     """
     assert day_or_never(None) == "never"
     assert day_or_never(datetime(2026, 8, 3, tzinfo=UTC)) == "2026-08-03"
+
+
+def test_with_dates_false_returns_the_bare_state() -> None:
+    """The parameter exists because the two renderers differed in *content*, not only in wording,
+    and the first unification flattened that.
+
+    The Streamlit key page's dataframe already has `expires` and `last used` columns, so the CLI's
+    date-bearing wording printed the same date twice per row and put a shouty `EXPIRED` inside a
+    cell. The CLI's fixed-width text table has nowhere else to put a date, so it keeps them.
+    """
+    lapsed = datetime.now(UTC) - timedelta(days=1)
+    live = datetime.now(UTC) + timedelta(days=30)
+
+    assert describe_state(revoked_at=lapsed, expires_at=None, with_dates=False) == "revoked"
+    assert describe_state(revoked_at=None, expires_at=lapsed, with_dates=False) == "expired"
+    assert describe_state(revoked_at=None, expires_at=live, with_dates=False) == "active"
+    assert describe_state(revoked_at=None, expires_at=None, with_dates=False) == "active"
+    # And the default still carries them, for the CLI.
+    assert describe_state(revoked_at=None, expires_at=live).startswith("active until")

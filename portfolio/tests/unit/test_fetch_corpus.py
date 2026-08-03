@@ -40,16 +40,22 @@ _PAPERS = ("1111", "2222", "3333")
 
 
 class _Response:
-    """A successful response. Failures are scripted as exceptions instead of as 4xx/5xx bodies,
-    because that is what `raise_for_status` turns them into anyway and constructing a real
-    `httpx.HTTPStatusError` needs a real Request and Response to attach.
+    """A response, successful unless given a `status`.
+
+    A real `httpx.HTTPStatusError` needs a real Request and Response to attach, so the 4xx/5xx
+    cases build one -- which matters, because `_download` now branches on
+    `exc.response.is_client_error` and a hand-rolled stand-in would not have that attribute.
     """
 
-    def __init__(self, content: bytes) -> None:
+    def __init__(self, content: bytes = b"", status: int = 200) -> None:
         self.content = content
+        self._status = status
 
     def raise_for_status(self) -> None:
-        return None
+        if self._status >= 400:
+            request = httpx.Request("GET", "https://arxiv.org/pdf/x")
+            response = httpx.Response(self._status, request=request)
+            raise httpx.HTTPStatusError(f"{self._status}", request=request, response=response)
 
 
 class _ScriptedClient:
@@ -150,11 +156,41 @@ def test_a_paper_is_not_retried_forever(corpus: ModuleType) -> None:
     assert _ScriptedClient.requests.count("2222") == corpus._ATTEMPTS
 
 
+def test_a_404_is_not_retried(corpus: ModuleType) -> None:
+    """A withdrawn or mistyped id is what a 404 actually is, and it is permanent -- so the first
+    version's three attempts with two 3-second sleeps burned six seconds per bad id to reach the
+    same answer, against this function's own stated rationale. It must still be a *paper* failure
+    rather than a build failure.
+    """
+    _ScriptedClient.outcomes = {"2222": [_Response(status=404)] * 3}
+
+    with pytest.raises(SystemExit):
+        corpus.main()
+
+    assert _ScriptedClient.requests.count("2222") == 1, "a 404 is permanent; do not retry it"
+    assert _downloaded(corpus) == ["1111", "3333"]
+
+
+def test_a_500_is_retried(corpus: ModuleType) -> None:
+    """The other side of the 4xx/5xx split: a server error is exactly the transient case retries
+    exist for, and a 45-paper corpus build against a public host will meet them.
+    """
+    _ScriptedClient.outcomes = {"2222": [_Response(status=503), _Response(b"%PDF-1.4 second try")]}
+
+    corpus.main()
+
+    assert _ScriptedClient.requests.count("2222") == 2
+    assert _downloaded(corpus) == list(_PAPERS)
+
+
 def test_an_unusable_url_is_a_paper_failure_not_a_build_failure(corpus: ModuleType) -> None:
     """`httpx.InvalidURL` is **not** a subclass of `httpx.HTTPError` -- checked against httpx
-    0.28.1 -- so it used to escape the per-paper handler and stop the build. A mistyped id is
-    the single likeliest way to reach it, and the comment above that handler names exactly that
-    case as one it survives.
+    0.28.1 -- so it escapes the per-paper handler unless named there, and stops the build.
+
+    Reachable from a *non-printable* character, i.e. a stray newline in `manifest.json`.
+    Deliberately not described as "a mistyped id" any more: `httpx.URL` accepts `abc`,
+    `2008 10896` and `../../etc/passwd` without complaint, so an ordinary typo is a valid URL and
+    a 404 -- covered by `test_a_404_is_not_retried` instead.
     """
     _ScriptedClient.outcomes = {"2222": [httpx.InvalidURL("not a url")] * 3}
 

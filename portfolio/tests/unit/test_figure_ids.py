@@ -15,14 +15,20 @@ from __future__ import annotations
 
 import hashlib
 import io
+import os
 import pathlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 from docling_core.types.doc.document import DoclingDocument, PictureItem
 from PIL import Image
+from pydantic import SecretStr
 
 from app.ingestion import figure_extractor
+
+_REAL_CAPTION_ALL = figure_extractor._caption_all
+"""Captured at import, before the autouse `_no_network` fixture replaces the module attribute --
+the one test that exercises `_caption_all` itself needs the real implementation."""
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Sequence
@@ -105,16 +111,22 @@ def test_unrenderable_picture_still_consumes_its_index(tmp_path: Path) -> None:
     assert [f.figure_id for f in figures] == ["fig-000-00", "fig-000-02"]
 
 
-def test_captions_stay_aligned_with_their_figures(tmp_path: Path) -> None:
-    """Rendering and captioning are two separate passes now, so a zip misalignment would
-    attach the wrong caption to a figure -- wrong, and invisible without this assertion.
+def test_captions_stay_aligned_with_their_figures(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Rendering and captioning are separate passes, so a zip misalignment would attach the wrong
+    caption to a figure -- wrong, and invisible without this assertion.
+
+    Three *distinct* pictures, because the cache now deduplicates a batch by image digest: with
+    the module's byte-identical `_Renderable` these would legitimately collapse to one caption and
+    the alignment this test exists for would be trivially satisfied.
     """
-    items = [_Renderable(self_ref=f"#/pictures/{i}") for i in range(3)]
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+    items = [_picture_of(shade) for shade in (10, 20, 30)]
 
     figures = figure_extractor.extract_figures(_document_yielding(items), tmp_path)
 
-    assert [f.caption for f in figures] == [_plausible_caption(i) for i in range(3)]
     assert [f.figure_id for f in figures] == ["fig-000-00", "fig-000-01", "fig-000-02"]
+    assert [f.caption for f in figures] == [_expected_caption(shade) for shade in (10, 20, 30)]
 
 
 def test_no_pictures_makes_no_captioning_call(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -267,7 +279,8 @@ def test_a_second_pass_over_the_same_document_makes_no_vision_call(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Re-ingest is not rare -- a re-upload of the same file is the *same* document (`doc_id` is
-    a content hash), every retry of a failed job re-enters here, and every corpus rebuild does
+    a hash of the tenant *and* the bytes, so identical content re-uploaded by the same tenant is
+    the same document), every retry of a failed job re-enters here, and every corpus rebuild does
     too. Docling work was already cached; the vision calls were not, so a 30-figure paper paid
     30 of them each time to arrive at the same captions.
     """
@@ -319,26 +332,54 @@ def test_a_figure_that_merely_moved_still_hits_the_cache(tmp_path: Path, monkeyp
     monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
 
     figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
-    figure_extractor.extract_figures(_document_yielding([_picture_of(20), _picture_of(10)]), tmp_path)
+    figures = figure_extractor.extract_figures(_document_yielding([_picture_of(20), _picture_of(10)]), tmp_path)
 
     assert calls == [1, 1], "shade 10 moved from index 0 to index 1 and must still hit"
+    # Content, not just the call count. Without this the test passes under the old `figure_id` key
+    # too, where the moved figure "hits" by being handed a stranger's caption.
+    assert figures[1].caption == _expected_caption(10), "it must hit with its *own* caption"
 
 
-def test_two_identical_pictures_share_one_caption(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A consequence of the digest key worth stating rather than discovering: the same logo on
-    every page is one vision call, not one per page. Correct -- same pixels, same description --
-    and it is where most of the saving comes from on a slide deck.
+def test_identical_pictures_cost_one_vision_call_on_the_very_first_ingest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The same logo on every page is one call, not one per page -- **including** the first time
+    the document is seen, which is where the saving actually is.
+
+    The first version of this test called `extract_figures` once to warm the cache before the
+    three-picture document, so it only proved the cross-*run* behaviour and passed while the first
+    ingest still paid three calls: the code collected every cache miss and sent them all, and three
+    identical images are three misses. One pass, no pre-warm.
+
+    The cost was the smaller half. Three independent calls on a non-deterministic model produce
+    three *different* captions for one picture, so three chunks described the same image
+    differently -- and a later re-ingest collapsed them onto whichever the cache happened to hold.
     """
     calls: list[int] = []
     monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
 
-    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
     figures = figure_extractor.extract_figures(
         _document_yielding([_picture_of(10), _picture_of(10), _picture_of(10)]), tmp_path
     )
 
-    assert calls == [1]
-    assert {figure.caption for figure in figures} == {_expected_caption(10)}
+    assert calls == [1], "one distinct image, so one call -- on the first pass, not the second"
+    assert [figure.figure_id for figure in figures] == ["fig-000-00", "fig-000-01", "fig-000-02"]
+    assert {figure.caption for figure in figures} == {_expected_caption(10)}, "all three, same caption"
+    assert len(list(tmp_path.glob("caption-*.txt"))) == 1
+
+
+def test_a_mix_of_new_and_duplicate_images_pays_once_per_distinct_image(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The general form: five pictures, two distinct, one batch of two."""
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+    shades = (10, 20, 10, 20, 10)
+
+    figures = figure_extractor.extract_figures(_document_yielding([_picture_of(s) for s in shades]), tmp_path)
+
+    assert calls == [2]
+    assert [figure.caption for figure in figures] == [_expected_caption(s) for s in shades]
 
 
 def test_refusals_are_cached_too_so_they_are_not_re_billed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -436,3 +477,91 @@ def test_the_cache_entry_sits_in_the_figure_directory(tmp_path: Path) -> None:
 
     assert (tmp_path / "fig-000-00.png").exists()
     assert len(list(tmp_path.glob("caption-*.txt"))) == 1
+
+
+def test_a_caption_cut_off_at_the_token_ceiling_is_not_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`/ask` got truncation detection and figure captioning did not, which was the same finding
+    left half-fixed.
+
+    A caption cut at `max_tokens` is well past `figure_min_caption_chars`, so the usability filter
+    keeps it -- and a figure's caption is its only searchable text, so a mid-sentence fragment
+    becomes the figure's entire retrievable content while reading like a real description. It would
+    also be *cached* under the image digest and re-served on every later ingest.
+
+    Driven through the real `_caption_all` with a stubbed model, because the check lives there
+    rather than in `extract_figures`.
+    """
+
+    class _Truncated:
+        content = "A line plot of discharge capacity against cycle number for three cathode mat"
+        response_metadata: ClassVar[dict[str, str]] = {"stop_reason": "max_tokens"}
+
+    class _Complete:
+        content = "A line plot of discharge capacity against cycle number for three cathode materials."
+        response_metadata: ClassVar[dict[str, str]] = {"stop_reason": "end_turn"}
+
+    class _StubLLM:
+        def batch(self, messages: list[object], config: dict | None = None) -> list[_Truncated | _Complete]:
+            assert config is not None
+            responses: list[_Truncated | _Complete] = [_Truncated(), _Complete()]
+            return responses[: len(messages)]
+
+    monkeypatch.setattr(figure_extractor, "ChatAnthropic", lambda **_kwargs: _StubLLM())
+    monkeypatch.setattr(figure_extractor.get_settings(), "anthropic_api_key", SecretStr("sk-ant-x"))
+
+    # `_REAL_CAPTION_ALL`, not `figure_extractor._caption_all`: the autouse `_no_network` fixture
+    # has replaced the module attribute, and the check under test lives inside the real function.
+    captions = _REAL_CAPTION_ALL([b"first image", b"second image"])
+
+    assert captions[0] == "", "a truncated caption must be dropped, not stored"
+    assert captions[1].startswith("A line plot")
+
+
+def test_the_cache_filename_is_the_digest_of_the_png_that_was_written(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The cache filename must be the digest of the PNG that is actually on disk.
+
+    That is the invariant the cache rests on, and it is what this pins. It deliberately does **not**
+    claim to pin "encoded once": Pillow's encode is deterministic, so a second `image.save(path)`
+    produces identical bytes and is indistinguishable from here -- measured, by mutating the code
+    back to a double encode and watching this stay green. The single encode is a CPU saving, and the
+    reason it is *also* correctness-relevant is exactly what this asserts: if the two encodes ever
+    diverged (a Pillow upgrade changing the default compression level would do it) the cache would
+    miss for every figure on every ingest while looking like it worked, and this test is what would
+    catch that.
+    """
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner([]))
+
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+
+    png = (tmp_path / "fig-000-00.png").read_bytes()
+    entry = next(path for path in tmp_path.glob("caption-*.txt"))
+    assert entry.name == f"caption-{hashlib.sha256(png).hexdigest()[:32]}.txt"
+
+
+def test_two_writers_of_one_image_do_not_share_a_temp_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The temp path must be unique per writer, not per digest.
+
+    It was `path.with_suffix(".tmp")` -- a function of the digest alone -- so two workers ingesting
+    the same `doc_id` (two uploads of identical bytes derive one id, and `WORKER_CONCURRENCY`
+    defaults to 2) wrote the same temp file and one `replace`d a file the other was still writing.
+    That is precisely what the temp file exists to prevent.
+    """
+    captured: list[str] = []
+    real_replace = pathlib.Path.replace
+
+    def _record_then_replace(self: pathlib.Path, target: pathlib.Path) -> pathlib.Path:
+        captured.append(self.name)
+        return real_replace(self, target)
+
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner([]))
+    monkeypatch.setattr(pathlib.Path, "replace", _record_then_replace)
+
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+
+    assert captured, "the atomic write must go through a temp file"
+    assert captured[0] != "caption-.tmp"
+    assert captured[0].endswith(".tmp")
+    assert str(os.getpid()) in captured[0], "the pid is what makes it unique between workers"
+    assert not list(tmp_path.glob("*.tmp")), "and it must not be left behind"

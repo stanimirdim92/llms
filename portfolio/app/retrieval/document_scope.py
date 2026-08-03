@@ -77,8 +77,12 @@ _DOC_ID_MARKER = re.compile(r"\bdoc[_\s-]?id\s*[=:]\s*([^\s,;]+)", re.IGNORECASE
 # fails closed, but on the one mechanism the README documents as *required* for the corpus.
 _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 
-# A marker capture only counts as an id if it contains a digit. Every real id here does: an
-# upload's is `{32 hex}-{32 hex}`, the corpus's is an arXiv id (`2008.10896`). Prose does not:
+# A candidate token only counts as an id if it contains a digit -- applied to bare `_DOC_ID_SHAPE`
+# matches as well as to marker captures, though only the marker form is loose enough for it to
+# matter. Every id this project mints contains one: an upload's is `{32 hex}-{32 hex}`, the shared
+# corpus's is `global-{32 hex}` (the one prefix with no digit of its own, hence "contains", not
+# "starts with"), and a manifest id is an arXiv number. Digit-free hex is possible in principle and
+# vanishingly unlikely -- (6/16)^32 -- so this is a heuristic, not a guarantee. Prose does not:
 # a question quoting SQL -- "why does `WHERE doc_id = 'x'` return nothing?" -- or a template
 # (`doc_id=%(doc_id)s`) used to be read as naming a document, fail to match any row, and refuse
 # the entire question with a 404 that named a document the user had not asked about. Refusing

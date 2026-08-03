@@ -255,7 +255,19 @@ def test_the_filename_and_tenant_reach_every_chunk_kind(tmp_path: Path) -> None:
     assert all(chunk.metadata["filename"] == "report.pdf" for chunk in chunks)
 
 
-def test_a_captioned_table_embeds_its_caption_exactly_once() -> None:
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "Table 1: discharge capacity by cathode material.",
+        # The three the first version of this fix got wrong, and this test could not see. The
+        # serializer escapes `_` as `\\_` and HTML-escapes `&`, `<`, `>`, so a substring test
+        # against the emitted markdown fails and the caption was prepended a second time.
+        "Table 2: F_1 scores for multi_head attention.",
+        "Table 3: capacity (mAh g-1) & efficiency (%).",
+        "Table 4: the x < 0.5 regime.",
+    ],
+)
+def test_a_captioned_table_embeds_its_caption_exactly_once(caption: str) -> None:
     """Writing this test is what found the duplication.
 
     The caption matters: "Table 3: capacity retention by cathode" is often the only wording a
@@ -265,9 +277,11 @@ def test_a_captioned_table_embeds_its_caption_exactly_once() -> None:
     and away from the data. Nothing raised; the chunk simply read slightly wrong to the
     embedding model.
     """
-    caption = "Table 1: discharge capacity by cathode material."
-
     chunks = chunk_document(_document([_table(caption=caption)], captions=[caption]), doc_id="doc", figures=[])
 
-    assert chunks[0].text.count(caption) == 1
-    assert caption in chunks[0].metadata["markdown"], "the serializer puts it there; this records that"
+    # Not `count(caption) == 1`, which was the first version and passes with the bug present: the
+    # duplicate copy is *escaped*, so it does not match the raw caption and the count stays 1.
+    # Count the lines before the grid instead -- one caption line, whatever escaping it carries.
+    head, _, grid = chunks[0].text.partition("\n|")
+    assert grid, "the markdown grid must survive"
+    assert len([line for line in head.splitlines() if line.strip()]) == 1, f"caption doubled: {head!r}"

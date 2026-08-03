@@ -8,9 +8,9 @@ Three failure modes matter here and they are not equally loud:
    indistinguishable from a correct one.
 2. **Silent under-matching.** A named document that stops resolving reverts to an unscoped
    search, which also answers successfully and also looks fine.
-3. **Cross-tenant resolution.** `doc_id` is a content hash, so two tenants uploading the same
-   bytes share one. Matching a filename against the wrong tenant's rows would resolve to
-   their document.
+3. **Cross-tenant resolution.** Ids and filenames both arrive from the client, so matching them
+   against the wrong tenant's rows resolves to that tenant's document. (Ids do not *collide*:
+   `upload_doc_id` salts the digest with `tenant_id`. The risk is a pasted id, not a derived one.)
 
 All of it is pure -- no Postgres, no Qdrant, no API keys -- so it runs everywhere.
 """
@@ -233,9 +233,8 @@ def test_scoped_filter_keeps_the_tenant_condition() -> None:
     """The doc_id condition is ANDed with the tenant condition, never substituted for it.
 
     A scoped filter that dropped tenant scoping would return any tenant's chunks for a
-    content-hash id -- and `doc_id` is a content hash, so two tenants uploading the same file
-    share one. Asserted on the built filter because a wrong filter here returns data rather
-    than raising.
+    client-supplied id -- and `doc_id` is exactly that on the way in, however it was generated.
+    Asserted on the built filter because a wrong filter here returns data rather than raising.
     """
     keys = _condition_keys(_build_filter(None, "tenant-a", ["doc-flyer"]))
 

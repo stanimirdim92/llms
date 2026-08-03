@@ -64,9 +64,12 @@ rate in front of you, and that rate did not exist until it was logged.
 _TRUNCATED_STOP_REASON = "max_tokens"
 """Anthropic's `stop_reason` when generation was cut off by the token ceiling.
 
-Read from `response_metadata`, which is where `langchain_anthropic` puts the raw API fields --
-its own docstring shows `response_metadata={'id': ..., 'stop_reason': 'tool_use', ...}`. Any
-other value (`end_turn`, `stop_sequence`) means the model chose to stop.
+Read from `response_metadata`, and the route it takes there is worth stating because it is not
+the obvious one: `langchain_anthropic._format_output` puts `stop_reason` in `llm_output`, and
+`langchain_core`'s `generate` is what merges `llm_output` into the message's `response_metadata`.
+So the read location is right, via langchain-core rather than langchain-anthropic -- resolved
+against both installed packages, not remembered. Any value other than `max_tokens` (`end_turn`,
+`stop_sequence`) means the model chose to stop.
 """
 
 
