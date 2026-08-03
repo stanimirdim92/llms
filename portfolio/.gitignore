@@ -84,17 +84,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# Un-ignored, and it takes a negation rather than a deletion: the repo-root `.gitignore`
-# ignores `.python-version` too, and a deeper pattern is what overrides a shallower one.
-# Dropping the rule here alone silently changed nothing.
-!.python-version
-
-# It came in from a generic Python template,
-# where the assumption is that each developer chooses their own interpreter. Here the choice
-# is not free: `requires-python` is >=3.13 while Docker and CI run 3.14, and on a 3.14
-# pre-release pydantic cannot build models -- so the local version is a fact about the
-# project, not a preference. Ignoring it made the pin useless to everyone but the machine
-# that created it, while README.md and CLAUDE.md described it as committed.
+# pyenv
 
 # celery beat schedule file
 celerybeat-schedule
