@@ -160,3 +160,7 @@ Three habits that make the set work:
 - **Run the project's full gate before pushing**, from its own `CLAUDE.md` or
   its `verify` skill rather than from memory. Report what actually ran,
   including anything that was skipped.
+- **Run a suite three times before calling it green.** One pass cannot tell a
+  deterministic pass from a flake, and a flaky suite makes every later green
+  meaningless -- shared-database fixtures and rate-limit counters that outlive a
+  test are the two that bit here.
