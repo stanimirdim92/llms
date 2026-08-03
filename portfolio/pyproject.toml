@@ -28,7 +28,7 @@ dependencies = [
     # while `limits[async-redis]` adds coredis for nothing. `limits.aio` with
     # `implementation="redispy"` uses the redis-py already here.
     "limits>=5.8.0,<6.0.0",
-    "fastapi[standard]>=0.140.13,<0.150.0",
+    "fastapi[standard]>=0.141.1,<0.150.0",
     "uvicorn>=0.51.0,<0.60.0",
     "sqlmodel>=0.0.39,<0.0.50",
 
