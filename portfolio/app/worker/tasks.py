@@ -41,10 +41,23 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> i
     Takes `file_path` as a string because job arguments are JSON in Postgres -- a `Path`
     isn't serializable and would fail at defer time, not here.
 
-    On failure this records `status="failed"` with the message and then **re-raises**. Both
-    halves matter: without the record the API cannot tell a failed ingest from a document
+    On failure this **tries** to record `status="failed"` with the message, and then re-raises.
+    Both halves matter: without the record the API cannot tell a failed ingest from a document
     that was never uploaded (they look identical -- an absent or stale row), and without the
     re-raise procrastinate marks the job succeeded and never retries the transient cases.
+
+    "Tries", stated precisely, because two paths still end with the row on `pending` and it is
+    worse to believe otherwise:
+
+    - **Postgres unreachable.** Then the `failed` write fails too, and the guarded handler below
+      logs `worker.status_write_failed` and re-raises the original. The row keeps whatever status
+      it had. Nothing else is possible from inside this task -- recording a database failure
+      needs the database -- so the visible symptom is a `pending` row plus a worker log line,
+      and the fix is the stuck-job sweeper in `docs/IDEAS.md`, not more code here.
+    - **Cancellation.** `except Exception` does not catch `asyncio.CancelledError`, which is a
+      `BaseException`, so a worker shut down mid-job leaves `pending`. Deliberate: swallowing
+      cancellation to write a status would delay shutdown and mark as *failed* a job
+      procrastinate will legitimately retry.
 
     A retry re-enters here and sets `processing` again, so a job that fails once and then
     succeeds moves failed -> processing -> ingested. Status always describes the latest

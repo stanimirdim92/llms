@@ -715,9 +715,37 @@ is a pre-release, and on 3.14.0rc2 pydantic fails to build models
 (`_eval_type() got an unexpected keyword argument 'prefer_fwd_module'`) -- so the suite could
 not run locally at all under a `>=3.14` floor, since `uv sync` refuses a 3.13 interpreter.
 Previously that was worked around by editing the floor temporarily and remembering to put it
-back, which also rewrote `uv.lock` each time. Now `uv venv --python 3.13 && uv sync
---extra dev` just works. That is the whole reason to prefer the lowest floor the code
-honestly supports rather than the highest one it happens to run on.
+back, which also rewrote `uv.lock` each time. Now `uv venv && uv sync --extra dev` just works,
+because **`.python-version` is tracked and pins 3.13**. That is the whole reason to prefer the
+lowest floor the code honestly supports rather than the highest one it happens to run on.
+
+Two consequences of that pin, both learned the hard way. It is excluded in `.dockerignore`:
+`python:3.14-slim` has no 3.13 and `UV_PYTHON_DOWNLOADS=0` forbids fetching one, so a future
+`COPY . .` would fail the build with a message about a missing interpreter. And CI overrides it
+per job via `setup-uv`'s `python-version` (which sets `UV_PYTHON`, measured to win over the
+file) and then **asserts** the interpreter it actually got -- otherwise a change in that
+precedence would make the 3.14 matrix leg a second 3.13 run and report green, which is the
+same shape of lie as a skipped test passing.
+
+## Corpus fetching: plain HTTP, after dropping the `arxiv` client
+
+The `arxiv` package was a direct dependency used in exactly one place -- `scripts/fetch_corpus.py`
+-- to turn a manifest id into `Result.pdf_url`. Dropped, because that URL is deterministic:
+`https://arxiv.org/pdf/<id>` serves the latest version, verified with a HEAD returning
+`200 application/pdf` and no redirect. The dependency was already half-unused, since `arxiv>=4`
+removed `Result.download_pdf` and the file was fetched over plain HTTP regardless. `requests`
+went with it (nothing imports it now; it still arrives via docling, streamlit and langsmith) and
+`httpx` is declared in its place -- guaranteed anyway by `fastapi[standard]`, `anthropic` and
+`qdrant-client`, but a script imports it directly so the manifest should say so.
+
+**What the swap initially lost, and now does not.** `arxiv.Client` defaults to
+`delay_seconds=3.0` and `num_retries=3`, and its own docstring ties those to arXiv's Terms of
+Use. The first version of the replacement was a bare `client.get` loop: back-to-back multi-MB
+requests to a public academic host, hard-failing the build on the first 5xx. Invisible at six
+papers, which is why it passed review; `data/manifest.json` says to expand toward ~45. Both are
+restored explicitly (`_REQUEST_SPACING_SECONDS`, `_ATTEMPTS`) rather than inherited from a
+library, and `tests/unit/test_fetch_corpus.py` pins them. Recorded because "this dependency only
+resolved a URL" was *nearly* true, and the part that was not true was the part that mattered.
 
 ## Testing: real services, and skip rather than fake
 

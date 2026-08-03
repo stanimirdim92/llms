@@ -187,10 +187,12 @@ async def main() -> None:
         await revoke(args.tenant, args.revoke)
     elif args.tenant:
         await add_key(args.tenant, args.name, expires_in)
-    elif args.tenant_name:
-        await create_tenant(args.tenant_name, args.name, expires_in)
     else:
-        parser.print_help()
+        # `args.tenant_name` is guaranteed here: the four branches are exhaustive because the
+        # early return above already handled "none of them set". This was an `elif` with a
+        # trailing `else: parser.print_help()`, which became unreachable the moment that early
+        # return was added -- dead code that reads as the no-arguments path and is not.
+        await create_tenant(args.tenant_name, args.name, expires_in)
 
 
 if __name__ == "__main__":

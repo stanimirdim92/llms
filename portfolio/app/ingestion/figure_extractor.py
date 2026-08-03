@@ -12,6 +12,7 @@ origin to match PyMuPDF's, a needless source of bugs Docling already solves inte
 from __future__ import annotations
 
 import base64
+import hashlib
 import io
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -122,9 +123,68 @@ def _caption_all(images: list[bytes]) -> list[str]:
     return [_response_text(response) for response in responses]
 
 
-def _caption_path(output_dir: Path, figure_id: str) -> Path:
-    """Where a figure's caption is cached, beside the PNG it describes."""
-    return output_dir / f"{figure_id}.txt"
+def _caption_path(output_dir: Path, image_bytes: bytes) -> Path:
+    """Where a caption is cached: keyed on a digest of the image it describes.
+
+    **Not** on `figure_id`, which is what the first version of this cache did and which was
+    wrong in the one way that matters. `figure_id` is `fig-{page}-{index}` with `index`
+    enumerating every picture item, so inserting a picture earlier in a document shifts every
+    later index down onto an id an *earlier* figure already occupied. Nothing deletes stale
+    entries, so that is a cache **collision**, not a miss: measured, a newly-inserted figure
+    was handed the caption written for the figure that used to hold its id. A caption is a
+    figure's only searchable text, so the result is a chunk that describes a different picture
+    and reads as perfectly good content -- rule 11's fluent, confident, wrong answer.
+
+    Content addressing removes the class of bug rather than the instance. Byte-identical images
+    share a caption, which is also a better hit rate (a figure that merely moved still hits),
+    and any change to the pixels misses. The digest is of the PNG this module encoded, not of
+    the source file, so it also changes if Docling's rendering changes -- which is exactly when
+    a re-caption is wanted.
+    """
+    return output_dir / f"caption-{hashlib.sha256(image_bytes).hexdigest()[:32]}.txt"
+
+
+def _cached_caption(path: Path) -> str | None:
+    """A usable cached caption, or None -- which means "not cached", for any reason.
+
+    Three failures all have to read as a miss, because the alternative in each case is worse
+    than paying for one vision call:
+
+    - **Empty file.** `write_text` is not atomic, so an interrupted write or a full disk leaves
+      a zero-byte entry. Read back as `""`, that is dropped by `_is_unusable_caption` and logged
+      as `figures.dropped_unusable_caption` -- indistinguishable from a model refusal, and it
+      never self-heals, so one bad write suppresses that figure from search permanently.
+    - **Undecodable bytes.** A corrupt entry raised `UnicodeDecodeError` out of
+      `extract_figures` and failed the whole document's ingest.
+    - **Unreadable file.** Permissions, a vanished directory.
+
+    The cost is that a model that genuinely returns an empty caption is re-billed on every
+    ingest. That is the right side to err on: the figure is dropped either way, and this way it
+    can recover.
+    """
+    try:
+        cached = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return None  # An ordinary miss. Silent, or every first ingest logs once per figure.
+    except (OSError, UnicodeDecodeError):
+        log.info("figures.caption_cache_unreadable", path=str(path))
+        return None
+    return cached or None
+
+
+def _store_caption(path: Path, caption: str) -> None:
+    """Write a caption to the cache atomically, and never fail the ingest over it.
+
+    Temp file plus `replace`, so a reader never observes a partial write -- see `_cached_caption`
+    for what a truncated entry costs. `OSError` is swallowed because this is a cache: a read-only
+    or full disk should make the next ingest slower, not fail this one.
+    """
+    temporary = path.with_suffix(".tmp")
+    try:
+        temporary.write_text(caption, encoding="utf-8")
+        temporary.replace(path)
+    except OSError:
+        log.warning("figures.caption_cache_write_failed", path=str(path))
 
 
 def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_dir: Path) -> list[str]:
@@ -137,13 +197,7 @@ def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_di
     rebuild. A 30-figure paper therefore paid 30 vision calls each time to arrive at the same
     captions.
 
-    The cache key is the `figure_id`, which encodes page number and picture index, and the
-    entry lives in the same directory as the image. That is safe against the drift that
-    matters: anything changing which regions Docling finds (an upgrade, a different render)
-    shifts the index and therefore misses the cache rather than reusing a caption for a
-    different picture. It is *not* safe against the same document being re-uploaded under the
-    same `doc_id` with different content -- which cannot happen, because `doc_id` is derived
-    from the content.
+    See `_caption_path` for the key, which is the part that was wrong the first time.
 
     The **raw** model output is cached, before `_is_unusable_caption` runs. Caching only the
     captions that survived would re-bill exactly the figures the model had already refused to
@@ -151,12 +205,10 @@ def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_di
     """
     captions: list[str] = []
     fresh_indices: list[int] = []
-    for index, (figure_id, *_) in enumerate(rendered):
-        path = _caption_path(output_dir, figure_id)
-        if path.exists():
-            captions.append(path.read_text(encoding="utf-8"))
-        else:
-            captions.append("")
+    for index, (_figure_id, _page_no, _image_path, image_bytes) in enumerate(rendered):
+        cached = _cached_caption(_caption_path(output_dir, image_bytes))
+        captions.append(cached or "")
+        if cached is None:
             fresh_indices.append(index)
 
     if len(fresh_indices) < len(rendered):
@@ -167,7 +219,7 @@ def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_di
     new_captions = _caption_all([rendered[index][3] for index in fresh_indices])
     for index, caption in zip(fresh_indices, new_captions, strict=True):
         captions[index] = caption
-        _caption_path(output_dir, rendered[index][0]).write_text(caption, encoding="utf-8")
+        _store_caption(_caption_path(output_dir, rendered[index][3]), caption)
     return captions
 
 

@@ -6,12 +6,16 @@ re-ingest writes *new* points and silently leaves the old ones behind -- still m
 the session filter, still retrievable, now stale. These tests exist so that regression
 fails here instead of in production retrieval.
 
-The caption cache is here for the same reason: it is keyed on `figure_id`, so the numbering
-above is exactly what decides whether a re-ingest reuses a caption or pays for a new one.
+The caption cache is here because it was *wrongly* keyed on `figure_id` -- see
+`test_a_figure_never_receives_a_caption_written_for_a_different_figure`, which is the test the
+first version of that cache did not have. Numbering and caching are one subject as a result.
 """
 
 from __future__ import annotations
 
+import hashlib
+import io
+import pathlib
 from typing import TYPE_CHECKING
 
 import pytest
@@ -210,16 +214,53 @@ def test_a_real_caption_is_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
 
 
 # ---------------------------------------------------------------------------------------------
-# The caption cache, which is keyed on the figure_id above -- hence its living in this module.
+# The caption cache
 # ---------------------------------------------------------------------------------------------
+#
+# Every picture below renders a *distinct* colour, which the fixtures above do not: `_Renderable`
+# is always white, so any two of them are byte-identical. That was harmless while the cache was
+# keyed on `figure_id`; it is the whole point now that the key is a digest of the image, because
+# byte-identical pictures legitimately share one entry. A test that wants to observe two
+# independent cache entries therefore has to use two different images.
 
 
-def _counting_captioner(calls: list[int]) -> Callable[[list[bytes]], list[str]]:
+def _picture_of(shade: int) -> PictureItem:
+    """A renderable picture whose pixels are unique to `shade`.
+
+    A subclass per call, because `PictureItem` is a pydantic model: a plain instance attribute
+    raises "object has no field", and a class attribute becomes a `ModelPrivateAttr` descriptor
+    rather than the value. Closing over `shade` sidesteps both.
+    """
+
+    class _Shaded(PictureItem):
+        def get_image(self, *_args: object, **_kwargs: object) -> Image.Image:
+            return Image.new("RGB", (_BIG, _BIG), (shade, shade, shade))
+
+    return _Shaded(self_ref=f"#/pictures/{shade % 10}")
+
+
+def _identifying_captioner(calls: list[int]) -> Callable[[list[bytes]], list[str]]:
+    """Captions that name the image they describe, so a wrong one is *visible*.
+
+    This is the part the first version of these tests got wrong. Its stub returned
+    `_plausible_caption(position_in_batch)`, so two figures captioned in the same pass received
+    identical strings and no assertion on caption content could distinguish "this figure's
+    caption" from "some other figure's caption". The digest is of the bytes actually sent, which
+    is the same thing the cache keys on -- so a collision shows up as a caption naming the wrong
+    digest rather than as a passing test.
+    """
+
     def _caption(images: list[bytes]) -> list[str]:
         calls.append(len(images))
-        return [_plausible_caption(index) for index in range(len(images))]
+        return [f"Figure {hashlib.sha256(image).hexdigest()[:8]}: a line plot of capacity." for image in images]
 
     return _caption
+
+
+def _expected_caption(shade: int) -> str:
+    buffer = io.BytesIO()
+    Image.new("RGB", (_BIG, _BIG), (shade, shade, shade)).save(buffer, "PNG")
+    return f"Figure {hashlib.sha256(buffer.getvalue()).hexdigest()[:8]}: a line plot of capacity."
 
 
 def test_a_second_pass_over_the_same_document_makes_no_vision_call(
@@ -231,14 +272,73 @@ def test_a_second_pass_over_the_same_document_makes_no_vision_call(
     30 of them each time to arrive at the same captions.
     """
     calls: list[int] = []
-    monkeypatch.setattr(figure_extractor, "_caption_all", _counting_captioner(calls))
-    items = [_Renderable(self_ref=f"#/pictures/{index}") for index in range(3)]
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+    items = [_picture_of(shade) for shade in (10, 20, 30)]
 
     first = figure_extractor.extract_figures(_document_yielding(items), tmp_path)
     second = figure_extractor.extract_figures(_document_yielding(items), tmp_path)
 
     assert calls == [3], "the second pass must not reach the vision model at all"
     assert [figure.caption for figure in second] == [figure.caption for figure in first]
+
+
+def test_a_figure_never_receives_a_caption_written_for_a_different_figure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The safety property, and the one the first version of this cache got wrong.
+
+    Keyed on `figure_id` -- `fig-{page}-{index}` over *all* picture items -- inserting a picture
+    earlier in a document shifted every later index down onto an id an earlier figure already
+    held. Nothing deletes stale entries, so that was a cache **collision**: measured, the newly
+    inserted figure was handed the caption written for the figure that used to be at index 0, and
+    a caption is a figure's only searchable text.
+
+    The predecessor of this test set up exactly this scenario and asserted only the call counts
+    and the id list -- both of which a collision satisfies. Assert content, or this proves
+    nothing.
+    """
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    # Shade 20 is inserted *before* shade 10, so it now occupies `fig-000-00` -- the id whose
+    # cache entry shade 10 wrote on the first pass.
+    figures = figure_extractor.extract_figures(_document_yielding([_picture_of(20), _picture_of(10)]), tmp_path)
+
+    assert [figure.figure_id for figure in figures] == ["fig-000-00", "fig-000-01"]
+    assert figures[0].caption == _expected_caption(20), "fig-000-00 was handed a stranger's caption"
+    assert figures[1].caption == _expected_caption(10), "the moved figure lost its own caption"
+    assert calls == [1, 1], "only the genuinely new image should have been sent"
+
+
+def test_a_figure_that_merely_moved_still_hits_the_cache(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The other side of content addressing, and a real improvement over the id-keyed version:
+    an unchanged picture that shifted position is the same picture, so it must not be re-billed.
+    """
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    figure_extractor.extract_figures(_document_yielding([_picture_of(20), _picture_of(10)]), tmp_path)
+
+    assert calls == [1, 1], "shade 10 moved from index 0 to index 1 and must still hit"
+
+
+def test_two_identical_pictures_share_one_caption(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A consequence of the digest key worth stating rather than discovering: the same logo on
+    every page is one vision call, not one per page. Correct -- same pixels, same description --
+    and it is where most of the saving comes from on a slide deck.
+    """
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    figures = figure_extractor.extract_figures(
+        _document_yielding([_picture_of(10), _picture_of(10), _picture_of(10)]), tmp_path
+    )
+
+    assert calls == [1]
+    assert {figure.caption for figure in figures} == {_expected_caption(10)}
 
 
 def test_refusals_are_cached_too_so_they_are_not_re_billed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -254,7 +354,7 @@ def test_refusals_are_cached_too_so_they_are_not_re_billed(tmp_path: Path, monke
         return ["NO_USEFUL_CONTENT"] * len(images)
 
     monkeypatch.setattr(figure_extractor, "_caption_all", _refuse)
-    items = [_Renderable(self_ref="#/pictures/0")]
+    items = [_picture_of(10)]
 
     assert figure_extractor.extract_figures(_document_yielding(items), tmp_path) == []
     assert figure_extractor.extract_figures(_document_yielding(items), tmp_path) == []
@@ -266,44 +366,73 @@ def test_only_the_uncached_figures_are_sent(tmp_path: Path, monkeypatch: pytest.
     *size* rather than the output, because the cost is what is being tested.
     """
     calls: list[int] = []
-    monkeypatch.setattr(figure_extractor, "_caption_all", _counting_captioner(calls))
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
 
-    figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
-    figure_extractor.extract_figures(
-        _document_yielding([_Renderable(self_ref="#/pictures/0"), _Renderable(self_ref="#/pictures/1")]), tmp_path
-    )
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10), _picture_of(20)]), tmp_path)
 
     assert calls == [1, 1]
 
 
-def test_a_shifted_index_misses_the_cache_rather_than_reusing_a_stranger(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The safety property of keying on `figure_id`. Anything that changes which regions Docling
-    finds -- an upgrade, a different render -- shifts the index, so the cache misses and the
-    figure is described afresh. Keying on position-in-batch instead would hand figure 1 the
-    caption written for what used to be figure 1 and is now something else entirely.
+def test_an_empty_cache_entry_is_treated_as_a_miss(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`write_text` is not atomic, so an interrupted write or a full disk leaves a zero-byte
+    entry. Read back as `""` it is dropped as unusable and logged identically to a model refusal,
+    and it never self-heals -- one bad write would suppress that figure from search forever.
+    The write path is now temp-file-plus-replace, and the read path treats empty as absent, so
+    neither half depends on the other holding.
     """
     calls: list[int] = []
-    monkeypatch.setattr(figure_extractor, "_caption_all", _counting_captioner(calls))
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    entry = next(path for path in tmp_path.glob("caption-*.txt"))
+    entry.write_text("", encoding="utf-8")
 
-    # First pass: one picture, at index 0.
-    figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
-    # Second pass: a picture appears *before* it, so the original is now index 1.
-    figures = figure_extractor.extract_figures(
-        _document_yielding([_Renderable(self_ref="#/pictures/9"), _Renderable(self_ref="#/pictures/0")]), tmp_path
-    )
+    figures = figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
 
-    assert calls == [1, 1], "index 01 is new to the cache; index 00 is not"
-    assert [figure.figure_id for figure in figures] == ["fig-000-00", "fig-000-01"]
+    assert calls == [1, 1], "the truncated entry must be re-captioned, not read back as empty"
+    assert [figure.caption for figure in figures] == [_expected_caption(10)]
 
 
-def test_the_cache_entry_sits_beside_the_image_it_describes(tmp_path: Path) -> None:
-    """Same directory, same stem. It is `data/processed/<doc_id>/figures/`, which is already
-    wiped by deleting that document's processed directory -- so there is no second cache to
-    remember to clear.
+def test_an_undecodable_cache_entry_does_not_fail_the_document(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """It used to raise `UnicodeDecodeError` out of `extract_figures`, so one corrupt byte in one
+    cached caption failed the whole document's ingest -- and via the worker marked it `failed`.
     """
-    figure_extractor.extract_figures(_document_yielding([_Renderable(self_ref="#/pictures/0")]), tmp_path)
+    calls: list[int] = []
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner(calls))
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    entry = next(path for path in tmp_path.glob("caption-*.txt"))
+    entry.write_bytes(b"\xff\xfe not utf-8")
+
+    figures = figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+
+    assert [figure.caption for figure in figures] == [_expected_caption(10)]
+
+
+def test_a_cache_write_failure_does_not_fail_the_document(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """This is a cache. A read-only or full disk should make the next ingest slower, not turn a
+    successfully captioned document into a failed one.
+    """
+    monkeypatch.setattr(figure_extractor, "_caption_all", _identifying_captioner([]))
+
+    def _refuse_to_write(_self: pathlib.Path, _data: str, **_kwargs: object) -> int:
+        raise OSError("no space left on device")
+
+    # Patched on `pathlib.Path` itself, not on `figure_extractor.Path`: that module imports
+    # `Path` under TYPE_CHECKING only, so the attribute does not exist at runtime.
+    monkeypatch.setattr(pathlib.Path, "write_text", _refuse_to_write)
+
+    figures = figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+
+    assert [figure.caption for figure in figures] == [_expected_caption(10)]
+
+
+def test_the_cache_entry_sits_in_the_figure_directory(tmp_path: Path) -> None:
+    """`data/processed/<doc_id>/figures/`, alongside the PNGs. Note that deleting the *parse*
+    cache -- `processed/<doc_id>.json`, a sibling file, not inside this directory -- does not
+    clear these; with a content-addressed key that is harmless, since a stale entry can only
+    ever be reused for a byte-identical image.
+    """
+    figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
 
     assert (tmp_path / "fig-000-00.png").exists()
-    assert (tmp_path / "fig-000-00.txt").read_text(encoding="utf-8") == _plausible_caption(0)
+    assert len(list(tmp_path.glob("caption-*.txt"))) == 1

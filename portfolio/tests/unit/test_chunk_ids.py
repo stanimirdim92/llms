@@ -7,9 +7,17 @@ the text and table halves, plus the two skips that keep a table from being store
 
 Docling's `HybridChunker` is stubbed, deliberately. It is not the thing under test -- the
 accounting around it is -- and constructing a real one calls
-`HuggingFaceTokenizer.from_pretrained`, which reaches out to huggingface.co. Measured here:
-with no egress to the hub that call hangs with no timeout rather than failing, so a real
-chunker in a unit suite is a test that either takes a network round trip or never returns.
+`HuggingFaceTokenizer.from_pretrained`, which reaches out to huggingface.co: a unit test that
+either takes a network round trip or fails on whatever the hub does today. (An earlier version
+of this docstring claimed that call "hangs with no timeout rather than failing". That is wrong
+and was withdrawn: `huggingface_hub` sets `DEFAULT_ETAG_TIMEOUT = 10`, and with the hub
+unreachable it raises `OSError` in single-digit seconds. What was actually observed was one
+120-second probe that did not finish -- a slow or stalled proxy, over-read as an absent
+timeout. Rule 13: resolve it, do not remember it.)
+
+The stub keeps the real class's *calling convention* -- keyword-only `tokenizer` -- because
+`HybridChunker` is a pydantic `BaseModel` and rejects positional arguments. A permissive stub
+made `HybridChunker(tokenizer)` pass here while raising `TypeError` in production.
 """
 
 from __future__ import annotations
@@ -23,10 +31,13 @@ from docling_core.types.doc.document import (
     DoclingDocument,
     NodeItem,
     ProvenanceItem,
+    RefItem,
     TableCell,
     TableData,
     TableItem,
+    TextItem,
 )
+from docling_core.types.doc.labels import DocItemLabel
 
 from app.ingestion import chunker as chunker_module
 from app.ingestion.chunker import chunk_document
@@ -37,7 +48,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def _table(page_no: int = 4, index: int = 0) -> TableItem:
+def _table(page_no: int = 4, index: int = 0, caption: str = "") -> TableItem:
     data = TableData(
         num_rows=1,
         num_cols=2,
@@ -57,22 +68,34 @@ def _table(page_no: int = 4, index: int = 0) -> TableItem:
         bbox=BoundingBox(l=0, t=0, r=1, b=1, coord_origin=CoordOrigin.TOPLEFT),
         charspan=(0, 0),
     )
-    return TableItem(self_ref=f"#/tables/{index}", data=data, prov=[prov])
+    captions = [RefItem(cref=f"#/texts/{index}")] if caption else []
+    return TableItem(self_ref=f"#/tables/{index}", data=data, prov=[prov], captions=captions)
 
 
-def _document(items: Sequence[NodeItem]) -> DoclingDocument:
+def _document(items: Sequence[NodeItem], captions: Sequence[str] = ()) -> DoclingDocument:
     """A document whose `iterate_items` yields exactly `items`.
 
     Subclassed rather than monkeypatched, for the same reason as `test_figure_ids.py`:
     `DoclingDocument` is a pydantic model, so assigning a method onto an instance raises
     "object has no field".
+
+    `captions` populates `texts`, because `TableItem.caption_text(document)` resolves a
+    `RefItem` -- `#/texts/N` -- against the document it is handed. A table built with a caption
+    ref but dropped into a document with no `texts` silently reports no caption, which is how
+    the caption branch of `chunk_document` stayed uncovered.
     """
 
     class _StubDocument(DoclingDocument):
         def iterate_items(self, *_args: object, **_kwargs: object) -> Iterator[tuple[NodeItem, int]]:
             return ((item, 0) for item in items)
 
-    return _StubDocument(name="test")
+    return _StubDocument(
+        name="test",
+        texts=[
+            TextItem(self_ref=f"#/texts/{index}", label=DocItemLabel.CAPTION, text=text, orig=text)
+            for index, text in enumerate(captions)
+        ],
+    )
 
 
 def _docling_chunk(text: str, doc_items: Sequence[NodeItem] = (), headings: Sequence[str] = ()) -> SimpleNamespace:
@@ -90,7 +113,11 @@ def _stub_chunker(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
     class _StubChunker:
-        def __init__(self, tokenizer: object) -> None:
+        def __init__(self, *, tokenizer: object) -> None:
+            # Keyword-only, matching the real `HybridChunker`: it is a pydantic `BaseModel`, so
+            # `HybridChunker(tokenizer)` raises "takes 1 positional argument but 2 were given".
+            # A stub accepting positional args left that mutation green here and broken in
+            # production -- nothing else calls `chunk_document`, so nothing else caught it.
             self._tokenizer = tokenizer
 
         def chunk(self, _document: DoclingDocument) -> Iterator[SimpleNamespace]:
@@ -179,15 +206,16 @@ def test_tables_are_numbered_separately_from_text() -> None:
 
 
 def test_a_table_carries_its_markdown_in_metadata_as_well_as_its_text() -> None:
-    """The text is what gets embedded; the metadata copy is what a client can re-render. They
-    are deliberately not the same string -- the text may have a caption prepended.
+    """The text is what gets embedded; the metadata copy is what a client can re-render. On an
+    uncaptioned table they coincide, which is what this asserts; the next test covers the case
+    where they must differ.
     """
     chunks = chunk_document(_document([_table()]), doc_id="doc", figures=[])
 
     assert chunks[0].chunk_type == "table"
     assert chunks[0].page_no == 4
     assert chunks[0].metadata["markdown"].startswith("| a")
-    assert chunks[0].text == chunks[0].metadata["markdown"], "no caption on this fixture, so they match"
+    assert chunks[0].text == chunks[0].metadata["markdown"], "this fixture has no caption, so they coincide"
 
 
 def test_a_figure_chunk_is_its_caption_keyed_by_figure_id(tmp_path: Path) -> None:
@@ -225,3 +253,21 @@ def test_the_filename_and_tenant_reach_every_chunk_kind(tmp_path: Path) -> None:
     assert {chunk.chunk_type for chunk in chunks} == {"text", "table", "figure"}
     assert all(chunk.tenant_id == "tenant-a" for chunk in chunks)
     assert all(chunk.metadata["filename"] == "report.pdf" for chunk in chunks)
+
+
+def test_a_captioned_table_embeds_its_caption_exactly_once() -> None:
+    """Writing this test is what found the duplication.
+
+    The caption matters: "Table 3: capacity retention by cathode" is often the only wording a
+    question will match, since the grid itself is numbers. But docling's markdown serializer
+    already emits it above the table, and `chunk_document` prepended it as well -- so every
+    captioned table was embedded with its caption twice, skewing the chunk toward the heading
+    and away from the data. Nothing raised; the chunk simply read slightly wrong to the
+    embedding model.
+    """
+    caption = "Table 1: discharge capacity by cathode material."
+
+    chunks = chunk_document(_document([_table(caption=caption)], captions=[caption]), doc_id="doc", figures=[])
+
+    assert chunks[0].text.count(caption) == 1
+    assert caption in chunks[0].metadata["markdown"], "the serializer puts it there; this records that"

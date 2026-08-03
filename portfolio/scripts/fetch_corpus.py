@@ -2,6 +2,7 @@
 
 import json
 import sys
+import time
 from pathlib import Path
 
 import httpx
@@ -12,18 +13,61 @@ from app.config import get_settings
 
 _PDF_URL = "https://arxiv.org/pdf/{arxiv_id}"
 """arXiv serves the latest version of a paper at its unversioned id, which is what the
-manifest stores.
+manifest stores. Verified rather than assumed: a HEAD of this URL returns
+`200 application/pdf`, with no redirect.
 
-This used to go through the `arxiv` client -- one API search per paper, purely to resolve
-`Result.pdf_url` -- and that dependency is gone. It was already only half in use: `arxiv>=4`
-removed `Result.download_pdf`, so the file it named was fetched over plain HTTP regardless.
-Verified rather than assumed: a HEAD of this URL returns `200 application/pdf`.
+This used to go through the `arxiv` client, purely to resolve `Result.pdf_url` -- and that
+dependency is gone. It was already only half in use: `arxiv>=4` removed
+`Result.download_pdf`, so the file it named was fetched over plain HTTP regardless.
+
+**But dropping it did lose something**, and an earlier version of this docstring wrongly said it
+did not. `arxiv.Client.__init__` defaults to `delay_seconds=3.0` and `num_retries=3`, and its own
+docstring warns that shrinking them "risks violating the arXiv API Terms of Use". So the old loop
+was paced at one request per 3 seconds with retries; a bare `client.get` loop is back-to-back
+multi-MB requests to a public academic host that hard-fails the build on the first 5xx. Invisible
+at 6 papers, which is why it went unnoticed -- `data/manifest.json`'s own note says to expand
+toward ~45. `_REQUEST_SPACING_SECONDS` and `_ATTEMPTS` below restore both.
 
 One consequence, unchanged either way but worth stating. The id is unversioned, so a revised
 paper yields different bytes under the same id -- and since `scripts/ingest.py` uses the arXiv
 id as the `doc_id`, that re-ingest correctly *replaces* the document rather than adding a
 second copy. `content_hash` in the registry is what records that the bytes moved.
 """
+
+_REQUEST_SPACING_SECONDS = 3.0
+"""Matches the `arxiv` client's own default, which its docstring ties to arXiv's Terms of Use.
+
+Kept even though nothing enforces it from our side: the failure mode of ignoring it is a block
+on the host's terms rather than an error we would see in a traceback.
+"""
+
+_ATTEMPTS = 3
+"""Total tries per paper, also matching the old client. Transient 5xx and connection resets are
+the common case on a large corpus build, and the alternative is failing the whole run for one.
+"""
+
+
+def _download(client: httpx.Client, arxiv_id: str) -> bytes:
+    """The PDF bytes, retrying transient failures.
+
+    Only `httpx.HTTPError` is retried, and deliberately not `httpx.InvalidURL`: an unusable URL
+    is permanent, so retrying it burns three attempts and two 3-second sleeps to reach the same
+    answer. It propagates to the caller's per-paper handler on the first try instead -- which is
+    also why that handler has to name it: `InvalidURL` is **not** a subclass of `HTTPError`
+    (checked against httpx 0.28.1), so a mistyped id used to escape and stop the whole build.
+    """
+    last: httpx.HTTPError | None = None
+    for attempt in range(_ATTEMPTS):
+        if attempt:
+            time.sleep(_REQUEST_SPACING_SECONDS)
+        try:
+            response = client.get(_PDF_URL.format(arxiv_id=arxiv_id))
+            response.raise_for_status()
+        except httpx.HTTPError as exc:
+            last = exc
+            continue
+        return response.content
+    raise last if last else RuntimeError("unreachable")
 
 
 def main() -> None:
@@ -32,20 +76,27 @@ def main() -> None:
     settings.raw_pdf_dir.mkdir(parents=True, exist_ok=True)
 
     failed: list[str] = []
-    # One client for every paper: connection reuse, and one place for the timeout. Redirects
-    # are followed because arXiv answers the unversioned URL with the versioned one.
+    # One client for every paper: connection reuse, and one place for the timeout.
     with httpx.Client(follow_redirects=True, timeout=60) as client:
-        for paper in manifest["papers"]:
+        for index, paper in enumerate(manifest["papers"]):
             arxiv_id = paper["arxiv_id"]
             out_path = settings.raw_pdf_dir / f"{arxiv_id}.pdf"
             if out_path.exists():
                 print(f"skip (cached): {arxiv_id}")
                 continue
 
+            # Spacing between *papers* as well as between retries. Skipped before the first
+            # request so a fully cached corpus costs nothing.
+            if index:
+                time.sleep(_REQUEST_SPACING_SECONDS)
+
             try:
-                response = client.get(_PDF_URL.format(arxiv_id=arxiv_id))
-                response.raise_for_status()
-            except httpx.HTTPError as exc:
+                content = _download(client, arxiv_id)
+                # `write_bytes` is inside the try because `OSError` -- a full disk, a read-only
+                # mount -- is a per-paper failure like any other, and it used to escape and stop
+                # the build after N papers had already downloaded.
+                out_path.write_bytes(content)
+            except (httpx.HTTPError, httpx.InvalidURL, OSError) as exc:
                 # Per paper, and the run still ends non-zero -- the same rule as
                 # `scripts/ingest.py`. One withdrawn or mistyped id must not stop the corpus
                 # build, but a corpus quietly missing a third of its papers is worse than a
@@ -55,10 +106,6 @@ def main() -> None:
                 failed.append(arxiv_id)
                 continue
 
-            # Written only after a successful response, so an interrupted download cannot leave
-            # a truncated PDF that the `out_path.exists()` check above then treats as cached --
-            # which surfaces later, inside Docling, as an unparseable file.
-            out_path.write_bytes(response.content)
             print(f"downloaded: {arxiv_id} -> {out_path}")
 
     if failed:

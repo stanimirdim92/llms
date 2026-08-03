@@ -55,6 +55,15 @@ jobs:
         # without checking, so a dependency added and not re-locked would just be missing.
         run: uv sync --extra dev --locked
 
+      - name: Assert the interpreter is the one this job asks for
+        # Same reason as the matrix leg's version of this step: `portfolio/.python-version` pins
+        # 3.13, `setup-uv`'s input is measured to win, and if that ever stops being true this job
+        # would lint and type-check a different interpreter than production runs. `ty` is
+        # version-sensitive exactly where it matters -- `app/ids.py` gates `uuid.uuid7` against
+        # an RFC 9562 fallback by version, so only one of the two branches is ever checked.
+        run: |
+          uv run python -c "import sys; v='.'.join(map(str, sys.version_info[:2])); sys.exit(0 if v=='3.14' else f'::error::expected 3.14, uv resolved {v}')"
+
       - name: Lint (ruff check)
         run: uv run ruff check .
 
@@ -192,6 +201,10 @@ jobs:
           enable-cache: auto
           cache-dependency-glob: "portfolio/uv.lock"
 
+      # No interpreter assertion in this job, unlike `static` and `test`. It never syncs an
+      # environment: `uv export` reads the lockfile, so there is nothing for a wrong interpreter
+      # to change except marker evaluation, and the export below is of the pinned set. Stated
+      # rather than left as an inconsistency someone has to re-derive.
       - name: Audit the locked dependency set
         # Audits what is actually pinned, via `uv export`, rather than whatever a fresh resolution
         # would pick -- the point is to check the versions that ship. --disable-pip keeps
