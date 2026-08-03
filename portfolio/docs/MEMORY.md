@@ -268,6 +268,14 @@ compose/Dockerfile interaction -- `docker compose config` parses compose, and un
 build an image. A red job whose cause was dismissed as "just a registry flake" is rule 12 wearing
 different clothes.
 
+**Confirmed green on `141a52c`** -- the first run in which this job executed its assertions rather
+than dying at step 6. Every one passed: the mount point is empty in the built image, `/health/ready`
+returned 200 on the *first* poll with postgres, qdrant and redis all reachable from the api
+container, nginx's generated upstream proxies, auth is enforced through the proxy, and the worker
+claimed its queue. Measurements for the next session: the cold image build is **7m35s** (torch +
+Docling dominate), the whole job 7m52s, and the four other jobs finish in 2m20s. So a `main` push
+is green in ~2.5 minutes and *fully* green in ~8.
+
 ### 2026-08-02 — an external review of 51 findings, and two rounds of fixing it
 
 The user had another Claude Code session audit `portfolio/` and pasted the report: 1 critical,
