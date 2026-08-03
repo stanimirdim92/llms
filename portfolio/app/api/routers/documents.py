@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
@@ -11,7 +12,7 @@ from app.config import get_settings
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
-from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
+from app.ingestion.uploads import content_digest, safe_filename, tenant_upload_dir, upload_doc_id
 from app.registry.db import get_document_record, list_document_records, stage_document_record
 from app.registry.models import STATUS_PENDING, DocumentRecord
 from app.worker.app import defer_document_ingest
@@ -65,16 +66,23 @@ async def upload_document(
     # separate process that reads this path, so the file has to exist by the time the job
     # becomes visible. The reverse order gives a job that reliably fails on a missing file.
     # The cost of this direction is an orphaned file if the transaction rolls back, which is
-    # harmless -- `doc_id` is a content hash, so a re-upload lands on the same path and
-    # overwrites it.
-    file_path.write_bytes(file_bytes)
+    # harmless -- a re-upload of the same bytes by the same tenant derives the same `doc_id`
+    # (see `upload_doc_id`), so it lands on the same path and overwrites it.
+    #
+    # `to_thread`, because `write_bytes` is a blocking syscall on up to `MAX_UPLOAD_SIZE_MB` and
+    # this is an `async def`: done inline it stalls the event loop for the whole write, so every
+    # other request on this worker -- including cheap `GET /v1/documents/{id}` status polls the
+    # API's own docs tell clients to make -- waits behind one upload's disk I/O. Same reasoning
+    # and same mechanism as `ingest_document`'s offload of Docling and the Qdrant upsert; no new
+    # dependency (`aiofiles` would be a second answer to a question this project already answers).
+    await asyncio.to_thread(file_path.write_bytes, file_bytes)
 
     await init_db()
     record = DocumentRecord(
         doc_id=doc_id,
         tenant_id=tenant_id,
         filename=filename,
-        content_hash=doc_id,
+        content_hash=content_digest(file_bytes),
         file_extension=file_path.suffix,
         file_size_bytes=len(file_bytes),
         status=STATUS_PENDING,

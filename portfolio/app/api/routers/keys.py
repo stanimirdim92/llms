@@ -54,7 +54,12 @@ def _to_response(api_key: management.ApiKey) -> ApiKeyResponse:
 async def create_key(request: CreateKeyRequest, principal: CurrentPrincipal) -> CreatedKeyResponse:
     try:
         key, record = await management.create_key(
-            principal, name=request.name, scopes=request.scopes, expires_in_days=request.expires_in_days
+            principal,
+            name=request.name,
+            # `or []` collapses the three spellings of "not specified" -- omitted, null, empty --
+            # into the one `create_key` materialises into the caller's own scopes.
+            scopes=request.scopes or [],
+            expires_in_days=request.expires_in_days,
         )
     except management.UnknownScopeError as exc:
         raise APIError(str(exc), code=400) from exc

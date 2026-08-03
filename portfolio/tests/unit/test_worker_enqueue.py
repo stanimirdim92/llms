@@ -16,7 +16,7 @@ import os
 import sys
 import uuid
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pytest
 from sqlalchemy import text
@@ -46,6 +46,10 @@ from app.worker.app import INGEST_TASK_NAME, defer_document_ingest
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable
+    from contextlib import AbstractAsyncContextManager
+    from pathlib import Path
+
+    from fastapi import UploadFile
 
     SessionFactory = Callable[[], AsyncSession]
 
@@ -519,3 +523,62 @@ async def test_the_shared_corpus_survives_a_tenant_with_more_documents_than_the_
 
     assert len(candidates) == 4, "3 of the tenant's own newest, plus the corpus on its own budget"
     assert "c" * 32 in [record.doc_id for record in candidates], "the corpus was crowded out"
+
+
+async def test_the_staged_row_stores_a_content_digest_not_the_doc_id(
+    db: SessionFactory, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """`content_hash` had two incompatible meanings in one column.
+
+    The router wrote the tenant-salted 32-char `doc_id` here; `ingest_document` overwrote it with
+    a plain 16-char digest on the terminal write. Same column, two values of different lengths and
+    meanings, reconciled only by whichever write happened last -- harmless while nothing reads the
+    field, which is exactly the state in which a column quietly becomes unusable.
+
+    Driven through the route function rather than over HTTP because the assertion is about what
+    the *staged* row holds, before any worker runs. `test_upload_paths.py` covers `content_digest`
+    itself; this is the wiring, which is the half that was wrong.
+    """
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+    payload = b"%PDF-1.4 upload body"
+
+    class _Upload:
+        filename = "paper.pdf"
+
+        async def read(self) -> bytes:
+            return payload
+
+    from app.api.routers import documents as documents_router  # noqa: PLC0415 -- imports Docling-free
+    from app.ingestion.uploads import content_digest, upload_doc_id  # noqa: PLC0415
+
+    # Patched on the *router* module, not on `app.db`. The router does `from app.db import
+    # get_session`, which binds the name at import time -- so patching `app.db.get_session`
+    # reaches it only if the router happens to be imported afterwards. It was: this test passed
+    # alone and wrote to the development database in the full suite, where an earlier module had
+    # already imported the router.
+    monkeypatch.setattr(documents_router, "get_session", _patched_session_factory(db))
+    monkeypatch.setattr(documents_router, "init_db", _already_initialised)
+
+    accepted = await documents_router.upload_document(file=cast("UploadFile", _Upload()), tenant_id=TENANT_A)
+
+    async with db() as session:
+        stored = await get_document_record(session, tenant_id=TENANT_A, doc_id=accepted.doc_id)
+    assert stored is not None
+    assert stored.content_hash == content_digest(payload)
+    assert stored.content_hash != upload_doc_id(TENANT_A, payload), "the doc_id is what the bug stored"
+
+
+def _patched_session_factory(factory: SessionFactory) -> Callable[[], AbstractAsyncContextManager[AsyncSession]]:
+    @asynccontextmanager
+    async def _session() -> AsyncIterator[AsyncSession]:
+        async with factory() as session:
+            yield session
+
+    return _session
+
+
+async def _already_initialised() -> None:
+    """The `db` fixture has created the schema; the route must not re-run `init_db` against the
+    *real* DATABASE_URL, which is what it would do here.
+    """
+    return

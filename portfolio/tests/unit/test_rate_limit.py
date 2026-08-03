@@ -206,3 +206,39 @@ async def test_reset_is_a_delta_not_an_epoch_timestamp() -> None:
 
     assert budget is not None
     assert budget.reset_seconds <= get_settings().rate_limit_window_seconds
+
+
+async def test_the_window_boundary_is_inclusive_so_a_full_window_frees_a_slot() -> None:
+    """Where the sliding window actually slides, asserted at the millisecond rather than by
+    sleeping.
+
+    The Lua trims with `ZREMRANGEBYSCORE key 0 (now - window)`, and that range is **inclusive**:
+    a request exactly one window old falls out, so a client that waited the advertised
+    `X-RateLimit-Reset` is granted its next request rather than being refused by one millisecond.
+    An exclusive trim would make the header a lie in the least forgivable way -- a client that
+    did exactly what it was told still gets a 429, and the natural fix (retry immediately) is a
+    tight loop.
+
+    Time is injected rather than slept: a real test of a 60-second window would take 60 seconds
+    and still only prove one point on the line.
+    """
+    scope = _scope("boundary")
+    window_ms = get_settings().rate_limit_window_seconds * 1000
+    clock = [1_000_000_000.0]
+
+    async def _check_at(offset_ms: int) -> rate_limit.Budget | None:
+        clock[0] = 1_000_000_000.0 + offset_ms / 1000
+        return await rate_limit.check(scope, TENANT_A, limit=1)
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(rate_limit.time, "time", lambda: clock[0])
+
+        await _check_at(0)  # spends the single slot
+
+        with pytest.raises(rate_limit.RateLimitExceeded):
+            await _check_at(window_ms - 1)  # one millisecond short of the window
+
+        budget = await _check_at(window_ms)  # exactly one window later
+
+    assert budget is not None, "Redis must be reachable for this suite; a None here means it is not"
+    assert budget.remaining == 0, "the slot was reused, not added to"

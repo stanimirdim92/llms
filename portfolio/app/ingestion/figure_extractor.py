@@ -276,11 +276,18 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
 
         figure_id = f"fig-{page_no:03d}-{index:02d}"
         image_path = output_dir / f"{figure_id}.png"
-        image.save(image_path, "PNG")
 
+        # Encoded once, then written. It used to be encoded twice -- once via `image.save(path)`
+        # and once into a buffer for the vision call -- which is PNG compression run twice per
+        # figure for two byte strings that must be identical. They must be, now more than before:
+        # the caption cache keys on this digest, so a second encode that differed at all (a
+        # library upgrade changing the default compression level would do it) would miss the
+        # cache for every figure while looking like it worked.
         buffer = io.BytesIO()
         image.save(buffer, "PNG")
-        rendered.append((figure_id, page_no, image_path, buffer.getvalue()))
+        image_bytes = buffer.getvalue()
+        image_path.write_bytes(image_bytes)
+        rendered.append((figure_id, page_no, image_path, image_bytes))
 
     if skipped_small:
         log.info("figures.skipped_small", count=skipped_small, min_dimension=get_settings().figure_min_dimension_px)

@@ -12,11 +12,10 @@ UI-side one is a courtesy (a disabled checkbox) and only the service-side one is
 """
 
 import asyncio
-from datetime import UTC, datetime
 
 import streamlit as st
 
-from app.auth.expiry import DEFAULT_EXPIRY_DAYS, EXPIRY_CHOICES, NEVER
+from app.auth.expiry import DEFAULT_EXPIRY_DAYS, EXPIRY_CHOICES, NEVER, describe_state
 from app.auth.management import KeyManagementError, create_key, list_keys, revoke_key
 from app.auth.models import ApiKey
 from app.auth.scopes import ALL_SCOPES, KEYS_READ, KEYS_WRITE, granted
@@ -56,25 +55,12 @@ def _rows(keys: list[ApiKey]) -> list[dict[str, object]]:
             "key_id": key.id,
             "prefix": f"{key.prefix}…",
             "scopes": ", ".join(key.scopes) or "all",
-            "state": _state(key),
+            "state": describe_state(revoked_at=key.revoked_at, expires_at=key.expires_at),
             "expires": key.expires_at,
             "last used": key.last_used_at,
         }
         for key in keys
     ]
-
-
-def _state(key: ApiKey) -> str:
-    """One column answering "can this key authenticate right now, and if not why not".
-
-    Revocation is reported ahead of expiry because it is the deliberate act: a key that was
-    revoked *and* has since lapsed is still a revocation story.
-    """
-    if key.revoked_at:
-        return "revoked"
-    if key.expires_at and key.expires_at <= datetime.now(UTC):
-        return "expired"
-    return "active"
 
 
 if KEYS_READ in held:

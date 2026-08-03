@@ -39,7 +39,9 @@ raises. That is the entire reason this checklist exists.
    else's chunks.
 7. **Return 404, not 403, for another tenant's resource.** Distinguishing "not yours" from
    "doesn't exist" confirms to any caller that a given file has been uploaded by *somebody* --
-   an existence oracle over content hashes.
+   a confirmed account for every `doc_id` that leaks into a log, a screenshot, or a bug report.
+   (Not an oracle you can *compute* into: `upload_doc_id` salts the digest with `tenant_id`, so
+   two tenants with the same file get different ids. The risk is ids that are already in hand.)
 
 ## Request/response shape
 

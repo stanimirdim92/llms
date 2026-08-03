@@ -50,6 +50,28 @@ def upload_doc_id(tenant_id: str, file_bytes: bytes) -> str:
     return f"{tenant_id}-{hasher.hexdigest()[:_DOC_ID_HASH_LENGTH]}"
 
 
+_CONTENT_HASH_LENGTH = 16
+"""64 bits of the digest, for change detection only -- not identity, which is `upload_doc_id`."""
+
+
+def content_digest(file_bytes: bytes) -> str:
+    """A digest of the bytes themselves, with no tenant salt.
+
+    Deliberately *not* `upload_doc_id`, and this column had been written both ways: the router
+    stored the tenant-salted 32-char `doc_id` on the pending row and `ingest_document` overwrote
+    it with a plain 16-char sha256 on the terminal write. Same column, two values with different
+    meanings and different lengths, reconciled only by whichever write happened last. Harmless
+    while nothing reads the field -- and that is exactly the state in which a column quietly
+    becomes unusable, because the first reader inherits both conventions.
+
+    Unsalted on purpose: `doc_id` already carries identity and isolation (see `upload_doc_id`),
+    so what is left for this field is the one question the id cannot answer -- did the bytes
+    change while the id stayed the same? That happens on a revised arXiv paper, where `doc_id`
+    is the arXiv id rather than a hash of the content.
+    """
+    return hashlib.sha256(file_bytes).hexdigest()[:_CONTENT_HASH_LENGTH]
+
+
 def safe_filename(filename: str | None) -> str:
     """Reduce a client-supplied filename to a bare name safe to join onto a directory.
 

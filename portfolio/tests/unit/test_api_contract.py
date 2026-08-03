@@ -25,7 +25,7 @@ from httpx import ASGITransport, AsyncClient
 from app.api import deps
 from app.api.main import app
 from app.api.routers import ask as ask_router, health
-from app.auth.scopes import ALL_SCOPES, DOCUMENTS_READ, UNRESTRICTED
+from app.auth.scopes import ALL_SCOPES, ASK, DOCUMENTS_READ, UNRESTRICTED
 from app.auth.service import Principal
 from app.config import get_settings
 from app.retrieval.document_scope import DocumentScope
@@ -112,6 +112,15 @@ async def test_upload_requires_a_key(client: AsyncClient) -> None:
 
 async def test_document_status_requires_a_key(client: AsyncClient) -> None:
     response = await client.get("/v1/documents/abc")
+
+    assert response.status_code == 401
+
+
+async def test_listing_documents_requires_a_key(client: AsyncClient) -> None:
+    """The one route that had no direct 401 test. Its neighbours all did, which is exactly how a
+    gap like this survives review: the *pattern* is visibly present, so nobody counts the routes.
+    """
+    response = await client.get("/v1/documents")
 
     assert response.status_code == 401
 
@@ -231,6 +240,26 @@ async def test_a_key_lacking_the_scope_is_403_and_told_which(
 
     assert response.status_code == 403
     assert "keys:write" in response.json()["detail"]
+
+
+async def test_holding_one_required_scope_is_not_enough_when_a_route_needs_another(
+    client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]
+) -> None:
+    """A key holding a mixture of held and not-held scopes, in one request.
+
+    Every other scope test grants nothing the route wants, so all of them would still pass if
+    `require_scopes` returned on the *first* satisfied scope instead of collecting the missing
+    ones. This one holds `documents:read` -- real, and useless here -- alongside not holding
+    `keys:write`, so a short-circuit reads as success.
+    """
+    as_a_key_holding([DOCUMENTS_READ, ASK])
+
+    response = await client.post("/v1/keys", json={"name": "ci"})
+
+    assert response.status_code == 403
+    detail = response.json()["detail"]
+    assert "keys:write" in detail
+    assert "documents:read" not in detail, "only the *missing* scopes belong in the message"
 
 
 async def test_scopes_gate_ask_too(client: AsyncClient, as_a_key_holding: Callable[[list[str]], None]) -> None:
@@ -395,6 +424,30 @@ async def test_readiness_is_503_when_a_required_dependency_is_down(
     assert body["ready"] is False
     assert body["dependencies"]["postgres"]["status"] == "down"
     assert "ConnectionError" in body["dependencies"]["postgres"]["detail"]
+
+
+async def test_readiness_is_503_when_qdrant_is_down(client: AsyncClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Postgres-down and Redis-down were each covered; Qdrant was not, and it is the dependency
+    whose treatment is least obvious -- Redis is deliberately *not* required, so "a dependency is
+    down" tells you nothing about which way Qdrant goes. Without the index there is nothing to
+    retrieve, so it is required.
+    """
+
+    async def _broken() -> None:
+        msg = "connection refused"
+        raise ConnectionError(msg)
+
+    async def _fine() -> None:
+        return
+
+    monkeypatch.setattr(health, "_probe_postgres", _fine)
+    monkeypatch.setattr(health, "_probe_qdrant", _broken)
+    monkeypatch.setattr(health, "_probe_redis", _fine)
+
+    response = await client.get("/health/ready")
+
+    assert response.status_code == 503
+    assert response.json()["dependencies"]["qdrant"]["status"] == "down"
 
 
 async def test_readiness_tolerates_redis_being_down(client: AsyncClient, monkeypatch: pytest.MonkeyPatch) -> None:

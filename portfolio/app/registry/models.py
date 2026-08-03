@@ -30,8 +30,6 @@ STATUS_PROCESSING = "processing"
 STATUS_INGESTED = "ingested"
 STATUS_FAILED = "failed"
 
-TERMINAL_STATUSES = frozenset({STATUS_INGESTED, STATUS_FAILED})
-
 
 class DocumentRecord(SQLModel, table=True):
     doc_id: str = Field(primary_key=True)

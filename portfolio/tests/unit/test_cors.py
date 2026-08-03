@@ -47,3 +47,23 @@ def test_wildcard_buried_among_explicit_origins_is_still_refused() -> None:
     """
     with pytest.raises(ValueError, match="any origin read authenticated responses"):
         Settings(cors_allow_origins=["https://app.example.com", "*"], cors_allow_credentials=True)
+
+
+def test_delete_is_an_allowed_method_by_default() -> None:
+    """`DELETE /v1/keys/{key_id}` exists, and revocation is the one browser-side action whose
+    failure matters. It was missing from the default list -- inert today, since no browser client
+    exists, and it would have surfaced as a CORS preflight rejection on exactly the call nobody
+    wants to debug under pressure.
+    """
+    assert "DELETE" in Settings(_env_file=None).cors_allow_methods
+
+
+def test_the_rate_limit_headers_are_exposed_to_a_browser() -> None:
+    """`X-RateLimit-*` is set on every response by design, but a browser cannot *read* a
+    non-safelisted response header unless it is listed here -- so without this the headers arrive
+    and `fetch` cannot see them, which reads as the API not sending them at all. `Retry-After`
+    for the same reason: it is what a client paces itself on after a 429.
+    """
+    exposed = Settings(_env_file=None).cors_expose_headers
+
+    assert {"X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"} <= set(exposed)

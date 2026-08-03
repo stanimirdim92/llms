@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
 from typing import TYPE_CHECKING
 
 import structlog
@@ -14,6 +13,7 @@ from app.ingestion.chunker import chunk_document
 from app.ingestion.figure_extractor import extract_figures
 from app.ingestion.models import GLOBAL_TENANT
 from app.ingestion.parser import load_parsed_document, parse_document, save_parsed_document
+from app.ingestion.uploads import content_digest
 from app.registry.db import save_document_record
 from app.registry.models import DocumentRecord
 
@@ -49,7 +49,7 @@ def _parse_and_chunk(doc_id: str, file_path: Path, tenant_id: str) -> tuple[list
     chunks = chunk_document(document, doc_id=doc_id, figures=figures, tenant_id=tenant_id, filename=file_path.name)
     log.info("ingestion.chunked", doc_id=doc_id, tenant_id=tenant_id, count=len(chunks))
 
-    content_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]
+    content_hash = content_digest(file_path.read_bytes())
     return chunks, content_hash, file_path.stat().st_size
 
 

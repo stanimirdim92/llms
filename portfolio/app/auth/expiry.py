@@ -46,3 +46,44 @@ def deadline(days: int | None) -> datetime | None:
         msg = f"expiry must be a positive number of days, got {days}; pass None for a key that never expires"
         raise ValueError(msg)
     return datetime.now(UTC) + timedelta(days=days)
+
+
+def day_or_never(value: datetime | None) -> str:
+    """A date for display, or the word "never".
+
+    `str(None)` in a table column reads as a bug in the tool rather than a fact about the key,
+    which is what "never" is: `NULL` means no deadline, the same rule as an empty scope list
+    meaning every scope.
+    """
+    return f"{value:%Y-%m-%d}" if value else "never"
+
+
+def describe_state(*, revoked_at: datetime | None, expires_at: datetime | None) -> str:
+    """One phrase answering "can this key authenticate right now, and if not why not".
+
+    Lives here, in the module that owns the expiry vocabulary, because it had been implemented
+    twice -- once in `scripts/create_tenant.py` and once in the Streamlit key page -- with
+    different wording. Both were correct; both were free to drift on the next edit to either,
+    and the two are read side by side by the same person debugging the same key.
+
+    Takes the two timestamps rather than an `ApiKey`, so nothing in `app/auth/` has to import a
+    table model to render a string, and so a caller holding an API *response* (which has the
+    same two fields and is not an `ApiKey`) can use it too.
+
+    **Order matters.** Revocation is reported ahead of expiry because it is the deliberate act:
+    a key that was revoked *and* has since lapsed is still a revocation story, and reversing
+    these two turns "we cut this customer off" into "it aged out", which is a different
+    conversation to have with them.
+
+    Wall-clock `now()` here, unlike enforcement in `auth/service.py`, which uses the *database*
+    clock. Deliberate: this is display, and a second of skew in a rendered table costs nothing,
+    whereas "expired" as an authorization outcome has to mean one thing across several api
+    processes.
+    """
+    if revoked_at:
+        return f"revoked {day_or_never(revoked_at)}"
+    if expires_at is None:
+        return "active"
+    if expires_at <= datetime.now(UTC):
+        return f"EXPIRED {day_or_never(expires_at)}"
+    return f"active until {day_or_never(expires_at)}"

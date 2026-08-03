@@ -38,10 +38,20 @@ any `/v1` route with no scope requirement. See `.claude/skills/add-endpoint`.
 is passed explicitly and lands in the WHERE clause (`registry/db.py::get_document_record`) or
 in the Qdrant filter (`vectorstore/qdrant_store.py::_build_filter`).
 
-The specific trap: `doc_id` is a content hash, so two tenants uploading identical bytes share
-one id. A lookup by `doc_id` alone returns the *other* tenant's row while looking entirely
-correct. Filtering after the query — `if row.tenant_id != caller` — is not equivalent, because
-by then the row has been read.
+The specific trap, stated correctly on the second attempt. Both this section and
+`registry/db.py`'s own docstring used to say "`doc_id` is a content hash, so two tenants
+uploading identical bytes share one id" — which is **false here**: `upload_doc_id` salts the
+digest with `tenant_id`, and a passing test asserts exactly that. (This same file says so two
+sections down.) The rule survives the correction, but for a different reason: a `doc_id` is
+client-supplied on the way *in* to a lookup, so nothing about how it was generated constrains
+what a caller can send. `GET /v1/documents/{doc_id}` receives whatever the client typed, and one
+tenant can paste another's id — from a shared log, a screenshot, a colleague. The WHERE clause is
+what makes that a 404 instead of a row. Filtering after the query — `if row.tenant_id != caller`
+— is not equivalent, because by then the row has been read.
+
+Worth flagging as a documentation failure in its own right: this project treats its own docs as
+verified fact, so a wrong *reason* attached to a right *rule* is how the rule gets "simplified"
+away later by someone who checks the reason and finds it doesn't hold.
 
 **Prevents:** cross-tenant reads. This class of bug returns data instead of raising, so it is
 invisible until someone reports seeing a stranger's document.
@@ -215,8 +225,14 @@ is indistinguishable from a correct one at the point of use.
 
 ## 16. 404 over 403 for another tenant's resource
 
-Distinguishing "not yours" from "doesn't exist" confirms to any caller that a given file has
-been uploaded by *somebody* — an existence oracle over content hashes.
+Distinguishing "not yours" from "doesn't exist" confirms to any caller that a given id belongs
+to *somebody* — and ids leak: out of a shared log, a screenshot, a support thread, a URL in a
+bug report. A 403 turns each leaked id into a confirmed account.
+
+(This used to be phrased as "an existence oracle over content hashes", which implied an attacker
+could *derive* another tenant's id by hashing a file they both have. They cannot —
+`upload_doc_id` salts the digest with `tenant_id`. The rule stands; the enumeration it prevents
+is over ids someone already has, not ids they can compute.)
 
 **Prevents:** enumeration. Costs a slightly less helpful error for the legitimate case.
 

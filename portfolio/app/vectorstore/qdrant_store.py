@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import uuid
 
+import structlog
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client.models import FieldCondition, Filter, FilterSelector, MatchAny, MatchValue
@@ -14,6 +15,8 @@ from qdrant_client.models import FieldCondition, Filter, FilterSelector, MatchAn
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
 from app.ingestion.models import GLOBAL_TENANT, Chunk
+
+log = structlog.get_logger(__name__)
 
 # Fixed, arbitrary namespace for deriving Qdrant point IDs from our own chunk_id strings
 # via uuid5 -- never regenerate this, or every existing point ID changes and re-ingesting
@@ -41,9 +44,18 @@ def _chunk_metadata(chunk: Chunk) -> dict:
     }
     if chunk.page_no is not None:
         metadata["page_no"] = chunk.page_no
+    dropped = []
     for key, value in chunk.metadata.items():
         if isinstance(value, (str, int, float, bool)):
             metadata[key] = value
+        else:
+            dropped.append(key)
+    if dropped:
+        # Logged, not raised: a non-primitive value is a caller mistake, not a reason to fail an
+        # ingest that is otherwise fine. But it must be *visible* -- silently dropping means the
+        # key is simply absent from the payload later, and the reader's first guess is that
+        # ingestion never ran rather than that their value was a list.
+        log.info("qdrant.metadata_dropped", chunk_id=chunk.chunk_id, keys=dropped)
     return metadata
 
 
@@ -159,6 +171,13 @@ class QdrantStore:
         tenant_id: str | None = None,
         doc_ids: list[str] | None = None,
     ) -> list[Document]:
+        # `chunk_types` has no production caller today -- `Retriever` never passes it, so every
+        # `/ask` searches text, tables and figures together, which is the intended behaviour.
+        # Kept, and said out loud rather than left as an unexplained unused parameter, because
+        # Epic 2's eval work needs exactly this to measure recall per chunk kind: "does the
+        # reranker ever surface a table" is unanswerable without being able to ask for one kind
+        # at a time. `tests/unit/test_qdrant_filtering.py` covers it through the in-memory engine,
+        # so it is exercised rather than merely present.
         # `qdrant-client`'s `QdrantVectorStore` (as of langchain-qdrant 1.1.0) has no
         # native async client of its own, same as Chroma -- `asimilarity_search` is
         # still `VectorStore`'s thread-pool-shimmed default. Kept async regardless: it's

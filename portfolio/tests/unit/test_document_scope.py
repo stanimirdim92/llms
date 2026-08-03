@@ -430,3 +430,35 @@ def test_longest_first_matching_does_not_depend_on_the_record_order() -> None:
     shortest_first = [_Record("doc-report", "Report.pdf"), _Record("doc-draft", "Draft Report.pdf")]
 
     assert resolve_scope("summarize Draft Report.pdf", shortest_first).doc_ids == ["doc-draft"]
+
+
+def test_a_doc_id_marker_in_quoted_code_does_not_refuse_the_question() -> None:
+    """`doc_id=` appears in ordinary technical prose -- a question *about* the schema, a template
+    string, a pasted SQL fragment. Read as naming a document, none of those match a row, so the
+    whole question was refused with a 404 naming a "document" the user never mentioned.
+
+    The rule is that a marker capture must contain a digit. Every real id here does: an upload's
+    is `{32 hex}-{32 hex}`, the corpus's is an arXiv number. Refusing when a document genuinely
+    *was* named is correct (rule 11); this is about not inventing that one was.
+    """
+    records = [_Record("019fb3eb" + "a" * 24, "paper.pdf")]
+
+    for question in (
+        "why does WHERE doc_id = 'x' return nothing?",
+        "is doc_id=%(doc_id)s the right placeholder?",
+        "what does doc_id: value mean here",
+    ):
+        scope = resolve_scope(question, records)
+        assert not scope.unknown, f"{question!r} named no document, so nothing should be refused"
+        assert not scope.doc_ids
+
+
+def test_a_real_doc_id_behind_the_marker_still_resolves() -> None:
+    """The other half -- the digit rule must not cost the feature it guards. This is the only
+    form that works for the shared corpus, whose ids are bare arXiv numbers.
+    """
+    records = [_Record("2008.10896", "cathodes.pdf")]
+
+    scope = resolve_scope("summarise doc_id=2008.10896 please", records)
+
+    assert scope.doc_ids == ["2008.10896"]

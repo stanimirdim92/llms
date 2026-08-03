@@ -79,13 +79,13 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 
 ## Cost and performance
 
-- **Record token usage per answer.** *(S, high value)* `answer_service.py` never reads
-  `response.usage`, so cost is only knowable while LangSmith tracing happens to be on — and
-  that project is on a 14-day retention tier. Log `input_tokens`/`output_tokens`/`stop_reason`
-  structurally per answer. Prerequisite for anything else in this section.
-- **Raise `max_tokens` above 1024, or stream.** *(S)* One measured answer finished **11 tokens**
-  under the ceiling. Structured-output requests sit right against it, and hitting it truncates
-  mid-JSON — which reads as a model failure rather than a config limit.
+- **Raise `max_tokens` above 1024, or stream.** *(S, now measurable)* One measured answer
+  finished **11 tokens** under the ceiling. Truncation is no longer silent — `stop_reason` and
+  the token counts are logged on every answer, `Answer.truncated` reaches `AskResponse`, and
+  Streamlit warns — so the missing input is now a *rate*: watch `answer_service.truncated` for a
+  while and raise the ceiling against real numbers rather than one anecdote. Raising it blind
+  costs money on every answer to fix a fraction of them.
+  (The "record token usage per answer" entry that sat here has shipped, so it is gone.)
 - **Cheaper model for figure captions.** *(S)* Captioning uses the same model as answering.
   It is a bounded describe-this-image task; Haiku may be indistinguishable at a fifth the cost.
   Measurable against a handful of figures without any eval harness.
@@ -155,6 +155,15 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 
 ## Ops
 
+- **Dedup concurrent enqueues for one document.** *(S)* Two uploads of the same bytes by the same
+  tenant, close together, derive the same `doc_id` and stage the same row -- but each defers its
+  own job, so two workers can ingest one document at once. Qdrant survives it (`upsert` is
+  delete-then-insert, and the later writer wins), but figure captioning is non-deterministic LLM
+  output, so the two runs need not produce identical chunk sets and the interleaving decides which
+  survives. Inferred from reading the code, not reproduced. The fix is one `SELECT ... FOR UPDATE`
+  on the existing row inside the transaction that already wraps the stage-and-defer, skipping the
+  defer when the status is already `pending` or `processing`; the care needed is that a *genuine*
+  re-upload after a completed ingest must still enqueue.
 - **Stuck-job sweeper.** *(S)* `updated_at` already makes a worker that died mid-`processing`
   visible. Nothing sweeps or re-enqueues those, so the row sits in `processing` forever.
 - **Backups.** *(M)* Postgres holds tenants, keys, and the document registry; there is no

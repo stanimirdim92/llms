@@ -308,7 +308,7 @@ portfolio/
 │   └── api/           main, deps, schemas, routers/{ask, documents}
 ├── streamlit_app/Home.py                 # calls the pipeline in process, not over HTTP
 ├── scripts/           fetch_corpus, ingest, create_tenant
-├── tests/unit/                           # 14 files, 129 tests; Postgres/Redis-backed ones skip if unreachable
+├── tests/unit/                           # Postgres/Redis-backed suites skip if unreachable — read the skip count
 ├── data/manifest.json                    # the pinned corpus
 ├── .docker/           Dockerfile, docker-compose.yml, nginx/
 ├── redis/             Dockerfile, redis.conf

@@ -9,9 +9,10 @@ process too and needs the identical checks.
 import pytest
 
 from app.config import get_settings
-from app.ingestion.uploads import safe_filename, tenant_upload_dir
+from app.ingestion.uploads import content_digest, safe_filename, tenant_upload_dir, upload_doc_id
 
 _VALID_TENANT = "a" * 32
+_OTHER_TENANT = "b" * 32
 
 
 @pytest.mark.parametrize(
@@ -51,3 +52,38 @@ def test_malformed_tenant_ids_never_become_paths(tenant_id: str) -> None:
     """
     with pytest.raises(ValueError, match="tenant id"):
         tenant_upload_dir(get_settings().upload_dir, tenant_id)
+
+
+def test_the_content_digest_is_the_same_value_both_writers_store() -> None:
+    """`content_hash` had two incompatible meanings in one column.
+
+    The router stored the tenant-salted 32-char `doc_id` on the pending row; `ingest_document`
+    overwrote it with a plain 16-char sha256 on the terminal write. Same column, two values of
+    different lengths and different meanings, reconciled only by whichever write happened last.
+    Harmless while nothing reads the field -- which is exactly the state in which a column
+    quietly becomes unusable, because the first reader inherits both conventions.
+
+    One function now, called by both. Asserting it is *not* the doc_id is the load-bearing half:
+    that is the value the bug wrote.
+    """
+    payload = b"%PDF-1.4 the same bytes"
+
+    digest = content_digest(payload)
+
+    assert digest == content_digest(payload), "deterministic"
+    assert digest != upload_doc_id(_VALID_TENANT, payload), "the id is salted; this is not"
+    assert digest == content_digest(payload), "and it does not depend on the tenant"
+
+
+def test_two_tenants_uploading_the_same_bytes_share_a_content_digest_but_not_an_id() -> None:
+    """The two fields answer different questions, and this is the difference.
+
+    `doc_id` is identity *and* isolation -- salted, so tenant A's id is unguessable from the file.
+    `content_hash` answers the one thing the id cannot: did the bytes change while the id stayed
+    the same? That happens on a revised arXiv paper, where `doc_id` is the arXiv id rather than a
+    hash of the content.
+    """
+    payload = b"%PDF-1.4 identical"
+
+    assert content_digest(payload) == content_digest(payload)
+    assert upload_doc_id(_VALID_TENANT, payload) != upload_doc_id(_OTHER_TENANT, payload)

@@ -6,7 +6,7 @@ reissued), and it is the one caller that mints an *unrestricted* key. Nothing ab
 exercised by the HTTP contract tests, because the HTTP routes deliberately cannot mint
 unrestricted keys -- see `test_scopes.py::test_an_unrestricted_key_can_confer_anything`.
 
-Split in two. The `_state`/`_day`/argument-parsing half is pure and always runs. The rest
+Split in two. The argument-parsing half is pure and always runs. The rest
 needs a real Postgres and skips without one, for the same reason `test_auth_touch.py` does:
 `revoke`'s guard *is* a two-column WHERE clause, and there is nothing left to test once the
 query is faked.
@@ -22,7 +22,6 @@ import importlib.util
 import sys
 import uuid
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -57,59 +56,12 @@ cli = _load_cli()
 
 
 # ---------------------------------------------------------------------------------------------
-# Pure: the state column and argument handling. No database.
+# Pure: argument handling. No database.
+#
+# The `_state`/`_day` tests that used to live here moved to `test_key_expiry.py` along with the
+# functions themselves: the same two were implemented in this CLI and in the Streamlit key page,
+# with different wording, and `app/auth/expiry.py` now owns one copy.
 # ---------------------------------------------------------------------------------------------
-
-
-def _key(*, revoked_at: datetime | None = None, expires_at: datetime | None = None) -> ApiKey:
-    return ApiKey(
-        id="k" * 32,
-        tenant_id="t" * 32,
-        key_hash="h" * 128,
-        prefix="pf_live_abcd",
-        name="ci",
-        revoked_at=revoked_at,
-        expires_at=expires_at,
-    )
-
-
-def test_a_key_with_no_deadline_reads_as_active() -> None:
-    """`expires_at IS NULL` means never, so this column must not call it expired."""
-    assert cli._state(_key()) == "active"
-
-
-def test_a_lapsed_deadline_is_shouted() -> None:
-    """Uppercase on purpose: the whole point of the column is that a lapsed key is visible in
-    a list of twenty, and "expired" in lower case reads like a heading.
-    """
-    state = cli._state(_key(expires_at=datetime.now(UTC) - timedelta(days=1)))
-
-    assert state.startswith("EXPIRED")
-
-
-def test_a_live_deadline_reports_the_date() -> None:
-    assert cli._state(_key(expires_at=datetime.now(UTC) + timedelta(days=30))).startswith("active until")
-
-
-def test_revocation_wins_over_expiry() -> None:
-    """A key that was revoked and has *since* lapsed is still a revocation story -- the
-    deliberate act is the one worth reporting. Reversing these two branches turns "we cut this
-    customer off" into "it aged out", which is a different conversation.
-    """
-    both = _key(
-        revoked_at=datetime.now(UTC) - timedelta(days=2),
-        expires_at=datetime.now(UTC) - timedelta(days=1),
-    )
-
-    assert cli._state(both).startswith("revoked")
-
-
-def test_a_missing_timestamp_renders_as_never_not_none() -> None:
-    """`last_used_at` is NULL for a key that has never authenticated, and `str(None)` in a
-    table column reads as a bug in the CLI rather than a fact about the key.
-    """
-    assert cli._day(None) == "never"
-    assert cli._day(datetime(2026, 8, 3, tzinfo=UTC)) == "2026-08-03"
 
 
 async def test_revoking_without_a_tenant_is_refused_before_any_database_work(

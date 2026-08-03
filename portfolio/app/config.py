@@ -134,13 +134,17 @@ class Settings(BaseSettings):
         default=None, description="CPU threads for Docling model inference. None = os.cpu_count()."
     )
 
-    # Concurrent ingest jobs per worker process. Neither this nor docling_num_threads means
-    # anything alone -- their *product* is what competes for cores, so on the 8-vCPU target
-    # box 2 x 4 fits and 4 x 8 would oversubscribe by 4x, making concurrent ingests slower
-    # than running them one at a time (context-switching on top of thread contention inside
-    # Docling's layout and table-structure passes). Raise this only alongside lowering
-    # DOCLING_NUM_THREADS, or on a bigger machine.
-    worker_concurrency: int = Field(default=2, description="Concurrent ingest jobs per worker process.")
+    # WORKER_CONCURRENCY is deliberately NOT a field here. It is read straight from the
+    # container environment by the worker's CMD (`procrastinate --concurrency
+    # ${WORKER_CONCURRENCY:-2}`), because procrastinate's concurrency is a CLI argument and
+    # nothing in Python ever sees it. There *was* a `worker_concurrency` field, never read by
+    # anything, whose default happened to match the CMD's fallback -- so the two agreed by
+    # coincidence and a `.env` change would have moved only one of them. The reasoning that
+    # field carried is worth keeping, though: neither knob means anything alone. Their *product*
+    # competes for cores, so on the 8-vCPU target 2 x 4 fits and 4 x 8 oversubscribes by 4x,
+    # making concurrent ingests slower than running them one at a time -- context-switching on
+    # top of thread contention inside Docling's layout and table-structure passes. Raise one
+    # only alongside lowering the other.
 
     # Defaults preserve today's hardcoded CORSMiddleware call in api/main.py exactly --
     # override via .env once there's a real frontend origin to lock this down to.
@@ -152,9 +156,19 @@ class Settings(BaseSettings):
     # reachable, so no data is exposed. What makes it dangerous is turning on credentials
     # -- see the validator below.
     cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])
-    cors_allow_methods: list[str] = Field(default_factory=lambda: ["GET", "POST"])
+    # DELETE is in the list because `DELETE /v1/keys/{key_id}` exists: the key-management page
+    # is the first thing a browser client needs, and revocation is the one action there whose
+    # failure matters. It was omitted, which is inert today (no browser client) and would have
+    # surfaced as a preflight rejection on the one call nobody wants to debug in a hurry.
+    cors_allow_methods: list[str] = Field(default_factory=lambda: ["GET", "POST", "DELETE"])
     cors_allow_headers: list[str] = Field(default_factory=list)
-    cors_expose_headers: list[str] = Field(default_factory=list)
+    # `X-RateLimit-*` is on every response by design (see `rate_limit.py`), but a browser cannot
+    # *read* a non-safelisted response header unless it is exposed here -- so without this the
+    # headers arrive and `fetch` cannot see them, which reads as the API not sending them.
+    # `Retry-After` for the same reason: it is what a client paces itself on after a 429.
+    cors_expose_headers: list[str] = Field(
+        default_factory=lambda: ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"]
+    )
     cors_allow_credentials: bool = Field(
         default=False, description="Required for cookie-based browser sessions. Forbidden with '*' origins."
     )

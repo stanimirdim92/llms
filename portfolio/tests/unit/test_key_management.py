@@ -175,6 +175,29 @@ async def test_omitting_scopes_copies_the_callers_own_rather_than_storing_empty(
     assert response.json()["scopes"] == [KEYS_READ, KEYS_WRITE]
 
 
+async def test_an_explicit_json_null_for_scopes_behaves_exactly_like_omitting_it(
+    db: SessionFactory, client: AsyncClient, authenticate: Callable[[str, list[str]], None]
+) -> None:
+    """`{"scopes": null}` used to be a 422 while an omitted field succeeded.
+
+    The difference is invisible from the caller's side, because most generated clients serialise
+    an unset optional field as an explicit null -- and `expires_in_days` next door already
+    accepted `null`, so the schema disagreed with itself about what "not specified" looks like.
+
+    Accepting it is safe for the reason the test above establishes: the escalation guard runs on
+    the *materialised* value, not on what was submitted, so all three spellings -- omitted,
+    `null`, `[]` -- resolve to the caller's own scopes and none can store an empty list.
+    """
+    authenticate(TENANT_A, [KEYS_WRITE, KEYS_READ])
+
+    response = await client.post("/v1/keys", json={"name": "explicit-null", "scopes": None})
+
+    assert response.status_code == 201
+    async with db() as session:
+        stored = (await session.exec(select(ApiKey))).all()
+    assert stored[0].scopes == [KEYS_READ, KEYS_WRITE], "must be materialised, never left empty"
+
+
 async def test_an_unrestricted_caller_materialises_every_scope(
     db: SessionFactory, client: AsyncClient, authenticate: Callable[[str, list[str]], None]
 ) -> None:

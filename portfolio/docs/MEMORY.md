@@ -390,7 +390,13 @@ started returning `DocumentScope`; caught by diffing the generated OpenAPI. Then
 tests between `@pytest.mark.usefixtures` and its function silently unauthenticated an existing
 test; caught by the suite. Worth carrying forward as a review reflex.
 
-### 2026-08-01 — redis image pinned, filename in chunk metadata ([`85ff4e2`](https://github.com/stanimirdim92/llms/commit/85ff4e2))
+### 2026-08-01 — filename in chunk metadata ([`85ff4e2`](https://github.com/stanimirdim92/llms/commit/85ff4e2))
+
+(This entry was titled "redis image pinned, filename in chunk metadata" and never mentioned the
+redis pin. The reasoning for that pin is real and lives in `redis/Dockerfile`'s own comment,
+which is the right place for it; the title has been trimmed to what the body actually covers.
+A log entry promising something it does not deliver is worse than a shorter one, because the
+next reader searches for it and concludes it was never written down.)
 
 `filename` now rides in the chunk payload and leads the model-visible block title. The symptom
 it fixed: the model summarising a document's contents while stating it had no document by that

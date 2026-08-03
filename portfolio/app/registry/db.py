@@ -151,9 +151,15 @@ async def get_document_record(session: AsyncSession, *, tenant_id: str, doc_id: 
     """Fetch one document, scoped to its owning tenant.
 
     `tenant_id` is in the WHERE clause rather than checked against the result afterwards, and
-    that matters here specifically: `doc_id` is a content hash, so two tenants uploading the
-    same file get the *same* id. A lookup by `doc_id` alone would hand tenant B the filename,
-    size, and status of tenant A's upload -- while looking entirely correct.
+    the reason is not the one this docstring used to give. It claimed `doc_id` is a content hash
+    so two tenants uploading the same file share an id -- false: `upload_doc_id` salts the digest
+    with `tenant_id` precisely so they do not, and a test asserts it.
+
+    The real reason is simpler and does not depend on how ids are generated: `doc_id` arrives
+    from the client. `GET /v1/documents/{doc_id}` passes through whatever was typed, and one
+    tenant can paste another's id -- out of a shared log, a screenshot, a support thread. Without
+    the tenant in the WHERE clause that returns tenant A's filename, size and status to tenant B,
+    while looking entirely correct. With it, it is a 404.
     """
     statement = select(DocumentRecord).where(
         DocumentRecord.doc_id == doc_id,

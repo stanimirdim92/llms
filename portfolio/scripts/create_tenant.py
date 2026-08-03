@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 
 from sqlmodel import select
 
-from app.auth.expiry import DEFAULT_EXPIRY_DAYS, EXPIRY_CHOICES, NEVER, deadline
+from app.auth.expiry import DEFAULT_EXPIRY_DAYS, EXPIRY_CHOICES, NEVER, day_or_never, deadline, describe_state
 from app.auth.keys import display_prefix, generate_key, hash_key
 from app.auth.models import ApiKey, Tenant
 from app.db import get_session, init_db
@@ -88,25 +88,6 @@ async def add_key(tenant_id: str, key_name: str, expires_in_days: int | None) ->
     print("\nStore it now -- it is not recoverable.")
 
 
-def _day(value: datetime | None) -> str:
-    return f"{value:%Y-%m-%d}" if value else "never"
-
-
-def _state(key: ApiKey) -> str:
-    """One column answering "can this key authenticate right now, and if not why not".
-
-    Order matters: revocation is reported ahead of expiry because it is the deliberate act.
-    A key that was revoked *and* has since lapsed is still a revocation story.
-    """
-    if key.revoked_at:
-        return f"revoked {_day(key.revoked_at)}"
-    if key.expires_at is None:
-        return "active"
-    if key.expires_at <= datetime.now(UTC):
-        return f"EXPIRED {_day(key.expires_at)}"
-    return f"active until {_day(key.expires_at)}"
-
-
 async def list_all() -> None:
     async with get_session() as session:
         tenants = (await session.exec(select(Tenant))).all()
@@ -118,7 +99,11 @@ async def list_all() -> None:
     for tenant in tenants:
         print(f"{tenant.id}  {tenant.name}")
         for key in (k for k in keys if k.tenant_id == tenant.id):
-            print(f"    {key.id}  {key.prefix}...  {key.name:<12} {_state(key):<22} last used {_day(key.last_used_at)}")
+            print(
+                f"    {key.id}  {key.prefix}...  {key.name:<12} "
+                f"{describe_state(revoked_at=key.revoked_at, expires_at=key.expires_at):<22} "
+                f"last used {day_or_never(key.last_used_at)}"
+            )
 
 
 async def revoke(tenant_id: str, key_id: str) -> None:

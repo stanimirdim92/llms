@@ -138,12 +138,25 @@ class CreateKeyRequest(BaseModel):
         description='Human label for the key ("ci", "laptop"). Once minted, this and the prefix are '
         "the only way to tell one key from another -- the secret itself is unrecoverable.",
     )
-    scopes: list[str] = Field(
-        default_factory=list,
-        description="What the new key may do. Empty means *the same scopes you hold*, which for an "
-        "unrestricted key is everything. You can never grant a scope your own key lacks; trying "
-        "returns 403.",
+    scopes: list[str] | None = Field(
+        default=None,
+        description="What the new key may do. Omitted, `null`, or `[]` all mean *the same scopes you "
+        "hold*, which for an unrestricted key is everything. You can never grant a scope your own key "
+        "lacks; trying returns 403.",
     )
+    """`| None` so an explicit `null` is accepted, not a 422.
+
+    It was `list[str]` with `default_factory=list`, which made `{"scopes": null}` a validation
+    error while an omitted field succeeded -- and most generated clients serialise an unset
+    optional field as an explicit null, so the difference is invisible from the caller's side.
+    `expires_in_days` next door already accepts `null`, so the schema disagreed with itself about
+    what "not specified" looks like.
+
+    Accepting it is safe because the escalation guard runs on the *materialised* value in
+    `auth/management.create_key`, not on what was submitted: all three spellings resolve to the
+    caller's own scopes before anything is stored, and none of them can store an empty list --
+    which would mean unrestricted.
+    """
     expires_in_days: Literal[30, 60, 90, 365] | None = Field(
         default=DEFAULT_EXPIRY_DAYS,
         description="Lifetime in days. `null` means the key never expires -- allowed, but say it "

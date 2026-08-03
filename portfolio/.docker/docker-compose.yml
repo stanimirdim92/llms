@@ -332,8 +332,13 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      api:
-        condition: service_healthy
+      # No dependency on `api`, and that is the same reasoning the `worker` service already
+      # carries: Streamlit calls the ingestion and answer code *in process*, never over HTTP, so
+      # it needs Qdrant, Postgres and its provider keys -- not a running API. It used to wait on
+      # `api: service_healthy`, which meant Streamlit refused to start while api was merely
+      # restarting, or while api was failing its own boot-time credential check, for a reason
+      # that has nothing to do with Streamlit. The inconsistency was the tell: two services with
+      # identical needs declared different dependencies.
       qdrant:
         condition: service_healthy
       postgres:

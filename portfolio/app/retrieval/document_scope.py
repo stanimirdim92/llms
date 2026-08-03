@@ -77,6 +77,15 @@ _DOC_ID_MARKER = re.compile(r"\bdoc[_\s-]?id\s*[=:]\s*([^\s,;]+)", re.IGNORECASE
 # fails closed, but on the one mechanism the README documents as *required* for the corpus.
 _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 
+# A marker capture only counts as an id if it contains a digit. Every real id here does: an
+# upload's is `{32 hex}-{32 hex}`, the corpus's is an arXiv id (`2008.10896`). Prose does not:
+# a question quoting SQL -- "why does `WHERE doc_id = 'x'` return nothing?" -- or a template
+# (`doc_id=%(doc_id)s`) used to be read as naming a document, fail to match any row, and refuse
+# the entire question with a 404 that named a document the user had not asked about. Refusing
+# rather than answering is right when a document *was* named (rule 11); this is about not
+# hallucinating that one was.
+_ID_MUST_CONTAIN_A_DIGIT = re.compile(r"\d")
+
 # The shape `upload_doc_id` generates: `{tenant_id}-{sha256[:32]}`, where tenant_id is a
 # `uuid7().hex` or the literal `global` for the shared corpus. Matched bare so an id pasted
 # straight out of `GET /v1/documents` works without the marker. Two fixed-length hex runs are
@@ -171,7 +180,7 @@ def _id_tokens(question: str) -> list[tuple[int, str]]:
         *((match.start(1), match.group(1).strip(_ID_EDGE_NOISE)) for match in _DOC_ID_MARKER.finditer(question)),
         *((match.start(), match.group()) for match in _DOC_ID_SHAPE.finditer(question)),
     ]
-    return [(position, token) for position, token in tokens if token]
+    return [(position, token) for position, token in tokens if token and _ID_MUST_CONTAIN_A_DIGIT.search(token)]
 
 
 def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope:
