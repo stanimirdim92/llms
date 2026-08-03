@@ -53,8 +53,12 @@ looks wrong, say so once and proceed.
 - **Postgres is the only database engine.** No SQLite anywhere — not for tests, not for Epic
   3's checkpointer.
 - **Python floor is 3.13**; Docker and CI run 3.14. The floor is what the code requires.
-  Build the dev venv on 3.13 (`uv venv --python 3.13`) — pydantic fails to build models on
-  3.14 pre-releases.
+  `.python-version` is tracked and pins local dev at 3.13, so plain `uv venv` is correct —
+  pydantic fails to build models on 3.14 pre-releases. It is excluded from the Docker build
+  context, and CI overrides it per job and then *asserts* the interpreter it actually got.
+  Note that `portfolio/.gitignore` no longer carries a `!.python-version` negation (the user
+  removed it); the file stays committed because gitignore does not apply to tracked files, but
+  it would vanish silently if it were ever untracked.
 - **Never commit `.env`.** It holds a real LangSmith API key, and **this repository is
   public** — a key that reaches a commit is disclosed the moment it is pushed, whether or not
   the commit is later reverted. `.env.example` stays placeholders only.
