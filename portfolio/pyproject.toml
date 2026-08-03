@@ -51,11 +51,13 @@ dependencies = [
     # Postgres, not the sqlite checkpointer: this project runs one database engine.
     "pydantic-settings>=2.14.2,<3.0.0",
     "docling>=2.115.0,<3.0.0",
-    "arxiv>=4.0.0,<5.0.0",
-    "requests>=2.33.1,<2.34.0", # arxiv==4.0.0 itself pins requests<2.34,>=2.32
     "structlog>=26.1.0,<27.0.0",
     "streamlit>=1.60.0,<2.0.0",
     "procrastinate>=3.9",
+    # Declared because `scripts/fetch_corpus.py` imports it, not because anything would be
+    # missing otherwise: `fastapi[standard]`, `anthropic` and `qdrant-client` all pull it in.
+    # It replaced the `arxiv` client, which only ever resolved a URL that is deterministic.
+    "httpx>=0.28.1,<0.29.0",
 ]
 
 [project.optional-dependencies]
