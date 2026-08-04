@@ -233,9 +233,8 @@ def _cached_or_captioned(rendered: list[tuple[str, int, Path, bytes]], output_di
     JSON -- but not free of Anthropic work: every figure was re-captioned on every ingest, and
     re-ingest is not rare. It happens on a re-upload of the same file (`doc_id` is a content
     hash of the tenant and the bytes, so the same tenant re-uploading identical content lands on
-    the *same* document), on any retry of a failed job, and on every corpus
-    rebuild. A 30-figure paper therefore paid 30 vision calls each time to arrive at the same
-    captions.
+    the *same* document), and on any retry of a failed job. A 30-figure paper therefore paid 30
+    vision calls each time to arrive at the same captions.
 
     See `_caption_path` for the key, which is the part that was wrong the first time.
 

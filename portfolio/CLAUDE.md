@@ -77,11 +77,14 @@ see `.claude/skills/VENDORED.md` for provenance and how to refresh. Reach for
 `qdrant-multitenancy` before touching the tenant filter and `qdrant-search-quality` when Epic 2's
 eval work starts, rather than re-deriving either.
 
-One open finding from them: **no payload index exists on `metadata.tenant_id`**, and the
-multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents;
-**required** at the 10k-tenant x 10-document target (order 1M points, where an unindexed
-tenant filter degrades toward a scan). Details in `.claude/skills/VENDORED.md`, verdict in
-`docs/TECHNICAL_DECISIONS.md`.
+**The one finding they produced is closed** (2026-08-03): `qdrant_store._ensure_payload_indexes` indexes
+`metadata.tenant_id` with **`is_tenant=True`** and `metadata.doc_id` as a plain keyword, from
+`QdrantStore.__init__`. **`is_tenant` is not a synonym for "indexed"** -- it tells Qdrant the
+field identifies tenants, so a tenant's vectors are stored together and a tenant-filtered
+search is served by sequential reads rather than degrading toward a scan at the 10k-tenant x
+10-document target. Don't drop the flag while keeping the index and assume it is equivalent.
+`metadata.chunk_type` is deliberately *not* indexed (no production caller passes `chunk_types`).
+Details in `.claude/skills/VENDORED.md`.
 
 ## Verification gate
 
@@ -341,10 +344,20 @@ rather than raising -- it fails silently, as cross-tenant data access.
 - `streamlit_app/Home.py` calls the pipeline **in process**, so the FastAPI dependency
   never runs for it. It authenticates via `auth.service.resolve_tenant` instead -- one
   auth implementation, not two. It must never mint its own tenant id.
-- `GLOBAL_TENANT` (`"global"`) is the shared corpus: readable by all, owned by none. Real
-  ids are `uuid7().hex`, so no tenant can ever be issued that value.
+- **There is no shared tenant, and do not reintroduce one.** A `GLOBAL_TENANT = "global"` used
+  to tag a curated corpus readable by everyone, which meant `_build_filter` matched
+  `MatchAny([global, caller])` and the honest description of isolation was "your documents *plus
+  global*". Removed 2026-08-03. The filter now matches **one** tenant via `MatchValue`, and it is
+  deliberately not a single-element list: a list invites a second element, which is exactly the
+  leak this boundary exists to stop.
+- **`tenant_id` is required everywhere it appears, with no default.** `_build_filter` raises on an
+  empty one, and `Chunk`, `chunk_document`, `ingest_document`, `Retriever.retrieve` and
+  `AnswerService.answer` all take it positionally-or-by-keyword with no fallback. The old default
+  was `GLOBAL_TENANT`; with the corpus gone, any default at all would silently file one tenant's
+  data under another name, and retrieval would return it rather than error.
 - `tests/unit/test_tenant_scoping.py` asserts on the built filter directly, which is why
-  it catches leaks without a live Qdrant.
+  it catches leaks without a live Qdrant. It asserts the permitted set **exactly** -- the weaker
+  `a in / b not in` form passed for months while the filter also admitted `global`.
 
 ## Rate limiting
 
@@ -368,12 +381,18 @@ rather than raising -- it fails silently, as cross-tenant data access.
   what the next request is granted. That precision was real and is gone; it is the price of the
   swap, not an oversight, and the concurrency test says so where it used to assert distinct
   `remaining` values.
-- **Never advertise `X-RateLimit-Reset: 0`.** `limits` stores the counter with a TTL of *twice*
-  the window and derives the reset as `current_expires_in % expiry`, which is correct inside the
-  window but yields `120 % 60 == 0` at the instant one opens -- so the first request against a
-  fresh key was told "retry now" while holding a spent budget. `_reset_seconds` clamps it to a
-  full window; `test_reset_is_never_zero_while_the_window_holds_a_request` goes red if that is
-  removed.
+- **`MovingWindowRateLimiter`, never `SlidingWindowCounterRateLimiter`.** The counter shipped for
+  one day and its failure is subtle enough to re-choose by accident: it **does not honour its own
+  `Retry-After`**. On a 10-request/2-second budget it advertises `reset in 2.00s`, identical to the
+  exact strategy, then grants **2 of 10** to a caller that waited 2.2 s, with the full budget back
+  only at 4.2 s. It weights the previous window's count instead of expiring individual requests, so
+  obeying the header is not enough and the natural client reaction is a tight retry loop. It also
+  reports `X-RateLimit-Reset: 0` on the first request of a fresh window (`120 % 60 == 0` against a
+  2x-window TTL), which needed a clamp that the exact strategy makes unnecessary. Two tests hold
+  the line, both red in 5 of 5 mutation runs: the full-budget-returns test and the 1x-vs-2x TTL
+  bound in the expiry test. It costs 1464 bytes per key against the counter's 120 -- ~29 MB at
+  10k tenants x 2 scopes, which is nothing on 16 GB. `FixedWindowRateLimiter` is cheaper again and
+  wrong: a caller straddles the boundary and spends two budgets back to back.
 - **Pass `max_connections`.** `limits` defaults it to 100 and its pool raises
   `MaxConnectionsError` rather than queueing, so the default turns burst load into 500s.
 - **`X-RateLimit-*` goes on successes too, not just 429s**, or the budget is only discoverable

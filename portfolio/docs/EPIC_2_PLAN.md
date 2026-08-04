@@ -108,6 +108,13 @@ Three consequences to carry forward:
 
 ## Phase 2.1 — Golden set
 
+**Prerequisite added 2026-08-03: there is no document set to build this against any more.** The
+six curated arXiv papers were removed with the shared `global` tenant, so the first task here is
+recreating a fixed corpus as *tenant-owned* fixtures — a seed tenant, its documents, and the
+ingest step, all reproducible from a script. Chunk ids are only stable if the documents and the
+chunker settings are, so this has to be pinned before any pair is written. See the shared-corpus
+entry in `docs/TECHNICAL_DECISIONS.md`.
+
 50+ grounded Q&A pairs in `data/eval/qa_dataset.jsonl`, committed. Each pair carries the
 question, an accepted answer, **the chunk ids that should be retrieved**, and the intent
 label from 2.0 — so the same file evaluates routing accuracy and retrieval recall, not just

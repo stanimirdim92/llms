@@ -130,8 +130,8 @@ The original design accepted a client-supplied `session_id` on both upload and `
 meant **any caller could read another tenant's documents by passing their id** — the schema's
 own comment promised the opposite. Removing the field from the request rather than merely
 ignoring it is the point: an absent field cannot be spoofed, and `extra="forbid"` means a
-stale client gets a 422 instead of silently receiving corpus-only answers and appearing to
-work.
+stale client gets a 422 instead of silently receiving answers scoped to somebody else and
+appearing to work.
 
 **Collapse rather than nest.** `tenant_id` from auth *plus* a `session_id` grouping key
 underneath it was the alternative. It was rejected because it would keep a client-supplied
@@ -141,8 +141,35 @@ the authenticated identity, with no request-supplied component at all. That is a
 invariant and a much harder one to regress. If per-project scoping is ever wanted, add a
 `workspace_id` then; it is a metadata addition plus one filter condition.
 
-`GLOBAL_TENANT` (`"global"`) is the shared corpus: readable by every tenant, owned by none.
-Real ids are `uuid7().hex`, so no tenant can ever be issued that value and claim it.
+### The shared corpus, removed 2026-08-03
+
+`GLOBAL_TENANT = "global"` used to tag a curated set of six arXiv papers, readable by every
+tenant and owned by none, with `uuid7().hex` real ids guaranteeing no tenant could be issued that
+value. It is gone, at the user's call, and the reasoning is worth keeping because the tradeoff was
+real in both directions.
+
+**What it bought.** Zero-setup demo value: clone, start, ask a question, get a cited answer. For a
+portfolio that is not nothing — it is the difference between a reviewer seeing the system work and
+a reviewer having to find a PDF first.
+
+**What it cost, and why that won.** A permanent exception in the one sentence that matters most
+about this system. Isolation was not "a tenant reads its own documents"; it was "a tenant reads its
+own documents **plus global**", and every explanation of the boundary had to carry that footnote.
+Concretely, it meant `_build_filter` matched `MatchAny([global, caller])`, and a list of permitted
+tenants is a shape that invites a second element. It also forced a *second* registry query
+(`list_scope_candidates`) whose only reason to exist was the corpus — and the two queries
+disagreed, producing a 404 on every document the docs told callers to name.
+
+**What replaced it.** One tenant, matched with `MatchValue`. `tenant_id` is required everywhere,
+with no default: the old default *was* `GLOBAL_TENANT`, and once the corpus is gone any default
+would silently file one tenant's data under another name. `_build_filter` raises on an empty
+tenant rather than building a filter with no tenant condition, which is what the previously-safe
+`tenant_id=None` ("corpus only") would have degenerated into.
+
+**What it costs us going forward, stated rather than discovered.** A fresh install answers nothing
+until someone uploads. And Epic 2's golden set now has no fixed document set to measure recall
+against, so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists —
+recorded in the README's known-gaps list.
 
 ## Authentication: database-backed API keys
 
@@ -450,10 +477,15 @@ itself, at the cost of a non-default module in the image.
 
 *Verdict, superseded: `limits` was adopted on 2026-08-03.* The reasoning above is kept because
 every fact in it still holds — what changed is the weighting, and by the user's call after the
-tradeoff was laid out. The memory measurement is what moved it: 120 bytes per key against 3120
-is a 26× difference at a 10k-tenant target, and "one round trip instead of two" is a latency
-argument on a path that was never the bottleneck. Shedding ~45 lines of Lua and a sorted-set
-expiry contract onto a library with 98 releases is worth two round trips.
+tradeoff was laid out. "One round trip instead of two" is a latency argument on a path that was
+never the bottleneck, and shedding ~45 lines of Lua plus a sorted-set expiry contract onto a
+library with 98 releases is worth two round trips.
+
+**The memory argument that first justified it was framed wrongly, and is corrected below.** It
+compared `limits`' *cheapest* strategy (120 bytes/key) against *our* implementation (3120) and
+called it 26×. Like for like — exact against exact — `limits`' `MovingWindowRateLimiter` costs
+1464 bytes, so the honest figure is **2× cheaper than the ZSET**, not 26×. That mattered, because
+the 26× bought a strategy that was wrong.
 
 *What adoption actually cost, since "use the battle-tested library" undersells it.* `limits`
 supplies the counting and has no opinion about anything else, so all of the following stayed
@@ -481,14 +513,48 @@ ours and every one of them had to be re-established rather than inherited:
 5. **Precision genuinely lost.** `remaining` now comes from a second round trip, so under
    concurrency it can disagree with what the next request is granted. The concurrency test used
    to assert the grants reported distinct `remaining` values counting down to zero; that
-   assertion is deleted, not weakened, and the reason is written where it was. `Retry-After`
-   became conservative rather than tight — never shorter, which is the safe direction.
+   assertion is deleted, not weakened, and the reason is written where it was.
+6. **The strategy had to be chosen twice.** `SlidingWindowCounterRateLimiter` shipped first, on
+   the memory number, and was replaced by `MovingWindowRateLimiter` the same day — see the next
+   section. An earlier version of this list closed by saying `Retry-After` had merely become
+   "conservative rather than tight — never shorter, which is the safe direction". That was
+   **false** under the counter, and it took measuring to find out.
 
-The window is also now an *approximation*: `SlidingWindowCounterRateLimiter` weights the
-previous window's count instead of tracking individual requests. It keeps the property that
-actually matters — unlike a fixed window it cannot be straddled to spend two budgets back to
-back — and the exact variant is one line away (`MovingWindowRateLimiter`) at 1464 bytes per key
-if that ever proves too loose.
+### The strategy: `MovingWindowRateLimiter`, chosen the second time
+
+`SlidingWindowCounterRateLimiter` was used for one day, on the memory argument, and the entry
+above should have been suspicious of an approximation adopted to save 27 MB on a 16 GB box. It
+was replaced once the approximation was measured rather than reasoned about, and the measurement
+is worth keeping because the failure is invisible from the API's shape:
+
+| after spending a 10-request / 2-second budget | told to wait | granted after waiting 2.2 s |
+|---|---|---|
+| `MovingWindowRateLimiter` | 2.00 s | **10 / 10** |
+| `SlidingWindowCounterRateLimiter` | 2.00 s | **2 / 10** |
+
+Both advertise the same `Retry-After`. Only one honours it. The counter weights the *previous*
+window's count instead of expiring individual requests, so a client that waits exactly as long as
+it was told still gets a 429 — and does not recover its full budget until 4.2 s, twice the
+window. The natural client-side reaction to "I waited and was refused anyway" is a tight retry
+loop, which is the specific failure the sliding-window choice exists to prevent in the first
+place.
+
+It also reported `X-RateLimit-Reset: 0` on the first request against a fresh key
+(`current_expires_in % expiry` = `120 % 60`, against a TTL of twice the window), which needed a
+clamp in `_reset_seconds`. The exact strategy reports a full window there, so the clamp was
+deleted rather than kept as defensive-looking dead code.
+
+**Two tests hold the line, both measured red in 5 of 5 mutation runs** with the counter
+reinstated: `test_the_full_budget_returns_after_the_advertised_reset`, and the `1x`-vs-`2x` TTL
+bound in `test_window_expiry_is_set_so_buckets_do_not_leak` (the counter must retain a window
+twice as long, to weight it as "previous"). A third,
+`test_a_fresh_window_advertises_a_full_window_not_zero`, is red in only **8 of 10** — the modulo
+lands on zero only when the first hit falls within a millisecond of the window opening — so it is
+documented as a hint, not a guard.
+
+The cost is 1464 bytes per key against the counter's 120: ~29 MB against ~2.4 MB at 10k tenants ×
+2 scopes. `FixedWindowRateLimiter` is cheaper again and wrong for the original reason — a caller
+straddles the boundary and spends two budgets back to back.
 
 *Net:* the counting is a library's problem now, the policy is still ours and is where all four
 historical bugs lived, and two of the five items above were bugs found *during* the swap that
@@ -797,7 +863,12 @@ file) and then **asserts** the interpreter it actually got -- otherwise a change
 precedence would make the 3.14 matrix leg a second 3.13 run and report green, which is the
 same shape of lie as a skipped test passing.
 
-## Corpus fetching: plain HTTP, after dropping the `arxiv` client
+## Corpus fetching: plain HTTP, after dropping the `arxiv` client (both now deleted)
+
+**Superseded 2026-08-03**: the curated corpus was removed, so `scripts/fetch_corpus.py`,
+`scripts/ingest.py`, `data/manifest.json` and `tests/unit/test_fetch_corpus.py` are all deleted.
+Kept as a decision record because the *lesson* outlived the code -- see the closing paragraph on
+what "this dependency only resolved a URL" missed.
 
 The `arxiv` package was a direct dependency used in exactly one place -- `scripts/fetch_corpus.py`
 -- to turn a manifest id into `Result.pdf_url`. Dropped, because that URL is deterministic:
@@ -841,12 +912,36 @@ The working assumption is **100,000 documents** (10,000 tenants, ~10 each) on an
 because several decisions above were sized against the smaller number and one of them
 changes verdict:
 
-- **The Qdrant payload index on `metadata.tenant_id` moves from deferred to required.**
-  `CLAUDE.md` and `docs/EPIC_4_PLAN.md` call it "harmless at 6 documents". At ~100k documents and
-  roughly 10 chunks each -- order 1M points -- every tenant-filtered query without a keyword
-  index on that field degrades toward a scan. The vendored `qdrant-multitenancy` skill
-  specifies a keyword index with `is_tenant=true`; that is now a prerequisite for load, not
-  an optimization.
+- **The Qdrant payload index on `metadata.tenant_id` moved from deferred to required, and is
+  now built** (2026-08-03, `qdrant_store._ensure_payload_indexes`). `CLAUDE.md` and
+  `docs/EPIC_4_PLAN.md` called it "harmless at 6 documents". At ~100k documents and roughly 10
+  chunks each -- order 1M points -- every tenant-filtered query without a keyword index on that
+  field degrades toward a scan, so it became a prerequisite for load rather than an
+  optimization.
+
+  `metadata.tenant_id` carries **`is_tenant=True`**, which is the part that is easy to lose
+  while thinking the index is still there: the flag tells Qdrant the field identifies tenants,
+  so each tenant's vectors are stored together and a tenant-filtered search is served by
+  sequential reads. A plain keyword index makes the filter fast to evaluate; `is_tenant` is what
+  makes the *reads* sequential. `metadata.doc_id` gets a plain keyword index (it is filtered by
+  `delete_document` on every re-ingest and by `/ask`'s document scoping).
+  `metadata.chunk_type` gets none -- `_build_filter` accepts `chunk_types` but no production
+  caller passes it, so an index would cost write amplification on every upsert to serve nothing.
+
+  **Verified against a real server, because it cannot be verified anywhere else.**
+  `qdrant_client`'s local/in-memory mode -- which every other Qdrant test in this project uses
+  -- warns "Payload indexes have no effect in the local Qdrant" and reports an empty
+  `payload_schema`, so an in-memory assertion would have been vacuous. Against
+  `qdrant/qdrant:v1.18.3`: `metadata.tenant_id` came back `data_type=keyword, is_tenant=True`,
+  `metadata.doc_id` `is_tenant=False`, `metadata.chunk_type` absent, and a second identical call
+  returned `completed` rather than raising (so it needs no existence check). The unit tests
+  assert the calls and their parameters and say in their docstrings that this is what they can
+  reach.
+
+  Creation failures are logged and swallowed. An index is a performance property, not a
+  correctness one -- the filters return the same points either way -- so refusing to construct
+  the store would turn a scale concern into an outage. Same reasoning as the rate limiter
+  failing open.
 - **Anything O(corpus) per query is out.** Answering a question by making one model call per
   document costs 100,000 calls. Corpus-level answering has to be bounded by retrieval first
   (see the map-reduce note below), never by a full scan.

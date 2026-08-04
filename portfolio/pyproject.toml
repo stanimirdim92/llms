@@ -22,13 +22,13 @@ requires-python = ">=3.13,<4.0"
 dependencies = [
     "gunicorn[http2]>=26.0.0,<30.0.0",
     "pillow>=12.3.0,<13.0.0",
-    "redis[hiredis]>=8.0.0,<9.0.0",
+    "redis[hiredis]>=8.1.0,<9.0.0",
     # Rate-limit counting only; the policy around it is app/rate_limit.py. Deliberately WITHOUT
     # an extra: `limits[redis]` would drag in `redis>3,<8.0.0` and conflict with the line above,
     # while `limits[async-redis]` adds coredis for nothing. `limits.aio` with
     # `implementation="redispy"` uses the redis-py already here.
     "limits>=5.8.0,<6.0.0",
-    "fastapi[standard]>=0.140.13,<0.150.0",
+    "fastapi[standard]>=0.141.1,<0.150.0",
     "uvicorn>=0.51.0,<0.60.0",
     "sqlmodel>=0.0.39,<0.0.50",
 
@@ -98,7 +98,7 @@ repository = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
 documentation = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
 
 [build-system]
-requires = ["uv_build>=0.11.32,<0.12"]
+requires = ["uv_build>=0.12.0,<0.13"]
 build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"

@@ -1,7 +1,6 @@
-"""Flat table recording every ingested document (curated corpus and user uploads
-alike), kept intentionally free of graph-shaped columns -- this is groundwork for an
-eventual Neo4j sync job, not a graph model itself. See docs/TECHNICAL_DECISIONS.md's
-"Database: Postgres, and only Postgres" section.
+"""Flat table recording every ingested document, kept intentionally free of graph-shaped
+columns -- this is groundwork for an eventual Neo4j sync job, not a graph model itself.
+See docs/TECHNICAL_DECISIONS.md's "Database: Postgres, and only Postgres" section.
 """
 
 from __future__ import annotations
@@ -34,7 +33,7 @@ STATUS_FAILED = "failed"
 class DocumentRecord(SQLModel, table=True):
     doc_id: str = Field(primary_key=True)
     tenant_id: str = Field(index=True)
-    """`"global"` for the curated corpus, a real tenant id for uploads."""
+    """The owning tenant. Every row has a real one -- there is no shared/global tenant."""
     filename: str
     content_hash: str
     file_extension: str
@@ -52,7 +51,7 @@ class DocumentRecord(SQLModel, table=True):
     attempt rather than the worst one.
 
     The default stays `ingested` because the two callers that bypass the queue entirely
-    (`scripts/ingest.py` for the corpus, and Streamlit, which runs the pipeline in process) only
+    (Streamlit, which runs the pipeline in process) only
     ever write a row once the work is already done.
 
     Indexed because the natural queries are status-shaped: "what is still pending for this

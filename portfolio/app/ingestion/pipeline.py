@@ -11,7 +11,6 @@ from app.config import get_settings
 from app.db import get_session, init_db
 from app.ingestion.chunker import chunk_document
 from app.ingestion.figure_extractor import extract_figures
-from app.ingestion.models import GLOBAL_TENANT
 from app.ingestion.parser import load_parsed_document, parse_document, save_parsed_document
 from app.ingestion.uploads import content_digest
 from app.registry.db import save_document_record
@@ -57,7 +56,7 @@ class EmptyDocumentError(Exception):
     """A document produced nothing searchable."""
 
 
-async def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, tenant_id: str = GLOBAL_TENANT) -> int:
+async def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, tenant_id: str) -> int:
     """Ingest a single document end-to-end. Returns the number of chunks written."""
     chunks, content_hash, file_size_bytes = await asyncio.to_thread(_parse_and_chunk, doc_id, file_path, tenant_id)
 

@@ -115,8 +115,9 @@ class Settings(BaseSettings):
     db_pool_timeout: int = Field(default=30)
     db_pool_recycle: int = Field(default=1800)
 
-    manifest_path: Path = Field(default=DATA_DIR / "manifest.json")
-    raw_pdf_dir: Path = Field(default=DATA_DIR / "raw_pdfs")
+    # `manifest_path` and `raw_pdf_dir` were removed with the curated corpus: they pointed at
+    # `data/manifest.json` (the arXiv id list) and the PDFs `scripts/fetch_corpus.py` downloaded
+    # into `data/raw_pdfs`. Nothing reads either now -- every document arrives as an upload.
     processed_dir: Path = Field(default=DATA_DIR / "processed")
     upload_dir: Path = Field(default=DATA_DIR / "uploads")
     max_upload_size_mb: int = Field(default=20)

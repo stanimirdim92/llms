@@ -188,7 +188,7 @@ async def test_a_question_naming_nothing_never_reads_the_registry(
         called = True
         return []
 
-    monkeypatch.setattr(ask_router, "list_scope_candidates", _tripwire)
+    monkeypatch.setattr(ask_router, "list_document_records", _tripwire)
     # The answer itself needs Voyage/Anthropic, so this asserts only on the pre-check by
     # letting the call fail afterwards -- the tripwire is what is under test.
     with contextlib.suppress(Exception):

@@ -25,8 +25,14 @@ from typing import TYPE_CHECKING, cast
 import pytest
 from qdrant_client import QdrantClient, models
 
-from app.ingestion.models import GLOBAL_TENANT, Chunk, ChunkType
-from app.vectorstore.qdrant_store import QdrantStore, _build_filter, _chunk_metadata, _point_id
+from app.ingestion.models import Chunk, ChunkType
+from app.vectorstore.qdrant_store import (
+    QdrantStore,
+    _build_filter,
+    _chunk_metadata,
+    _ensure_payload_indexes,
+    _point_id,
+)
 
 if TYPE_CHECKING:
     from langchain_qdrant import QdrantVectorStore
@@ -93,35 +99,6 @@ def test_a_tenant_cannot_retrieve_another_tenants_chunk(client: QdrantClient) ->
     visible = _search(client, _build_filter(None, TENANT_A))
 
     assert visible == ["doc-a-text-0000"]
-
-
-def test_the_shared_corpus_is_visible_to_every_tenant(client: QdrantClient) -> None:
-    """`GLOBAL_TENANT` is readable by all and owned by none, so a tenant's own filter must match
-    both its uploads and the corpus -- and still not the other tenant.
-    """
-    _insert(
-        client,
-        _chunk(doc_id="corpus", tenant_id=GLOBAL_TENANT),
-        _chunk(doc_id="doc-a", tenant_id=TENANT_A),
-        _chunk(doc_id="doc-b", tenant_id=TENANT_B),
-    )
-
-    visible = _search(client, _build_filter(None, TENANT_A))
-
-    assert sorted(visible) == ["corpus-text-0000", "doc-a-text-0000"]
-
-
-def test_no_tenant_filter_means_corpus_only(client: QdrantClient) -> None:
-    """What an unauthenticated or corpus-only path should see: never a tenant's uploads."""
-    _insert(
-        client,
-        _chunk(doc_id="corpus", tenant_id=GLOBAL_TENANT),
-        _chunk(doc_id="doc-a", tenant_id=TENANT_A),
-    )
-
-    visible = _search(client, _build_filter(None, None))
-
-    assert visible == ["corpus-text-0000"]
 
 
 def test_chunk_type_narrows_within_the_tenant_not_across_it(client: QdrantClient) -> None:
@@ -245,3 +222,70 @@ def test_the_delete_selector_carries_the_tenant(client: QdrantClient) -> None:
 
     assert _search(client, _build_filter(None, TENANT_A)) == []
     assert _search(client, _build_filter(None, TENANT_B)) == ["collide-text-0001"]
+
+
+def test_the_tenant_field_is_indexed_as_a_tenant_field() -> None:
+    """`is_tenant=True` on `metadata.tenant_id`, which is the whole point of the index.
+
+    Plain "indexed" is not enough and this is why the assertion targets the flag rather than
+    the field list: `is_tenant` tells Qdrant the field identifies tenants, so a tenant's
+    vectors are stored together and a tenant-filtered search is served by sequential reads.
+    Without it, the tenant filter degrades toward a scan as the collection grows -- invisible
+    at six documents, and the target is 10k tenants x 10 documents (order 1M points).
+    `qdrant-scaling` lists omitting it under things not to do.
+
+    **This asserts the calls, not the effect, and that is a real limitation.** `qdrant_client`'s
+    local mode warns "Payload indexes have no effect in the local Qdrant" and leaves
+    `payload_schema` empty, so the in-memory engine the rest of this file uses cannot observe an
+    index at all. The effect was verified once against a real `qdrant/qdrant:v1.18.3` container
+    -- `metadata.tenant_id` came back `data_type=keyword, is_tenant=True` -- and that is
+    recorded in `docs/TECHNICAL_DECISIONS.md` rather than re-run here.
+    """
+    calls: list[tuple[str, object]] = []
+
+    class _Recorder:
+        def create_payload_index(self, *, collection_name: str, field_name: str, field_schema: object) -> None:
+            assert collection_name == "kb"
+            calls.append((field_name, field_schema))
+
+    _ensure_payload_indexes(cast("QdrantClient", _Recorder()), "kb")
+
+    indexed = dict(calls)
+    assert set(indexed) == {"metadata.tenant_id", "metadata.doc_id"}, (
+        f"unexpected set of indexed fields: {sorted(indexed)}"
+    )
+    assert getattr(indexed["metadata.tenant_id"], "is_tenant", None) is True, (
+        "metadata.tenant_id must be indexed with is_tenant=True, not merely indexed"
+    )
+    assert getattr(indexed["metadata.doc_id"], "is_tenant", None) is False, (
+        "only the tenant field is a tenant field; is_tenant on doc_id would co-locate by document"
+    )
+    # Not indexed on purpose: `_build_filter` accepts `chunk_types` but no production caller
+    # passes it, so an index would cost write amplification on every upsert to serve nothing.
+    assert "metadata.chunk_type" not in indexed
+
+
+def test_a_failed_index_creation_does_not_stop_the_store_from_constructing() -> None:
+    """An index is a performance property, not a correctness one.
+
+    The filters return exactly the same points unindexed, just more slowly, so a Qdrant that
+    refuses `create_payload_index` must not take the api down at startup -- same reasoning as the
+    rate limiter failing open. The loud log is what keeps it from being silent.
+
+    Both fields are attempted even when the first fails, which is the part a naive
+    try/except around the whole loop would get wrong: one unsupported field would silently
+    cost the other its index.
+    """
+    attempted: list[str] = []
+
+    class _Broken:
+        def create_payload_index(self, *, collection_name: str, field_name: str, field_schema: object) -> None:
+            attempted.append(field_name)
+            msg = "index creation refused"
+            raise RuntimeError(msg)
+
+    _ensure_payload_indexes(cast("QdrantClient", _Broken()), "kb")  # must not raise
+
+    assert attempted == ["metadata.tenant_id", "metadata.doc_id"], (
+        f"a failure on one field skipped the others: {attempted}"
+    )

@@ -60,12 +60,16 @@ invisible until someone reports seeing a stranger's document.
 
 An id in a request body is user input no matter how authoritative it looks.
 `retrieval/document_scope.py` matches filenames and `doc_id`s against the output of
-`list_scope_candidates(tenant_id=...)` — the caller's own documents plus the shared corpus,
-entitlement-filtered in the WHERE clause — so an id the caller may not read resolves to
-nothing and returns 404, rather than reaching a Qdrant filter. Using the narrower
-`list_document_records` here was a real defect: it excludes `GLOBAL_TENANT`, so the
-documented `doc_id=<arXiv id>` form 404'd on every curated paper while its unit test
-passed against a made-up tenant id.
+`list_document_records(tenant_id=...)` — entitlement-filtered in the WHERE clause — so an id the
+caller may not read resolves to nothing and returns 404, rather than reaching a Qdrant filter.
+
+There were two such queries until 2026-08-03, and the pair is worth remembering even though it is
+gone. A shared corpus readable by every tenant made "what may I scope to" strictly wider than
+"what do I own", so scoping used a separate `list_scope_candidates`. They disagreed: the narrower
+one excluded the corpus, so the documented `doc_id=<arXiv id>` form 404'd on every curated paper
+while its unit test passed against a made-up tenant id. **Two functions answering almost the same
+question is the shape to distrust** — with the corpus removed they collapsed into one, and the
+only surviving difference is a `limit` passed at the call site.
 
 **Prevents:** the validation gap that would otherwise open the moment any id becomes an input.
 Note the accident this avoids relying on: an unowned `doc_id` ANDed with the tenant condition

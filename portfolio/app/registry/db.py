@@ -9,13 +9,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlmodel import col, select
 
-from app.ingestion.models import GLOBAL_TENANT
 from app.registry.models import STATUS_FAILED, STATUS_PROCESSING, DocumentRecord
-
-_CORPUS_SCOPE_LIMIT = 500
-"""How many shared-corpus documents can be named in a question. Its own budget, separate
-from the caller's, so a tenant's uploads can never crowd the corpus out of the candidate
-set -- see `list_scope_candidates`."""
 
 if TYPE_CHECKING:
     from sqlalchemy.dialects.postgresql import Insert
@@ -51,7 +45,7 @@ async def stage_document_record(session: AsyncSession, record: DocumentRecord) -
 
 async def save_document_record(session: AsyncSession, record: DocumentRecord) -> None:
     """Upsert and commit -- the path for everything that isn't the queued upload route:
-    `ingest_document`'s terminal write, the corpus script, Streamlit.
+    `ingest_document`'s terminal write, and Streamlit.
     """
     await stage_document_record(session, record)
     await session.commit()
@@ -87,55 +81,27 @@ async def _set_status(session: AsyncSession, *, doc_id: str, status: str, error:
     await session.commit()
 
 
-async def list_scope_candidates(session: AsyncSession, *, tenant_id: str, limit: int = 200) -> list[DocumentRecord]:
-    """Every document a question may be *scoped to*: this tenant's, plus the shared corpus.
-
-    Deliberately a different function from `list_document_records`, which answers "my
-    documents" and must keep excluding `GLOBAL_TENANT` -- listing documents nobody uploaded
-    would misrepresent what the tenant owns. Scoping is the opposite question: the corpus is
-    readable by everyone, so naming one of its papers has to resolve.
-
-    That difference was a real defect. `/ask`'s OpenAPI description and the README both said
-    the `doc_id=` marker "is the only form that works for the shared corpus" -- and it never
-    did, because the candidate set came from the my-documents query. Following the README's
-    own copy-pasteable example returned 404 for one of the six papers the project ships.
-
-    Still an authorization boundary, not a bypass: `IN (tenant, 'global')` is two named
-    values, so no crafted id widens it. This is the same shape `QdrantStore._build_filter`
-    uses for the retrieval filter, which is what makes the two agree about what is readable.
-    """
-
-    # Two queries, each with its own limit, rather than one `IN` list with a shared one. A
-    # single `ORDER BY uploaded_at DESC LIMIT 200` looks equivalent and is not: the curated
-    # corpus is the *oldest* content in the table, so a tenant with 200 newer uploads would
-    # push every corpus row past the cut and get H1's 404 back on every curated paper --
-    # invisibly, and only for the busiest tenants. Worse, a truncated own-document could
-    # silently scope to a shorter filename that survived. The corpus is small and fixed, so
-    # it gets its own budget instead of competing for one.
-    async def _newest(owner: str, cap: int) -> list[DocumentRecord]:
-        statement = (
-            select(DocumentRecord)
-            .where(DocumentRecord.tenant_id == owner)
-            .order_by(col(DocumentRecord.uploaded_at).desc())
-            .limit(cap)
-        )
-        return list((await session.exec(statement)).all())
-
-    own = await _newest(tenant_id, limit)
-    corpus = [] if tenant_id == GLOBAL_TENANT else await _newest(GLOBAL_TENANT, _CORPUS_SCOPE_LIMIT)
-    return own + corpus
-
-
 async def list_document_records(session: AsyncSession, *, tenant_id: str, limit: int = 100) -> list[DocumentRecord]:
     """Every document this tenant owns, newest first.
 
     Exists because "what documents do I have?" is a *metadata* question, and asking it through
-    /ask cannot work: retrieval matches chunks semantically, so a meta-question about the corpus
-    retrieves whatever happens to be nearest in embedding space and the answer is grounded in
-    that. A real user asked exactly this and got a confident summary of one document's chunks.
+    /ask cannot work: retrieval matches chunks semantically, so a meta-question about a
+    collection retrieves whatever happens to be nearest in embedding space and the answer is
+    grounded in that. A real user asked exactly this and got a confident summary of one
+    document's chunks.
 
-    Deliberately excludes the shared corpus (`GLOBAL_TENANT`): this answers "my documents", and
-    mixing in corpus documents nobody uploaded would misrepresent what the tenant owns.
+    **This also serves `/ask`'s document scoping**, which used to need a separate
+    `list_scope_candidates`. That function existed only because the curated corpus was readable
+    by every tenant, so "what may I scope to" (`tenant_id IN (caller, 'global')`) was a strictly
+    wider question than "what do I own". With the corpus removed the two are the same query, and
+    keeping both would be two names for one thing -- which is how they came to disagree in the
+    first place. Their disagreement was a real defect: `/ask`'s docs promised the `doc_id=`
+    marker worked for the corpus, and it 404'd, because the candidate set came from the
+    my-documents query.
+
+    Callers that resolve a *name* pass a larger `limit` than callers that render a list; the
+    scoping path asks for 200 where `GET /v1/documents` asks for 100. That is the only surviving
+    difference, and it lives at the call site where it can be seen.
     """
     statement = (
         select(DocumentRecord)

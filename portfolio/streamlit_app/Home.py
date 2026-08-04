@@ -1,5 +1,5 @@
 """Demo UI for the /ask RAG pipeline: upload your own documents, ask a question, get a
-cited answer grounded in the curated corpus plus your tenant's own uploads.
+cited answer grounded in the documents your tenant has uploaded.
 
 This UI calls the ingestion and answer code *in process* rather than over HTTP, so
 `api/deps.py::current_tenant` never runs for it. It therefore has to authenticate itself:
@@ -21,7 +21,7 @@ from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_uplo
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
 from app.logs import configure_logging
-from app.registry.db import list_document_records, list_scope_candidates
+from app.registry.db import list_document_records
 
 # Runtime import, not TYPE_CHECKING. This module has no `from __future__ import
 # annotations`, so `-> list[DocumentRecord]` on `_list_documents` is evaluated when the
@@ -37,7 +37,7 @@ configure_logging()
 
 st.set_page_config(page_title="AI Engineer Portfolio — RAG Demo", page_icon="📄")
 st.title("Scientific Document RAG")
-st.caption("Ask a question about the curated materials-science / battery corpus, or upload your own documents first.")
+st.caption("Upload a document, then ask questions about it. Nothing is searchable until you upload something.")
 
 if "tenant_id" not in st.session_state:
     st.session_state.tenant_id = None
@@ -56,15 +56,15 @@ def _store() -> QdrantStore:
 
 
 async def _scope_candidates(tenant_id: str) -> list[DocumentRecord]:
-    """What a question may be scoped to: this tenant's documents plus the shared corpus.
+    """What a question may be scoped to: this tenant's documents.
 
-    Separate from `_list_documents` on purpose -- see `registry.db.list_scope_candidates`.
-    Using the my-documents query for scoping is what made the documented `doc_id=` form 404
-    on the curated papers.
+    Same query as `_list_documents`, with a wider limit -- resolving a name a user typed needs a
+    bigger net than rendering a list. It was a genuinely different query while a shared corpus
+    existed; it is not any more, and the two are kept apart only by that limit.
     """
     await init_db()
     async with get_session() as session:
-        return await list_scope_candidates(session, tenant_id=tenant_id)
+        return await list_document_records(session, tenant_id=tenant_id, limit=200)
 
 
 async def _list_documents(tenant_id: str) -> list[DocumentRecord]:
@@ -159,7 +159,7 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
 # The registry, not session state: session state is empty after a browser refresh, while these
 # rows are what the tenant actually owns. Also the answer to "what documents do I have?", which
 # /ask cannot give -- retrieval matches chunks semantically, so a meta-question about the
-# corpus gets answered from whatever text is nearest in embedding space.
+# collection gets answered from whatever text is nearest in embedding space.
 with st.expander("My documents", expanded=not st.session_state.uploaded_docs):
     records = asyncio.run(_list_documents(tenant_id))
     if not records:
@@ -189,10 +189,10 @@ question = st.text_input(
 if st.button("Ask", type="primary") and question:
     # Reuses the rows the expander above already fetched, so scoping costs no extra query
     # here -- unlike `/ask`, which has no such list at hand and gates the read on the regex.
-    # NOT the `records` the table above rendered: that list is "my documents" and excludes
-    # the shared corpus, so naming one of the six curated papers used to 404 here exactly as
-    # it did on `/ask`. Scoping and listing are different questions -- same fix, same file
-    # boundary, one scoping implementation rather than two.
+    # Same query as the table above, with a wider limit. These were genuinely different
+    # questions while a shared corpus existed -- "what may I scope to" included documents nobody
+    # had uploaded -- and the two implementations disagreed, which 404'd every curated paper.
+    # With the corpus gone there is one query and one scoping implementation.
     scope = (
         resolve_scope(question, asyncio.run(_scope_candidates(tenant_id)))
         if mentions_a_document(question)
@@ -217,7 +217,7 @@ if st.button("Ask", type="primary") and question:
 
     st.subheader("Answer")
     if scope.filenames:
-        st.caption(f"Scoped to {', '.join(scope.filenames)} — the rest of your corpus was not searched.")
+        st.caption(f"Scoped to {', '.join(scope.filenames)} — your other documents were not searched.")
     st.write(result.text)
     if result.truncated:
         # Above the citations, not below, because the citation list is the *other* thing this

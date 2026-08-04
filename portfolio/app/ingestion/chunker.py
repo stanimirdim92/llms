@@ -9,7 +9,7 @@ from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTok
 from docling_core.types.doc.document import DoclingDocument, TableItem
 
 from app.config import get_settings
-from app.ingestion.models import GLOBAL_TENANT, Chunk
+from app.ingestion.models import Chunk
 
 if TYPE_CHECKING:
     from app.ingestion.figure_extractor import ExtractedFigure
@@ -33,7 +33,7 @@ def chunk_document(
     document: DoclingDocument,
     doc_id: str,
     figures: list[ExtractedFigure],
-    tenant_id: str = GLOBAL_TENANT,
+    tenant_id: str,
     filename: str = "",
 ) -> list[Chunk]:
     """Produce text, table, and figure chunks for one parsed document.

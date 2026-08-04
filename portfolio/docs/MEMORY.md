@@ -88,6 +88,9 @@ looks wrong, say so once and proceed.
 - **Epic 4 Phase 3** — docs, health checks, CI.
 - **Epic 4 Phase 5.1** — ingestion behind a procrastinate job queue. `POST /v1/documents`
   returns 202; document row and job commit in one transaction.
+- **No shared corpus** (removed 2026-08-03). Every document belongs to the tenant that uploaded
+  it; a fresh install has nothing to search until someone uploads. Epic 2's golden set therefore
+  has no document set to measure against and needs tenant-owned fixtures built first.
 - **Explicit document scoping on `/ask`** — pulled forward out of Epic 2 because it fixed an
   observed defect rather than moving a metric. Naming a document by **filename or `doc_id`**
   scopes retrieval to it; an unowned identifier is a 404.
@@ -143,18 +146,30 @@ underneath them.
   the memory numbers below were on the table. Full accounting in
   `docs/TECHNICAL_DECISIONS.md`.
 - **Redis cost per rate-limit key** (2026-08-03, `MEMORY USAGE` after 60 requests on one key).
-  `limits` `SlidingWindowCounter` **120 bytes** (a string); `limits` `MovingWindow` 1464 (a
-  list); the old hand-rolled ZSET 3120 (32-char uuid members). At 10k tenants × 2 scopes that
-  is ~2.4 MB against ~62 MB. This 26× is what decided the swap; note more than half of it was
-  the uuid member rather than the algorithm.
+  `limits` `SlidingWindowCounter` **120 bytes** (a string); `limits` `MovingWindow` **1464** (a
+  list); the old hand-rolled ZSET 3120 (32-char uuid members). **In use: MovingWindow**, so
+  ~29 MB at 10k tenants × 2 scopes, against ~62 MB for the ZSET. The 120-vs-3120 "26×" was the
+  number that first justified the swap and it was a bad comparison — `limits`' cheapest strategy
+  against our implementation. Like for like the figure is 2×, and the 26× bought a strategy that
+  did not honour its own `Retry-After` (next entry).
+- **The sliding-window *counter* does not honour its own `Retry-After`** (2026-08-03). Spend a
+  10-request budget in a 2-second window; both strategies advertise `reset in 2.00 s`. After
+  waiting 2.2 s, `MovingWindow` grants **10/10** and `SlidingWindowCounter` grants **2/10**, with
+  the full budget back only at 4.2 s — twice the window. This is why the strategy changed the
+  same day it shipped. Guard reliability, measured by reinstating the counter:
+  `test_the_full_budget_returns_after_the_advertised_reset` red 5/5,
+  `test_window_expiry_is_set_so_buckets_do_not_leak` red 5/5,
+  `test_a_fresh_window_advertises_a_full_window_not_zero` red only 8/10.
 - **`limits` defaults `max_connections` to 100** (2026-08-03) and its pool raises
   `MaxConnectionsError` rather than queueing — which is the 200-concurrent ceiling recorded
   above, now explained rather than observed. Reproduced with both the moving window and the
   counter, so it belongs to the storage bridge, not the strategy. `redis_max_connections` in
   `Settings` overrides it.
-- **`limits` retains a counter for 2× the window** (2026-08-03, measured 119999 ms for a 60 s
-  window). Inherent to the algorithm: the current window's count must outlive its own window to
-  be weighted as the next one's "previous".
+- **Window retention differs by strategy** (2026-08-03). `SlidingWindowCounter` keeps a key for
+  **2× the window** (measured 119999 ms at a 60 s window) because the current count must outlive
+  its own window to be weighted as the next one's "previous". `MovingWindow`, in use, keeps it for
+  **1×** (59999 ms). The test bound is `1×` deliberately — `2×` would still pass and would stop
+  that test noticing a strategy change.
 - **`fastapi-limiter` 0.2.0** is the only other live async option (delegates to
   `pyrate-limiter` 4.x, redis-8 compatible). Rejected on specifics: its 429 is a bare
   `HTTPException(429)` with no `Retry-After` or `X-RateLimit-*` and `try_acquire_async` returns
@@ -175,9 +190,14 @@ more discussion.
    (Docling `partial_success`, 1/16 pages, fifteen timeouts on arXiv 2008.10896). Needs
    hardware that can finish a parse. Determines whether processed artefacts can stay on local
    disk at target scale.
-3. **Payload index on `metadata.tenant_id`.** The vendored `qdrant-multitenancy` skill calls
-   for a keyword index with `is_tenant=true`. Harmless at 6 documents; **required** at 100k
-   (order 1M points, where an unindexed tenant filter degrades toward a scan). Not built.
+3. ~~**Payload index on `metadata.tenant_id`.**~~ **Resolved 2026-08-03.**
+   `qdrant_store._ensure_payload_indexes` indexes it with `is_tenant=True`, plus
+   `metadata.doc_id` as a plain keyword. Verified against a real `qdrant/qdrant:v1.18.3`
+   container, because it *cannot* be verified in-memory -- `qdrant_client`'s local mode warns
+   "Payload indexes have no effect in the local Qdrant" and reports an empty `payload_schema`,
+   so an in-memory assertion would have been vacuous. What remains open is the *effect at
+   scale*: nothing has measured a tenant-filtered query at 1M points, with or without the
+   index, so "required at 100k" is still an argument rather than a measurement.
 4. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03.** Every answer now logs
    `stop_reason`, `input_tokens` and `output_tokens` structurally, and `Answer.truncated` reaches
    `AskResponse` and the Streamlit page. What is still missing is `cost_usd` — the per-model price
@@ -200,6 +220,80 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-03 (later still) — the Qdrant tenant payload index
+
+Closed the one finding the vendored `qdrant-*` skills had produced and that had been sitting open
+since they were added: **no payload index existed at all.**
+`qdrant_store._ensure_payload_indexes`, called from `__init__` after the collection is created,
+now indexes `metadata.tenant_id` with `is_tenant=True` and `metadata.doc_id` as a plain keyword.
+
+The part worth remembering is not the change, it is **that this could not be tested the way
+everything else about Qdrant is tested here.** `test_qdrant_filtering.py` runs against
+`qdrant_client`'s in-memory engine, which warns "Payload indexes have no effect in the local
+Qdrant" and reports an empty `payload_schema` — so any in-memory assertion about an index passes
+whether or not the index was ever requested. Verified once against a real `qdrant/qdrant:v1.18.3`
+container instead (`metadata.tenant_id` → `data_type=keyword, is_tenant=True`;
+`metadata.doc_id` → `is_tenant=False`; `metadata.chunk_type` absent; a second identical call
+returns `completed`, so no existence check is needed). The unit tests assert the *calls* and say
+so in their docstrings rather than implying they prove the effect.
+
+Both new tests mutation-tested: dropping `is_tenant` turns one red, and hoisting the `try` to
+wrap the whole loop turns the other red (one field's failure would otherwise silently cost the
+other its index).
+
+`is_tenant` is not a synonym for "indexed", and that is the thing a future reader is most likely
+to get wrong: a plain keyword index makes the filter cheap to *evaluate*, while `is_tenant` is
+what makes each tenant's vectors co-located so the reads are sequential.
+
+Two things deliberately not done, both recorded with their preconditions in `docs/IDEAS.md`:
+`metadata.chunk_type` gets no index (no production caller passes `chunk_types`), and the `m=0` +
+`payload_m` per-tenant-HNSW trade from `qdrant-scaling` stays untaken — it is conditional on
+indexing throughput being the bottleneck *and* cross-tenant search being rare, and both are
+false here, since every query reads the shared corpus alongside the tenant's own documents.
+
+### 2026-08-03 (later still) — the shared corpus is gone
+
+The user asked what `app/registry/` was for, then confirmed that a tenant sees "own + global",
+then said the demo corpus had no relevance and to remove it. Offered two readings -- delete the
+data, or delete the concept -- and they chose the concept. Right call, and the reason is worth
+keeping: the data-only version would have left `GLOBAL_TENANT` machinery unused inside the
+security filter, and unused code in a filter is what a later reader mistakes for load-bearing.
+
+**What went.** `GLOBAL_TENANT`, `scripts/fetch_corpus.py`, `scripts/ingest.py`,
+`data/manifest.json`, `tests/unit/test_fetch_corpus.py`, `Settings.manifest_path`,
+`Settings.raw_pdf_dir`, the `data/manifest.json` COPY in the Dockerfile, and
+`registry.db.list_scope_candidates`.
+
+**What the change actually turned on**, beyond deleting things:
+
+1. **`_build_filter` matches one tenant with `MatchValue`, not a one-element `MatchAny`.** A list
+   invites a second element, which is precisely the leak the function exists to stop.
+2. **It raises on an empty `tenant_id`.** `None` used to mean "corpus only" and was *safe because
+   the corpus existed*. With the corpus gone the same permissive signature would mean "no tenant
+   condition at all" -- every tenant's chunks, to a caller who supplied nothing, silently, since a
+   too-wide filter returns rows rather than raising. This is the sharpest instance of rule 8 this
+   project has: removing the thing a default pointed at makes the default dangerous.
+3. **`tenant_id` lost its default everywhere** -- `Chunk`, `chunk_document`, `ingest_document`,
+   `Retriever.retrieve`, `AnswerService.answer`. The old default was `GLOBAL_TENANT`. That churned
+   ~20 test call sites, which is the point: each now says which tenant it means.
+4. **Two registry queries collapsed into one.** `list_scope_candidates` existed *only* because the
+   corpus made "what may I scope to" wider than "what do I own". They had disagreed once already
+   (H1: a 404 on every curated paper). The surviving difference is a `limit` at the call site.
+
+**Tests: deleted where the concept went, strengthened where it did not.** Removed 4 in
+`test_worker_enqueue.py`, 2 in `test_qdrant_filtering.py`, 3 corpus-CLI tests in
+`test_ingest_failures.py`, and all of `test_fetch_corpus.py`. Two rewrites matter more than the
+deletions: `test_tenant_cannot_reach_another_tenants_documents` now asserts the permitted set
+**exactly** rather than `a in / b not in` -- the weak form passed for months while the filter also
+admitted `global` -- and a new parametrized test pins the empty-tenant `ValueError`. 353 pass,
+0 skipped, 0 failed.
+
+**One consequence I nearly shipped.** `data/manifest.json` was the only tracked file under
+`data/`, so deleting it left a fresh clone with **no `data/` directory** -- and compose's
+`../data:/app/data` bind mount would then have Docker create it owned by root, breaking the first
+upload for the non-root `appuser` with an error pointing at the application. Added `data/.gitkeep`
+explaining exactly that.
 
 ### 2026-08-03 (later) — the rate limiter moved onto `limits`
 
@@ -241,6 +335,30 @@ written from the memory measurement, and the same measurement then argued for ad
 which deleted the ZSET. Left struck through as an example rather than silently removed.
 
 Gate: 372 passed / 0 skipped, three consecutive runs.
+
+**Then the strategy was wrong, and reading the `limits` docs is what caught it.** The user asked
+whether we should change strategy. `SlidingWindowCounterRateLimiter` had been chosen hours earlier
+purely on memory (120 bytes/key against 1464 for the exact one) — and an approximation adopted to
+save 27 MB on a 16 GB box should have been suspicious on its face. Measured properly, the counter
+**does not honour its own `Retry-After`**: spend a 10-request/2-second budget, both strategies say
+"reset in 2.00 s", and after waiting 2.2 s the exact one grants 10/10 while the counter grants
+**2/10**, not recovering fully until 4.2 s. A client that does exactly what the header says still
+gets a 429, and the natural reaction is a tight retry loop — the precise failure the sliding
+window exists to prevent. Switched to `MovingWindowRateLimiter`; the `X-RateLimit-Reset: 0` clamp
+became dead code and was deleted rather than left looking defensive.
+
+Three things worth carrying forward from that:
+
+1. **The 26× memory headline was a bad comparison** and I wrote it into four files. It put
+   `limits`' *cheapest* strategy against *our* implementation. Like for like it is 2×, and the
+   26× is what bought the wrong strategy. Corrected everywhere.
+2. **A test with `limit=1` cannot tell "some budget returned" from "all budget returned".** The
+   first version of the window test used a single slot, which the counter also returns — so it
+   passed while the strategy was broken. It now spends four and asserts all four come back.
+3. **Guard reliability is itself measurable.** Reinstating the counter:
+   full-budget-returns red 5/5, the 1×-vs-2× TTL bound red 5/5, the fresh-window-reset test red
+   only **8/10** (the modulo lands on zero only within a millisecond of the window opening). The
+   third is documented as a hint, not a guard, rather than being counted as one.
 
 **And the "run it three times" agreement was retired the same day**, because the user asked what
 the third run was actually doing and the answer was "the same thing as the first". pytest orders

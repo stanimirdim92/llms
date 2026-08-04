@@ -148,12 +148,12 @@ async def test_window_expiry_is_set_so_buckets_do_not_leak() -> None:
     ttl = await client.pttl(keys[0])
 
     assert ttl > 0, f"no TTL on {keys[0]!r} (pttl={ttl}; -2 means the key does not exist)"
-    # **Twice** the window, not one -- measured at 119999 ms for a 60 s window. The sliding
-    # counter has to keep the current window's count alive through the *following* window to
-    # weight it as "previous", so retention is inherently 2x. The bound is what matters (it is
-    # bounded at all); the factor is recorded so a future 2x -> 3x drift is visible rather than
-    # being absorbed by a loose `< 1 hour`.
-    assert ttl <= 2 * window * 1000
+    # One window, measured at 59999 ms for a 60 s window. It was `2 *` for a day, under
+    # `SlidingWindowCounterRateLimiter`, which has to keep the current window's count alive
+    # through the *following* window to weight it as "previous". `MovingWindowRateLimiter` needs
+    # no such thing. The tight bound is deliberate: `2 *` would still pass today and would stop
+    # this test noticing a strategy change, which is exactly what it should notice.
+    assert ttl <= window * 1000
 
 
 async def test_unreachable_redis_fails_open(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -245,16 +245,23 @@ async def test_the_budget_reports_what_is_left_and_when_it_resets() -> None:
     assert all(0 < budget.reset_seconds <= window for budget in (first, second, third))
 
 
-async def test_reset_is_never_zero_while_the_window_holds_a_request() -> None:
-    """Pins the clamp in `_reset_seconds`, which exists to cover a `limits` boundary bug.
+async def test_a_fresh_window_advertises_a_full_window_not_zero() -> None:
+    """Guards the *strategy choice*, which is why it survived the clamp it was written for.
 
-    Its counter is stored with a TTL of twice the window, and the reset is
-    `current_expires_in % expiry` -- right inside the window, but `120 % 60 == 0` at the instant
-    the window opens. So the *first* request against a fresh key was told
-    `X-RateLimit-Reset: 0`, i.e. "retry immediately", while holding a spent budget.
+    `SlidingWindowCounterRateLimiter` stores its counter with a TTL of twice the window and
+    derives the reset as `current_expires_in % expiry` -- right inside the window, but
+    `120 % 60 == 0` at the instant one opens. So under that strategy the **first** request
+    against a fresh key was told `X-RateLimit-Reset: 0`: retry immediately, with a budget
+    already spent. It needed a clamp in `_reset_seconds`, and this test was written to pin it.
 
-    This is the first request against a brand-new scope, which is exactly that instant. Remove
-    the clamp and it reports 0.
+    `MovingWindowRateLimiter` expires individual entries rather than whole windows and reports a
+    full window here, so the clamp is gone and this test kept the behaviour.
+
+    **It is a hint, not the guard.** Measured against the counter it is red in only 8 of 10 runs:
+    the modulo lands on zero only when the first hit falls within a millisecond of the window
+    opening, so it is timing-dependent by nature. `test_window_expiry_is_set_so_buckets_do_not_leak`
+    and `test_the_full_budget_returns_after_the_advertised_reset` were red in 5 of 5 -- those are
+    what actually stop the strategy regressing.
     """
     budget = await rate_limit.check(_scope("fresh-window"), TENANT_A, limit=5)
 
@@ -292,38 +299,53 @@ async def test_reset_is_a_delta_not_an_epoch_timestamp() -> None:
     assert budget.reset_seconds <= get_settings().rate_limit_window_seconds
 
 
-async def test_a_full_window_frees_a_slot(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Where the sliding window actually slides: a client that waits is served.
+async def test_the_full_budget_returns_after_the_advertised_reset(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A client that waits exactly as long as we told it must get its **whole** budget back.
 
-    This is the one test that had to change shape rather than wording. The old version injected
-    a fake clock and asserted the millisecond boundary, which worked because the trim was
-    arithmetic *we* wrote (`ZREMRANGEBYSCORE key 0 (now - window)`, inclusive). `limits`'
-    sliding-window counter rolls on **Redis key expiry** instead, so no clock we can patch moves
-    it -- a time-injected version would pass with the window mechanism entirely broken, which is
-    a test that proves the fake.
+    This is the most valuable test in the file, because a strategy that fails it looks completely
+    fine everywhere else. `SlidingWindowCounterRateLimiter` was in use for one day and fails it
+    badly: on a 10-request/2-second budget it advertises `reset in 2.00s` -- identical to what the
+    exact strategy advertises -- and then grants **2 of 10** to a caller that waited 2.2 s, with
+    the full budget not back until 4.2 s. It weights the previous window's count instead of
+    expiring individual requests, so obeying the header is not enough, and the natural client
+    reaction to "I waited and still got a 429" is a tight retry loop. `MovingWindowRateLimiter`
+    grants 10 of 10.
 
-    So: a real one-second window, really waited out. That costs the suite ~1.2 s and proves one
-    point on the line instead of the exact boundary. The boundary precision is genuinely gone,
-    and `Retry-After` is now conservative rather than tight -- a refused caller may be told to
-    wait slightly longer than needed, never shorter, which is the safe direction.
+    Asserting the *whole* budget rather than one slot is the point: a single slot comes back under
+    the counter too, which is why the earlier version of this test passed while the strategy was
+    wrong. It used `limit=1`, so "some budget returned" and "all budget returned" were the same
+    assertion, and the bug had nowhere to show.
+
+    Time is real here. The window boundary lives inside `limits` now, so injecting a clock would
+    move nothing and the test would pass with the mechanism entirely broken.
     """
-    scope = _scope("window-slide")
+    scope = _scope("full-budget-returns")
+    limit = 4
     monkeypatch.setattr(
         rate_limit,
         "get_settings",
         lambda: get_settings().model_copy(update={"rate_limit_window_seconds": 1}),
     )
 
-    first = await rate_limit.check(scope, TENANT_A, limit=1)
-    assert first is not None, "Redis must be reachable for this suite; a None here means it is not"
+    for _ in range(limit):
+        assert await rate_limit.check(scope, TENANT_A, limit=limit) is not None
 
     with pytest.raises(rate_limit.RateLimitExceeded) as excinfo:
-        await rate_limit.check(scope, TENANT_A, limit=1)
-    assert excinfo.value.retry_after_seconds >= 1, "a 429 that says 'retry in 0s' is a tight loop"
+        await rate_limit.check(scope, TENANT_A, limit=limit)
+    told_to_wait = excinfo.value.retry_after_seconds
+    assert told_to_wait >= 1, "a 429 that says 'retry in 0s' is a tight loop"
 
-    await asyncio.sleep(1.2)
+    await asyncio.sleep(told_to_wait + 0.2)
 
-    after = await rate_limit.check(scope, TENANT_A, limit=1)
+    granted = 0
+    for _ in range(limit):
+        try:
+            if await rate_limit.check(scope, TENANT_A, limit=limit) is not None:
+                granted += 1
+        except rate_limit.RateLimitExceeded:
+            pass
 
-    assert after is not None, "the window did not slide: a caller that waited was still refused"
-    assert after.remaining == 0, "the slot was reused, not added to"
+    assert granted == limit, (
+        f"waited the advertised {told_to_wait}s and only {granted}/{limit} were granted -- "
+        "the strategy does not honour its own Retry-After"
+    )

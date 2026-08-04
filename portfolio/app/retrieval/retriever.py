@@ -21,8 +21,8 @@ class Retriever:
     async def retrieve(
         self,
         query: str,
+        tenant_id: str,
         top_k: int | None = None,
-        tenant_id: str | None = None,
         doc_ids: list[str] | None = None,
     ) -> list[Document]:
         settings = get_settings()

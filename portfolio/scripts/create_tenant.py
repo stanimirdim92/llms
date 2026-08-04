@@ -2,11 +2,11 @@
 
 Until Phase 5 adds a registration UI, this is the only way to get a usable key.
 
-    python scripts/create_tenant.py "Acme Corp"                       # new tenant + first key
-    python scripts/create_tenant.py --tenant <id> --name ci           # extra key for a tenant
-    python scripts/create_tenant.py --tenant <id> --expires-in 90     # 30/60/90/365 or never
-    python scripts/create_tenant.py --list
-    python scripts/create_tenant.py --tenant <id> --revoke <key-id>
+    uv run python scripts/create_tenant.py "Acme Corp"                       # new tenant + first key
+    uv run python scripts/create_tenant.py --tenant <id> --name ci           # extra key for a tenant
+    uv run python scripts/create_tenant.py --tenant <id> --expires-in 90     # 30/60/90/365 or never
+    uv run python scripts/create_tenant.py --list
+    uv run python scripts/create_tenant.py --tenant <id> --revoke <key-id>
 """
 
 import argparse

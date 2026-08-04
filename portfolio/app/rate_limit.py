@@ -15,28 +15,40 @@ is a wash; the cost is head-of-line blocking and it scales with Redis RTT.
 `redis[hiredis]>=8` the project already has: no coredis, no third Redis client, no downgrade.
 The `redis>3,<8.0.0` pin people hit belongs to the *synchronous* `limits[redis]` extra only.
 
-**`SlidingWindowCounterRateLimiter`, which is an approximation.** It keeps two counters per
-key -- current window and previous -- and weights the previous one by how much of it still
-overlaps, instead of storing a timestamp per request. So a burst can be off by a fraction of
-the previous window's count where the old hand-rolled ZSET was exact. What it buys, measured:
-**120 bytes per key** after 60 requests against 3120 for the ZSET and 1464 for `limits`' own
-exact `MovingWindowRateLimiter`. At the 10k-tenant target that is ~2.4 MB of Redis instead of
-~62 MB. The property that actually matters is preserved: unlike a *fixed* window it cannot be
-straddled to spend two budgets back to back.
+**`MovingWindowRateLimiter`, the exact one.** It stores a timestamp per request, so the window
+slides off the oldest entry -- the same semantics as the hand-rolled ZSET this replaced.
 
-What was given up by moving off the hand-rolled script, stated plainly because a reader will
+`SlidingWindowCounterRateLimiter` was used first, for one day, because it costs **120 bytes per
+key** against 1464 for this one (measured, 60 requests on one key). That was the wrong trade and
+the measurement that killed it is worth keeping: the counter **does not honour its own
+`Retry-After`**. Spend a 10-request budget in a 2-second window, and it says "reset in 2.00s"
+exactly as this one does -- but a client that waits 2.2 s is granted **2 of 10**, and does not
+get the full budget back until 4.2 s, twice the window. Because it weights the *previous*
+window's count rather than expiring individual requests, a caller that did exactly what the
+header told it still gets a 429, and the obvious client-side reaction is to retry in a tight
+loop. This one grants 10 of 10 at 2.2 s.
+
+The memory difference is 1464 vs 120 bytes per key, so ~29 MB against ~2.4 MB at 10k tenants x
+2 scopes -- both nothing on a 16 GB box, and still less than half the 3120 bytes/key the ZSET
+cost. Beware the 26x figure that briefly justified the counter: it compared `limits`' *cheapest*
+strategy against *our* implementation. Like for like, exact against exact, `limits` is 2x
+cheaper than the ZSET, and that is the honest number.
+
+`FixedWindowRateLimiter` is cheaper still and wrong here: a caller can spend a full budget at
+the end of one window and again at the start of the next, an observed burst of twice the limit.
+
+What *is* given up by moving off the hand-rolled script, stated plainly because a reader will
 otherwise assume it still holds:
 
 - **`remaining` is a second observation, not part of the decision.** `hit()` returns a bool;
   the numbers come from `get_window_stats()` afterwards. Under concurrency the advertised
   `remaining` can therefore disagree with what the next request is granted -- the old Lua
   returned both from one atomic call. Two round trips per check instead of one.
-- **`Retry-After` is conservative rather than tight.** The counter knows when a *window* rolls,
-  not when the oldest request falls out, so a refused caller may be told to wait longer than
-  strictly needed. Never shorter, which is the direction that matters.
-- **The window boundary is Redis key expiry, not arithmetic we control**, so it cannot be
-  tested by injecting a clock. `test_a_full_window_frees_a_slot` uses a real one-second window
-  and really waits.
+- **The window boundary is inside `limits` now**, so it cannot be tested by injecting a clock
+  the way the ZSET's arithmetic could. `test_the_full_budget_returns_after_the_advertised_reset`
+  uses a real one-second window and really waits. It is also one of the two tests that catch a
+  switch back to the counter -- both measured red in 5 of 5 mutation runs, the other being
+  `test_window_expiry_is_set_so_buckets_do_not_leak` on the 1x-vs-2x TTL.
 """
 
 from __future__ import annotations
@@ -53,7 +65,7 @@ import structlog
 from limits import RateLimitItemPerSecond
 from limits.aio.storage import RedisStorage
 from limits.aio.storage.redis.redispy import RedispyBridge
-from limits.aio.strategies import SlidingWindowCounterRateLimiter
+from limits.aio.strategies import MovingWindowRateLimiter
 
 from app.config import get_settings
 
@@ -64,9 +76,7 @@ log = structlog.get_logger(__name__)
 
 
 _storages: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, RedisStorage] = weakref.WeakKeyDictionary()
-_limiters: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, SlidingWindowCounterRateLimiter] = (
-    weakref.WeakKeyDictionary()
-)
+_limiters: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, MovingWindowRateLimiter] = weakref.WeakKeyDictionary()
 
 
 def _storage() -> RedisStorage:
@@ -105,12 +115,12 @@ def _storage() -> RedisStorage:
     return storage
 
 
-def _limiter() -> SlidingWindowCounterRateLimiter:
+def _limiter() -> MovingWindowRateLimiter:
     """The strategy bound to this loop's storage. Cached for the same reason as `_storage`."""
     loop = asyncio.get_running_loop()
     limiter = _limiters.get(loop)
     if limiter is None:
-        limiter = SlidingWindowCounterRateLimiter(_storage())
+        limiter = MovingWindowRateLimiter(_storage())
         _limiters[loop] = limiter
     return limiter
 
@@ -221,7 +231,7 @@ async def check(scope: str, subject: str, limit: int) -> Budget | None:
         log.warning("rate_limit.unavailable", scope=scope, error=str(exc))
         return None
 
-    budget = Budget(limit=limit, remaining=stats.remaining, reset_seconds=_reset_seconds(stats.reset_time, window))
+    budget = Budget(limit=limit, remaining=stats.remaining, reset_seconds=_reset_seconds(stats.reset_time))
     if not allowed:
         retry_after = max(1, budget.reset_seconds)
         log.info("rate_limit.exceeded", scope=scope, subject=subject, retry_after=retry_after)
@@ -229,22 +239,26 @@ async def check(scope: str, subject: str, limit: int) -> Budget | None:
     return budget
 
 
-def _reset_seconds(reset_time: float, window: int) -> int:
+def _reset_seconds(reset_time: float) -> int:
     """`limits`' absolute epoch reset into the delta the header advertises, rounded **up**.
 
     Rounding down would advertise a reset that has not happened yet, so a client obeying the
     header retries a moment early and gets a second 429.
 
-    **The zero case is a `limits` boundary bug, not a real "resets now".** Its counter stores
-    the current window with a TTL of *twice* the window (measured: 119999 ms for a 60 s window)
-    so the count survives to serve as the next window's "previous", then derives the reset as
-    `current_expires_in % expiry`. For any instant inside the window that is correct -- at t
-    seconds in, `(2w - t) % w == w - t`. At **t = 0 it yields `120 % 60 == 0`**, so the very
-    first request of a fresh window is told the window resets immediately. For a low-traffic key
-    that is the common request, and a client pacing on the header retries at once and earns a
-    429. A request was just counted, so the truthful answer is a full window from now.
+    **There is no clamp here, and there was one for a day.** Under
+    `SlidingWindowCounterRateLimiter` this had to special-case zero: that strategy stores the
+    counter with a TTL of *twice* the window and derives the reset as
+    `current_expires_in % expiry`, which is right inside the window but yields `120 % 60 == 0`
+    at the instant one opens -- so the first request against a fresh key was told "resets now"
+    while holding a spent budget. `MovingWindowRateLimiter` reports a full window on that same
+    first request (measured: 60.00 s), because it expires individual entries rather than whole
+    windows, so the workaround became dead code and dead code that looks defensive is worse than
+    none.
 
-    Delete this clamp and `test_reset_is_never_zero_while_the_window_holds_a_request` goes red.
+    What stops the counter coming back is `test_window_expiry_is_set_so_buckets_do_not_leak` and
+    `test_the_full_budget_returns_after_the_advertised_reset`, both red in 5 of 5 mutation runs.
+    `test_a_fresh_window_advertises_a_full_window_not_zero` covers the same ground but is only red
+    in **8 of 10** -- the modulo lands on zero only when the first hit falls within a millisecond
+    of the window opening -- so treat it as a hint and not as the guard.
     """
-    seconds = max(0, math.ceil(reset_time - time.time()))
-    return window if seconds == 0 else seconds
+    return max(0, math.ceil(reset_time - time.time()))

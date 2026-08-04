@@ -158,7 +158,6 @@ WORKDIR /app
 COPY --from=builder --chown=appuser:app /opt/venv /opt/venv
 COPY --chown=appuser:app app ./app
 COPY --chown=appuser:app streamlit_app ./streamlit_app
-COPY --chown=appuser:app data/manifest.json ./data/manifest.json
 
 USER appuser
 
