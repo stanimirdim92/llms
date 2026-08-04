@@ -77,11 +77,14 @@ see `.claude/skills/VENDORED.md` for provenance and how to refresh. Reach for
 `qdrant-multitenancy` before touching the tenant filter and `qdrant-search-quality` when Epic 2's
 eval work starts, rather than re-deriving either.
 
-One open finding from them: **no payload index exists on `metadata.tenant_id`**, and the
-multitenancy skill calls for a keyword index with `is_tenant=true`. Harmless at 6 documents;
-**required** at the 10k-tenant x 10-document target (order 1M points, where an unindexed
-tenant filter degrades toward a scan). Details in `.claude/skills/VENDORED.md`, verdict in
-`docs/TECHNICAL_DECISIONS.md`.
+**The one finding they produced is closed** (2026-08-03): `qdrant_store._ensure_payload_indexes` indexes
+`metadata.tenant_id` with **`is_tenant=True`** and `metadata.doc_id` as a plain keyword, from
+`QdrantStore.__init__`. **`is_tenant` is not a synonym for "indexed"** -- it tells Qdrant the
+field identifies tenants, so a tenant's vectors are stored together and a tenant-filtered
+search is served by sequential reads rather than degrading toward a scan at the 10k-tenant x
+10-document target. Don't drop the flag while keeping the index and assume it is equivalent.
+`metadata.chunk_type` is deliberately *not* indexed (no production caller passes `chunk_types`).
+Details in `.claude/skills/VENDORED.md`.
 
 ## Verification gate
 

@@ -46,16 +46,27 @@ Recorded so a future session knows which to reach for rather than re-deriving it
   (`vectorstore/qdrant_store.py::_build_filter`), which is exactly what this skill covers.
   Read it before changing the tenant boundary.
 
-  **It already found something.** The skill says to create a keyword payload index on the
-  tenant field with `is_tenant=true` (v1.11+), which co-locates each tenant's vectors so they
-  are served by sequential reads. We create **no payload index at all** — `_build_filter`
-  keys on `metadata.tenant_id` and `metadata.chunk_type` on every query, and
-  `delete_document` on `metadata.doc_id`, all unindexed. `qdrant-scaling`'s tenant-scaling
-  page lists skipping `is_tenant=true` under things not to do. Not fixed yet: it is a
-  one-time `create_payload_index` call at collection setup, invisible at 6 documents and
-  **required** at the stated 10k-tenants/10-documents-each target (order 1M points).
-  Tracked here rather than silently added, since it is outside the change that vendored
-  these.
+  **It found something, and it is now fixed (2026-08-03).** The skill says to create a
+  keyword payload index on the tenant field with `is_tenant=true` (v1.11+), which co-locates
+  each tenant's vectors so they are served by sequential reads; `qdrant-scaling` lists
+  skipping it under things not to do. We had **no payload index at all**.
+  `qdrant_store._ensure_payload_indexes`, called from `QdrantStore.__init__` after the
+  collection is created, now indexes `metadata.tenant_id` with `is_tenant=True` and
+  `metadata.doc_id` as a plain keyword.
+
+  Two things worth knowing before touching it. **`metadata.chunk_type` is deliberately not
+  indexed** — `_build_filter` accepts `chunk_types` but no production caller passes it, so an
+  index would cost write amplification on every upsert to serve nothing. And **the effect is
+  not testable in-memory**: `qdrant_client`'s local mode warns "Payload indexes have no effect
+  in the local Qdrant" and reports an empty `payload_schema`, so the unit tests assert the
+  calls and their parameters, while the effect was verified once against a real
+  `qdrant/qdrant:v1.18.3` container (`data_type=keyword, is_tenant=True`).
+
+  Still not done, from `qdrant-scaling`: the `m=0` + `payload_m` trade that builds per-tenant
+  HNSW graphs only. That one is explicitly conditional — take it *if* indexing throughput
+  becomes the bottleneck and cross-tenant search is rare. Neither holds here: nothing measures
+  Qdrant yet, and every query reads the shared corpus alongside the tenant's own documents, so
+  cross-tenant reads are the norm rather than the exception.
 - **`qdrant-search-quality`** — golden sets, recall@k, hybrid search, when reranking helps.
   This is Epic 2's subject matter; consult it when building the eval framework rather than
   inventing a methodology.

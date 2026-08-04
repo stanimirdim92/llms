@@ -96,10 +96,16 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 
 ## Scale — toward 10k tenants × 10 documents
 
-- **Payload index on `metadata.tenant_id` with `is_tenant=true`.** *(S, becomes required)*
-  Harmless at 6 documents; at ~1M points an unindexed tenant filter degrades toward a scan.
-  Already an open question in `docs/MEMORY.md` — listed here because the *work* is small and
-  well-understood.
+- ~~**Payload index on `metadata.tenant_id` with `is_tenant=true`.**~~ **Done 2026-08-03**
+  (`qdrant_store._ensure_payload_indexes`), verified against a real `qdrant/qdrant:v1.18.3`
+  container. Delete this line at the next prune.
+- **The `m=0` + `payload_m` trade for per-tenant HNSW graphs.** *(M, conditional — probably
+  never)* `qdrant-scaling` offers it when indexing throughput becomes the bottleneck: build no
+  global HNSW graph, only per-tenant ones. Recorded with its precondition because it is easy to
+  cargo-cult from the docs, and **both halves of the precondition currently fail** — nothing
+  measures Qdrant's indexing throughput, and every query reads the shared corpus alongside the
+  tenant's own documents, so the "cross-tenant search is rare" assumption it trades against is
+  false here. Revisit only with a measurement in hand.
 - **Quantization.** *(M)* Scalar or binary quantization on the collection, to keep the working
   set in RAM at 16 GB. Costs recall; the `qdrant-performance-optimization` skill has the
   tradeoff. Needs recall@k to evaluate honestly.

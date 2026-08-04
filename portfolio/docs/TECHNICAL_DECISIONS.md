@@ -880,12 +880,36 @@ The working assumption is **100,000 documents** (10,000 tenants, ~10 each) on an
 because several decisions above were sized against the smaller number and one of them
 changes verdict:
 
-- **The Qdrant payload index on `metadata.tenant_id` moves from deferred to required.**
-  `CLAUDE.md` and `docs/EPIC_4_PLAN.md` call it "harmless at 6 documents". At ~100k documents and
-  roughly 10 chunks each -- order 1M points -- every tenant-filtered query without a keyword
-  index on that field degrades toward a scan. The vendored `qdrant-multitenancy` skill
-  specifies a keyword index with `is_tenant=true`; that is now a prerequisite for load, not
-  an optimization.
+- **The Qdrant payload index on `metadata.tenant_id` moved from deferred to required, and is
+  now built** (2026-08-03, `qdrant_store._ensure_payload_indexes`). `CLAUDE.md` and
+  `docs/EPIC_4_PLAN.md` called it "harmless at 6 documents". At ~100k documents and roughly 10
+  chunks each -- order 1M points -- every tenant-filtered query without a keyword index on that
+  field degrades toward a scan, so it became a prerequisite for load rather than an
+  optimization.
+
+  `metadata.tenant_id` carries **`is_tenant=True`**, which is the part that is easy to lose
+  while thinking the index is still there: the flag tells Qdrant the field identifies tenants,
+  so each tenant's vectors are stored together and a tenant-filtered search is served by
+  sequential reads. A plain keyword index makes the filter fast to evaluate; `is_tenant` is what
+  makes the *reads* sequential. `metadata.doc_id` gets a plain keyword index (it is filtered by
+  `delete_document` on every re-ingest and by `/ask`'s document scoping).
+  `metadata.chunk_type` gets none -- `_build_filter` accepts `chunk_types` but no production
+  caller passes it, so an index would cost write amplification on every upsert to serve nothing.
+
+  **Verified against a real server, because it cannot be verified anywhere else.**
+  `qdrant_client`'s local/in-memory mode -- which every other Qdrant test in this project uses
+  -- warns "Payload indexes have no effect in the local Qdrant" and reports an empty
+  `payload_schema`, so an in-memory assertion would have been vacuous. Against
+  `qdrant/qdrant:v1.18.3`: `metadata.tenant_id` came back `data_type=keyword, is_tenant=True`,
+  `metadata.doc_id` `is_tenant=False`, `metadata.chunk_type` absent, and a second identical call
+  returned `completed` rather than raising (so it needs no existence check). The unit tests
+  assert the calls and their parameters and say in their docstrings that this is what they can
+  reach.
+
+  Creation failures are logged and swallowed. An index is a performance property, not a
+  correctness one -- the filters return the same points either way -- so refusing to construct
+  the store would turn a scale concern into an outage. Same reasoning as the rate limiter
+  failing open.
 - **Anything O(corpus) per query is out.** Answering a question by making one model call per
   document costs 100,000 calls. Corpus-level answering has to be bounded by retrieval first
   (see the map-reduce note below), never by a full scan.

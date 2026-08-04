@@ -187,9 +187,14 @@ more discussion.
    (Docling `partial_success`, 1/16 pages, fifteen timeouts on arXiv 2008.10896). Needs
    hardware that can finish a parse. Determines whether processed artefacts can stay on local
    disk at target scale.
-3. **Payload index on `metadata.tenant_id`.** The vendored `qdrant-multitenancy` skill calls
-   for a keyword index with `is_tenant=true`. Harmless at 6 documents; **required** at 100k
-   (order 1M points, where an unindexed tenant filter degrades toward a scan). Not built.
+3. ~~**Payload index on `metadata.tenant_id`.**~~ **Resolved 2026-08-03.**
+   `qdrant_store._ensure_payload_indexes` indexes it with `is_tenant=True`, plus
+   `metadata.doc_id` as a plain keyword. Verified against a real `qdrant/qdrant:v1.18.3`
+   container, because it *cannot* be verified in-memory -- `qdrant_client`'s local mode warns
+   "Payload indexes have no effect in the local Qdrant" and reports an empty `payload_schema`,
+   so an in-memory assertion would have been vacuous. What remains open is the *effect at
+   scale*: nothing has measured a tenant-filtered query at 1M points, with or without the
+   index, so "required at 100k" is still an argument rather than a measurement.
 4. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03.** Every answer now logs
    `stop_reason`, `input_tokens` and `output_tokens` structurally, and `Answer.truncated` reaches
    `AskResponse` and the Streamlit page. What is still missing is `cost_usd` — the per-model price
@@ -212,6 +217,37 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-03 (later still) — the Qdrant tenant payload index
+
+Closed the one finding the vendored `qdrant-*` skills had produced and that had been sitting open
+since they were added: **no payload index existed at all.**
+`qdrant_store._ensure_payload_indexes`, called from `__init__` after the collection is created,
+now indexes `metadata.tenant_id` with `is_tenant=True` and `metadata.doc_id` as a plain keyword.
+
+The part worth remembering is not the change, it is **that this could not be tested the way
+everything else about Qdrant is tested here.** `test_qdrant_filtering.py` runs against
+`qdrant_client`'s in-memory engine, which warns "Payload indexes have no effect in the local
+Qdrant" and reports an empty `payload_schema` — so any in-memory assertion about an index passes
+whether or not the index was ever requested. Verified once against a real `qdrant/qdrant:v1.18.3`
+container instead (`metadata.tenant_id` → `data_type=keyword, is_tenant=True`;
+`metadata.doc_id` → `is_tenant=False`; `metadata.chunk_type` absent; a second identical call
+returns `completed`, so no existence check is needed). The unit tests assert the *calls* and say
+so in their docstrings rather than implying they prove the effect.
+
+Both new tests mutation-tested: dropping `is_tenant` turns one red, and hoisting the `try` to
+wrap the whole loop turns the other red (one field's failure would otherwise silently cost the
+other its index).
+
+`is_tenant` is not a synonym for "indexed", and that is the thing a future reader is most likely
+to get wrong: a plain keyword index makes the filter cheap to *evaluate*, while `is_tenant` is
+what makes each tenant's vectors co-located so the reads are sequential.
+
+Two things deliberately not done, both recorded with their preconditions in `docs/IDEAS.md`:
+`metadata.chunk_type` gets no index (no production caller passes `chunk_types`), and the `m=0` +
+`payload_m` per-tenant-HNSW trade from `qdrant-scaling` stays untaken — it is conditional on
+indexing throughput being the bottleneck *and* cross-tenant search being rare, and both are
+false here, since every query reads the shared corpus alongside the tenant's own documents.
 
 ### 2026-08-03 (later) — the rate limiter moved onto `limits`
 

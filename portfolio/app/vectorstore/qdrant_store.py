@@ -6,15 +6,27 @@ Epic 3's agent imports this module directly rather than constructing a second st
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 import structlog
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
-from qdrant_client.models import FieldCondition, Filter, FilterSelector, MatchAny, MatchValue
+from qdrant_client.models import (
+    FieldCondition,
+    Filter,
+    FilterSelector,
+    KeywordIndexParams,
+    MatchAny,
+    MatchValue,
+    PayloadSchemaType,
+)
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
 from app.ingestion.models import GLOBAL_TENANT, Chunk
+
+if TYPE_CHECKING:
+    from qdrant_client import QdrantClient
 
 log = structlog.get_logger(__name__)
 
@@ -32,6 +44,60 @@ _POINT_ID_NAMESPACE = uuid.UUID("6f2d7e2a-9b1a-4c3e-8f7a-1d2e3c4b5a6f")
 
 def _point_id(chunk_id: str) -> str:
     return str(uuid.uuid5(_POINT_ID_NAMESPACE, chunk_id))
+
+
+# Payload fields that carry a filter on a production path, and therefore need an index. Every
+# query in this module filters on `metadata.tenant_id`; `metadata.doc_id` is filtered by
+# `delete_document` (once per re-ingest) and by `/ask`'s document scoping.
+#
+# **`is_tenant=True` on the tenant field is the load-bearing part**, and it is not a synonym for
+# "indexed": it tells Qdrant the field identifies tenants, so each tenant's vectors are stored
+# together and a tenant-filtered search is served by sequential reads instead of jumping around
+# the segment. Without it a tenant filter degrades toward a scan as the collection grows --
+# invisible at six documents, and the stated target is 10k tenants x 10 documents, order 1M
+# points. `qdrant-scaling` lists omitting it under things not to do. Requires Qdrant v1.11+;
+# compose pins v1.18.3.
+#
+# `metadata.chunk_type` is deliberately **not** indexed. `_build_filter` accepts `chunk_types`
+# but no production caller passes it, so an index there would cost write amplification on every
+# upsert to serve nothing. Add it if a caller appears.
+_TENANT_FIELD = "metadata.tenant_id"
+_INDEXED_PAYLOAD_FIELDS: tuple[tuple[str, bool], ...] = (
+    (_TENANT_FIELD, True),
+    ("metadata.doc_id", False),
+)
+
+
+def _ensure_payload_indexes(client: QdrantClient, collection_name: str) -> None:
+    """Create the keyword payload indexes this store's filters depend on.
+
+    Called from `__init__` after the collection is created or validated, which makes it the one
+    place a fresh Qdrant instance gets indexed. `create_payload_index` is idempotent -- verified,
+    not assumed: a second identical call returns `completed` rather than raising -- so this is
+    safe on every construction and needs no "does it exist" read first.
+
+    Failures are logged and swallowed. An index is a performance property, not a correctness
+    one: the filters in this module return exactly the same points unindexed, just more slowly,
+    so a store that cannot create an index should still serve. The alternative is refusing to
+    construct, which would take the whole api down over something that only matters at scale.
+    That is the same fail-open reasoning as the rate limiter, and the loud log is what stops it
+    being silent.
+
+    **Not observable in tests.** `qdrant_client`'s local/in-memory mode warns "Payload indexes
+    have no effect in the local Qdrant" and leaves `payload_schema` empty, so no in-memory test
+    can assert the effect -- only that the right calls were made with the right parameters. The
+    effect was verified once against a real `qdrant/qdrant` container; see
+    `docs/TECHNICAL_DECISIONS.md`.
+    """
+    for field, is_tenant in _INDEXED_PAYLOAD_FIELDS:
+        try:
+            client.create_payload_index(
+                collection_name=collection_name,
+                field_name=field,
+                field_schema=KeywordIndexParams(type=PayloadSchemaType.KEYWORD, is_tenant=is_tenant),
+            )
+        except Exception as exc:  # noqa: BLE001 -- an index is performance, not correctness
+            log.warning("qdrant.payload_index_failed", field=field, error=str(exc))
 
 
 def _chunk_metadata(chunk: Chunk) -> dict:
@@ -103,6 +169,7 @@ class QdrantStore:
             client_options={"url": url or settings.qdrant_url},
             collection_name=collection_name or settings.qdrant_collection,
         )
+        _ensure_payload_indexes(self._store.client, self._store.collection_name)
 
     def delete_document(self, doc_id: str, tenant_id: str) -> None:
         """Remove every point belonging to `doc_id` *within one tenant*, whatever its chunk
