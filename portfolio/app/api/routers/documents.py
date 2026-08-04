@@ -128,9 +128,8 @@ def _to_status(record: DocumentRecord) -> DocumentStatusResponse:
     summary="List the documents you have uploaded",
     description="Returns every document owned by the tenant the `x-api-key` header authenticates "
     "as, newest first, with ingestion status. Use this rather than asking /ask what documents "
-    "exist -- /ask matches chunks semantically, so a question about the corpus gets answered from "
-    "whatever text is nearest in embedding space, not from the document list. Excludes the shared "
-    "curated corpus, which nobody uploaded.",
+    "exist -- /ask matches chunks semantically, so a question about your collection gets answered "
+    "from whatever text is nearest in embedding space, not from the document list.",
     response_description="This tenant's documents and how many were returned",
     dependencies=[
         Depends(require_scopes(DOCUMENTS_READ)),

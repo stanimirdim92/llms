@@ -23,10 +23,11 @@ from qdrant_client.models import (
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
-from app.ingestion.models import GLOBAL_TENANT, Chunk
 
 if TYPE_CHECKING:
     from qdrant_client import QdrantClient
+
+    from app.ingestion.models import Chunk
 
 log = structlog.get_logger(__name__)
 
@@ -129,13 +130,25 @@ def _to_document(chunk: Chunk) -> Document:
     return Document(page_content=chunk.text, metadata=_chunk_metadata(chunk))
 
 
-def _build_filter(chunk_types: list[str] | None, tenant_id: str | None, doc_ids: list[str] | None = None) -> Filter:
-    """Always includes the global corpus; additionally includes `tenant_id`'s own uploads.
+def _build_filter(chunk_types: list[str] | None, tenant_id: str, doc_ids: list[str] | None = None) -> Filter:
+    """Matches exactly one tenant's chunks. Nothing else is readable.
 
     This is the entire retrieval security boundary: it is what stops one tenant reading
     another's documents. `tenant_id` must therefore only ever come from
     `api/deps.py::current_tenant` -- i.e. from a verified API key, never from a request body.
     Accepting a caller-supplied scope here is exactly the vulnerability this replaced.
+
+    **One tenant, via `MatchValue`, not a list via `MatchAny`.** Until the curated corpus was
+    removed this matched `[GLOBAL_TENANT, tenant_id]`, so every read also returned documents
+    nobody had uploaded. That is gone, and with it the only reason this was ever a list -- a
+    single-element `MatchAny` would work identically and would invite someone to add a second
+    element later, which is precisely the leak this function exists to prevent.
+
+    **`tenant_id` is required and must be non-empty.** It used to accept `None`, which meant
+    "corpus only" and was safe *because* the corpus existed. With the corpus gone the same
+    permissive shape would mean "no tenant condition at all" -- every tenant's chunks, from a
+    caller who supplied nothing. Raising is the only defensible reading of a missing tenant on
+    the one code path that decides who may read what.
 
     `QdrantVectorStore`'s dict-based filter shorthand only supports flat equality
     matching (no `$in`/`$and`) and is deprecated by the library itself -- building a
@@ -143,8 +156,10 @@ def _build_filter(chunk_types: list[str] | None, tenant_id: str | None, doc_ids:
     the AND, `MatchAny` is the IN. Metadata lives under LangChain's `metadata` payload
     key, hence the `metadata.<field>` key prefix.
     """
-    tenant_ids = [GLOBAL_TENANT] if not tenant_id or tenant_id == GLOBAL_TENANT else [GLOBAL_TENANT, tenant_id]
-    must = [FieldCondition(key="metadata.tenant_id", match=MatchAny(any=tenant_ids))]
+    if not tenant_id:
+        msg = "tenant_id is required: an absent tenant would build a filter matching every tenant"
+        raise ValueError(msg)
+    must = [FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id))]
     if chunk_types:
         must.append(FieldCondition(key="metadata.chunk_type", match=MatchAny(any=chunk_types)))
     if doc_ids:
@@ -234,8 +249,8 @@ class QdrantStore:
         self,
         query: str,
         top_k: int,
+        tenant_id: str,
         chunk_types: list[str] | None = None,
-        tenant_id: str | None = None,
         doc_ids: list[str] | None = None,
     ) -> list[Document]:
         # `chunk_types` has no production caller today -- `Retriever` never passes it, so every

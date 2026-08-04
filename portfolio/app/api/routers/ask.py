@@ -12,7 +12,7 @@ from app.auth.scopes import ASK
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
-from app.registry.db import list_scope_candidates
+from app.registry.db import list_document_records
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 
 router = APIRouter()
@@ -27,39 +27,41 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     """Resolve a filename or `doc_id` named in the question against what this caller may read.
 
     The registry read is gated on `mentions_a_document` so the common case -- a question that
-    names nothing -- costs no query. The records come from `list_scope_candidates`, which
-    puts `tenant_id IN (caller, 'global')` in the WHERE clause, so a resolved `doc_id` is
-    always one the caller is entitled to. That is the ownership check required before any id
-    reaches a Qdrant filter: matching on a client-supplied id alone would resolve to another
-    tenant's document while looking entirely correct.
+    names nothing -- costs no query. `list_document_records` puts `tenant_id` in the WHERE
+    clause, so a resolved `doc_id` is always one the caller owns. That is the ownership check
+    required before any id reaches a Qdrant filter: matching on a client-supplied id alone
+    would resolve to another tenant's document while looking entirely correct.
 
-    **Not `list_document_records`.** That one answers "my documents" and excludes the shared
-    corpus by design, which silently made the documented `doc_id=<arXiv id>` form 404 for
-    every one of the six curated papers. Scoping and listing are different questions; using
-    the listing query for scoping is what broke the feature.
+    This used to call a separate `list_scope_candidates`, because the curated corpus made "what
+    may I scope to" wider than "what do I own". The corpus is gone, so they are the same query
+    and there is one function again. Do not reintroduce a second one: the last time two existed
+    they disagreed, and the disagreement was a 404 on every document the docs told callers to
+    name.
     """
     if not mentions_a_document(question):
         return DocumentScope()
 
     await init_db()
     async with get_session() as session:
-        records = await list_scope_candidates(session, tenant_id=tenant_id)
+        # 200, not the 100 `GET /v1/documents` renders: this resolves a *name* a caller typed,
+        # so the net has to be wider than what a listing page shows.
+        records = await list_document_records(session, tenant_id=tenant_id, limit=200)
     return resolve_scope(question, records)
 
 
 @router.post(
     "/ask",
     tags=["ask"],
-    summary="Ask a question over the curated corpus plus your own tenant's uploads",
+    summary="Ask a question over the documents your tenant has uploaded",
     description="Retrieves relevant chunks, reranks them, and generates a cited answer grounded only "
-    "in what was retrieved. Searches the shared corpus plus documents uploaded by the tenant the "
-    "`x-api-key` header authenticates as -- never another tenant's. Requires a valid API key.\n\n"
+    "in what was retrieved. Searches **only** documents uploaded by the tenant the `x-api-key` "
+    "header authenticates as -- never another tenant's, and there is no shared corpus. A tenant "
+    "that has uploaded nothing has nothing to search. Requires a valid API key.\n\n"
     "Naming one of your own documents in the question restricts the search to that document, "
     "and `scoped_to` in the response says which. Either identifier works, both exactly as "
     "`GET /v1/documents` reports them: the **filename** written in full with its extension "
     "('give me the contents of report.pdf'), or the **doc_id**, bare or behind a `doc_id=` "
-    "marker. The marker is the only form that works for the shared corpus, whose ids are bare "
-    "arXiv numbers.\n\nNaming a document you do not have returns **404** rather than silently "
+    "marker.\n\nNaming a document you do not have returns **404** rather than silently "
     "searching everything; naming one of yours that is still ingesting (or that failed) returns "
     "**409**, because answering from a document with no chunks yet would be a confident lie about "
     "a document nothing searched.",

@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from qdrant_client.models import FieldCondition, Filter
 
-from app.ingestion.models import GLOBAL_TENANT
 from app.registry.models import STATUS_FAILED, STATUS_INGESTED, STATUS_PENDING, DocumentRecord
 from app.retrieval.document_scope import mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import _build_filter
@@ -186,17 +185,20 @@ def test_the_marker_accepts_the_spellings_people_type() -> None:
 
 
 def test_the_marker_carries_an_id_shape_no_regex_could_find() -> None:
-    """The curated corpus uses bare arXiv ids. `2008.10896` is indistinguishable from a
-    decimal number in prose, so it only ever resolves behind an explicit marker -- which is
-    the whole reason the marker exists alongside the shape pattern.
+    """An id that reads as a decimal number resolves only behind the explicit `doc_id=` marker.
 
-    The record is `GLOBAL_TENANT`, not a fake tenant id. With a fake one this test passed
-    while the real path 404'd on every corpus paper, because the candidate set came from the
-    my-documents query -- exactly the gap a convenient fixture can hide. See H1 and
-    `test_worker_enqueue.py::test_scope_candidates_include_the_shared_corpus` for the
-    integration half.
+    `2008.10896` is indistinguishable from a measurement in prose, so no shape pattern can
+    safely match it bare -- which is why the marker exists alongside the pattern, and why the
+    second assertion here matters as much as the first: a question mentioning a number must not
+    scope to a document.
+
+    That id is a leftover shape from the curated corpus, which used bare arXiv numbers and has
+    been removed. Kept as the test case anyway, because it is still the hardest shape the marker
+    has to carry, and today's ids (`{tenant}-{16 hex}`) would make this test pass for the
+    uninteresting reason that they look nothing like prose. A fixture that cannot fail is worse
+    than an unrealistic one.
     """
-    records = [_Record("2008.10896", "2008.10896.pdf", tenant_id=GLOBAL_TENANT)]
+    records = [_Record("2008.10896", "2008.10896.pdf", tenant_id="a" * 32)]
 
     assert resolve_scope("what does doc_id=2008.10896 conclude?", records).doc_ids == ["2008.10896"]
     assert not mentions_a_document("the cell retained 2008.10896 mAh/g"), "a bare decimal must not scope"

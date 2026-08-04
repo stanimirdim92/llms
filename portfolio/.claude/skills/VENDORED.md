@@ -54,6 +54,11 @@ Recorded so a future session knows which to reach for rather than re-deriving it
   collection is created, now indexes `metadata.tenant_id` with `is_tenant=True` and
   `metadata.doc_id` as a plain keyword.
 
+  Note the filter it protects changed shape on the same day: `_build_filter` matches **one**
+  tenant with `MatchValue`, since the shared `global` corpus was removed. The skill's
+  payload-tenancy advice is unaffected -- one collection, one tenant field, a `must` filter on it
+  -- and the tenant field is if anything more clearly a tenant field now.
+
   Two things worth knowing before touching it. **`metadata.chunk_type` is deliberately not
   indexed** — `_build_filter` accepts `chunk_types` but no production caller passes it, so an
   index would cost write amplification on every upsert to serve nothing. And **the effect is

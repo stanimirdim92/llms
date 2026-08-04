@@ -1,0 +1,9 @@
+Keeps `data/` present in a fresh clone.
+
+`data/manifest.json` used to do this incidentally -- it was the only tracked file here, and it
+went with the curated corpus. Without something tracked, `git clone` produces no `data/` at all,
+and `docker-compose.yml`'s `../data:/app/data` bind mount then makes Docker create it **owned by
+root**. The images run as a non-root `appuser`, so the first upload fails with a permission error
+that points at the application rather than at a missing directory.
+
+Everything actually written here (uploads/, processed/) is gitignored.

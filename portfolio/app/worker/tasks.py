@@ -2,8 +2,8 @@
 
 Status ownership is split deliberately. This task owns `processing` and `failed`;
 `ingest_document` itself owns the terminal `ingested` write (it already upserted the row
-before this queue existed, and it still needs to for the corpus script and Streamlit, which
-call it directly and not through a queue). One writer per state, no duplicated logic.
+before this queue existed, and it still needs to for Streamlit, which calls it directly and
+not through a queue). One writer per state, no duplicated logic.
 """
 
 from __future__ import annotations

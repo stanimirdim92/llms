@@ -88,6 +88,9 @@ looks wrong, say so once and proceed.
 - **Epic 4 Phase 3** — docs, health checks, CI.
 - **Epic 4 Phase 5.1** — ingestion behind a procrastinate job queue. `POST /v1/documents`
   returns 202; document row and job commit in one transaction.
+- **No shared corpus** (removed 2026-08-03). Every document belongs to the tenant that uploaded
+  it; a fresh install has nothing to search until someone uploads. Epic 2's golden set therefore
+  has no document set to measure against and needs tenant-owned fixtures built first.
 - **Explicit document scoping on `/ask`** — pulled forward out of Epic 2 because it fixed an
   observed defect rather than moving a metric. Naming a document by **filename or `doc_id`**
   scopes retrieval to it; an unowned identifier is a 404.
@@ -248,6 +251,49 @@ Two things deliberately not done, both recorded with their preconditions in `doc
 `payload_m` per-tenant-HNSW trade from `qdrant-scaling` stays untaken — it is conditional on
 indexing throughput being the bottleneck *and* cross-tenant search being rare, and both are
 false here, since every query reads the shared corpus alongside the tenant's own documents.
+
+### 2026-08-03 (later still) — the shared corpus is gone
+
+The user asked what `app/registry/` was for, then confirmed that a tenant sees "own + global",
+then said the demo corpus had no relevance and to remove it. Offered two readings -- delete the
+data, or delete the concept -- and they chose the concept. Right call, and the reason is worth
+keeping: the data-only version would have left `GLOBAL_TENANT` machinery unused inside the
+security filter, and unused code in a filter is what a later reader mistakes for load-bearing.
+
+**What went.** `GLOBAL_TENANT`, `scripts/fetch_corpus.py`, `scripts/ingest.py`,
+`data/manifest.json`, `tests/unit/test_fetch_corpus.py`, `Settings.manifest_path`,
+`Settings.raw_pdf_dir`, the `data/manifest.json` COPY in the Dockerfile, and
+`registry.db.list_scope_candidates`.
+
+**What the change actually turned on**, beyond deleting things:
+
+1. **`_build_filter` matches one tenant with `MatchValue`, not a one-element `MatchAny`.** A list
+   invites a second element, which is precisely the leak the function exists to stop.
+2. **It raises on an empty `tenant_id`.** `None` used to mean "corpus only" and was *safe because
+   the corpus existed*. With the corpus gone the same permissive signature would mean "no tenant
+   condition at all" -- every tenant's chunks, to a caller who supplied nothing, silently, since a
+   too-wide filter returns rows rather than raising. This is the sharpest instance of rule 8 this
+   project has: removing the thing a default pointed at makes the default dangerous.
+3. **`tenant_id` lost its default everywhere** -- `Chunk`, `chunk_document`, `ingest_document`,
+   `Retriever.retrieve`, `AnswerService.answer`. The old default was `GLOBAL_TENANT`. That churned
+   ~20 test call sites, which is the point: each now says which tenant it means.
+4. **Two registry queries collapsed into one.** `list_scope_candidates` existed *only* because the
+   corpus made "what may I scope to" wider than "what do I own". They had disagreed once already
+   (H1: a 404 on every curated paper). The surviving difference is a `limit` at the call site.
+
+**Tests: deleted where the concept went, strengthened where it did not.** Removed 4 in
+`test_worker_enqueue.py`, 2 in `test_qdrant_filtering.py`, 3 corpus-CLI tests in
+`test_ingest_failures.py`, and all of `test_fetch_corpus.py`. Two rewrites matter more than the
+deletions: `test_tenant_cannot_reach_another_tenants_documents` now asserts the permitted set
+**exactly** rather than `a in / b not in` -- the weak form passed for months while the filter also
+admitted `global` -- and a new parametrized test pins the empty-tenant `ValueError`. 353 pass,
+0 skipped, 0 failed.
+
+**One consequence I nearly shipped.** `data/manifest.json` was the only tracked file under
+`data/`, so deleting it left a fresh clone with **no `data/` directory** -- and compose's
+`../data:/app/data` bind mount would then have Docker create it owned by root, breaking the first
+upload for the non-root `appuser` with an error pointing at the application. Added `data/.gitkeep`
+explaining exactly that.
 
 ### 2026-08-03 (later) — the rate limiter moved onto `limits`
 

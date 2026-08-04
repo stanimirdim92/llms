@@ -25,11 +25,9 @@ from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.config import get_settings
-from app.ingestion.models import GLOBAL_TENANT
 from app.registry.db import (
     get_document_record,
     list_document_records,
-    list_scope_candidates,
     mark_document_failed,
     mark_document_processing,
     save_document_record,
@@ -442,21 +440,6 @@ async def test_listing_returns_only_this_tenants_documents(db: SessionFactory) -
     assert [record.doc_id for record in mine] == ["a" * 32]
 
 
-async def test_listing_excludes_the_shared_corpus(db: SessionFactory) -> None:
-    """Listing means uploads. Corpus documents are readable by every tenant and owned by
-    none, so listing them as the tenant's own would misrepresent what they uploaded.
-    """
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=GLOBAL_TENANT, doc_id="c" * 32))
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
-
-    async with db() as session:
-        mine = await list_document_records(session, tenant_id=TENANT_A)
-
-    assert [record.doc_id for record in mine] == ["a" * 32]
-
-
 async def test_listing_respects_the_limit(db: SessionFactory) -> None:
     for index in range(5):
         async with db() as session:
@@ -466,65 +449,6 @@ async def test_listing_respects_the_limit(db: SessionFactory) -> None:
         limited = await list_document_records(session, tenant_id=TENANT_A, limit=2)
 
     assert len(limited) == 2
-
-
-async def test_scope_candidates_include_the_shared_corpus(db: SessionFactory) -> None:
-    """The integration half of finding H1, and the assertion whose absence let it ship.
-
-    `/ask`'s own OpenAPI text and the README both promise that `doc_id=<bare arXiv id>` is
-    how you scope a question to a curated paper. It resolved against `list_document_records`,
-    which deliberately excludes `GLOBAL_TENANT` -- so following the README's copy-pasteable
-    example returned 404 for one of the six papers the project ships. Unit tests on the
-    resolver all passed, because their fixtures used a made-up tenant id.
-    """
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=GLOBAL_TENANT, doc_id="c" * 32))
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
-
-    async with db() as session:
-        candidates = await list_scope_candidates(session, tenant_id=TENANT_A)
-
-    assert sorted(record.doc_id for record in candidates) == ["a" * 32, "c" * 32]
-
-
-async def test_scope_candidates_still_exclude_other_tenants(db: SessionFactory) -> None:
-    """Widening the candidate set to include the corpus must not widen it to everyone. The
-    IN-list is two named values, so no crafted id can satisfy it -- same shape as the Qdrant
-    filter, which is what keeps the two agreeing about what is readable.
-    """
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_B, doc_id="b" * 32))
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
-
-    async with db() as session:
-        candidates = await list_scope_candidates(session, tenant_id=TENANT_A)
-
-    assert [record.doc_id for record in candidates] == ["a" * 32]
-
-
-async def test_the_shared_corpus_survives_a_tenant_with_more_documents_than_the_limit(
-    db: SessionFactory,
-) -> None:
-    """The corpus gets its own budget, not a share of the caller's.
-
-    One `IN (tenant, 'global') ORDER BY uploaded_at DESC LIMIT n` looks equivalent and is not:
-    the curated corpus is the *oldest* content in the table, so a tenant with more recent
-    uploads than the limit pushes every corpus row past the cut and gets H1's 404 back on
-    every curated paper -- silently, and only for the busiest tenants.
-    """
-    async with db() as session:
-        await save_document_record(session, _record(tenant_id=GLOBAL_TENANT, doc_id="c" * 32))
-    for index in range(6):
-        async with db() as session:
-            await save_document_record(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
-
-    async with db() as session:
-        candidates = await list_scope_candidates(session, tenant_id=TENANT_A, limit=3)
-
-    assert len(candidates) == 4, "3 of the tenant's own newest, plus the corpus on its own budget"
-    assert "c" * 32 in [record.doc_id for record in candidates], "the corpus was crowded out"
 
 
 async def test_the_staged_row_stores_a_content_digest_not_the_doc_id(

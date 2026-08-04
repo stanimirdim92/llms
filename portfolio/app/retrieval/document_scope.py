@@ -1,7 +1,7 @@
 """Recognise a filename named inside a free-text question and narrow retrieval to it.
 
 Asked "give me the contents of 3020072D.pdf", the answer path previously searched the
-tenant's whole corpus and assembled a reply from whatever ranked highest -- so the response
+tenant's whole collection and assembled a reply from whatever ranked highest -- so the response
 could be about a different document entirely, stated confidently. Naming a document is a
 *scoping* instruction, and scoping is not a relevance problem.
 
@@ -19,9 +19,12 @@ Two things count as naming a document, because both are things a user copies out
   narrowed to that one file -- a wrong answer with no error, which is the worst failure this
   system has. Requiring the extension makes the trigger deliberate.
 - **A `doc_id`**, either behind an explicit `doc_id=` marker or as the bare
-  `{tenant_id}-{hash}` shape that `upload_doc_id` generates. The marker is what makes the
-  curated corpus's ids usable at all: those are bare arXiv ids like `2008.10896`, which no
-  regex can distinguish from a decimal number in running prose.
+  `{tenant_id}-{hash}` shape that `upload_doc_id` generates. The marker exists so an id of
+  *any* shape can be named, including shapes no regex can safely match bare -- a bare
+  `2008.10896` is indistinguishable from a decimal number in running prose. Every id minted
+  today has the two-hex-run shape, so the marker is currently belt to the pattern's braces;
+  it stays because it is documented API surface and because the next id scheme need not be
+  as convenient.
 
 Ignoring ids was a real defect, not a hypothetical. Asked for structured output "for document
 with id ... doc_id=019fb3...", the search ran unscoped and four of the five chunks that won
@@ -66,23 +69,21 @@ _EXTENSION_ALTERNATION = "|".join(re.escape(ext) for ext in sorted(SUPPORTED_UPL
 # into the token. The trailing boundary stops `report.pdfx` matching as `report.pdf`.
 _FILENAME_TOKEN = re.compile(rf"[\w.\-]+\.(?:{_EXTENSION_ALTERNATION})\b", re.IGNORECASE)
 
-# An explicit marker, so *any* id shape works -- including the curated corpus's bare arXiv
-# ids, which are unmatchable on shape alone. Accepts what people actually type: `doc_id=x`,
-# `doc id: x`, `docid = x`.
+# An explicit marker, so *any* id shape works -- including shapes unmatchable on shape alone.
+# Accepts what people actually type: `doc_id=x`, `doc id: x`, `docid = x`.
 _DOC_ID_MARKER = re.compile(r"\bdoc[_\s-]?id\s*[=:]\s*([^\s,;]+)", re.IGNORECASE)
 
 # Trailing characters the capture above swallows that are never part of an id: a
-# sentence-ending period, a closing quote or bracket. Without this, `doc_id=2008.10896.` and
-# `doc_id="2008.10896"` both fail to match a stored id and 404 on a document that exists --
-# fails closed, but on the one mechanism the README documents as *required* for the corpus.
+# sentence-ending period, a closing quote or bracket. Without this, `doc_id=<id>.` and
+# `doc_id="<id>"` both fail to match a stored id and 404 on a document that exists -- fails
+# closed, but on the form the API docs tell callers to use.
 _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 
 # A candidate token only counts as an id if it contains a digit -- applied to bare `_DOC_ID_SHAPE`
 # matches as well as to marker captures, though only the marker form is loose enough for it to
-# matter. Every id this project mints contains one: an upload's is `{32 hex}-{32 hex}`, the shared
-# corpus's is `global-{32 hex}` (the one prefix with no digit of its own, hence "contains", not
-# "starts with"), and a manifest id is an arXiv number. Digit-free hex is possible in principle and
-# vanishingly unlikely -- (6/16)^32 -- so this is a heuristic, not a guarantee. Prose does not:
+# matter. Every id this project mints is `{32 hex}-{32 hex}`, so "contains a digit" rather than
+# "starts with" one: either run can in principle be digit-free hex, which is vanishingly unlikely
+# ((6/16)^32) but not impossible, so this is a heuristic and not a guarantee. Prose does not:
 # a question quoting SQL -- "why does `WHERE doc_id = 'x'` return nothing?" -- or a template
 # (`doc_id=%(doc_id)s`) used to be read as naming a document, fail to match any row, and refuse
 # the entire question with a 404 that named a document the user had not asked about. Refusing
@@ -91,10 +92,13 @@ _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 _ID_MUST_CONTAIN_A_DIGIT = re.compile(r"\d")
 
 # The shape `upload_doc_id` generates: `{tenant_id}-{sha256[:32]}`, where tenant_id is a
-# `uuid7().hex` or the literal `global` for the shared corpus. Matched bare so an id pasted
-# straight out of `GET /v1/documents` works without the marker. Two fixed-length hex runs are
-# specific enough not to collide with prose; a bare arXiv id deliberately is not.
-_DOC_ID_SHAPE = re.compile(r"\b(?:[0-9a-f]{32}|global)-[0-9a-f]{32}\b", re.IGNORECASE)
+# `uuid7().hex`. Matched bare so an id pasted straight out of `GET /v1/documents` works without
+# the marker. Two fixed-length hex runs are specific enough not to collide with prose.
+#
+# The `|global` alternative that used to sit in this pattern went with the shared corpus. It was
+# there because corpus documents were tagged `global`, so their ids were `global-{32 hex}` -- a
+# shape no tenant can produce now, since `global` is not a `uuid7().hex`.
+_DOC_ID_SHAPE = re.compile(r"\b[0-9a-f]{32}-[0-9a-f]{32}\b", re.IGNORECASE)
 
 
 _LOOSE_FILENAME = re.compile(rf"\S*\.(?:{_EXTENSION_ALTERNATION})(?!\w)", re.IGNORECASE)
@@ -155,7 +159,7 @@ class DocumentScope:
     Distinguished from `unknown` because the honest answer is different: the document exists,
     it just has no chunks yet (or failed). Scoping to it "succeeds" and returns an empty,
     confident non-answer -- so the caller must say *pending* or *failed*, not *no such
-    document*, and certainly not answer from the rest of the corpus.
+    document*, and certainly not answer from the tenant's other documents.
     """
 
     @property
@@ -191,10 +195,12 @@ def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope
     """Match filename- and doc_id-shaped tokens in `question` against `records`.
 
     `records` must already be scoped to what the caller may read -- pass the output of
-    `registry.db.list_scope_candidates`, which is the tenant's own documents plus the shared
-    corpus. **Not `list_document_records`**: that answers "my documents" and excludes the
-    corpus, and using it here is what made the documented `doc_id=<arXiv id>` form 404 on
-    every curated paper.
+    `registry.db.list_document_records`, which puts `tenant_id` in the WHERE clause.
+
+    There used to be a second query, `list_scope_candidates`, because the shared corpus made
+    "what may I scope to" wider than "what do I own". The corpus is gone and so is that query.
+    Worth knowing why it existed: while both existed they disagreed, and the disagreement was a
+    404 on every document the API docs told callers to name.
 
     This function does no authorization of its own and must never be handed the full table:
     it would happily scope a query to another tenant's `doc_id`, and the Qdrant filter would

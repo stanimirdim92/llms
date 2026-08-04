@@ -154,7 +154,7 @@ class AnswerService:
             thinking={"type": "disabled"},
         )
 
-    async def answer(self, question: str, tenant_id: str | None = None, doc_ids: list[str] | None = None) -> Answer:
+    async def answer(self, question: str, tenant_id: str, doc_ids: list[str] | None = None) -> Answer:
         """`doc_ids` narrows retrieval to those documents. Resolved by the caller from its own
         registry rows (see `retrieval/document_scope.py`); this method does not parse the
         question, so a scope is always an explicit decision made somewhere legible.

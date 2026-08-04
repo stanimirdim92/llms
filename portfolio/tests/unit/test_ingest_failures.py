@@ -12,8 +12,6 @@ case this module exists for.
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from pathlib import Path
-from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 import pytest
@@ -23,12 +21,13 @@ from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.worker import tasks
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from app.registry.models import DocumentRecord
     from app.vectorstore.qdrant_store import QdrantStore
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable, Coroutine
-    from types import ModuleType
 
 DOC_ID = "d" * 32
 TENANT = "t" * 32
@@ -268,91 +267,6 @@ async def test_missing_provider_credentials_fail_the_job_not_the_worker(
 
 
 # ---------------------------------------------------------------------------------------------
-# The corpus script's per-document error handling
-# ---------------------------------------------------------------------------------------------
-
-
-def _load_corpus_cli() -> ModuleType:
-    """`scripts/` is not a package, so load by path -- same as `test_create_tenant.py`."""
-    import importlib.util  # noqa: PLC0415
-
-    path = Path(__file__).resolve().parents[2] / "scripts" / "ingest.py"
-    spec = importlib.util.spec_from_file_location("corpus_ingest_cli", path)
-    assert spec is not None
-    assert spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-@pytest.fixture
-def corpus(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> ModuleType:
-    """The corpus script with three papers on disk and no Qdrant."""
-    cli = _load_corpus_cli()
-    manifest = tmp_path / "manifest.json"
-    manifest.write_text('{"papers": [{"arxiv_id": "1111"}, {"arxiv_id": "2222"}, {"arxiv_id": "3333"}]}')
-    for arxiv_id in ("1111", "2222", "3333"):
-        (tmp_path / f"{arxiv_id}.pdf").write_bytes(b"%PDF-1.4")
-
-    monkeypatch.setattr(cli, "get_settings", lambda: SimpleNamespace(manifest_path=manifest, raw_pdf_dir=tmp_path))
-    monkeypatch.setattr(cli, "QdrantStore", lambda: SimpleNamespace(count=lambda: 0))
-    return cli
-
-
-async def test_one_unparseable_paper_does_not_abandon_the_rest(
-    corpus: ModuleType,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """The corpus build used to stop at the first failure, so the papers *after* the offender
-    were never attempted -- and re-running re-parsed everything that had already succeeded just
-    to reach the next failure. Every paper must be attempted; a failed run still exits non-zero.
-    """
-    attempted: list[str] = []
-
-    async def _ingest(*, doc_id: str, **_kwargs: object) -> int:
-        attempted.append(doc_id)
-        if doc_id == "2222":
-            raise EmptyDocumentError("2222.pdf produced no searchable content")
-        return 5
-
-    monkeypatch.setattr(corpus, "ingest_document", _ingest)
-
-    with pytest.raises(SystemExit) as excinfo:
-        await corpus.main()
-
-    assert attempted == ["1111", "2222", "3333"]
-    assert excinfo.value.code == 1
-
-
-async def test_a_fully_successful_run_exits_zero(corpus: ModuleType, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The other half: the non-zero exit must be conditional, or the script always looks broken
-    to whatever invokes it.
-    """
-
-    async def _ingest(**_kwargs: object) -> int:
-        return 5
-
-    monkeypatch.setattr(corpus, "ingest_document", _ingest)
-
-    await corpus.main()  # must not raise SystemExit
-
-
-async def test_a_missing_pdf_counts_as_a_failure(corpus: ModuleType, monkeypatch: pytest.MonkeyPatch) -> None:
-    """It used to `continue` silently with a printed note and still exit 0, so a corpus missing
-    a third of its papers looked like a clean build. Retrieval then answers from less material
-    than the eval set assumes -- which reads as a retrieval quality problem, not a missing file.
-    """
-
-    async def _ingest(**_kwargs: object) -> int:
-        return 5
-
-    monkeypatch.setattr(corpus, "ingest_document", _ingest)
-    (corpus.get_settings().raw_pdf_dir / "2222.pdf").unlink()
-
-    with pytest.raises(SystemExit):
-        await corpus.main()
-
-
 def test_the_parse_stage_computes_the_shared_content_digest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Where `content_hash`'s terminal value is actually produced.
 

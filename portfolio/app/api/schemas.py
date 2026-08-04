@@ -18,7 +18,7 @@ class AskRequest(BaseModel):
     earlier version accepted `session_id` here, which let any caller read another tenant's
     documents just by passing their id. `extra="forbid"` makes a request that still sends
     one fail with a 422 rather than being silently ignored -- a stale client is told plainly
-    instead of quietly getting corpus-only results.
+    instead of quietly getting results scoped to somebody else.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -60,7 +60,7 @@ class AskResponse(BaseModel):
     scoped_to: list[str] = Field(
         default_factory=list,
         description="Filenames the search was restricted to, because the question named them. "
-        "Empty means the whole corpus plus all of this tenant's uploads were searched. Present so "
+        "Empty means every document this tenant has uploaded was searched. Present so "
         "narrowing is never silent -- an answer drawn from one document reads identically to one "
         "drawn from everything.",
     )
@@ -117,7 +117,7 @@ class DocumentStatusResponse(BaseModel):
 
 class DocumentListResponse(BaseModel):
     """`GET /v1/documents`. The answer to "what documents do I have?", which cannot come from
-    /ask: retrieval matches chunks semantically, so a meta-question about the corpus gets grounded
+    /ask: retrieval matches chunks semantically, so a meta-question about the collection gets grounded
     in whatever text happens to be nearest in embedding space.
     """
 

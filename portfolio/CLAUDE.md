@@ -344,10 +344,20 @@ rather than raising -- it fails silently, as cross-tenant data access.
 - `streamlit_app/Home.py` calls the pipeline **in process**, so the FastAPI dependency
   never runs for it. It authenticates via `auth.service.resolve_tenant` instead -- one
   auth implementation, not two. It must never mint its own tenant id.
-- `GLOBAL_TENANT` (`"global"`) is the shared corpus: readable by all, owned by none. Real
-  ids are `uuid7().hex`, so no tenant can ever be issued that value.
+- **There is no shared tenant, and do not reintroduce one.** A `GLOBAL_TENANT = "global"` used
+  to tag a curated corpus readable by everyone, which meant `_build_filter` matched
+  `MatchAny([global, caller])` and the honest description of isolation was "your documents *plus
+  global*". Removed 2026-08-03. The filter now matches **one** tenant via `MatchValue`, and it is
+  deliberately not a single-element list: a list invites a second element, which is exactly the
+  leak this boundary exists to stop.
+- **`tenant_id` is required everywhere it appears, with no default.** `_build_filter` raises on an
+  empty one, and `Chunk`, `chunk_document`, `ingest_document`, `Retriever.retrieve` and
+  `AnswerService.answer` all take it positionally-or-by-keyword with no fallback. The old default
+  was `GLOBAL_TENANT`; with the corpus gone, any default at all would silently file one tenant's
+  data under another name, and retrieval would return it rather than error.
 - `tests/unit/test_tenant_scoping.py` asserts on the built filter directly, which is why
-  it catches leaks without a live Qdrant.
+  it catches leaks without a live Qdrant. It asserts the permitted set **exactly** -- the weaker
+  `a in / b not in` form passed for months while the filter also admitted `global`.
 
 ## Rate limiting
 

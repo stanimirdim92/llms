@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, cast
 import pytest
 from qdrant_client import QdrantClient, models
 
-from app.ingestion.models import GLOBAL_TENANT, Chunk, ChunkType
+from app.ingestion.models import Chunk, ChunkType
 from app.vectorstore.qdrant_store import (
     QdrantStore,
     _build_filter,
@@ -99,35 +99,6 @@ def test_a_tenant_cannot_retrieve_another_tenants_chunk(client: QdrantClient) ->
     visible = _search(client, _build_filter(None, TENANT_A))
 
     assert visible == ["doc-a-text-0000"]
-
-
-def test_the_shared_corpus_is_visible_to_every_tenant(client: QdrantClient) -> None:
-    """`GLOBAL_TENANT` is readable by all and owned by none, so a tenant's own filter must match
-    both its uploads and the corpus -- and still not the other tenant.
-    """
-    _insert(
-        client,
-        _chunk(doc_id="corpus", tenant_id=GLOBAL_TENANT),
-        _chunk(doc_id="doc-a", tenant_id=TENANT_A),
-        _chunk(doc_id="doc-b", tenant_id=TENANT_B),
-    )
-
-    visible = _search(client, _build_filter(None, TENANT_A))
-
-    assert sorted(visible) == ["corpus-text-0000", "doc-a-text-0000"]
-
-
-def test_no_tenant_filter_means_corpus_only(client: QdrantClient) -> None:
-    """What an unauthenticated or corpus-only path should see: never a tenant's uploads."""
-    _insert(
-        client,
-        _chunk(doc_id="corpus", tenant_id=GLOBAL_TENANT),
-        _chunk(doc_id="doc-a", tenant_id=TENANT_A),
-    )
-
-    visible = _search(client, _build_filter(None, None))
-
-    assert visible == ["corpus-text-0000"]
 
 
 def test_chunk_type_narrows_within_the_tenant_not_across_it(client: QdrantClient) -> None:

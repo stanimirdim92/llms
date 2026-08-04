@@ -1,6 +1,6 @@
 ---
 name: run-stack
-description: Bring up the portfolio Docker stack (api, worker, streamlit, qdrant, postgres, redis, nginx), mint an API key, and ingest the document corpus. Use when asked to run, start, boot, restart, or verify the portfolio app end to end, when a service is crash-looping or a port is already allocated, when an upload is stuck pending, or when ingestion needs to run against a live Qdrant/Postgres.
+description: Bring up the portfolio Docker stack (api, worker, streamlit, qdrant, postgres, redis, nginx), mint an API key, and upload a first document. Use when asked to run, start, boot, restart, or verify the portfolio app end to end, when a service is crash-looping or a port is already allocated, when an upload is stuck pending, or when ingestion needs to run against a live Qdrant/Postgres.
 ---
 
 # Running the portfolio stack
@@ -76,25 +76,29 @@ Statuses: `pending` (queued) -> `processing` (a worker has it) -> `ingested` or
 `failed`. A retry moves `failed` back to `processing`, so status describes the latest
 attempt rather than the worst one.
 
-## Ingesting the corpus
+## Getting something to search
 
-This path **bypasses the queue entirely** -- `scripts/ingest.py` calls `ingest_document`
-directly, so it works whether or not the worker is running and writes its registry rows
-as `ingested` in one step.
+**A fresh stack has nothing in it.** There is no curated corpus and no seed data -- the
+`scripts/fetch_corpus.py` / `scripts/ingest.py` pair that used to download and ingest six
+arXiv papers was removed along with the shared `global` tenant. Every document now arrives
+as an upload by an authenticated tenant, so `/ask` on a new install answers from nothing
+until you upload something. That is expected, not a broken stack.
 
-    uv run python scripts/fetch_corpus.py    # download the pinned arXiv papers
-    uv run python scripts/ingest.py          # parse, chunk, embed, store
+Upload through the API, which goes through the queue (202, then a worker picks it up):
 
-This works against the containerized services because compose publishes their ports
-(6333, 5432) to the host. Confirm the shell's config points at `localhost` rather than
-the compose hostnames.
+    curl -X POST http://localhost:8000/v1/documents \
+      -H "x-api-key: pf_live_..." -F "file=@/path/to/paper.pdf"
+
+Poll until `ingested` -- a first upload also pays ~1 minute of Docling model downloads:
+
+    curl http://localhost:8000/v1/documents -H "x-api-key: pf_live_..."
 
 Then verify a real answer, which is the only thing that exercises the store layer (the
 unit tests don't touch Qdrant):
 
     curl -X POST http://localhost:8000/v1/ask \
       -H "x-api-key: pf_live_..." -H "Content-Type: application/json" \
-      -d '{"question": "What cathode materials show the highest cycling stability?"}'
+      -d '{"question": "<something the uploaded document actually covers>"}'
 
 The key is required -- without it this is a 401 -- and retrieval scope is derived from
 it, so there is no request field to pass instead.
@@ -226,9 +230,11 @@ A pre-18 volume cannot be read by 18 without `pg_upgrade` (which needs both vers
 installed), so the compose file uses a separate `postgres_data_v18` volume. The old one is
 left on disk deliberately -- inspect it with a 17 image, or remove it with
 `docker volume rm portfolio_postgres_data`. What's lost by starting fresh is the `tenants`
-and `api_keys` rows, so re-mint a key. Note Qdrant points from earlier *uploads* are tagged
-with the old tenant id and become unreachable to the new tenant; corpus documents are tagged
-`global` and stay queryable.
+and `api_keys` rows, so re-mint a key. Note Qdrant points from earlier uploads are tagged with
+the old tenant id and become unreachable to the new tenant -- and since there is no shared
+`global` tenant any more, nothing survives a tenant reset as queryable. Drop the Qdrant volume
+too, or those points are orphaned: they match no live tenant filter and no longer appear in the
+registry, so nothing will ever read or delete them.
 
 **Credential changes to `POSTGRES_*` appear to do nothing** -- `initdb` only runs on an
 empty volume. `docker compose down -v` first; note this now destroys the job queue as

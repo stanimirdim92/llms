@@ -72,6 +72,12 @@ def _table(page_no: int = 4, index: int = 0, caption: str = "") -> TableItem:
     return TableItem(self_ref=f"#/tables/{index}", data=data, prov=[prov], captions=captions)
 
 
+TENANT = "a" * 32
+"""These tests do not care *which* tenant, only that one is named. `chunk_document` requires it
+since the shared corpus was removed -- there is no longer a default tenant a chunk could
+silently belong to."""
+
+
 def _document(items: Sequence[NodeItem], captions: Sequence[str] = ()) -> DoclingDocument:
     """A document whose `iterate_items` yields exactly `items`.
 
@@ -142,7 +148,7 @@ def _reset_chunks() -> Iterator[None]:
 def test_text_chunks_are_numbered_from_zero_in_order() -> None:
     _chunks.extend([_docling_chunk("first"), _docling_chunk("second")])
 
-    chunks = chunk_document(_document([]), doc_id="doc", figures=[])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([]), doc_id="doc", figures=[])
 
     assert [chunk.chunk_id for chunk in chunks] == ["doc-text-0000", "doc-text-0001"]
 
@@ -157,7 +163,7 @@ def test_a_blank_chunk_is_dropped_and_does_not_consume_a_number() -> None:
     """
     _chunks.extend([_docling_chunk("first"), _docling_chunk("   \n  "), _docling_chunk("third")])
 
-    chunks = chunk_document(_document([]), doc_id="doc", figures=[])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([]), doc_id="doc", figures=[])
 
     assert [chunk.chunk_id for chunk in chunks] == ["doc-text-0000", "doc-text-0001"]
     assert [chunk.text for chunk in chunks] == ["first", "third"]
@@ -172,7 +178,7 @@ def test_a_chunk_containing_a_table_is_not_also_stored_as_prose() -> None:
     table = _table()
     _chunks.extend([_docling_chunk("prose"), _docling_chunk("| a | b |", doc_items=[table])])
 
-    chunks = chunk_document(_document([]), doc_id="doc", figures=[])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([]), doc_id="doc", figures=[])
 
     assert [chunk.chunk_type for chunk in chunks] == ["text"]
 
@@ -180,7 +186,7 @@ def test_a_chunk_containing_a_table_is_not_also_stored_as_prose() -> None:
 def test_headings_become_the_section_path() -> None:
     _chunks.append(_docling_chunk("body", headings=["Results", "Ablations"]))
 
-    chunks = chunk_document(_document([]), doc_id="doc", figures=[])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([]), doc_id="doc", figures=[])
 
     assert chunks[0].section_path == "Results > Ablations"
 
@@ -191,7 +197,7 @@ def test_a_text_chunk_with_no_provenance_has_no_page() -> None:
     """
     _chunks.append(_docling_chunk("body"))
 
-    chunks = chunk_document(_document([]), doc_id="doc", figures=[])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([]), doc_id="doc", figures=[])
 
     assert chunks[0].page_no is None
 
@@ -200,7 +206,9 @@ def test_tables_are_numbered_separately_from_text() -> None:
     """Two independent counters, so adding a paragraph cannot renumber a table."""
     _chunks.append(_docling_chunk("prose"))
 
-    chunks = chunk_document(_document([_table(index=0), _table(index=1)]), doc_id="doc", figures=[])
+    chunks = chunk_document(
+        tenant_id=TENANT, document=_document([_table(index=0), _table(index=1)]), doc_id="doc", figures=[]
+    )
 
     assert [chunk.chunk_id for chunk in chunks] == ["doc-text-0000", "doc-table-0000", "doc-table-0001"]
 
@@ -210,7 +218,7 @@ def test_a_table_carries_its_markdown_in_metadata_as_well_as_its_text() -> None:
     uncaptioned table they coincide, which is what this asserts; the next test covers the case
     where they must differ.
     """
-    chunks = chunk_document(_document([_table()]), doc_id="doc", figures=[])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([_table()]), doc_id="doc", figures=[])
 
     assert chunks[0].chunk_type == "table"
     assert chunks[0].page_no == 4
@@ -230,7 +238,7 @@ def test_a_figure_chunk_is_its_caption_keyed_by_figure_id(tmp_path: Path) -> Non
         caption="A line plot of capacity against cycle number.",
     )
 
-    chunks = chunk_document(_document([]), doc_id="doc", figures=[figure])
+    chunks = chunk_document(tenant_id=TENANT, document=_document([]), doc_id="doc", figures=[figure])
 
     assert chunks[0].chunk_id == "doc-fig-005-02"
     assert chunks[0].chunk_type == "figure"
@@ -247,7 +255,11 @@ def test_the_filename_and_tenant_reach_every_chunk_kind(tmp_path: Path) -> None:
     figure = ExtractedFigure(figure_id="fig-001-00", page_no=1, image_path=tmp_path / "f.png", caption="A schematic.")
 
     chunks = chunk_document(
-        _document([_table()]), doc_id="doc", figures=[figure], tenant_id="tenant-a", filename="report.pdf"
+        document=_document([_table()]),
+        doc_id="doc",
+        figures=[figure],
+        tenant_id="tenant-a",
+        filename="report.pdf",
     )
 
     assert {chunk.chunk_type for chunk in chunks} == {"text", "table", "figure"}
@@ -277,7 +289,9 @@ def test_a_captioned_table_embeds_its_caption_exactly_once(caption: str) -> None
     and away from the data. Nothing raised; the chunk simply read slightly wrong to the
     embedding model.
     """
-    chunks = chunk_document(_document([_table(caption=caption)], captions=[caption]), doc_id="doc", figures=[])
+    chunks = chunk_document(
+        tenant_id=TENANT, document=_document([_table(caption=caption)], captions=[caption]), doc_id="doc", figures=[]
+    )
 
     # Not `count(caption) == 1`, which was the first version and passes with the bug present: the
     # duplicate copy is *escaped*, so it does not match the raw caption and the count stays 1.

@@ -82,8 +82,8 @@ curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "summarise paper.pdf"}'
 
-# ...or by doc_id, bare or behind a `doc_id=` marker. The marker is the only form that works
-# for the shared corpus, whose ids are bare arXiv numbers a regex cannot tell from a decimal.
+# ...or by doc_id, bare or behind a `doc_id=` marker. The marker exists so an id of any shape
+# can be named, including shapes no regex can safely pick out of prose.
 curl -X POST http://localhost:8000/v1/ask \
   -H "x-api-key: pf_live_..." -H "content-type: application/json" \
   -d '{"question": "extract the contact details from doc_id=019fb3eb...-64a6d182..."}'
@@ -139,17 +139,16 @@ counts, so the truncation *rate* is visible in the logs rather than only per req
 `/docs` has the full OpenAPI schema. The Streamlit app at `:8501` does the same two
 operations through a UI, authenticating with the same key.
 
-To load the curated corpus (6 arXiv materials-science papers, pinned in
-`data/manifest.json`) instead of your own uploads — also from the host, against the
-compose Qdrant and Postgres on their published ports:
+**A fresh install has nothing to search.** There is no seed data and no shared corpus: every
+document belongs to the tenant that uploaded it, so `/ask` answers from nothing until you
+upload something. Upload first, then ask.
 
-```bash
-uv run python scripts/fetch_corpus.py    # downloads the pinned PDFs
-uv run python scripts/ingest.py          # parse -> chunk -> embed -> Qdrant + Postgres
-```
-
-Corpus documents are tagged `tenant_id="global"` and are readable by every tenant;
-uploads are readable only by the tenant whose key uploaded them.
+That is a deliberate simplification, made 2026-08-03. A curated set of six arXiv
+materials-science papers used to ship, tagged `tenant_id="global"` and readable by every
+tenant, with `scripts/fetch_corpus.py` and `scripts/ingest.py` to load it. It bought a
+zero-setup demo and cost a permanent exception in the one sentence that matters most about
+this system — isolation was "your documents **plus global**" rather than "your documents".
+Both scripts and the `global` tenant are gone; see `docs/TECHNICAL_DECISIONS.md`.
 
 ### Running without Docker
 
@@ -287,8 +286,10 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 
-- The corpus is 6 papers, not the ~45 the plan called for, and Epic 1's final
-  15-question prose/table/figure spot-check has not been run.
+- **There is no evaluation corpus at all.** The 6 curated papers were removed with the shared
+  tenant, and Epic 2's golden set needs *some* fixed document set to measure recall against —
+  so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists.
+  Epic 1's final 15-question prose/table/figure spot-check was never run either.
 - **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation and
   the delete-then-insert contract run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to
@@ -322,9 +323,8 @@ portfolio/
 │   ├── auth/          models, keys, service
 │   └── api/           main, deps, schemas, routers/{ask, documents}
 ├── streamlit_app/Home.py                 # calls the pipeline in process, not over HTTP
-├── scripts/           fetch_corpus, ingest, create_tenant
+├── scripts/           create_tenant
 ├── tests/unit/                           # Postgres/Redis-backed suites skip if unreachable — read the skip count
-├── data/manifest.json                    # the pinned corpus
 ├── .docker/           Dockerfile, docker-compose.yml, nginx/
 ├── redis/             Dockerfile, redis.conf
 ├── docs/EPIC_2_PLAN.md, docs/EPIC_3_PLAN.md        # buildable plans for the unbuilt epics

@@ -130,8 +130,8 @@ The original design accepted a client-supplied `session_id` on both upload and `
 meant **any caller could read another tenant's documents by passing their id** — the schema's
 own comment promised the opposite. Removing the field from the request rather than merely
 ignoring it is the point: an absent field cannot be spoofed, and `extra="forbid"` means a
-stale client gets a 422 instead of silently receiving corpus-only answers and appearing to
-work.
+stale client gets a 422 instead of silently receiving answers scoped to somebody else and
+appearing to work.
 
 **Collapse rather than nest.** `tenant_id` from auth *plus* a `session_id` grouping key
 underneath it was the alternative. It was rejected because it would keep a client-supplied
@@ -141,8 +141,35 @@ the authenticated identity, with no request-supplied component at all. That is a
 invariant and a much harder one to regress. If per-project scoping is ever wanted, add a
 `workspace_id` then; it is a metadata addition plus one filter condition.
 
-`GLOBAL_TENANT` (`"global"`) is the shared corpus: readable by every tenant, owned by none.
-Real ids are `uuid7().hex`, so no tenant can ever be issued that value and claim it.
+### The shared corpus, removed 2026-08-03
+
+`GLOBAL_TENANT = "global"` used to tag a curated set of six arXiv papers, readable by every
+tenant and owned by none, with `uuid7().hex` real ids guaranteeing no tenant could be issued that
+value. It is gone, at the user's call, and the reasoning is worth keeping because the tradeoff was
+real in both directions.
+
+**What it bought.** Zero-setup demo value: clone, start, ask a question, get a cited answer. For a
+portfolio that is not nothing — it is the difference between a reviewer seeing the system work and
+a reviewer having to find a PDF first.
+
+**What it cost, and why that won.** A permanent exception in the one sentence that matters most
+about this system. Isolation was not "a tenant reads its own documents"; it was "a tenant reads its
+own documents **plus global**", and every explanation of the boundary had to carry that footnote.
+Concretely, it meant `_build_filter` matched `MatchAny([global, caller])`, and a list of permitted
+tenants is a shape that invites a second element. It also forced a *second* registry query
+(`list_scope_candidates`) whose only reason to exist was the corpus — and the two queries
+disagreed, producing a 404 on every document the docs told callers to name.
+
+**What replaced it.** One tenant, matched with `MatchValue`. `tenant_id` is required everywhere,
+with no default: the old default *was* `GLOBAL_TENANT`, and once the corpus is gone any default
+would silently file one tenant's data under another name. `_build_filter` raises on an empty
+tenant rather than building a filter with no tenant condition, which is what the previously-safe
+`tenant_id=None` ("corpus only") would have degenerated into.
+
+**What it costs us going forward, stated rather than discovered.** A fresh install answers nothing
+until someone uploads. And Epic 2's golden set now has no fixed document set to measure recall
+against, so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists —
+recorded in the README's known-gaps list.
 
 ## Authentication: database-backed API keys
 
@@ -836,7 +863,12 @@ file) and then **asserts** the interpreter it actually got -- otherwise a change
 precedence would make the 3.14 matrix leg a second 3.13 run and report green, which is the
 same shape of lie as a skipped test passing.
 
-## Corpus fetching: plain HTTP, after dropping the `arxiv` client
+## Corpus fetching: plain HTTP, after dropping the `arxiv` client (both now deleted)
+
+**Superseded 2026-08-03**: the curated corpus was removed, so `scripts/fetch_corpus.py`,
+`scripts/ingest.py`, `data/manifest.json` and `tests/unit/test_fetch_corpus.py` are all deleted.
+Kept as a decision record because the *lesson* outlived the code -- see the closing paragraph on
+what "this dependency only resolved a URL" missed.
 
 The `arxiv` package was a direct dependency used in exactly one place -- `scripts/fetch_corpus.py`
 -- to turn a manifest id into `Result.pdf_url`. Dropped, because that URL is deterministic:

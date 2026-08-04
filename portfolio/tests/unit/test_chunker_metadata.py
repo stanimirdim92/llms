@@ -3,15 +3,23 @@ from structlog.testing import capture_logs
 from app.ingestion.models import Chunk
 from app.vectorstore.qdrant_store import _chunk_metadata
 
+TENANT = "a" * 32
+"""`Chunk.tenant_id` is required since the shared corpus was removed, so these say which
+tenant they mean. They used to rely on its default -- the literal `"global"` -- and one
+assertion below checked for exactly that string, which is why removing the default surfaced
+here rather than passing quietly."""
+
 
 def test_text_chunk_metadata_has_no_page_when_unknown() -> None:
-    chunk = Chunk(chunk_id="doc-text-0000", doc_id="doc", chunk_type="text", text="hello", page_no=None)
+    chunk = Chunk(
+        chunk_id="doc-text-0000", doc_id="doc", chunk_type="text", text="hello", tenant_id=TENANT, page_no=None
+    )
 
     metadata = _chunk_metadata(chunk)
 
     assert metadata["doc_id"] == "doc"
     assert metadata["chunk_type"] == "text"
-    assert metadata["tenant_id"] == "global"
+    assert metadata["tenant_id"] == TENANT
     assert "page_no" not in metadata
 
 
@@ -20,6 +28,7 @@ def test_table_chunk_metadata_includes_page_and_markdown() -> None:
         chunk_id="doc-table-0000",
         doc_id="doc",
         chunk_type="table",
+        tenant_id=TENANT,
         text="| a | b |\n|---|---|\n| 1 | 2 |",
         page_no=3,
         metadata={"markdown": "| a | b |\n|---|---|\n| 1 | 2 |"},
@@ -37,6 +46,7 @@ def test_figure_chunk_metadata_includes_image_path() -> None:
         chunk_id="doc-fig-001-00",
         doc_id="doc",
         chunk_type="figure",
+        tenant_id=TENANT,
         text="A plot of capacity retention vs cycle number.",
         page_no=5,
         metadata={"image_path": "/tmp/doc/figures/fig-005-00.png"},
@@ -58,6 +68,7 @@ def test_a_non_primitive_metadata_value_is_dropped_and_logged() -> None:
         chunk_id="doc-text-0000",
         doc_id="doc",
         chunk_type="text",
+        tenant_id=TENANT,
         text="hello",
         page_no=None,
         metadata={"filename": "report.pdf", "authors": ["a", "b"], "extra": {"nested": 1}},

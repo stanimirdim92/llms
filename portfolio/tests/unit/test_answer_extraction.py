@@ -27,6 +27,10 @@ if TYPE_CHECKING:
     from app.retrieval.retriever import Retriever
 
 
+TENANT = "a" * 32
+"""Any tenant: these assert on how an Anthropic response is parsed, not on scoping."""
+
+
 def _document(doc_id: str, chunk_id: str = "", page_no: int | None = None) -> Document:
     metadata: dict = {"doc_id": doc_id}
     if chunk_id:
@@ -239,7 +243,7 @@ async def test_hitting_the_token_ceiling_is_reported_as_truncated(service: answe
     """
     _wire(service, _response(_TRUNCATED_STOP_REASON))
 
-    answer = await service.answer("why?")
+    answer = await service.answer("why?", tenant_id=TENANT)
 
     assert answer.truncated is True
 
@@ -250,7 +254,7 @@ async def test_a_normal_stop_is_not_reported_as_truncated(service: answer_servic
     """
     _wire(service, _response("end_turn"))
 
-    answer = await service.answer("why?")
+    answer = await service.answer("why?", tenant_id=TENANT)
 
     assert answer.truncated is False
 
@@ -262,7 +266,7 @@ async def test_a_missing_stop_reason_is_not_reported_as_truncated(service: answe
     """
     _wire(service, AIMessage(content="text only", response_metadata={}))
 
-    answer = await service.answer("why?")
+    answer = await service.answer("why?", tenant_id=TENANT)
 
     assert answer.truncated is False
 
@@ -273,6 +277,6 @@ async def test_an_answer_without_usage_metadata_still_returns(service: answer_se
     """
     _wire(service, AIMessage(content="text only", response_metadata={"stop_reason": "end_turn"}))
 
-    answer = await service.answer("why?")
+    answer = await service.answer("why?", tenant_id=TENANT)
 
     assert answer.text == "text only"
