@@ -4,7 +4,7 @@
 # two builds months apart can pull different nginx majors -- in the one component that
 # terminates TLS and parses every inbound request -- with no PR, no diff, and no review.
 # Debian-based, not `-alpine`: the next line is `apt-get`, and alpine has `apk`.
-FROM nginx:1.29
+FROM nginx:1.31
 
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 
