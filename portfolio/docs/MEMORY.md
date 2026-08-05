@@ -275,6 +275,39 @@ unmeasured indexing throughput still blocks the trade. Worth noting how it survi
 was true when written, in a file nobody had reason to re-read, and the removal commit had no
 reason to grep for it.
 
+**Then a 440-skill repo, `alirezarezvani/claude-skills`, scanned end to end — and nothing taken.**
+MIT and cleanly licensed, ~300 of it business content, ~137 engineering. Per-skill verdicts are in
+`VENDORED.md` so nobody pays for that scan twice. Three things learned that generalise beyond it:
+
+- **A skill that ships executable tools can be worse than one that ships prose.**
+  `rag-architect`'s `retrieval_evaluator.py` computes precision@k, recall@k, MRR and NDCG — against
+  a **TF-IDF retriever it implements itself**. Run it here and the numbers look like Epic 2 metrics
+  while describing a system with no Qdrant, no Voyage embeddings and no reranker. Rule 11 wearing a
+  CLI. Contrast `senior-prompt-engineer`'s evaluator, which takes *your* contexts and answers as
+  input and so grades the real thing — right shape, still declined, because its ROUGE-L
+  faithfulness is a lexical proxy where `EPIC_2_PLAN.md` chose RAGAS, and it would be a third voice
+  on eval after that plan and `qdrant-search-quality`.
+- **A skill can fail by re-importing something this project already dropped.** `karpathy-coder` is
+  the root `CLAUDE.md`'s rules 1–4, same source — but it enforces them with a complexity checker
+  thresholding on file lines, imports, nesting depth and cyclomatic complexity, and that file says
+  outright the extensions "built on arbitrary thresholds" were dropped deliberately. Taking it
+  would smuggle them back under the name of the rules that replaced them.
+- **A skill that produces one finding and then costs context forever is a finding, not a skill.**
+  `ai-security`'s scanner is regex matching over prompts, which is not this system's exposure — but
+  its § *Indirect Injection via External Content* named a real gap. Verified: retrieved chunk text
+  goes verbatim into Anthropic `document` blocks via `_build_document_blocks`, and **the word
+  "injection" appears nowhere in `app/` or in any doc here**, so the absence was silence rather
+  than a decision. Three things keep it off the urgent list — documents are tenant-scoped so the
+  blast radius is self-inflicted, Epic 1 has no tools to abuse, and the `document` block is
+  Anthropic's own channel for source material rather than string concatenation (that last one is
+  **plausible and unverified**, and is flagged as such). Recorded in `docs/IDEAS.md` under Auth,
+  with a note to re-read it at Epic 3 where the agent gets tools.
+
+`slo-architect` was the only near miss and is parked in `docs/IDEAS.md`: good work, but SLIs,
+error budgets and burn-rate alerts need production traffic and an on-call rotation to mean
+anything — unlike the LangGraph skills, which needed only code to exist. That is the difference
+between "install ahead of use" and "install ahead of *existing*".
+
 No `CHANGELOG.md` entry for any of this. Nothing under `.claude/` or `docs/` changes what a caller
 observes, which is the skill's own noise filter working as intended.
 

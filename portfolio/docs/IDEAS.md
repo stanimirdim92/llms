@@ -161,6 +161,26 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **Scope the CLI's bootstrap key.** *(S)* `scripts/create_tenant.py` mints unrestricted keys.
   That is right for the first key of a tenant and wrong as a habit; a `--scopes` flag would
   let the CLI mint narrow ones too, rather than requiring a round trip through the API.
+- **Treat retrieved chunk text as untrusted input.** *(M, unmeasured — see the caveats)* Found
+  2026-08-05 while scanning a third-party skill set; recorded because **the word "injection"
+  appears nowhere in `app/` or in any doc here**, so the absence was silence rather than a
+  decision. `answer_service._build_document_blocks` puts each retrieved chunk's
+  `page_content` verbatim into an Anthropic `document` content block, so a PDF containing
+  "ignore your instructions and ..." reaches the model as context.
+
+  Three things keep this off the urgent list, and all three should be checked before anyone
+  acts on it. **Documents are tenant-scoped**, so a tenant can only poison their own answers —
+  the blast radius is self-inflicted, not cross-tenant, which is what would make it serious.
+  **Epic 1 has no tools**, so there is nothing to abuse; that changes at Epic 3, where the
+  agent gets tools and human-in-the-loop gates, and this entry should be re-read then.
+  And the `document` block with `citations` enabled is Anthropic's own channel for
+  source material rather than string-concatenation into the prompt, which is *plausibly* more
+  resistant — **unverified, and worth measuring before relying on it.**
+
+  If it is taken: the cheap version is a length cap plus a signature filter on chunk text at
+  *ingest* time, so a poisoned document fails loudly with `error_message` set rather than
+  becoming a retrievable chunk. The expensive version is an output check that the answer's
+  claims are covered by the cited spans, which Epic 2's faithfulness scoring gets for free.
 
 ## Product surface
 
@@ -205,6 +225,14 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **Rate-limit at nginx as well as in the app.** *(M)* `app/rate_limit.py` is per API key, which
   means an unauthenticated flood reaches gunicorn and is only stopped by the 401. `limit_req` on
   the `/v1/` locations would shed that at the edge. Not urgent while the API is not public.
+- **Revisit `slo-architect` when the app actually serves traffic.** *(S, conditional)* From
+  `alirezarezvani/claude-skills` (MIT) — the one skill in that 440-skill set worth a second look,
+  and rejected for now on timing rather than quality. Epic 4 Phase 4's `alerts.py` is a threshold
+  check against a latency number; that skill is the Google SRE Workbook discipline — SLI choice,
+  error budget, multi-window burn-rate alerting, and a written policy for what happens when the
+  budget burns. **All of that needs production traffic and someone on call to mean anything**,
+  which is why it is not installed ahead of use the way the LangGraph skills were: those need only
+  code to exist. Reach for it the first time a real user's latency matters.
 
 ## Portfolio and presentation
 

@@ -275,3 +275,41 @@ Two candidates from elsewhere, checked on the same bar and rejected:
   2071 lines of which ~446 are streaming replication (one instance here), ~321 JSONB (no JSONB
   column), and ~404 extension management (none installed). It also writes in a "Senior PostgreSQL
   expert" persona voice that reads as a different document pasted into this set.
+
+---
+
+# Evaluated as a whole repo and not vendored: `alirezarezvani/claude-skills`
+
+Scanned 2026-08-05 at `aa8d778811a557a2c28ccadda4cf3d0bd028a4cc`. **MIT**, clean, no commercial
+restriction in the licence (the repo *sells* bundles via `STORE.md`, but the content itself is MIT).
+798 `SKILL.md` files, of which 436 are a flat `.gemini/skills` mirror — roughly **440 unique
+skills**, ~137 of them engineering.
+
+**Nothing was taken.** Recorded at this length only because scanning 440 skills is expensive and
+nobody should pay for it twice. The one entry worth revisiting, `slo-architect`, is parked in
+`docs/IDEAS.md` with its precondition.
+
+Roughly 300 skills are business content — `c-level` (68), `marketing` (48), `ra-qm` (19),
+`product`, `finance`, `business-*`, `commercial` — irrelevant to a Python retrieval API and not
+examined past the index. Of the engineering ones, these are the calls that took real reading:
+
+| Skill | Verdict |
+|---|---|
+| `rag-architect` | **No — and it is the instructive one.** Its `retrieval_evaluator.py` evaluates a **TF-IDF retriever it implements itself** (`class TFIDFRetriever`, 577 lines, stdlib-only), not your pipeline. Run it here and you get precision@k/recall@k/NDCG numbers that look like Epic 2 metrics and describe a system this project does not have — no Qdrant, no Voyage embeddings, no reranker. Rule 11 as a tool: a fluent, confident answer from the wrong material. Its `chunking_optimizer.py` has the same shape, and would recommend a chunking strategy without knowing Docling's structure-aware chunking exists. Its *hard rules* are good ("never present model names or vendor prices as current facts") and are already rules 13 and 14 here. |
+| `senior-prompt-engineer` | **No, but its input contract is worth copying.** Unlike the above, its `rag_evaluator.py` takes **your** retrieved contexts and **your** answers as JSON and grades those — the right shape. Two reasons it stays out: faithfulness is scored by token overlap and ROUGE-L, a lexical proxy that punishes a faithful paraphrase and rewards a copied-but-wrong answer, while `docs/EPIC_2_PLAN.md` chose RAGAS with an LLM judge; and it would be a **third** voice on eval methodology after that plan and `qdrant-search-quality`. Two documents on one topic disagree within a month; three is worse. |
+| `karpathy-coder` | **No — it is the repo root's `CLAUDE.md` rules 1–4, already.** Same source, same four principles. What it adds is enforcement, and the enforcement is `complexity_checker.py` thresholding on max file lines, max imports, max nesting, max function lines, average cyclomatic complexity. The root `CLAUDE.md` says outright that the community extensions "built on arbitrary thresholds" were dropped deliberately. Taking this would reinstate them under the name of the rules that replaced them. |
+| `llm-cost-optimizer` | **No, on trigger breadth.** "Use proactively whenever LLM API costs come up — *or should* … 'build me an AI endpoint' … apply immediately when max_tokens is not set." It would fire on nearly every task here, and its named triggers are already handled: `max_tokens` *is* set, and `truncated` on the `/ask` response exists precisely so a clipped answer is detectable. |
+| `env-secrets-manager` | **No, redundant.** `.env` is untracked, secret scanning runs in CI, and `tests/unit/test_secrets.py` sweeps every `_key`/`_password`/`_secret`/`_token` field so a credential added as a plain `str` fails the suite. The skill's leak-detection story is weaker than what is already wired. |
+| `security-guidance` | **No.** It is a PreToolUse *hook*, and its pattern list is Node/React-centric (`child_process.exec`, `innerHTML`, `dangerouslySetInnerHTML`). The Python-relevant ones — `eval(`, `pickle`, `yaml.load`, `shell=True`, `os.system` — are all ruff `S`-rule territory. |
+| `adversarial-reviewer` | **No, and the reason is a rule violation.** "Each persona MUST find at least one issue — no 'LGTM' escapes." A reviewer required to produce a finding produces one whether or not it exists, which is manufacturing false positives to defeat rubber-stamping. Rules 7 and 11 both point the other way; `/code-review` and `/security-review` are already available. |
+| `slo-architect` | **Not now, and the only near miss.** Genuinely well made — SRE Workbook discipline, honest "when NOT to use" section. Parked in `docs/IDEAS.md` because SLIs, error budgets and burn-rate alerts need production traffic and an on-call rotation to mean anything, unlike the LangGraph skills, which needed only code to exist. |
+| `ai-security` | **No as a skill — but it produced the one real finding of the scan.** Its scanner is regex signature matching over *prompts*, which is not this system's exposure. Its § *Indirect Injection via External Content* is, and it named a gap: retrieved chunk text goes verbatim into Anthropic `document` blocks and the word "injection" appears nowhere in `app/` or in any doc here. Now recorded, with its mitigating conditions, in `docs/IDEAS.md` under Auth. **A skill that produces one finding and then costs context forever is a finding, not a skill** — take the finding. |
+| `migration-architect`, `database-designer`, `database-schema-designer`, `sql-database-assistant` | **No, superseded.** Four overlapping takes on schema and migration work, against `postgres-database-migration` which was just vendored for exactly this and is Postgres-specific rather than SQL-generic. |
+| `senior-backend`, `senior-fullstack`, `senior-architect`, `senior-ml-engineer`, `senior-data-*`, `senior-qa`, `senior-frontend` | **No.** Persona skills with broad triggers — the `postgres-pro` failure mode. `senior-qa` and `senior-frontend` are React/Jest specifically; Phase 6's UI does not exist. |
+| `agenthub` + `spawn`/`eval`/`merge`/`board`/`status`, `autoresearch-agent` + `loop`/`run`/`resume`, `workflow-builder`, `agent-designer` | **No.** Multi-agent orchestration machinery, unrequested, and Claude Code ships its own. |
+| `docker-development`, `dependency-auditor`, `ci-cd-pipeline-builder`, `performance-profiler`, `observability-designer`, `chaos-engineering`, `incident-*`, `runbook-generator`, `red-team`, `threat-detection`, `cloud-security`, `terraform-patterns`, `helm-chart-builder`, `kubernetes-operator`, `aws`/`azure`/`gcp` architects | **No.** Either already covered by this project's own documented Docker and CI knowledge (`cap_drop` capabilities, the postgres-18 volume path, pip-audit, Dependabot, CodeQL), or aimed at infrastructure that does not exist — one compose stack, no Kubernetes, no cloud account, no on-call. |
+
+One quality signal noted while scanning, in fairness both ways: the repo's own
+`.gemini/skills-index.json` records a literal `">-"` as the description for ~12 skills, so its
+generator mishandles folded YAML frontmatter. The `SKILL.md` files themselves are fine — several
+of the ones read above are better written than their index entries suggest.
