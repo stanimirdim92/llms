@@ -315,3 +315,71 @@ One quality signal noted while scanning, in fairness both ways: the repo's own
 `.gemini/skills-index.json` records a literal `">-"` as the description for ~12 skills, so its
 generator mishandles folded YAML frontmatter. The `SKILL.md` files themselves are fine — several
 of the ones read above are better written than their index entries suggest.
+
+## Taken after all: `slo-architect`
+
+**Vendored 2026-08-05**, on the user's call, reversing the "not now" above. The precondition that
+parked it — "revisit when the app actually serves traffic" — moved when hosting the app online went
+on the table the same day. Files: `SKILL.md` (234 lines), three scripts
+(`slo_designer.py`, `slo_review.py`, `error_budget_calculator.py`), four references, two assets.
+Licence `ALIREZAREZVANI_LICENSE` (MIT, Copyright 2025 Alireza Rezvani), commit
+`aa8d778811a557a2c28ccadda4cf3d0bd028a4cc`.
+
+**It ships executable Python**, unlike every other vendored skill here, which are markdown only.
+`ruff.toml` excludes the directory for that reason — the exclusion is covering real `.py` files, not
+fenced blocks inside `.md`, so do not assume the usual "it isn't ours to format" comment is the whole
+story. The scripts are unreviewed and unrun; read them before running one.
+
+Still nothing here measures Qdrant or the API, so an SLO defined from this skill today would have no
+SLI behind it. Read it when there is traffic, which is exactly the condition that unparked it.
+
+---
+
+# Vendored: `langchain-ai/langsmith-skills`
+
+Three skills, all of them, copied verbatim.
+
+| | |
+|---|---|
+| Source | https://github.com/langchain-ai/langsmith-skills |
+| Commit | `68c8bb6b4b7cb5b20870b7b6afb340f6c958b0e6` (upstream dated 2026-04-08) |
+| Vendored | 2026-08-05 |
+| License | **MIT**, declared only in `.claude-plugin/plugin.json` — copied here as `LANGSMITH_SKILLS_LICENSE.json` |
+| Taken | `langsmith-evaluator`, `langsmith-dataset`, `langsmith-trace` (936 lines) |
+
+**Same weaker provenance as the langchain set**: no `LICENSE` file in the repository, the MIT
+declaration lives in the plugin manifest, so the manifest itself is the licence evidence. Pinning the
+commit matters more here than for qdrant.
+
+Refresh:
+
+    git clone --depth 1 https://github.com/langchain-ai/langsmith-skills /tmp/ls-skills
+    cp -r /tmp/ls-skills/config/skills/langsmith-* portfolio/.claude/skills/
+    cp /tmp/ls-skills/.claude-plugin/plugin.json portfolio/.claude/skills/LANGSMITH_SKILLS_LICENSE.json
+
+## Why all three, when every other set was cut
+
+Because LangSmith is not a candidate here — it is already wired. `LANGSMITH_API_KEY` is in `.env`,
+`config.py` has the bridge, and the one cost measurement this project has
+(**$0.017024 per `/ask`**) came off a LangSmith trace. These describe a service in use.
+
+- **`langsmith-evaluator`** — evaluators, LLM-as-judge, `evaluate()`. `docs/EPIC_2_PLAN.md` Phase 2.3
+  already specifies "RAGAS metrics wrapped as LangSmith custom evaluators", so this is the mechanism
+  the plan named, documented.
+- **`langsmith-dataset`** — dataset types including a RAG shape. Phase 2.1 is the golden set.
+- **`langsmith-trace`** — tracing and querying traces. Already how cost and latency get observed.
+
+All three trigger on LangSmith-specific names, so none of them dilutes triggering the way a
+"any RAG system" description would. All three are leaves; there is no hub in this repo to avoid.
+
+## What they do NOT settle, and must not be read as settling
+
+`EPIC_2_PLAN.md` Phase 2.2 decided **against LangSmith-only**, in as many words: "It is a network
+call to a hosted service, and the regression gate must work offline and in version control. Both,
+for different jobs." Hosting the app changes nothing about that — CI is still CI, and a committed
+`baseline.parquet` diffed in a pull request is what makes a regression reviewable.
+
+So these skills cover the **judged** half (faithfulness, relevancy — plausibly instead of RAGAS,
+which is under active comparison) and the interactive half. They do not cover `recall@k` against
+golden chunk ids, routing accuracy, the parquet run rows, or the offline gate. A future session that
+reads "leave evals to LangSmith" as settled has overturned a written decision without noticing.

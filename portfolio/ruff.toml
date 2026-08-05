@@ -3,7 +3,10 @@ line-length = 120
 indent-width = 4
 extend-exclude = [
     # Vendored verbatim -- not ours to format. `.claude/skills/VENDORED.md` lists what came from
-    # where; every vendored directory needs a line here.
+    # where; every vendored directory needs a line here **and in `ty.toml`'s `[src] exclude`**. The
+    # two lists must name the same directories: `slo-architect` was added here and not there, and
+    # `ty` -- which runs with `error-on-warning` -- failed the gate on an operator inside a vendored
+    # script nobody here wrote or can fix.
     #
     # The previous version of this comment covered only the qdrant set and called this a *future*
     # risk: "a future version that actually rewrites markdown would dirty the vendor diff and make
@@ -15,7 +18,11 @@ extend-exclude = [
     ".claude/skills/qdrant-*",
     ".claude/skills/langchain-*",
     ".claude/skills/langgraph-*",
+    ".claude/skills/langsmith-*",
     ".claude/skills/postgres-database-migration",
+    # This one ships three executable Python scripts, not just markdown, so the exclusion covers
+    # real .py files rather than fenced blocks inside .md.
+    ".claude/skills/slo-architect",
     ".ruff_cache",
     ".env",
     "*.pyi",

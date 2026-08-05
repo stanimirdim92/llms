@@ -222,17 +222,11 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   holds; a version that reaches for a CDN font would break in a browser and nowhere else — no
   test, no log, no error server-side. Needs one Playwright load of the page behind nginx with
   the console captured.
-- **Rate-limit at nginx as well as in the app.** *(M)* `app/rate_limit.py` is per API key, which
-  means an unauthenticated flood reaches gunicorn and is only stopped by the 401. `limit_req` on
-  the `/v1/` locations would shed that at the edge. Not urgent while the API is not public.
-- **Revisit `slo-architect` when the app actually serves traffic.** *(S, conditional)* From
-  `alirezarezvani/claude-skills` (MIT) — the one skill in that 440-skill set worth a second look,
-  and rejected for now on timing rather than quality. Epic 4 Phase 4's `alerts.py` is a threshold
-  check against a latency number; that skill is the Google SRE Workbook discipline — SLI choice,
-  error budget, multi-window burn-rate alerting, and a written policy for what happens when the
-  budget burns. **All of that needs production traffic and someone on call to mean anything**,
-  which is why it is not installed ahead of use the way the LangGraph skills were: those need only
-  code to exist. Reach for it the first time a real user's latency matters.
+- ~~**Revisit `slo-architect` when the app actually serves traffic.**~~ **Vendored 2026-08-05**
+  once hosting went on the table — `.claude/skills/slo-architect`, MIT, provenance in
+  `.claude/skills/VENDORED.md`. Note it ships three executable, unreviewed Python scripts, unlike
+  every other vendored skill here. Nothing measures the API yet, so an SLO defined from it today
+  would have no SLI behind it. Delete this line at the next prune.
 
 ## Portfolio and presentation
 

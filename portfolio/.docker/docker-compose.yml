@@ -273,6 +273,13 @@ services:
         # nginx/Dockerfile for what each failure looks like when they drift.
         REQUEST_TIMEOUT: ${GUNICORN_TIMEOUT:-600}
         MAX_UPLOAD_MB: ${MAX_UPLOAD_SIZE_MB:-20}
+        # Edge flood shield, per IP. Deliberately NOT derived from RATE_LIMIT_* -- those are
+        # per-API-key fairness budgets and these are volume limits; nginx/Dockerfile explains why
+        # tying them together would make the edge shed traffic the app would have allowed.
+        EDGE_RATE_GENERAL: ${EDGE_RATE_GENERAL:-20}
+        EDGE_BURST_GENERAL: ${EDGE_BURST_GENERAL:-40}
+        EDGE_RATE_UPLOAD: ${EDGE_RATE_UPLOAD:-30}
+        EDGE_BURST_UPLOAD: ${EDGE_BURST_UPLOAD:-10}
     restart: unless-stopped
     ports:
       - "80:80"

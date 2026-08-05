@@ -131,8 +131,11 @@ looks wrong, say so once and proceed.
 
 **Verified on real infrastructure:** `init_db` against live Postgres including the
 advisory-lock path; the queued path end to end (`POST` → job row → worker → Qdrant →
-`ingested`). **Still unverified:** the Qdrant client over the wire under concurrency, and the
-nginx config's syntax (no nginx binary in the sandbox).
+`ingested`); and **the nginx config, finally** — syntax via `nginx -t`, and the edge rate limiter's
+behaviour against a stub upstream (2026-08-05). **Still unverified:** the Qdrant client over the
+wire under concurrency. The nginx check used the locally-cached `nginx:1.29` because `1.31` (the
+pinned tag) would not pull through the proxy; every directive involved is long-standing, but it is
+not the pinned image.
 
 ---
 
@@ -252,6 +255,70 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-05 (end of day) — edge rate limiting, four vendored skills, and the nginx config finally tested
+
+**`limit_req` at nginx, from `docs/IDEAS.md` § Ops on the user's "go".** Two zones keyed on
+`$binary_remote_addr`: general at 20r/s burst 40, uploads at 30r/m burst 10, both an order of
+magnitude above the app's per-key budgets because this is a flood shield and not a fairness device.
+`limit_req_status 429` so the edge and the app answer the same status.
+
+Three design points worth keeping:
+
+- **Health is exempted by mapping its key to the empty string**, because there is no `limit_req
+  off;`. The alternative — a separate `location` — means a second copy of the whole proxy block,
+  and a location that declares its own `limit_req` stops inheriting the server-level ones. Shedding
+  a readiness probe would take the container out of rotation to protect it.
+- **Both `limit_req` directives sit at `server` level**, for that same inheritance reason: in
+  `location /` they would leave any later location silently unlimited. Same trap `nginx.conf`
+  already documents for `add_header`, quieter failure.
+- **IP here, API key in the app, and that is not the contradiction it looks like** next to
+  `TECHNICAL_DECISIONS.md` rejecting an IP key. nginx cannot see a verified key; trusting
+  `$http_x_api_key` would hand an attacker unlimited buckets by varying a header.
+
+**Verified by execution, not by reading**, which matters because a limiter that parses but does not
+limit is the definition of documentation-not-verification. Ran nginx with a stub upstream and a
+sidecar curl:
+
+| Request | Allowed | Distinguishes |
+|---|---|---|
+| `/health/ready` ×200 | **200** | exemption works (a limited path allowed 41) |
+| `POST /v1/documents` ×60 | **11** | upload zone binds — burst 10 + 1 |
+| `GET /v1/documents` ×60 | **41** | discriminates by method |
+| `POST /v1/ask` ×60 | **41** | discriminates by path |
+
+Those four numbers are mutually exclusive, so a wrong map regex would have shown up as the wrong one
+rather than as a plausible pass. The shed status was 429, confirming `limit_req_status`.
+
+**And a bug I introduced and caught in the same pass.** I added `nginx -t` to the nginx Dockerfile,
+which would have failed every build: the `upstream` block resolves `api:8000` at config-parse time,
+and `api` is a compose service name with no DNS during `docker build`. Removed, with the reason
+written where someone would otherwise re-add it. The related trap is worse and is now recorded
+there too — **nginx aborts on the first `[emerg]`, and `include conf.d/*.conf` is the last line of
+`nginx.conf`**, so an unresolvable upstream means `default.conf` is never parsed at all. My first
+test run "failed" on the upstream and had silently validated nothing about the limiter.
+`--add-host api:127.0.0.1` fixes it.
+
+This also closes a long-standing gap: **the nginx config had never been syntax-checked** ("no nginx
+binary in the sandbox"). It has now, though on the locally-cached `nginx:1.29` rather than the pinned
+`1.31`, which would not pull through the proxy — noted rather than glossed.
+
+**Four skills vendored**, both on the user's call. Three `langsmith-*` (evaluator, dataset, trace) —
+LangSmith is already wired here, so these document a service in use; MIT, manifest-only licence, same
+weaker provenance as the langchain set. And **`slo-architect`**, reversing this morning's "not now"
+because hosting moved its stated precondition. It is the first vendored skill that ships **executable
+Python**, so `ruff.toml`'s exclusion is now covering real `.py` files rather than fenced blocks, and
+`VENDORED.md` says the scripts are unreviewed and unrun.
+
+**One conflict surfaced rather than averaged.** The user's "leave evals to LangSmith" collides with
+`EPIC_2_PLAN.md` Phase 2.2, which decided against LangSmith-only because *"the regression gate must
+work offline and in version control."* Hosting does not change what CI needs, so that is a **revisit**
+and not a stale reason. Recorded in `VENDORED.md`: the skills cover the judged half, while `recall@k`,
+routing accuracy, the parquet run rows and the committed baseline stay local. A future session
+reading "leave evals to LangSmith" as settled will have overturned a written decision without
+noticing.
+
+Backups stay in `IDEAS.md` — the user will handle it with a cloud backup later. Stop raising it.
 
 ### 2026-08-05 (later still) — three more agents, and why not five
 

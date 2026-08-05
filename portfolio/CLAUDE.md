@@ -140,6 +140,17 @@ Vendored verbatim, at pinned commits, with provenance and refresh steps in
   `human-in-the-loop`) from github.com/langchain-ai/langchain-skills. The LangGraph three are
   installed ahead of use, for Epic 3's agent; `langgraph-persistence` is the one to read before
   wiring the Postgres checkpointer.
+- **Three `langsmith-*`** (`evaluator`, `dataset`, `trace`) from
+  github.com/langchain-ai/langsmith-skills. LangSmith is already wired here, so these describe a
+  service in use rather than a candidate. **They do not settle the eval architecture:**
+  `docs/EPIC_2_PLAN.md` decided against LangSmith-only because the regression gate must work offline
+  and in version control, and hosting the app does not change what CI needs. They cover the judged
+  metrics and interactive exploration; `recall@k`, routing accuracy, the parquet run rows and the
+  committed baseline are still local.
+- **`slo-architect`** from github.com/alirezarezvani/claude-skills, taken once hosting went on the
+  table. It is the only vendored skill that ships **executable Python** — three unreviewed scripts —
+  so read them before running one, and note `ruff.toml` excludes real `.py` files for it rather than
+  fenced blocks. Nothing measures the API yet, so an SLO defined from it today has no SLI behind it.
 - **`postgres-database-migration`** from github.com/timescale/pg-aiguide — one skill of that
   repo's ten. Read it before writing any `ALTER TABLE` by hand, which is the only way a column
   gets added here: there is no Alembic and `create_all` never adds one (see the failure contract
@@ -484,3 +495,24 @@ rather than raising -- it fails silently, as cross-tenant data access.
   `asyncio.run()` (Streamlit, CLIs, per-test loops).
 - `api/main.py`'s error handler must forward `exc.headers`; it overrides FastAPI's default,
   so dropping them silently strips `Retry-After` from every 429.
+- **There are now TWO limiters, and they are keyed differently on purpose.** nginx does a per-IP
+  flood shield (`limit_req`, two zones, added 2026-08-05); the app does per-API-key fairness. That
+  is not the contradiction it looks like next to `TECHNICAL_DECISIONS.md` rejecting an IP key: nginx
+  cannot see a *verified* key, and trusting `$http_x_api_key` at the edge would hand an attacker
+  unlimited buckets by varying a header. Three things not to undo:
+  - **Health must stay exempt.** `/health/live` and `/health/ready` are exempted by mapping their
+    key to the empty string, which is the only mechanism available — there is no `limit_req off`.
+    The container `HEALTHCHECK` hits readiness every 30s and `depends_on: service_healthy` gates the
+    stack on it, so shedding a probe takes the container out of rotation to protect it. Verified by
+    execution: 200 of 200 requests to `/health/ready` returned 200, where a limited path allowed 41.
+  - **Never set an `EDGE_*` rate below the app's own budget.** The edge would 429 a caller who still
+    had app budget while `X-RateLimit-Remaining` said otherwise — unreproducible from the client.
+  - **The `limit_req` directives live at `server` level, not in `location /`.** A location that
+    declares its own `limit_req` does not inherit the ones above it, so a location added later would
+    be silently unlimited — the same inheritance trap `nginx.conf` documents for `add_header`, with
+    a quieter failure.
+
+  Behind a load balancer, `$binary_remote_addr` is the *immediate peer*, so every request shares one
+  key and the zone becomes a global cap. `set_real_ip_from` is present but **commented out on
+  purpose**: enabling it with a too-broad trust range is worse than no limiter, because a client can
+  then spoof `X-Forwarded-For` and mint a bucket per request.

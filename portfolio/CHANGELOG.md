@@ -13,6 +13,29 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-08-05
+
+#### Added
+
+- **A second rate limit, at nginx, keyed on your IP address rather than your API key.** It sheds
+  volume before a request reaches the app, so an unauthenticated flood no longer costs a worker and
+  a database lookup per request. It answers **`429`**, the same status as the app's own limiter, and
+  the budgets are set an order of magnitude above the per-key ones — roughly 1200 requests/minute
+  from one address, and 30 uploads/minute — so ordinary use from behind a shared address is
+  unaffected. **`GET /health/live` and `GET /health/ready` are exempt.**
+
+  Two things to know if you hit it. This limiter sends **no `X-RateLimit-*` headers and no
+  `Retry-After`** — those come from the app, and a request shed at the edge never reaches it, so a
+  `429` with no headers means the edge and a `429` with headers means your key's budget. And the
+  four settings (`EDGE_RATE_GENERAL`, `EDGE_BURST_GENERAL`, `EDGE_RATE_UPLOAD`, `EDGE_BURST_UPLOAD`)
+  are **build arguments baked into the nginx image**, not runtime environment variables, so changing
+  one needs `docker compose build nginx` rather than a restart.
+
+  *Deploying behind a load balancer or CDN:* every request would share one bucket, because nginx
+  sees only the immediate peer. `.docker/nginx/nginx.conf` carries a commented `set_real_ip_from`
+  block and the warning that comes with it — a too-broad trust range lets a client spoof
+  `X-Forwarded-For` and evade the limit entirely.
+
 ### 2026-08-04
 
 #### Removed

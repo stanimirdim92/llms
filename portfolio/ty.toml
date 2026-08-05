@@ -2,6 +2,15 @@
 root = ["."]
 python-version = "3.13"
 
+[src]
+# Vendored third-party code, not ours to type-check. **Keep this in step with `ruff.toml`'s
+# `extend-exclude`** -- the two lists must name the same directories, and this entry exists because
+# they did not. `slo-architect` is the first vendored skill shipping real `.py` files rather than
+# markdown; it was excluded from ruff and not from ty, and `ty` (with `error-on-warning`) failed the
+# gate on an `unsupported-operator` inside `error_budget_calculator.py`. Vendoring a directory means
+# adding it to BOTH files, or the gate goes red on code nobody here wrote and cannot fix.
+exclude = [".claude/skills/"]
+
 [rules]
 possibly-unresolved-reference = "warn"
 division-by-zero='warn'
