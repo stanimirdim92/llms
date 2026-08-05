@@ -40,6 +40,10 @@ already taken, and a session log. Nothing else carries that across sessions. **U
 the end of any session that changed something** -- the protocol is at the top of the file.
 
 - `README.md` -- the system as it is.
+- `CHANGELOG.md` -- what a *user* would notice changed, and what breaks on upgrade. Keep it to
+  observable behaviour: routes, response fields, env vars, defaults, removals. The reasoning
+  belongs in `docs/MEMORY.md`; if an entry needs a paragraph of "because", it is in the wrong
+  file. `.claude/skills/changelog` has the conventions.
 - `docs/PATTERNS.md` -- the recurring shapes and the failure each one prevents. Also lists what is
   deliberately *absent*, so a reviewer doesn't "fix" it.
 - `docs/TECHNICAL_DECISIONS.md` -- why each choice, and what was rejected. Update this when a

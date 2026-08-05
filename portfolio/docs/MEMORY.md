@@ -7,11 +7,14 @@ State that does not survive a new session otherwise. Read this first; update it 
 | File | Holds | Changes when |
 |---|---|---|
 | `CLAUDE.md` | Rules and invariants. Imperative, timeless. | A new way to break the system is found. |
+| `CHANGELOG.md` | What a *user* notices changed, and what breaks on upgrade. | Observable behaviour changes. |
 | `docs/PATTERNS.md` | Recurring shapes and the failures they prevent. | The architecture changes. |
 | `docs/TECHNICAL_DECISIONS.md` | Why each technology, and what was rejected. | A decision is revisited. |
 | `docs/EPIC_*_PLAN.md` | What is planned and in what order. | Scope or sequencing moves. |
 | `docs/IDEAS.md` | The parking lot — unscheduled ideas, and rejected ones with their reason. | Any time something occurs to you. |
 | **`docs/MEMORY.md`** (this file) | **Where we actually are.** Standing directives, open questions, session log, measurements taken. | Every working session. |
+
+The pair most likely to drift is this file's session log and `CHANGELOG.md`. Same events, different readers: the changelog says `Retry-After` is now safe to obey, this file says the counter granted 2 of 10 to a client that waited and records the measurement. If an entry explains *why*, it belongs here.
 
 If a fact is durable and imperative it belongs in `CLAUDE.md`, not here — this file is the
 mutable part, and mixing the two means the rules get buried in changelog.
