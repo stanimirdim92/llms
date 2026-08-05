@@ -143,10 +143,11 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
                         # getting an answer grounded in some other document.
                         st.error(str(exc))
                     else:
-                        # `else`, not code after the `try`: `st.stop()` in the except branch raises
-                        # internally but isn't typed NoReturn, so a trailing block reads as
-                        # "chunk_count possibly unbound" to the type checker -- and would genuinely
-                        # be unbound if st.stop() ever stopped raising.
+                        # `else`, not code after the `try`: the except branch calls `st.error`,
+                        # which does not raise, so a trailing block would reach `chunk_count`
+                        # genuinely unbound -- not merely unprovable. This comment used to blame
+                        # `st.stop()` not being typed NoReturn; there is no `st.stop()` in that
+                        # branch, and a reader checking for one concludes the `else` is redundant.
                         st.session_state.uploaded_docs.append(doc_id)
                         st.success(f"Ingested {uploaded_file.name} — {chunk_count} chunks (doc_id: {doc_id})")
             else:
@@ -187,9 +188,9 @@ question = st.text_input(
 )
 
 if st.button("Ask", type="primary") and question:
-    # Reuses the rows the expander above already fetched, so scoping costs no extra query
-    # here -- unlike `/ask`, which has no such list at hand and gates the read on the regex.
-    # Same query as the table above, with a wider limit. These were genuinely different
+    # Same query as the table above, with a wider limit -- so this is a second registry read, not
+    # a reuse of the expander's rows. (It used to claim "no extra query here", which was false the
+    # moment the call became `_scope_candidates(tenant_id)`.) These were genuinely different
     # questions while a shared corpus existed -- "what may I scope to" included documents nobody
     # had uploaded -- and the two implementations disagreed, which 404'd every curated paper.
     # With the corpus gone there is one query and one scoping implementation.
@@ -211,8 +212,6 @@ if st.button("Ask", type="primary") and question:
         st.stop()
 
     with st.spinner("Retrieving, reranking, and generating..."):
-        # Streamlit's script model runs synchronously (no event loop of its own), so an
-        # async call needs its own loop here rather than a plain await.
         result = asyncio.run(_service().answer(question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None))
 
     st.subheader("Answer")

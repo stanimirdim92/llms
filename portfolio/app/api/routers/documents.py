@@ -22,7 +22,7 @@ router = APIRouter()
 
 
 def _write_upload(tenant_dir: Path, file_path: Path, file_bytes: bytes) -> None:
-    """Create the tenant's directory and write the file. Both syscalls, one offload.
+    """Both blocking syscalls, in one offload.
 
     `mkdir` is here rather than left inline because it was the only blocking filesystem call still
     sitting in an `async def` after the `write_bytes` offload -- cheap, but the comment at the call

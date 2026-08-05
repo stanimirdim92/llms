@@ -357,9 +357,9 @@ cd .docker && docker compose config      # after any compose/Dockerfile edit
 After editing `pyproject.toml`, run `uv lock` and commit the result — `uv.lock` is committed and
 CI installs with `--locked`, which fails if the two have drifted.
 
-Both service-backed suites *skip* when their service is unreachable, so a green local run
-may have tested less than it looks. CI provides Postgres and Redis and then asserts
-neither suite skipped, because a broken service wiring would otherwise be
+Five service-backed suites *skip* when their service is unreachable, so a green local run
+may have tested less than it looks. CI provides Postgres and Redis and then asserts that
+none of the five skipped, because broken service wiring would otherwise be
 indistinguishable from a pass.
 
 [`CLAUDE.md`](CLAUDE.md) carries the failure contracts — the things that look correct and

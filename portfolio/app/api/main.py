@@ -103,8 +103,7 @@ async def unhandled_error_handler(request: Request, exc: Exception) -> JSONRespo
     Without this, an unanticipated exception -- a provider SDK raising something new, a
     `KeyError` off chunk metadata, a Postgres `IntegrityError`, an outright bug -- escapes
     every route and is answered by Starlette's `ServerErrorMiddleware` with a bare
-    `PlainTextResponse("Internal Server Error")`. Three things break at once, and all three
-    are silent:
+    `PlainTextResponse("Internal Server Error")`. Two things break at once, and both are silent:
 
     1. It never reaches the structured `api.error` log above, so there is no server-side
        trace of the one category of failure most worth tracing. That is rule 7 inverted.

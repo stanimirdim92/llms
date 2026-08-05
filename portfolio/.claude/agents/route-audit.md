@@ -24,40 +24,27 @@ parameters and their annotations, its request model if any, and every database r
 
 ## Per-route checks
 
-1. **Tenant source.** Does it take `tenant_id: CurrentTenant` (or `CurrentPrincipal`)? A tenant read
-   from a body, query string, path or form field is a finding at the highest severity. There is no
-   legitimate case.
-2. **`app.api.deps` imported at runtime, not under `TYPE_CHECKING`.** FastAPI resolves the
-   annotation at registration to find the `Depends()`; a TYPE_CHECKING-only import breaks injection
-   at startup. ruff's TC001 argues for moving it, so this regresses under a lint fix.
-3. **Rate limit present.** `dependencies=[Depends(rate_limited("<scope>", "<settings_field>"))]`,
-   and the named settings field actually exists in `app/config.py`. A scope naming a missing field
-   is a finding.
-4. **The authorization predicate is in the query.** Look at each `select()`: is `tenant_id` in the
-   WHERE clause, or is it checked in an `if` after the row comes back? `doc_id` is a content hash,
-   so two tenants uploading the same bytes share one -- a lookup by `doc_id` alone returns the other
-   tenant's row and looks entirely correct. Compare against
-   `app/registry/db.py::get_document_record`, which is the shape that is right.
-5. **Any client-supplied id is validated against ownership before it reaches a Qdrant filter.** The
-   tenant condition being satisfied by a *different* clause in the same filter is not protection.
-6. **404, never 403, for another tenant's resource.** A 403 confirms the resource exists, which is
-   an existence oracle over content hashes.
-7. **Request models that carry no tenant field set `model_config = ConfigDict(extra="forbid")`.**
-   Silently ignoring a smuggled `session_id` was the original vulnerability; 422 is the fix.
-8. **Errors are `APIError`, not bare `HTTPException`**, and the handler forwards `exc.headers`
-   (check `app/api/main.py` once, not per route) -- dropping them strips `Retry-After` from 429s.
-9. **OpenAPI metadata present:** `tags`, `summary`, `description`, `response_description`, and
-   `Field(description=...)` on every schema field. The schema is the contract a generated client is
-   built from, so a bare field name becomes an untyped guess downstream.
-10. **`status_code=` set explicitly when it is not 200.** `POST /v1/documents` is 202 because the
-    work is queued; 200 would claim it finished.
-11. **The two tests exist**, in `tests/unit/test_api_contract.py`: a **401** test naming this route,
-    and a **cross-tenant 404** test if the route reads anything by id. The 401 test matters even
-    though other routes have one -- the dependency is per-route, so a route added without it is open
-    and no existing test notices.
+**Apply every item in the skill's *Non-negotiable*, *Request/response shape* and *Tests* sections
+to each route.** Do not work from a copy of that list. An earlier version of this file restated all
+eleven checks, and within a day check 4's copy had drifted into a claim the code contradicts -- it
+said `doc_id` is a plain content hash so two tenants share one, when `upload_doc_id` salts the
+digest with `tenant_id` and they do not. `docs/PATTERNS.md` §2 had already recorded that correction
+and warned that a wrong reason attached to a right rule is how the rule gets deleted later. A second
+copy of a checklist is how the wrong reason survives, so there is no second copy here.
 
-Also check, once: that no router imports `app.ingestion.pipeline`, `parser`, or
-`figure_extractor`. The api must not import Docling. `tests/unit/test_upload_formats.py` pins it.
+Only three things need framing specific to a sweep:
+
+- **Check every `select()` individually, not the route as a whole.** One route can hold a filtered
+  read and an unfiltered one, so "has a tenant filter somewhere" is not an audited route. Compare
+  each against `app/registry/db.py::get_document_record`.
+- **Resolve helpers before judging.** If the tenant predicate lives in a function you did not read,
+  that check is *unresolved*, not passed. Name the helper you could not follow.
+- **The 401 test is per route.** Other routes having one proves nothing: the dependency is declared
+  per route, so a route added without it is open and no existing test notices. Confirm a test names
+  *this* route.
+
+Also check once, rather than per route: that no router imports `app.ingestion.pipeline`, `parser`,
+or `figure_extractor`. The api must not import Docling. `tests/unit/test_upload_formats.py` pins it.
 
 ## Known false positives -- do not report these
 

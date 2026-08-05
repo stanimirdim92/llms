@@ -104,9 +104,6 @@ def _build_document_blocks(documents: list[Document]) -> list[dict]:
 
 
 def _extract_citations(content_blocks: AnthropicContent, documents: list[Document]) -> list[Citation]:
-    """`content_blocks` is the AIMessage's `.content`, a list of blocks when citations
-    are enabled (each a dict mirroring the raw Anthropic API shape).
-    """
     citations: list[Citation] = []
     if isinstance(content_blocks, str):
         return citations

@@ -1,7 +1,9 @@
 # Vendored skills
 
 Everything under `qdrant-*/` in this directory is **third-party, copied verbatim** from
-Qdrant's own skills repository. `run-stack/` is ours; nothing else here is.
+Qdrant's own skills repository. **Four skills are ours** — `verify`, `add-endpoint`, `run-stack` and
+`changelog`, inventoried in `../../CLAUDE.md` § Skills. Everything else here is vendored; the
+sections below say from where.
 
 | | |
 |---|---|

@@ -84,15 +84,9 @@ what is never delegated -- the gate, a failure-contract edit, and the final verd
 
 None of them can write, and none may report that they ran anything.
 
-**Two things measured about discovery, because both cost a wasted invocation otherwise.**
-Definitions are picked up **at session start only** -- adding one mid-session and invoking it fails
-with "Agent type not found", and this is not a path problem: probes at `portfolio/.claude/agents/`
-*and* at the repo root both failed in the same session, while skills added in that session were
-picked up twice. So a new definition needs a fresh session before it can be used. And discovery
-walks **up** from the working directory, unlike skills, which are found downward -- so if a session
-rooted at the repo top cannot see these, the fix is to move the three files to the repo-root
-`.claude/agents/` and accept that their descriptions then load for the three dormant course
-directories too. **Untested**, because it needs a restart to test.
+**Definitions are picked up at session start only**, and discovery walks **up** from the working
+directory rather than down as skills do. Both measured; the probe detail and the open question about
+whether a repo-root session resolves these are in `docs/MEMORY.md`.
 
 ## Skills
 
@@ -127,17 +121,10 @@ Vendored verbatim, at pinned commits, with provenance and refresh steps in
   CONCURRENTLY` cannot run inside a transaction** and `init_db` does all its DDL inside one, so a
   concurrent index needs its own autocommit connection — the skill can't know that.
 
-**`langchain-rag` from that repo is deliberately excluded, and should stay excluded.** It
-recommends `RecursiveCharacterTextSplitter`, OpenAI embeddings and Chroma — three things this
-project rejected and documented rejecting — while triggering on "ANY RAG system". A skill that
-contradicts the decision record is worse than no skill, because it argues back. Reasoning in
-`VENDORED.md`.
-
-**Same reason `pg-aiguide`'s `postgres` hub skill is excluded** while one leaf of it is vendored:
-the hub triggers on "any PostgreSQL database work" and routes to `pgvector-semantic-search`, which
-triggers on "Implement RAG with PostgreSQL". The vector store is Qdrant. Take narrow leaves from
-these repos, never the hubs — a hub's job is to claim a whole topic, and the topics here are
-already decided.
+**Take narrow leaves from these repos, never the hubs.** A hub claims a whole topic, and the topics
+here are decided, so a hub argues back at the decision record — which is worse than no skill.
+`langchain-rag` and `pg-aiguide`'s `postgres` are both excluded on that ground and must stay
+excluded; `VENDORED.md` has the per-skill reasoning and should not be restated here.
 
 **The one finding the qdrant set produced is closed** (2026-08-03): `qdrant_store._ensure_payload_indexes` indexes
 `metadata.tenant_id` with **`is_tenant=True`** and `metadata.doc_id` as a plain keyword, from
@@ -374,7 +361,8 @@ Things that look correct and aren't:
   image, and `app/config.py`'s `Settings`, which assembles `DATABASE_URL` from them.
   Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME`.
 - **Every credential in `Settings` is a `SecretStr`**, and `.get_secret_value()` marks each
-  point where one escapes (eight, across `config.py`, `db.py` and `worker/app.py`). One object
+  point where one escapes (six: four in `config.py`, one each in `db.py` and `worker/app.py` --
+  this said eight, and `config.py`'s own copy of the count was wrong too). One object
   holds the Anthropic, Voyage and LangSmith keys plus the Postgres password, so anything that
   renders it renders all four -- and this repository is public. `database_url` is a `SecretStr`
   too: it embeds the password, so masking the password alone was theatre.

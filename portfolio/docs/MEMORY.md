@@ -189,11 +189,21 @@ more discussion.
 1. **Identity for Epic 4 Phase 5.2.** User accounts sit on top of the existing API-key tenant
    model, and the relationship between "tenant" and "user" hasn't been decided. Blocks 5.2
    onward.
-2. **`processed_dir` disk footprint at 100k documents.** Still unmeasured — the attempt failed
+2. **Do the three `.claude/agents/` definitions resolve from a repo-root session?** Measured
+   2026-08-05: definitions are picked up **at session start only** -- adding one mid-session and
+   invoking it fails with "Agent type not found", and this is not a path problem, since probes at
+   `portfolio/.claude/agents/` *and* at the repo root both failed in the same session while skills
+   added that session were picked up twice. What is *not* measured is the interaction with the
+   documented walk-**up** discovery rule: this session's working directory is the repo root, and
+   walking up from there never reaches `portfolio/.claude/agents/`. Skills are found downward, which
+   is why they work. If a fresh session cannot see the three agents, move them to the repo-root
+   `.claude/agents/` and accept that their descriptions then load for the three dormant course
+   directories too. One restart answers it.
+3. **`processed_dir` disk footprint at 100k documents.** Still unmeasured — the attempt failed
    (Docling `partial_success`, 1/16 pages, fifteen timeouts on arXiv 2008.10896). Needs
    hardware that can finish a parse. Determines whether processed artefacts can stay on local
    disk at target scale.
-3. ~~**Payload index on `metadata.tenant_id`.**~~ **Resolved 2026-08-03.**
+4. ~~**Payload index on `metadata.tenant_id`.**~~ **Resolved 2026-08-03.**
    `qdrant_store._ensure_payload_indexes` indexes it with `is_tenant=True`, plus
    `metadata.doc_id` as a plain keyword. Verified against a real `qdrant/qdrant:v1.18.3`
    container, because it *cannot* be verified in-memory -- `qdrant_client`'s local mode warns
@@ -201,12 +211,12 @@ more discussion.
    so an in-memory assertion would have been vacuous. What remains open is the *effect at
    scale*: nothing has measured a tenant-filtered query at 1M points, with or without the
    index, so "required at 100k" is still an argument rather than a measurement.
-4. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03.** Every answer now logs
+5. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03.** Every answer now logs
    `stop_reason`, `input_tokens` and `output_tokens` structurally, and `Answer.truncated` reaches
    `AskResponse` and the Streamlit page. What is still missing is `cost_usd` — the per-model price
    table Epic 2 Phase 2.2's parquet schema wants. Kept in the list rather than deleted so the
    half that shipped is not mistaken for the whole.
-5. **Whole-document extraction.** "Fill this schema from document X" is not a similarity query
+6. **Whole-document extraction.** "Fill this schema from document X" is not a similarity query
    — every field must be found, so ranking chunks against the schema text is the wrong
    primitive even when correctly scoped. Works today only because the test document is one
    chunk; on a longer document `rerank_top_n=5` would drop a field-bearing chunk and the model
@@ -223,6 +233,68 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-05 (later) — a redundancy sweep that mostly found errors
+
+Asked to remove redundant comments from the `.md` and `.py` files. Delegated two read-only surveys
+(the first real use of the delegation agreement) and kept every verdict: one agent read all 51
+non-test Python files and examined 339 comment/docstring units, the other read 20 markdown files in
+full. **Four comments were actually redundant. Eight Python comments and about ten documented claims
+were wrong**, which is the more useful result and not what anyone asked for.
+
+**The one that matters most, because it happened inside the guard against it.**
+`.claude/skills/add-endpoint/SKILL.md` item 5 justified putting `tenant_id` in the WHERE clause by
+claiming `doc_id` is a plain content hash, so two tenants uploading the same file share one id. That
+is false -- `upload_doc_id` salts the digest with `tenant_id` -- and item 7 of the *same file* said
+so, so the skill contradicted itself. `docs/PATTERNS.md` §2 had already caught and written up this
+exact correction, including the warning that "a wrong *reason* attached to a right *rule* is how the
+rule gets 'simplified' away later". Then `.claude/agents/route-audit.md`, written earlier the same
+day, copied the wrong half into the agent whose entire job is auditing that boundary. The
+prediction came true within hours, in the file written to prevent it.
+
+The fix was one edit doing two jobs: `route-audit.md` no longer restates the checklist at all, it
+points at the skill. A second copy of a checklist is the mechanism by which the wrong reason
+survives, so the dedup *is* the correction. The rule itself never changed -- a `doc_id` is
+client-supplied on the way in, so how it was generated constrains nothing.
+
+**Counts that nobody can reconcile.** Three separate ones were wrong: `config.py` claimed eight
+`.get_secret_value()` call sites "worth grepping for" and the grep returns six, while naming only
+four places -- and `CLAUDE.md` repeated the eight. `api/main.py` promised "three things break" and
+listed two. `registry/models.py` justified the `ingested` default with "the two callers" and named
+one. A count that disagrees with its own list is worse than no count, because the reader assumes the
+list is the stale part.
+
+**Five stale claims left by the corpus removal**, all in the same shape as the `m=0` incident:
+`uploads.py`'s `content_digest` justified itself with a revised arXiv paper whose `doc_id` was the
+arXiv id -- so its stated purpose is now *unreachable*, since every surviving `doc_id` changes when
+the bytes do, and the field is write-only today; `chunker.py`'s `filename=""` default pointed at the
+deleted `scripts/ingest.py`; `scripts/create_tenant.py` said it was "the only way to get a usable
+key" while `routers/keys.py` said the opposite in as many words.
+
+**And the skip count, which is rule 12's own subject.** `CLAUDE.md` and the `verify` skill said five
+service-backed suites; `PATTERNS.md` said three, `TECHNICAL_DECISIONS.md` said two, `README.md` said
+"both". CI loops over five -- and `portfolio-ci.yml`'s own header comment still said three. So the
+one rule this project calls "the most expensive false confidence" was understated in four places at
+once, including the workflow that enforces it.
+
+Two more corrected: `TECHNICAL_DECISIONS.md` still headed the rate-limit section "hand-rolled on
+`redis.asyncio`" and said "Keyed per tenant" forty lines after saying "Per key, not per tenant"; and
+its graphrag rejection rested on `>=3.14` vs `<3.14` being unsatisfiable, which stopped being true
+when the floor dropped to 3.13. The graphrag *verdict* survives on per-document cost; the argument
+does not, and is now struck rather than deleted.
+
+**What was deliberately not done.** The markdown survey also returned a bloat list -- ~250 lines in
+`TECHNICAL_DECISIONS.md` § rate limiting where four facts are each stated three times, ~75 lines in
+this file re-narrating the same swap, 113 lines of superseded Phase 1 plan inline in
+`EPIC_4_PLAN.md` -- plus fifteen duplicate clusters that currently *agree* (the document-set table
+in five places with five different row lists; "Postgres only" in eight; the api-must-not-import-
+Docling measurement in six). Those are rewrites, not fixes, and folding them into a commit of
+verified corrections would make the diff unreviewable. Left for a deliberate pass.
+
+**On the delegation itself:** it worked, and the caveat in `../CLAUDE.md` held exactly as written.
+The agents found breadth no single pass would have — 339 comment units, 20 files — and produced
+several confident items that were wrong on inspection, plus an `UNSURE` bucket that was the right
+call twice. Every kept finding was re-verified at source before it was edited.
 
 ### 2026-08-05 — the skill set, and what a skill costs to keep
 

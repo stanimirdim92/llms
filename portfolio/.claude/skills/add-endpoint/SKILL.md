@@ -30,9 +30,13 @@ raises. That is the entire reason this checklist exists.
    caller is entitled to the tenant and merely lacks a capability); another tenant's resource
    is still 404, see below.
 5. **Put `tenant_id` in the WHERE clause**, not in an `if` after the query. See
-   `registry/db.py::get_document_record`. This matters more than it looks: `doc_id` is a content
-   hash, so two tenants uploading the same file share an id -- a lookup by `doc_id` alone returns
-   the *other* tenant's row while looking entirely correct.
+   `registry/db.py::get_document_record`. The reason is *not* that two tenants share a `doc_id` --
+   `upload_doc_id` salts the digest with `tenant_id`, so they do not, and item 7 below says so.
+   It is that a `doc_id` is **client-supplied on the way in**: the route receives whatever the
+   caller typed, and one tenant can paste another's id from a log, a screenshot or a bug report.
+   The WHERE clause is what makes that a 404 instead of a row. Filtering afterwards is not
+   equivalent -- by then the row has been read. `docs/PATTERNS.md` §2 has the full correction and
+   why a wrong reason attached to a right rule is dangerous.
 6. **Validate any client-supplied id against ownership before it reaches a Qdrant filter.** A
    `doc_ids` parameter (planned, `docs/EPIC_4_PLAN.md` 5.4) is a fresh cross-tenant read otherwise:
    the tenant condition is satisfied by the other clause and the filter happily returns someone

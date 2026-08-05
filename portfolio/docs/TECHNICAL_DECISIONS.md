@@ -334,7 +334,7 @@ one is reachable by any key and nothing raises. `require_scopes` attaches its re
 the returned closure so `test_scopes.py` can walk the route table and fail on any `/v1` route
 with no requirement — the assertion a newly added route silently falsifies.
 
-## Rate limiting: hand-rolled on `redis.asyncio`
+## Rate limiting: the `limits` library on redis-py
 
 **Decision.** A sliding-window limiter in `app/rate_limit.py`, per **key** and per scope.
 
@@ -566,13 +566,16 @@ for free.
 of one window and again at the start of the next — an observed burst of twice the configured
 limit.
 
-**The check is a Lua script because it must be atomic.** A read-then-write implementation
-lets concurrent requests all observe a count below the limit and all proceed, which is the
-exact scenario rate limiting exists to prevent. A test fires 25 concurrent requests at a limit
-of 5 and asserts exactly 5 pass.
+**The count must be atomic**, however it is implemented. A read-then-write version lets concurrent
+requests all observe a count below the limit and all proceed, which is the exact scenario rate
+limiting exists to prevent. A test fires 25 concurrent requests at a limit of 5 and asserts exactly
+5 pass. This was a hand-rolled Lua script until 2026-08-03; `limits` now owns the atomicity, which
+is the one part that was never the problem here.
 
-**Keyed per tenant**, not per IP — an IP key punishes shared corporate egress and is trivially
-evaded. **Per scope** too, so exhausting the upload budget does not also block questions.
+**Keyed per API key**, not per tenant and not per IP — an IP key punishes shared corporate egress
+and is trivially evaded, and a tenant key lets one client exhaust another's budget (see § Per key,
+not per tenant above; this paragraph said "per tenant" and contradicted it). **Per scope** too, so
+exhausting the upload budget does not also block questions.
 Uploads get a much tighter budget (10/min vs 60/min) because they cost Docling CPU plus one
 Anthropic vision call per figure plus one Voyage embedding call per chunk; `/ask` is a
 retrieve, a rerank, and one generation.
@@ -890,20 +893,29 @@ resolved a URL" was *nearly* true, and the part that was not true was the part t
 
 ## Testing: real services, and skip rather than fake
 
-Unit tests that can be pure are pure. The two exceptions are deliberate:
+Unit tests that can be pure are pure. The exceptions are deliberate, and there are now **five**
+suites, not the two this section originally described:
 
 - **Auth tests run against real Postgres.** Substituting SQLite hid a foreign-key bug and a
   timezone bug, as described above.
-- **Rate-limit tests run against real Redis.** The limiter is a Lua script and a sorted-set
-  expiry contract; a fake would only assert that the fake behaves as written.
+- **Rate-limit tests run against real Redis.** A fake would only assert that the fake behaves as
+  written. (This originally read "the limiter is a Lua script and a sorted-set expiry contract" —
+  true until the swap onto `limits`, and the reason still holds under `MovingWindowRateLimiter`.)
+- **Worker/registry, key-management and the `create_tenant` CLI** joined later, for the same
+  reason and with the same skip behaviour.
 
-Both **skip** when their service is unreachable, so the suite still runs on a bare machine.
-That has a cost worth naming: a green local run may have tested less than it appears. CI
-therefore provides both services *and* asserts that neither suite skipped, since a silently
-skipped auth suite is indistinguishable from a passing one.
+All five **skip** when their service is unreachable, so the suite still runs on a bare machine.
+That has a cost worth naming: a green local run may have tested less than it appears — 59 tests'
+worth. CI therefore provides both services *and* asserts that none of the five skipped, since a
+silently skipped auth suite is indistinguishable from a passing one. It asserted three for a
+while, which let the two newest skip in CI unnoticed.
 
-Nothing exercises Qdrant. Store-layer bugs surface only on a real ingest — which is exactly
-how the point-id constraint was found, after it shipped.
+Qdrant's **filtering** is exercised — `tests/unit/test_qdrant_filtering.py` runs `_build_filter`
+through `qdrant_client`'s in-memory engine, so tenant isolation is proved by execution in CI with
+no server. Its **network path** is not, which is where the point-id constraint escaped to
+production. Do not shorten this to either "Qdrant is tested" or "nothing exercises Qdrant"; the
+second is what this paragraph used to say, and it was the flat opposite of the other five places
+that describe it.
 
 ## Scale target: 10k tenants x 10 documents
 
@@ -969,11 +981,12 @@ time -- and none of the planned queries do. Postgres plus columnar files on disk
 
 Two further findings from the same read, recorded so they are not re-derived:
 
-- **It cannot be a dependency here.** Every one of its eight packages pins
-  `requires-python = ">=3.11,<3.14"`. Against this project's `>=3.14` floor that is an
-  unsatisfiable resolution, not a warning -- the same class of conflict as `slowapi` against
-  `redis>=8`. Anything taken from it is reimplemented, not imported. MIT licence, so that is
-  permitted with attribution.
+- **~~It cannot be a dependency here.~~ Corrected 2026-08-05: this reason no longer holds.** Every
+  one of its eight packages pins `requires-python = ">=3.11,<3.14"`, and that was written against a
+  `>=3.14` floor, where it would indeed have been unsatisfiable. **The floor was lowered to
+  `>=3.13`** (see § Python version, and `pyproject.toml`), and `>=3.13` with `<3.14` resolves fine.
+  The verdict below still stands on its own -- per-document indexing cost -- but this argument is
+  dead and must not be reused. MIT licence, so importing would be permitted.
 - **Its per-document indexing cost rules out the pipeline at this scale.** Entity extraction
   is roughly a model call per chunk, plus description summarisation, plus a report per
   detected community. Estimated at ~20 calls per document, 100k documents is ~2M model calls,

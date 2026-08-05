@@ -22,9 +22,14 @@ def _table_to_markdown(table: TableItem, document: DoclingDocument) -> str:
 
 
 def _base_metadata(filename: str) -> dict:
-    """Metadata every chunk kind carries. Empty when no filename is known (the corpus
-    script passes one; a caller that does not simply gets the old doc_id-only behaviour)
-    rather than storing an empty string that would render as a blank title.
+    """Metadata every chunk kind carries. Empty when no filename is known, rather than storing an
+    empty string that would render as a blank title.
+
+    The `filename=""` default is now unreached: `pipeline.py` is the only caller and always passes
+    `file_path.name`. It existed for `scripts/ingest.py`, deleted with the curated corpus. Kept as
+    a default because the alternative is a required argument on a function whose callers are all
+    internal -- but do not add a caller that relies on the empty branch without deciding what a
+    chunk with no title should look like.
     """
     return {"filename": filename} if filename else {}
 
@@ -63,7 +68,6 @@ def chunk_document(
             continue
         doc_items = getattr(docling_chunk.meta, "doc_items", [])
         if any(isinstance(item, TableItem) for item in doc_items):
-            # Tables are handled separately below so they stay atomic; skip here.
             continue
         page_no = doc_items[0].prov[0].page_no if doc_items and doc_items[0].prov else None
         headings = getattr(docling_chunk.meta, "headings", None) or []

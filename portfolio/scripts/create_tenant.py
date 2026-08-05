@@ -1,6 +1,8 @@
 """CLI: create a tenant and mint or revoke its API keys.
 
-Until Phase 5 adds a registration UI, this is the only way to get a usable key.
+This is how a tenant's *first* key is minted -- it needs database access, which is right for
+bootstrapping and wrong for everything after. Rotation goes through `POST /v1/keys` or the
+Streamlit page; see `app/api/routers/keys.py`, which says so from the other side.
 
     uv run python scripts/create_tenant.py "Acme Corp"                       # new tenant + first key
     uv run python scripts/create_tenant.py --tenant <id> --name ci           # extra key for a tenant

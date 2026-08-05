@@ -25,9 +25,11 @@ class Settings(BaseSettings):
     `**********`, and this repository is public, so a key that reaches a log someone pastes is
     disclosed. The cost is that the places genuinely needing the characters say
     `.get_secret_value()`, which is a readable marker of exactly where a secret escapes. There are
-    eight, and they are worth grepping for rather than trusting this list: six in this file
-    (`redis_url`, `_assemble_database_url`, the LangSmith bridge, `require_provider_credentials`),
-    plus `app/db.py`'s engine and `app/worker/app.py`'s procrastinate DSN.
+    six, and grep rather than trust this list: four in this file (`redis_url`,
+    `_assemble_database_url`, the LangSmith bridge, `require_provider_credentials`), plus
+    `app/db.py`'s engine and `app/worker/app.py`'s procrastinate DSN. It said eight/six before,
+    which was wrong in both halves while naming only four places -- a count nobody can reconcile
+    is worse than no count, because the reader assumes the list is the stale part.
 
     The provider clients need no change: `ChatAnthropic.anthropic_api_key`,
     `VoyageAIEmbeddings.voyage_api_key` and `VoyageAIRerank.voyage_api_key` are all declared

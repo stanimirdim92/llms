@@ -67,8 +67,15 @@ def content_digest(file_bytes: bytes) -> str:
 
     Unsalted on purpose: `doc_id` already carries identity and isolation (see `upload_doc_id`),
     so what is left for this field is the one question the id cannot answer -- did the bytes
-    change while the id stayed the same? That happens on a revised arXiv paper, where `doc_id`
-    is the arXiv id rather than a hash of the content.
+    change while the id stayed the same?
+
+    **That question is currently unreachable, and saying so is the point.** The example used to be
+    a revised arXiv paper, whose `doc_id` was the arXiv id rather than a content hash; those came
+    from the curated corpus, removed 2026-08-03. Every surviving `doc_id` is
+    `f"{tenant_id}-{sha256(tenant_id, bytes)}"`, so different bytes always mean a different id. The
+    field is therefore write-only today. Left in place rather than dropped because the paragraph
+    above is the real reason it exists -- the column was written two ways and reconciled by
+    whichever write landed last -- and a reader deciding its fate needs both halves.
     """
     return hashlib.sha256(file_bytes).hexdigest()[:_CONTENT_HASH_LENGTH]
 

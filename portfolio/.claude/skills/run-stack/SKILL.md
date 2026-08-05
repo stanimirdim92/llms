@@ -58,7 +58,10 @@ copied into the image, so this runs on the host against the published port 5432:
     uv sync --extra dev                                  # once
     uv run python scripts/create_tenant.py "My Org"      # prints the key ONCE
 
-`--list` shows tenants and keys, `--revoke <key_id>` revokes one.
+`--list` shows tenants and keys. Revocation needs **both** identifiers --
+`--tenant <id> --revoke <key_id>` -- because looking a key up by id alone was the security fix, and
+the CLI calls `parser.error("--revoke requires --tenant")` without it. `--expires-in` takes
+30/60/90/365 or `never`.
 
 ## Uploading a document (asynchronous)
 

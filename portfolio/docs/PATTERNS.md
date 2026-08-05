@@ -276,8 +276,10 @@ escaped to production, so don't say "Qdrant is tested" without that qualifier.
 ## 18. A skipped test must not look like a passing one
 
 Service-backed suites skip when Postgres or Redis is unreachable, so a green local run can have
-tested far less than it appears to. CI provides both services and **asserts none of the three
-suites skipped**.
+tested far less than it appears to. CI provides both services and **asserts none of the five
+suites skipped** (`.github/workflows/portfolio-ci.yml`). It guarded three for a while, which let
+the two newer ones skip in CI silently — the failure this pattern exists to prevent, occurring
+inside the guard against it.
 
 **Prevents:** the most expensive kind of false confidence, because it is self-reinforcing —
 every subsequent green run inherits it.

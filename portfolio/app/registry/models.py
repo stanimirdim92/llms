@@ -50,9 +50,11 @@ class DocumentRecord(SQLModel, table=True):
     attempt; a retry moves a `failed` row back to `processing`, so this describes the latest
     attempt rather than the worst one.
 
-    The default stays `ingested` because the two callers that bypass the queue entirely
-    (Streamlit, which runs the pipeline in process) only
-    ever write a row once the work is already done.
+    The default stays `ingested` because the one caller that bypasses the queue entirely --
+    Streamlit, which runs the pipeline in process -- only ever writes a row once the work is
+    already done. It said "two callers" and named one: the second was `scripts/ingest.py`, deleted
+    with the curated corpus. Do not read the surviving single caller as making the default
+    vestigial; it is still the only thing that makes the bypass path correct.
 
     Indexed because the natural queries are status-shaped: "what is still pending for this
     tenant", "what failed".
