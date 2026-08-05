@@ -71,6 +71,25 @@ looks wrong, say so once and proceed.
   nothing. The *remote* branch could not be deleted from the container (the session's git
   proxy refuses ref deletion); it points at the same commit as main and is the user's to
   remove in the GitHub UI.
+- **There is no dependency-minimisation rule, and don't invent one.** Stated by the user 2026-08-05
+  after a dependency comparison leaned on package counts. `docs/EPIC_2_PLAN.md`'s "this adds **no
+  dependency**" is a *fact* about parquet arriving free via Streamlit, not a value. The signals that
+  actually matter when weighing a package: does it pin an existing package **backwards** (an eval
+  tool dragging `huggingface-hub` back constrains the *ingestion* stack), does it reach the runtime
+  image, does it monkey-patch anything (`nest-asyncio`), and what it adds to the CVE surface
+  `pip-audit` scans. Raw package count is close to meaningless — measured: `.docker/Dockerfile` runs
+  `uv sync --no-install-project --locked` with **no `--extra`**, so `[project.optional-dependencies]`
+  never reaches the api, worker or Streamlit image. Eval tooling therefore belongs in an `eval`
+  extra.
+- **Hosting the app online is on the table** ("at some point", 2026-08-05) — a signal, not yet a
+  decision, so don't build for it. What it changes when it firms up: `slo-architect` was parked with
+  the explicit precondition "revisit when the app actually serves traffic"; Epic 4 Phase 4
+  observability and the nginx `limit_req` idea are both filed as "not urgent while the API is not
+  public"; **backups become the highest-consequence open item**, since nothing backs up the Postgres
+  holding tenants, keys and the document registry; the prompt-injection entry's mitigating argument
+  is "blast radius is self-inflicted", which weakens sharply with real tenants; and the Dependabot
+  backlog stops being background noise. A server-backed eval or observability platform also stops
+  being an imposition if a deployment exists anyway.
 - Streamlit retires when the React UI lands (Epic 4 Phase 6). Don't invest in it beyond parity.
 - Commit-signing warnings from the stop hook are expected and were accepted — signing cannot
   work in this container. Don't re-raise.
