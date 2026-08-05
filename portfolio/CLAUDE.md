@@ -58,10 +58,41 @@ A durable imperative rule goes *here*. Current state goes in `docs/MEMORY.md`. M
 the rules in changelog.
 
 **The repo root `../CLAUDE.md` holds the general rules** -- the 15 numbered coding rules, the
-document-set split above, and the working agreements on secrets, lockfiles, and the gate. It is
-loaded alongside this file, so don't restate it here. What belongs *here* is anything true of
-only this project: the failure contracts below are the point, because each names a specific file
-and a specific way that file fails.
+document-set split above, the working agreements on secrets, lockfiles, and the gate, and the
+delegation rule for subagents. It is loaded alongside this file, so don't restate it here. What
+belongs *here* is anything true of only this project: the failure contracts below are the point,
+because each names a specific file and a specific way that file fails.
+
+## Subagents
+
+Three in `.claude/agents/`, all read-only, all for breadth. `../CLAUDE.md` holds the rule about
+what is never delegated -- the gate, a failure-contract edit, and the final verdict on a finding.
+
+- **`doc-consistency`** — sweeps the document set for claims the code no longer supports or that
+  contradict another document. It exists because a sentence that was true when written, in a file
+  nobody re-reads, is this repo's most common defect: three files claimed the `m=0`/`payload_m`
+  Qdrant trade was blocked by a shared corpus that had been removed hours earlier, and it was
+  found by accident months later. Run it after any removal or rename.
+- **`route-audit`** — every route in `app/api/routers/` against the `add-endpoint` checklist. The
+  boundary is re-established per route *and* per query, so exhaustive beats spot-checking; the
+  definition carries the known false positives (health routes have no auth or rate limit on
+  purpose) so they stop being re-reported.
+- **`candidate-triage`** — licence and provenance first, then fit against the recorded decisions,
+  for anything third-party. Encodes the traps that have actually sunk candidates here: hub skills
+  that route to a rejected stack, shipped "evaluators" that measure their own toy retriever, and
+  descriptions broad enough to fire on every task.
+
+None of them can write, and none may report that they ran anything.
+
+**Two things measured about discovery, because both cost a wasted invocation otherwise.**
+Definitions are picked up **at session start only** -- adding one mid-session and invoking it fails
+with "Agent type not found", and this is not a path problem: probes at `portfolio/.claude/agents/`
+*and* at the repo root both failed in the same session, while skills added in that session were
+picked up twice. So a new definition needs a fresh session before it can be used. And discovery
+walks **up** from the working directory, unlike skills, which are found downward -- so if a session
+rooted at the repo top cannot see these, the fix is to move the three files to the repo-root
+`.claude/agents/` and accept that their descriptions then load for the three dormant course
+directories too. **Untested**, because it needs a restart to test.
 
 ## Skills
 

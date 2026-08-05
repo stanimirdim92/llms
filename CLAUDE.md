@@ -168,3 +168,41 @@ Three habits that make the set work:
   One randomised pass beats three ordered ones, and the seed is printed (`-v`, or
   `--randomly-seed=last` to replay) so a red run stays reproducible. Shared-database
   fixtures and counters that outlive a test are what bit here, and order is how they bite.
+
+# Delegating to subagents
+
+**Delegate breadth. Keep judgment and verification.** Subagent definitions live in each project's
+`.claude/agents/`; discovery walks up from the working directory, so a definition under
+`portfolio/` applies when working there and a repo-root one applies everywhere.
+
+**Delegate** read-only sweeps where the conclusion is the deliverable and the file dumps are not:
+triaging many candidates against one rubric, auditing every route against a checklist, sweeping the
+document set for claims that stopped being true, searching for a symptom across a subsystem. The
+test is whether the work is *wide and shallow with a fixed question*. A 440-candidate scan done
+single-threaded read about a dozen of them properly; that is the case delegation is for.
+
+**Never delegate:**
+
+- **The gate.** An agent reporting "353 passed" is a *claim*, and rule 12 is that a skipped test is
+  not a passing test -- one level removed, that becomes an unread skip count reported as green. Run
+  it yourself, read the skip count yourself.
+- **A change to a failure contract**, in any `CLAUDE.md` or `PATTERNS.md`. Those exist because
+  something cost us; rewording one is the highest-consequence edit in the repo.
+- **The final verdict on a finding.** An agent's report is a lead. Confirm it at the source before
+  it is written down, because anything recorded here is read as established fact by the next
+  session -- rule 7 with a longer blast radius.
+
+**And know what delegation cannot find.** The findings worth most here come from one context
+noticing that two *distant* things contradict each other -- a comment in `ruff.toml` that predicted
+the failure the gate just produced; a sentence about a shared corpus that a removal in a different
+session invalidated. No brief sends an agent looking for those, because the connection is the
+finding. A narrow agent reports faithfully on its slice and the contradiction lives in the gaps
+between slices. So a wide sweep is a *supplement* to reading the thing yourself, never a substitute.
+
+Two practical notes. Each agent re-reads the `CLAUDE.md` files and `MEMORY.md`, so a ten-way fan-out
+pays that ten times -- fan out for breadth that earns it, not for two files. And **say what was
+delegated** in the response, so a wrong conclusion is traceable to the agent that produced it.
+
+*Deliberately not numbered as rule 16.* Rules 8-15 each got written after the failure it describes
+actually happened here, and that is the stated bar. Delegation has not cost us anything yet. If it
+does, the incident goes in the numbered list and this section shrinks to a pointer.
