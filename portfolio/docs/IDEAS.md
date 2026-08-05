@@ -102,10 +102,13 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **The `m=0` + `payload_m` trade for per-tenant HNSW graphs.** *(M, conditional — probably
   never)* `qdrant-scaling` offers it when indexing throughput becomes the bottleneck: build no
   global HNSW graph, only per-tenant ones. Recorded with its precondition because it is easy to
-  cargo-cult from the docs, and **both halves of the precondition currently fail** — nothing
-  measures Qdrant's indexing throughput, and every query reads the shared corpus alongside the
-  tenant's own documents, so the "cross-tenant search is rare" assumption it trades against is
-  false here. Revisit only with a measurement in hand.
+  cargo-cult from the docs. **One half of the precondition now holds and the other still does
+  not.** The trade needs indexing throughput to be the bottleneck *and* cross-tenant search to be
+  rare; removing the shared corpus (2026-08-03) made every query single-tenant, so cross-tenant
+  search is now not merely rare but **impossible** — `_build_filter` matches exactly one tenant.
+  What still blocks it is that **nothing measures Qdrant's indexing throughput**, so there is no
+  evidence it is the bottleneck. Revisit only with that measurement in hand; the previous note
+  here said both halves failed, which stopped being true the day the corpus went.
 - **Quantization.** *(M)* Scalar or binary quantization on the collection, to keep the working
   set in RAM at 16 GB. Costs recall; the `qdrant-performance-optimization` skill has the
   tradeoff. Needs recall@k to evaluate honestly.

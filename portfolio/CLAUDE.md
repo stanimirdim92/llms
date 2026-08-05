@@ -88,12 +88,25 @@ Vendored verbatim, at pinned commits, with provenance and refresh steps in
   `human-in-the-loop`) from github.com/langchain-ai/langchain-skills. The LangGraph three are
   installed ahead of use, for Epic 3's agent; `langgraph-persistence` is the one to read before
   wiring the Postgres checkpointer.
+- **`postgres-database-migration`** from github.com/timescale/pg-aiguide — one skill of that
+  repo's ten. Read it before writing any `ALTER TABLE` by hand, which is the only way a column
+  gets added here: there is no Alembic and `create_all` never adds one (see the failure contract
+  below). It carries the lock level of every common DDL operation, which is the thing that
+  decides whether a one-millisecond statement stalls the whole API. Note that **`CREATE INDEX
+  CONCURRENTLY` cannot run inside a transaction** and `init_db` does all its DDL inside one, so a
+  concurrent index needs its own autocommit connection — the skill can't know that.
 
 **`langchain-rag` from that repo is deliberately excluded, and should stay excluded.** It
 recommends `RecursiveCharacterTextSplitter`, OpenAI embeddings and Chroma — three things this
 project rejected and documented rejecting — while triggering on "ANY RAG system". A skill that
 contradicts the decision record is worse than no skill, because it argues back. Reasoning in
 `VENDORED.md`.
+
+**Same reason `pg-aiguide`'s `postgres` hub skill is excluded** while one leaf of it is vendored:
+the hub triggers on "any PostgreSQL database work" and routes to `pgvector-semantic-search`, which
+triggers on "Implement RAG with PostgreSQL". The vector store is Qdrant. Take narrow leaves from
+these repos, never the hubs — a hub's job is to claim a whole topic, and the topics here are
+already decided.
 
 **The one finding the qdrant set produced is closed** (2026-08-03): `qdrant_store._ensure_payload_indexes` indexes
 `metadata.tenant_id` with **`is_tenant=True`** and `metadata.doc_id` as a plain keyword, from

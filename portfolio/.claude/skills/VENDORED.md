@@ -69,9 +69,14 @@ Recorded so a future session knows which to reach for rather than re-deriving it
 
   Still not done, from `qdrant-scaling`: the `m=0` + `payload_m` trade that builds per-tenant
   HNSW graphs only. That one is explicitly conditional — take it *if* indexing throughput
-  becomes the bottleneck and cross-tenant search is rare. Neither holds here: nothing measures
-  Qdrant yet, and every query reads the shared corpus alongside the tenant's own documents, so
-  cross-tenant reads are the norm rather than the exception.
+  becomes the bottleneck **and** cross-tenant search is rare. **Corrected 2026-08-05:** this
+  entry used to say neither half held, on the grounds that every query read the shared corpus
+  alongside the tenant's own documents. The corpus was removed the same day these skills found
+  the index gap, so that sentence was stale within hours — every query is single-tenant now and
+  `_build_filter` cannot match two tenants, which makes cross-tenant search impossible rather
+  than rare. The half that still fails is the first: **nothing measures Qdrant's indexing
+  throughput**, so there is no evidence it is the bottleneck. `docs/IDEAS.md` holds the live
+  version of this condition.
 - **`qdrant-search-quality`** — golden sets, recall@k, hybrid search, when reranking helps.
   This is Epic 2's subject matter; consult it when building the eval framework rather than
   inventing a methodology.
@@ -161,3 +166,112 @@ live hazard, so the exclusion is the point rather than an oversight.
   them would quietly argue for a different tool than the plan chose. Read them when Epic 2
   starts and decide deliberately; do not let a skill make that call by triggering first.
 - **`langgraph-cli`, `swarm`** — no current use.
+
+---
+
+# Vendored: `timescale/pg-aiguide`
+
+**One skill of the ten**, copied verbatim.
+
+| | |
+|---|---|
+| Source | https://github.com/timescale/pg-aiguide |
+| Commit | `b4f11a45907af3abda0f79e784aff9a6d5eef468` (upstream dated 2026-06-26) |
+| Vendored | 2026-08-05 |
+| License | Apache 2.0 — `PG_AIGUIDE_LICENSE`, **plus `PG_AIGUIDE_NOTICE`** |
+| Taken | `postgres-database-migration` only — `SKILL.md` (486 lines) + 3 `references/` (292) |
+
+**Two licence files here where qdrant has one, and that is not tidiness.** This repo ships a
+`NOTICE` ("Copyright 2025 Timescale, Inc., d/b/a Tiger Data") and Apache 2.0 §4(d) requires a
+redistribution to carry the attribution notices from it. qdrant/skills has `LICENSE` and no
+`NOTICE` — checked, not assumed — so that vendoring stays complete with one file.
+
+Refresh:
+
+    git clone --depth 1 https://github.com/timescale/pg-aiguide /tmp/pg-aiguide
+    rm -rf portfolio/.claude/skills/postgres-database-migration
+    cp -r /tmp/pg-aiguide/skills/postgres-database-migration portfolio/.claude/skills/
+    cp /tmp/pg-aiguide/LICENSE portfolio/.claude/skills/PG_AIGUIDE_LICENSE
+    cp /tmp/pg-aiguide/NOTICE   portfolio/.claude/skills/PG_AIGUIDE_NOTICE
+    # then update the commit/date above, and re-check the exclusions below still hold
+
+## Why this one, and why it is not premature
+
+It lands on a gap this project has already written down twice. `app/db.py::init_db`'s docstring
+says there is no Alembic and that a schema change currently means dropping the volume; `CLAUDE.md`
+carries the contract that **`create_all` creates missing *tables*, never missing *columns***, so
+adding a field to an existing model changes nothing, `init_db` reports success, and the next query
+fails with `column ... does not exist`. `ApiKey.expires_at` was added by hand under exactly that
+rule — against an empty table, which is why it cost nothing. The next one will not be: at the
+10k-tenant × 10-document target, `documentrecord` holds 100k rows.
+
+So the division of labour is: **rule 8 governs what a new column must *mean*** (absent data reads
+as the pre-existing behaviour, then check the inverse); this skill governs **how to add it without
+locking the table**. Neither substitutes for the other.
+
+The five things in it that are worth having in the room rather than re-derived:
+
+- `ADD COLUMN` nullable is metadata-only; with a **non-volatile** default it is still
+  metadata-only on PG 11+; with a **volatile** one (`now()`, `gen_random_uuid()`) it is a full
+  table rewrite. Three outcomes that look like one statement.
+- `ADD CONSTRAINT ... NOT VALID` then `VALIDATE CONSTRAINT` — the second half scans under
+  `ShareUpdateExclusiveLock`, so reads and writes continue.
+- A unique constraint the non-blocking way: `CREATE UNIQUE INDEX CONCURRENTLY`, then
+  `ADD CONSTRAINT ... UNIQUE USING INDEX`.
+- `lock_timeout` on every production DDL, and *why*: a fast `ALTER TABLE` queued behind one long
+  `SELECT` blocks every query that arrives after it. The failure is an application-wide stall
+  caused by a statement that would have taken a millisecond.
+- After any failed `CREATE INDEX CONCURRENTLY`, check `pg_index.indisvalid` — a crashed build
+  leaves an invalid index behind that costs writes and serves nothing.
+
+**One project-specific interaction it does not know about.** `CREATE INDEX CONCURRENTLY` cannot
+run inside a transaction, and `init_db` does all its DDL inside one (`get_engine().begin()`, so
+that `pg_advisory_xact_lock` releases on exit). A concurrent index therefore cannot be added from
+`init_db` — it needs its own autocommit connection or a psql session, outside the boot path.
+
+## Three vendor links in it, deliberately not edited out
+
+§ *Fork-Based Migration Testing* recommends [Neon](https://neon.tech) and
+[Ghost](https://ghost.build) for fast forking, and PgDog for replaying production traffic at a
+fork. **This project has no fork facility** — Postgres runs as a compose service on a named
+volume. The applicable path is the skill's own *Without Forking* block: `pg_dump -Fc` +
+`pg_restore` into a scratch database, or `createdb -T`.
+
+Left verbatim so the refresh above stays a copy rather than a merge. Recorded here so a session
+reading § Fork-Based Migration Testing does not treat "sign up for a forking provider" as this
+project's next step.
+
+## The other nine, and two outside candidates
+
+Same test as the langchain set: a skill nobody triggers is not free, because descriptions are
+always in context.
+
+- **`postgres`** (the hub) — **excluded, and this is the important one.** It triggers on "any
+  PostgreSQL database work" and routes to **`pgvector-semantic-search`**, whose own triggers
+  include "Implement RAG (Retrieval Augmented Generation) with PostgreSQL". That is the
+  `langchain-rag` failure mode again, against a different decision: this project's vector store
+  is Qdrant, chosen and recorded in `docs/TECHNICAL_DECISIONS.md`. Taking the hub means a
+  retrieval question here can surface advice to build the retrieval layer in Postgres instead.
+  The narrow trigger list on `postgres-database-migration` is precisely why *it* is safe to take.
+- **`ghost-database`** — a commercial upsell for Ghost's hosted forking. No.
+- **`setup-timescaledb-hypertables`, `find-hypertable-candidates`,
+  `migrate-postgres-tables-to-hypertables`, `design-postgis-tables`** — TimescaleDB and PostGIS;
+  neither extension is installed or planned.
+- **`design-postgres-tables`, `postgres-hybrid-text-search`** — the first overlaps `add-endpoint`
+  and the model modules' own documented constraints; the second is Postgres full-text search,
+  which retrieval here does not use.
+
+Two candidates from elsewhere, checked on the same bar and rejected:
+
+- **`duthaho-postgresql`** (skillsdirectory.com) — **rejected on provenance first.** The listing
+  page 403s through the proxy and no canonical repository was found, so there is no licence file
+  and no commit to pin; nothing could be entered in a table above honestly. On content it would
+  have failed anyway: no raw SQL exists in `app/` beyond the health probe's `SELECT 1`, no
+  `Relationship` field exists for its N+1 pitfall to apply to, and one of its two migration
+  examples — `ALTER TABLE users ADD CONSTRAINT unique_email UNIQUE (email)` — is presented as
+  routine while being the form that builds the index under `AccessExclusiveLock`, blocking reads
+  and writes for the whole scan. The skill taken above covers that exact case correctly.
+- **`Jeffallan/claude-skills`'s `postgres-pro`** — MIT and honestly licensed, rejected on fit:
+  2071 lines of which ~446 are streaming replication (one instance here), ~321 JSONB (no JSONB
+  column), and ~404 extension management (none installed). It also writes in a "Senior PostgreSQL
+  expert" persona voice that reads as a different document pasted into this set.

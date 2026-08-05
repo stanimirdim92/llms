@@ -224,6 +224,60 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-05 — the skill set, and what a skill costs to keep
+
+Two sessions of skill work, logged together because the second only makes sense as the first one's
+rule applied again. Provenance and per-skill reasoning live in `.claude/skills/VENDORED.md`; what
+belongs here is the selection rule and the calls it produced.
+
+**The rule: a skill's description is always in context, so an untriggered skill is not free.** It
+dilutes triggering for `verify`, `add-endpoint` and `changelog` — the three that actually stop
+bugs here. Every candidate therefore gets two checks in order: **licence and provenance**, then
+**fit against what this project has already decided.** A skill fails on either.
+
+Landed 2026-08-04 ([`ab9a162`](https://github.com/stanimirdim92/llms/commit/ab9a162),
+[`59ffb8f`](https://github.com/stanimirdim92/llms/commit/59ffb8f)): a project-owned `changelog`
+skill plus the `CHANGELOG.md` it produced, and **four of twenty-two** langchain skills.
+
+Landed 2026-08-05: **one of ten** `pg-aiguide` skills — `postgres-database-migration`. It lands on
+a gap already written down twice (no Alembic; `create_all` never adds a column) and its trigger
+list is narrow — migration verbs only.
+
+**Two rejections worth keeping, because both were the same failure in different clothes.**
+`langchain-rag` triggers on "ANY RAG system" and recommends `RecursiveCharacterTextSplitter`,
+OpenAI embeddings and Chroma — three things `docs/TECHNICAL_DECISIONS.md` records rejecting.
+`pg-aiguide`'s `postgres` hub triggers on "any PostgreSQL database work" and routes to
+`pgvector-semantic-search`, which triggers on "Implement RAG with PostgreSQL" — against a project
+whose vector store is Qdrant. **Generalising: take narrow leaves from these repos, never the
+hubs.** A hub's job is to claim a whole topic, and the topics here are decided. Both exclusions
+are now in `CLAUDE.md` because a skill that contradicts the decision record argues back, which is
+rule 6 turned into a live hazard.
+
+Two Postgres candidates the user found were also rejected. `duthaho-postgresql` failed the
+*first* check — skillsdirectory.com 403s through the proxy and no canonical repository was
+found, so there is no licence to cite and no commit to pin. The content, once the user pasted it,
+would have failed the second anyway; notably one of its two migration examples presents
+`ADD CONSTRAINT ... UNIQUE` as routine, which is the form that blocks reads and writes for a full
+index build. `postgres-pro` was honestly MIT and failed on fit: ~1170 of its 2071 lines are
+replication, JSONB and extension management, none of which exist here.
+
+**Apache 2.0 §4(d) came up for the first time.** `timescale/pg-aiguide` ships a `NOTICE`
+("Copyright 2025 Timescale, Inc., d/b/a Tiger Data") and redistribution has to carry its
+attribution, so that vendoring has two licence files where qdrant's has one. Checked rather than
+assumed that qdrant/skills ships no `NOTICE` — it does not, so that entry stays complete as is.
+
+**A stale claim found and fixed in three files while writing this up.** `VENDORED.md`,
+`docs/IDEAS.md` and this log all said the `m=0` + `payload_m` trade was blocked on *both* halves
+of its precondition, because "every query reads the shared corpus alongside the tenant's own
+documents". The corpus was removed on 2026-08-03 — hours after that sentence was written — so
+every query is single-tenant and cross-tenant search is now impossible, not merely rare. Only the
+unmeasured indexing throughput still blocks the trade. Worth noting how it survived: the sentence
+was true when written, in a file nobody had reason to re-read, and the removal commit had no
+reason to grep for it.
+
+No `CHANGELOG.md` entry for any of this. Nothing under `.claude/` or `docs/` changes what a caller
+observes, which is the skill's own noise filter working as intended.
+
 ### 2026-08-03 (later still) — the Qdrant tenant payload index
 
 Closed the one finding the vendored `qdrant-*` skills had produced and that had been sitting open
@@ -252,8 +306,10 @@ what makes each tenant's vectors co-located so the reads are sequential.
 Two things deliberately not done, both recorded with their preconditions in `docs/IDEAS.md`:
 `metadata.chunk_type` gets no index (no production caller passes `chunk_types`), and the `m=0` +
 `payload_m` per-tenant-HNSW trade from `qdrant-scaling` stays untaken — it is conditional on
-indexing throughput being the bottleneck *and* cross-tenant search being rare, and both are
-false here, since every query reads the shared corpus alongside the tenant's own documents.
+indexing throughput being the bottleneck *and* cross-tenant search being rare, and at the time of
+writing both were false. (**Corrected 2026-08-05:** removing the corpus later the same day made
+every query single-tenant, so the second half now holds. Only the unmeasured indexing throughput
+still blocks it. `docs/IDEAS.md` carries the current version.)
 
 ### 2026-08-03 (later still) — the shared corpus is gone
 

@@ -2,11 +2,20 @@ target-version = "py313"
 line-length = 120
 indent-width = 4
 extend-exclude = [
-    # Vendored verbatim from github.com/qdrant/skills (see .claude/skills/VENDORED.md).
-    # Excluded because it isn't ours to format: ruff already walks these 30 markdown files,
-    # and a future version that actually rewrites markdown would dirty the vendor diff and
-    # make "did upstream change?" unanswerable.
+    # Vendored verbatim -- not ours to format. `.claude/skills/VENDORED.md` lists what came from
+    # where; every vendored directory needs a line here.
+    #
+    # The previous version of this comment covered only the qdrant set and called this a *future*
+    # risk: "a future version that actually rewrites markdown would dirty the vendor diff and make
+    # 'did upstream change?' unanswerable". That future is here -- ruff 0.16 reformats python code
+    # blocks inside markdown, and `ruff format --check` went red on the four langchain files from
+    # the commit that vendored them, unnoticed. Adding a vendored directory without adding it here
+    # therefore breaks the gate, and *fixing* the gate by letting ruff rewrite the files would
+    # destroy the verbatim property the refresh procedure depends on.
     ".claude/skills/qdrant-*",
+    ".claude/skills/langchain-*",
+    ".claude/skills/langgraph-*",
+    ".claude/skills/postgres-database-migration",
     ".ruff_cache",
     ".env",
     "*.pyi",
