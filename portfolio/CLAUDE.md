@@ -30,7 +30,7 @@ hold this together, and both fail quietly if broken:
 
 Status lives on `DocumentRecord.status` (`pending`/`processing`/`ingested`/`failed`). The task
 owns `processing`/`failed`; `ingest_document` owns the terminal `ingested` write, because
-`scripts/ingest.py` and Streamlit call it directly and bypass the queue entirely.
+Streamlit calls it directly and bypasses the queue entirely.
 
 ## Docs, and which one to write in
 
@@ -75,13 +75,27 @@ Ours, in `.claude/skills/`:
   a silent leak rather than an error.
 - **`run-stack`** — bringing the stack up, minting a key, and tracing one document across
   api → job → worker → Qdrant → registry when it misbehaves.
+- **`changelog`** — what belongs in `CHANGELOG.md` versus `docs/MEMORY.md`'s session log, and why
+  most commits produce no entry at all.
 
-Plus 10 `qdrant-*` skills vendored verbatim from github.com/qdrant/skills at a pinned commit —
-see `.claude/skills/VENDORED.md` for provenance and how to refresh. Reach for
-`qdrant-multitenancy` before touching the tenant filter and `qdrant-search-quality` when Epic 2's
-eval work starts, rather than re-deriving either.
+Vendored verbatim, at pinned commits, with provenance and refresh steps in
+`.claude/skills/VENDORED.md`:
 
-**The one finding they produced is closed** (2026-08-03): `qdrant_store._ensure_payload_indexes` indexes
+- **10 `qdrant-*`** from github.com/qdrant/skills. Reach for `qdrant-multitenancy` before touching
+  the tenant filter and `qdrant-search-quality` when Epic 2's eval work starts, rather than
+  re-deriving either.
+- **`langchain-dependencies`** and three `langgraph-*` (`fundamentals`, `persistence`,
+  `human-in-the-loop`) from github.com/langchain-ai/langchain-skills. The LangGraph three are
+  installed ahead of use, for Epic 3's agent; `langgraph-persistence` is the one to read before
+  wiring the Postgres checkpointer.
+
+**`langchain-rag` from that repo is deliberately excluded, and should stay excluded.** It
+recommends `RecursiveCharacterTextSplitter`, OpenAI embeddings and Chroma — three things this
+project rejected and documented rejecting — while triggering on "ANY RAG system". A skill that
+contradicts the decision record is worse than no skill, because it argues back. Reasoning in
+`VENDORED.md`.
+
+**The one finding the qdrant set produced is closed** (2026-08-03): `qdrant_store._ensure_payload_indexes` indexes
 `metadata.tenant_id` with **`is_tenant=True`** and `metadata.doc_id` as a plain keyword, from
 `QdrantStore.__init__`. **`is_tenant` is not a synonym for "indexed"** -- it tells Qdrant the
 field identifies tenants, so a tenant's vectors are stored together and a tenant-filtered

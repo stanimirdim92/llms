@@ -82,3 +82,82 @@ Recorded so a future session knows which to reach for rather than re-deriving it
 Less relevant here: `qdrant-edge`, `qdrant-deployment-options` (settled: self-hosted via
 compose), `qdrant-version-upgrade`, `qdrant-model-migration` (would matter if the Voyage model
 changed), `qdrant-clients-sdk` (we go through `langchain-qdrant`).
+
+---
+
+# Vendored: `langchain-ai/langchain-skills`
+
+Four skills copied verbatim, on the same terms as the qdrant set above.
+
+| | |
+|---|---|
+| Source | https://github.com/langchain-ai/langchain-skills |
+| Commit | `f3ea282efb82c84f1093ae58006841e66ca28a94` |
+| Dated | 2026-07-30 |
+| License | **MIT**, declared in the upstream `.claude-plugin/plugin.json` — copied here as `LANGCHAIN_SKILLS_LICENSE.json` |
+| Taken | `langchain-dependencies`, `langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop` |
+
+**Weaker provenance than the qdrant set, and worth knowing.** There is no `LICENSE` file in that
+repository; the MIT declaration exists only in the plugin manifest, which is why the manifest
+itself is vendored as the licence evidence rather than a licence file. The repo also describes
+itself as "in early development; APIs and content may change" — pinning the commit matters more
+here than it did for qdrant.
+
+Refresh the same way:
+
+    git clone --depth 1 https://github.com/langchain-ai/langchain-skills /tmp/lc-skills
+    cp -r /tmp/lc-skills/config/skills/<name> portfolio/.claude/skills/
+    cp /tmp/lc-skills/.claude-plugin/plugin.json portfolio/.claude/skills/LANGCHAIN_SKILLS_LICENSE.json
+    # then update the commit/date above, and re-check the exclusions below still hold
+
+## Why these four and not the other eighteen
+
+Skill *descriptions* are always in context, so a skill nobody triggers is not free — it dilutes
+triggering for the ones that matter, including `verify`, `add-endpoint` and `changelog`, which are
+the three that actually stop bugs here. The set was cut on that basis.
+
+- **`langchain-dependencies`** — pays off immediately. This project pins ~10 `langchain-*`
+  packages, went through the 1.0 split (`langchain-classic`, `CrossEncoderReranker` changing
+  package), and takes a Dependabot PR every few days. A version reference for the ecosystem is
+  the one thing here that is useful today rather than at some future epic.
+- **`langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop`** — Epic 3
+  is a LangGraph agent with human-in-the-loop curation, `langgraph-checkpoint-postgres` is
+  already a declared dependency, and `CLAUDE.md` carries a standing directive that its
+  checkpointer must be Postgres and never SQLite. `langgraph-persistence` covers exactly
+  checkpointers, `thread_id` and `Store`; the HITL one covers `interrupt()` and
+  `Command(resume=...)`. These are installed ahead of use because the epic is designed and the
+  dependency is already pinned — reach for them the moment `app/agent/` exists.
+
+## Deliberately excluded
+
+### `langchain-rag` — **do not vendor this one**
+
+Its description is "INVOKE THIS SKILL when building ANY retrieval-augmented generation (RAG)
+system. Covers document loaders, RecursiveCharacterTextSplitter, embeddings (OpenAI), and vector
+stores (Chroma, FAISS, Pinecone)."
+
+Every element of that is something this project rejected on purpose and recorded rejecting in
+`docs/TECHNICAL_DECISIONS.md`: `RecursiveCharacterTextSplitter` instead of Docling's structure-aware
+chunking (a table split mid-row yields chunks that are individually meaningless and collectively
+misleading), OpenAI embeddings instead of Voyage, and **Chroma**, which this project migrated
+*off* deliberately. Combined with triggering as aggressive as "ANY RAG system", it would fire on
+retrieval work here and recommend the stack we removed — a future session would then be choosing
+between a skill and a decision record that contradict each other. That is rule 6 turned into a
+live hazard, so the exclusion is the point rather than an oversight.
+
+### The rest
+
+- **Six quickstarts** (`langchain-python`/`typescript`, `langgraph-python`/`typescript`,
+  `deepagents-python`/`typescript`) — this project is well past a weather or math example.
+- **Five Deep Agents skills** plus `managed-deep-agents` — Deep Agents is not used and not
+  planned; Epic 3 is LangGraph.
+- **`ecosystem-primer`** — framework *selection* guidance. Already selected.
+- **`langchain-fundamentals`, `langchain-middleware`** — real overlap with the LangGraph three,
+  and `langchain-middleware`'s HITL material duplicates `langgraph-human-in-the-loop`. Take one
+  of a pair, not both; revisit if Epic 3 ends up using `create_agent` rather than a `StateGraph`.
+- **`eval-engineering`, `langsmith-online-eval-engineering`** — the closest call. Epic 2 *is* an
+  eval framework, but these target Harbor tasks and LangSmith online evaluators, while
+  `docs/EPIC_2_PLAN.md` specifies a golden set with recall@k over parquet + DuckDB. Installing
+  them would quietly argue for a different tool than the plan chose. Read them when Epic 2
+  starts and decide deliberately; do not let a skill make that call by triggering first.
+- **`langgraph-cli`, `swarm`** — no current use.
