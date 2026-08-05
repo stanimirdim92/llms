@@ -240,6 +240,17 @@ need provider keys.
   toggling `do_ocr`) shifts every later id: the new ids insert cleanly while the old
   points stay behind, still matching the tenant filter, still retrievable, now stale.
   There is no other cleanup path.
+- **Never put a document's bytes at a path the filename alone determines.** `document_upload_path`
+  gives `<root>/<tenant_id>/<doc_id>/<safe filename>`, and `doc_id` is in there because two
+  documents sharing a filename otherwise share a path: worker A reads B's bytes, files B's content
+  under A's `doc_id`, and records B's `content_hash` as A's, so **nothing afterwards looks wrong**.
+  It is sticky rather than transient -- the parse cache is `processed_dir/<doc_id>.json` and figures
+  are `processed_dir/<doc_id>/figures`, so a later correct re-ingest reads the poisoned cache.
+  Both writers must use that helper (the router *and* Streamlit, which had its own copy of the bug),
+  and `write_upload`'s rename is what stops a worker reading a half-written file.
+  **`expected_digest` is the second line and must stay fail-closed**, checked *before* the parse —
+  after it, the wrong bytes are already cached under this id. `tests/unit/test_upload_paths.py`
+  pins all of it; three mutations were confirmed red, including moving the check after the parse.
 - **Never renumber figure ids** in `figure_extractor.extract_figures`. A picture item
   with no renderable image still consumes its `enumerate` index on purpose;
   `tests/unit/test_figure_ids.py` pins this.

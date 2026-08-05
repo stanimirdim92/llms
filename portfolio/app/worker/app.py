@@ -70,7 +70,9 @@ app = App(connector=PsycopgConnector(conninfo=_conninfo()))
 INGEST_RETRY = RetryStrategy(max_attempts=3, wait=5, exponential_wait=2)
 
 
-async def defer_document_ingest(session: AsyncSession, *, doc_id: str, tenant_id: str, file_path: str) -> None:
+async def defer_document_ingest(
+    session: AsyncSession, *, doc_id: str, tenant_id: str, file_path: str, expected_digest: str
+) -> None:
     """Enqueue an ingest job **inside the caller's transaction**.
 
     This is the reason for a Postgres-backed queue. The job INSERT runs on the same
@@ -91,13 +93,17 @@ async def defer_document_ingest(session: AsyncSession, *, doc_id: str, tenant_id
 
     Defers **by name** rather than by importing the task, so this stays callable from the api
     without dragging in Docling. See the module docstring.
+
+    `expected_digest` travels with the job so the worker can refuse bytes that changed between
+    acceptance and ingestion. Required here, optional on the *task* -- see `tasks.py` for why
+    that asymmetry is deliberate rather than an oversight.
     """
     await app.configure_task(
         name=INGEST_TASK_NAME,
         allow_unknown=True,  # the implementation lives in the worker process, not this one
         connection=await _raw_connection(session),
         queue=INGEST_QUEUE,
-    ).defer_async(doc_id=doc_id, tenant_id=tenant_id, file_path=file_path)
+    ).defer_async(doc_id=doc_id, tenant_id=tenant_id, file_path=file_path, expected_digest=expected_digest)
 
 
 async def _raw_connection(session: AsyncSession) -> psycopg.AsyncConnection:

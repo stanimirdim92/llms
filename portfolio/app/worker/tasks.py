@@ -35,7 +35,7 @@ def _store() -> QdrantStore:
 
 
 @app.task(name=INGEST_TASK_NAME, queue=INGEST_QUEUE, retry=INGEST_RETRY)
-async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> int:
+async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str, expected_digest: str | None = None) -> int:
     """Parse, chunk, embed and store one already-uploaded file.
 
     Takes `file_path` as a string because job arguments are JSON in Postgres -- a `Path`
@@ -64,6 +64,18 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> i
     attempt rather than the worst one, which is what a UI should show.
     """
     path = Path(file_path)
+    # `expected_digest` defaults to None, and that default is a **compatibility boundary rather
+    # than a convenience**. Job arguments are JSON rows already sitting in `procrastinate_jobs`
+    # when a deploy lands, so a job enqueued before this parameter existed carries no
+    # `expected_digest`; a required parameter would make every one of those fail permanently with
+    # a TypeError that names nothing. Rule 8: absent data has to mean the pre-existing behaviour,
+    # which here is "ingest without the integrity check" -- what it did before.
+    #
+    # It is logged at warning level rather than passed silently, because the pre-existing behaviour
+    # is the one with the known defect. Anything still hitting this line weeks from now is a stuck
+    # job, not a legacy one.
+    if expected_digest is None:
+        log.warning("worker.ingest_without_digest", doc_id=doc_id, tenant_id=tenant_id, path=file_path)
     log.info("worker.ingest_start", doc_id=doc_id, tenant_id=tenant_id)
     try:
         # `init_db` and the `processing` write are inside the try, not ahead of it. They were
@@ -83,7 +95,9 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str) -> i
         # Deliberately per-job rather than at worker startup: raising on import would take down
         # the whole worker and break CI's import check, which runs without keys.
         require_provider_credentials()
-        chunk_count = await ingest_document(doc_id=doc_id, file_path=path, store=_store(), tenant_id=tenant_id)
+        chunk_count = await ingest_document(
+            doc_id=doc_id, file_path=path, store=_store(), tenant_id=tenant_id, expected_digest=expected_digest
+        )
     except Exception as exc:
         # Broad on purpose: any failure must be visible in the row, and the specific
         # exception types span Docling, Anthropic, Voyage, Qdrant and psycopg.

@@ -70,7 +70,11 @@ async def test_a_document_with_no_chunks_is_refused_not_recorded(
     """
     with pytest.raises(EmptyDocumentError):
         await ingest_document(
-            doc_id=DOC_ID, file_path=tmp_path / "scan.pdf", store=cast("QdrantStore", store), tenant_id=TENANT
+            doc_id=DOC_ID,
+            file_path=tmp_path / "scan.pdf",
+            store=cast("QdrantStore", store),
+            tenant_id=TENANT,
+            expected_digest=None,
         )
 
 
@@ -84,7 +88,11 @@ async def test_the_refusal_happens_before_anything_is_written(
     """
     with pytest.raises(EmptyDocumentError):
         await ingest_document(
-            doc_id=DOC_ID, file_path=tmp_path / "scan.pdf", store=cast("QdrantStore", store), tenant_id=TENANT
+            doc_id=DOC_ID,
+            file_path=tmp_path / "scan.pdf",
+            store=cast("QdrantStore", store),
+            tenant_id=TENANT,
+            expected_digest=None,
         )
 
     assert store.upserted == []
@@ -100,7 +108,11 @@ async def test_the_refusal_names_the_file_and_no_setting(
     """
     with pytest.raises(EmptyDocumentError) as excinfo:
         await ingest_document(
-            doc_id=DOC_ID, file_path=tmp_path / "scan.pdf", store=cast("QdrantStore", store), tenant_id=TENANT
+            doc_id=DOC_ID,
+            file_path=tmp_path / "scan.pdf",
+            store=cast("QdrantStore", store),
+            tenant_id=TENANT,
+            expected_digest=None,
         )
 
     message = str(excinfo.value)
@@ -285,7 +297,7 @@ def test_the_parse_stage_computes_the_shared_content_digest(tmp_path: Path, monk
     monkeypatch.setattr(pipeline, "chunk_document", lambda *_args, **_kwargs: [object()])
     monkeypatch.setattr(pipeline.get_settings(), "processed_dir", tmp_path)
 
-    _chunks, content_hash, file_size = pipeline._parse_and_chunk(DOC_ID, file_path, TENANT)
+    _chunks, content_hash, file_size = pipeline._parse_and_chunk(DOC_ID, file_path, TENANT, None)
 
     assert content_hash == content_digest(payload)
     assert len(content_hash) == 16
@@ -322,7 +334,13 @@ async def test_the_terminal_write_records_the_same_content_digest_as_the_router(
     monkeypatch.setattr(pipeline, "save_document_record", _save)
     monkeypatch.setattr(pipeline, "init_db", _noop)
 
-    await ingest_document(doc_id=DOC_ID, file_path=file_path, store=cast("QdrantStore", store), tenant_id=TENANT)
+    await ingest_document(
+        doc_id=DOC_ID,
+        file_path=file_path,
+        store=cast("QdrantStore", store),
+        tenant_id=TENANT,
+        expected_digest=None,
+    )
 
     assert recorded, "the terminal registry write must happen"
     assert recorded[0].content_hash == content_digest(payload)

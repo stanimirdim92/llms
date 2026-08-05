@@ -69,13 +69,19 @@ def content_digest(file_bytes: bytes) -> str:
     so what is left for this field is the one question the id cannot answer -- did the bytes
     change while the id stayed the same?
 
-    **That question is currently unreachable, and saying so is the point.** The example used to be
-    a revised arXiv paper, whose `doc_id` was the arXiv id rather than a content hash; those came
-    from the curated corpus, removed 2026-08-03. Every surviving `doc_id` is
-    `f"{tenant_id}-{sha256(tenant_id, bytes)}"`, so different bytes always mean a different id. The
-    field is therefore write-only today. Left in place rather than dropped because the paragraph
-    above is the real reason it exists -- the column was written two ways and reconciled by
-    whichever write landed last -- and a reader deciding its fate needs both halves.
+    **Corrected 2026-08-05: this field is load-bearing, and the note here previously said it was
+    write-only.** That note reasoned that since `doc_id` is `f"{tenant_id}-{sha256(tenant_id,
+    bytes)}"`, different bytes always mean a different id, so bytes can never change under a fixed
+    id. True of the *id* and false of the *file*: uploads were stored at
+    `<tenant>/<filename>`, so two documents sharing a filename shared a path and each overwrote the
+    other's bytes under a different id. The reasoning was about id collisions and the defect was a
+    path collision.
+
+    So this digest is now what the upload hands the worker as `expected_digest`, and
+    `pipeline._parse_and_chunk` refuses to parse when it does not match what is on disk. It is read
+    on every ingest rather than never. `document_upload_path` closes the path collision itself; the
+    digest is the second line, for anything else that can rewrite a file between acceptance and
+    ingestion -- a retry after a manual disk edit, a restored backup, a future shared object store.
     """
     return hashlib.sha256(file_bytes).hexdigest()[:_CONTENT_HASH_LENGTH]
 
@@ -113,3 +119,61 @@ def tenant_upload_dir(upload_root: Path, tenant_id: str) -> Path:
         msg = "refusing to write outside the upload directory"
         raise ValueError(msg)
     return directory
+
+
+def document_upload_path(upload_root: Path, tenant_id: str, doc_id: str, filename: str) -> Path:
+    """Where one document's bytes live: `<root>/<tenant_id>/<doc_id>/<safe filename>`.
+
+    **`doc_id` is in the path because the filename alone is not an identity.** It used to be
+    `<root>/<tenant_id>/<filename>`, and two different documents sharing a filename then shared a
+    path. The failure is not a lost file, it is a *silent content swap* between two identities:
+
+    1. Upload A as `report.pdf` -> `doc_id=A`, bytes written to `tenant/report.pdf`.
+    2. Upload B, different bytes, also `report.pdf` -> `doc_id=B`, overwrites `tenant/report.pdf`.
+    3. Worker A dequeues, reads the path it was given, and gets **B's bytes**.
+    4. B's content is parsed, chunked, embedded and stored under **A's** `doc_id`, and A's
+       registry row records B's `content_hash` -- so nothing afterwards looks wrong.
+
+    The damage was sticky rather than transient, which is what made it worth the path change
+    rather than a lock: `pipeline._parse_and_chunk` caches the parse at
+    `processed_dir/<doc_id>.json` and figures under `processed_dir/<doc_id>/figures`, so B's parsed
+    output and captions persisted under A's identity and a later correct re-ingest of A would hit
+    that cache and read B again.
+
+    `doc_id` is `f"{tenant_id}-{32 hex}"` (see `upload_doc_id`), so it cannot contain a separator
+    -- but this is a path built from an identifier, and the containment check below is here for the
+    same reason `tenant_upload_dir`'s is: not because the format guarantee is doubted today.
+
+    The filename is kept as the leaf rather than folded into the directory name, and that is
+    load-bearing in two places: `chunk_document` stores `file_path.name` as the chunk's `filename`
+    metadata, which is what `retrieval/document_scope.py` matches a question against, and
+    `EmptyDocumentError`'s message names the file back to the user. A `<doc_id>.pdf` leaf would
+    make document-name scoping match on a content hash.
+    """
+    directory = tenant_upload_dir(upload_root, tenant_id) / doc_id
+    leaf = safe_filename(filename)
+    path = (directory / leaf).resolve()
+    if not path.is_relative_to(directory.resolve()):
+        msg = "refusing to write outside the document directory"
+        raise ValueError(msg)
+    return path
+
+
+def write_upload(path: Path, file_bytes: bytes) -> None:
+    """Write the bytes so a reader never sees a partial file.
+
+    Blocking; call it through `asyncio.to_thread` from async code.
+
+    **The rename is the point.** A plain `write_bytes` to the final path is visible to the worker
+    the moment the first block lands, so a worker that dequeues mid-write parses a truncated
+    document and records the truncation as the document. `os.replace` within the same directory is
+    atomic on POSIX, so the final path either does not exist or holds every byte.
+
+    The temporary name is prefixed `.` and suffixed `.partial` so a crashed write leaves something
+    obviously incomplete rather than a plausible-looking document -- and `safe_filename` rejects
+    leading dots, so a leftover can never be mistaken for an upload.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    staging = path.with_name(f".{path.name}.partial")
+    staging.write_bytes(file_bytes)
+    staging.replace(path)

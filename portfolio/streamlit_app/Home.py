@@ -19,7 +19,7 @@ from app.db import get_session, init_db
 from app.generation.answer_service import AnswerService
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
-from app.ingestion.uploads import safe_filename, tenant_upload_dir, upload_doc_id
+from app.ingestion.uploads import content_digest, document_upload_path, upload_doc_id, write_upload
 from app.logs import configure_logging
 from app.registry.db import list_document_records
 
@@ -111,16 +111,15 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
             st.error(f"Unsupported file type: {uploaded_file.name}")
         else:
             settings = get_settings()
-            # Same hardened helpers the API route uses, rather than joining the path by
-            # hand: this UI writes to disk itself, so it needs the identical containment
-            # and filename checks, not a second unvalidated version of them.
-            tenant_dir = tenant_upload_dir(settings.upload_dir, tenant_id)
-            tenant_dir.mkdir(parents=True, exist_ok=True)
             file_bytes = uploaded_file.getvalue()
-            file_path = tenant_dir / safe_filename(uploaded_file.name)
-            file_path.write_bytes(file_bytes)
-
             doc_id = upload_doc_id(tenant_id, file_bytes)
+            digest = content_digest(file_bytes)
+            # `document_upload_path` and `write_upload`, not a hand-joined path: this UI writes to
+            # disk itself, so it needs the identical containment checks *and* the same
+            # `<tenant>/<doc_id>/<filename>` layout. It previously built `<tenant>/<filename>` --
+            # its own copy of the bug the API route had, which is what having two copies produces.
+            file_path = document_upload_path(settings.upload_dir, tenant_id, doc_id, uploaded_file.name)
+            write_upload(file_path, file_bytes)
             if doc_id not in st.session_state.uploaded_docs:
                 with st.spinner(f"Ingesting {uploaded_file.name}..."):
                     # Deliberately still synchronous, unlike POST /v1/documents, which now
@@ -134,7 +133,13 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
                     # the /ask call below needs asyncio.run() rather than a plain await.
                     try:
                         chunk_count = asyncio.run(
-                            ingest_document(doc_id=doc_id, file_path=file_path, store=_store(), tenant_id=tenant_id)
+                            ingest_document(
+                                doc_id=doc_id,
+                                file_path=file_path,
+                                store=_store(),
+                                tenant_id=tenant_id,
+                                expected_digest=digest,
+                            )
                         )
                     except EmptyDocumentError as exc:
                         # Surfaced rather than swallowed: a scanned PDF with no text layer parses

@@ -25,12 +25,45 @@ if TYPE_CHECKING:
 log = structlog.get_logger(__name__)
 
 
-def _parse_and_chunk(doc_id: str, file_path: Path, tenant_id: str) -> tuple[list[Chunk], str, int]:
+class ContentMismatchError(Exception):
+    """The bytes on disk are not the bytes that were accepted for this `doc_id`.
+
+    A distinct type rather than a bare `Exception` because the worker's retry policy has to treat
+    it as **deterministic**: the file will not un-change itself, so retrying re-reads the same
+    wrong bytes and burns another parse. It also names a real integrity failure worth alerting on,
+    which a generic parse error does not.
+    """
+
+
+def _parse_and_chunk(
+    doc_id: str, file_path: Path, tenant_id: str, expected_digest: str | None
+) -> tuple[list[Chunk], str, int]:
     """Everything here is synchronous, CPU-bound work (Docling parsing, chunking) or
     local disk I/O -- run via `asyncio.to_thread` from `ingest_document` so it doesn't
     block the event loop while other requests (e.g. concurrent uploads) are in flight.
     """
     settings = get_settings()
+
+    # Hashed **before** the parse, not after, and this ordering is the whole guard. The parse is
+    # cached at `processed_dir/<doc_id>.json` and figures under `processed_dir/<doc_id>/figures`,
+    # so parsing the wrong bytes writes them under this `doc_id` permanently -- a later correct
+    # re-ingest hits the cache and reads the wrong content again. Verifying afterwards would
+    # detect the swap and leave the poisoned cache in place.
+    #
+    # One read, reused for the digest and returned as `content_hash`. The previous code read the
+    # file at the *end* purely to recompute a hash it then stored, which is what erased the
+    # evidence: on a content swap it recorded the hash of whatever it had actually read, so the
+    # registry row was internally consistent and wrong.
+    file_bytes = file_path.read_bytes()
+    content_hash = content_digest(file_bytes)
+    if expected_digest is not None and content_hash != expected_digest:
+        msg = (
+            f"{file_path.name} changed on disk between upload and ingestion: expected digest "
+            f"{expected_digest}, found {content_hash}. Refusing to ingest, because parsing these "
+            f"bytes would file another document's content under this one's id."
+        )
+        raise ContentMismatchError(msg)
+
     processed_path = settings.processed_dir / f"{doc_id}.json"
 
     if processed_path.exists():
@@ -48,17 +81,27 @@ def _parse_and_chunk(doc_id: str, file_path: Path, tenant_id: str) -> tuple[list
     chunks = chunk_document(document, doc_id=doc_id, figures=figures, tenant_id=tenant_id, filename=file_path.name)
     log.info("ingestion.chunked", doc_id=doc_id, tenant_id=tenant_id, count=len(chunks))
 
-    content_hash = content_digest(file_path.read_bytes())
-    return chunks, content_hash, file_path.stat().st_size
+    return chunks, content_hash, len(file_bytes)
 
 
 class EmptyDocumentError(Exception):
     """A document produced nothing searchable."""
 
 
-async def ingest_document(doc_id: str, file_path: Path, store: QdrantStore, tenant_id: str) -> int:
-    """Ingest a single document end-to-end. Returns the number of chunks written."""
-    chunks, content_hash, file_size_bytes = await asyncio.to_thread(_parse_and_chunk, doc_id, file_path, tenant_id)
+async def ingest_document(
+    doc_id: str, file_path: Path, store: QdrantStore, tenant_id: str, expected_digest: str | None
+) -> int:
+    """Ingest a single document end-to-end. Returns the number of chunks written.
+
+    `expected_digest` is the `content_digest` the upload recorded, and it is **required rather
+    than defaulted** on purpose: a default of `None` here would let a caller silently opt out of
+    the integrity check by forgetting an argument, which is the failure this parameter exists to
+    prevent. Pass `None` explicitly and only where there is genuinely nothing to compare against
+    -- today that is a job enqueued before this parameter existed (see `worker/tasks.py`).
+    """
+    chunks, content_hash, file_size_bytes = await asyncio.to_thread(
+        _parse_and_chunk, doc_id, file_path, tenant_id, expected_digest
+    )
 
     if not chunks:
         # Recorded as a failure rather than a zero-chunk success, because "ingested" with nothing

@@ -196,7 +196,9 @@ async def test_row_and_job_commit_together(db: SessionFactory) -> None:
     """The happy path of the whole design: one transaction, both writes visible."""
     async with db() as session:
         await stage_document_record(session, _record())
-        await defer_document_ingest(session, doc_id=DOC_ID, tenant_id=TENANT_A, file_path="/app/data/x.pdf")
+        await defer_document_ingest(
+            session, doc_id=DOC_ID, tenant_id=TENANT_A, file_path="/app/data/x.pdf", expected_digest="deadbeef"
+        )
         await session.commit()
 
     assert await _job_count(db) == 1
@@ -216,7 +218,9 @@ async def test_rollback_leaves_neither_the_row_nor_the_job(db: SessionFactory) -
     """
     async with db() as session:
         await stage_document_record(session, _record())
-        await defer_document_ingest(session, doc_id=DOC_ID, tenant_id=TENANT_A, file_path="/app/data/x.pdf")
+        await defer_document_ingest(
+            session, doc_id=DOC_ID, tenant_id=TENANT_A, file_path="/app/data/x.pdf", expected_digest="deadbeef"
+        )
         await session.rollback()
 
     assert await _job_count(db) == 0

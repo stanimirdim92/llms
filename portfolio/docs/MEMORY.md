@@ -256,6 +256,63 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-05 (end of day, later) — the same-filename content swap (external review P0 #1)
+
+The user supplied a deep external review and said to take **point 1 only**. Verified it at source
+before touching anything, and it is real. The most serious defect found in this project so far.
+
+**The defect.** Uploads were stored at `<upload_dir>/<tenant_id>/<safe_filename>` -- **no `doc_id`
+in the path**. Two documents sharing a filename therefore shared a path:
+
+1. A uploaded as `report.pdf` -> `doc_id=A`, bytes at `tenant/report.pdf`.
+2. B uploaded, different bytes, also `report.pdf` -> `doc_id=B`, overwrites the same path.
+3. Worker A dequeues, reads the path it was handed, gets **B's bytes**.
+4. B's content is parsed, chunked, embedded and stored under **A's** identity.
+
+And the evidence was then erased: `_parse_and_chunk` recomputed `content_hash` from whatever it had
+actually read and `save_document_record` wrote that back over the value the upload staged, so A's row
+was internally consistent and wrong.
+
+**One thing the review did not name, which decided the fix.** The damage was *sticky*, not
+transient: the parse cache is `processed_dir/<doc_id>.json` and figures are
+`processed_dir/<doc_id>/figures`, so B's parsed output and captions persisted under A's `doc_id` and
+a later correct re-ingest of A would hit that cache and read B again. A lock around the write would
+not have helped; the path had to change.
+
+**Fixed in two layers.** `document_upload_path` now owns the layout --
+`<root>/<tenant>/<doc_id>/<filename>`, with the filename kept as the *leaf* deliberately, because
+`chunk_document` stores `file_path.name` as chunk metadata and that is what
+`retrieval/document_scope.py` matches a question against; a `<doc_id>.pdf` leaf would make
+document-name scoping match on a content hash. And `expected_digest` travels with the job, checked
+**before the parse**, failing closed with a new `ContentMismatchError`.
+
+**Streamlit had its own copy of the bug** -- it built `tenant_dir / safe_filename(...)`
+independently. Both writers now go through the one helper, which is the actual lesson: the duplicate
+path construction is *why* the two could diverge.
+
+**Two judgement calls worth keeping.** `expected_digest` is **required, not defaulted**, on
+`ingest_document` and `_parse_and_chunk` -- a default of `None` would let a caller silently opt out
+of the integrity check by forgetting an argument, which is the thing the parameter exists to prevent.
+`ty` then found all seven stale call sites for free. But it *is* optional on the procrastinate
+**task**, because job arguments are JSON rows already in `procrastinate_jobs` when a deploy lands: a
+required parameter would fail every in-flight job permanently with a TypeError. Rule 8 -- absent data
+means the pre-existing behaviour -- and it logs `worker.ingest_without_digest` at warning, because
+the pre-existing behaviour is the one with the defect.
+
+**Six tests, three mutations, all red.** Removing `doc_id` from the path turns two red; disabling the
+digest comparison turns one red; and *moving the verification after the parse* also turns it red --
+with the check late, `ContentMismatchError` is never what surfaces, because Docling tries to parse
+the swapped bytes first. That third mutation is the one that proves the ordering claim rather than
+asserting it.
+
+**And it corrects something I wrote this morning.** I had recorded `content_digest` as "write-only,
+its question unreachable", reasoning that since `doc_id` is derived from the bytes, bytes can never
+change under a fixed id. True of the *id*, false of the *file*: the collision was on the path, not
+the id. My reasoning was about the wrong object. The field is now read on every ingest.
+
+Not done, deliberately, and still open from the review: the other three P0s (Qdrant/Postgres dual
+write, no Alembic, no AI quality gate) plus everything in sections 2-8. The user said point 1 only.
+
 ### 2026-08-05 (end of day) — edge rate limiting, four vendored skills, and the nginx config finally tested
 
 **`limit_req` at nginx, from `docs/IDEAS.md` § Ops on the user's "go".** Two zones keyed on

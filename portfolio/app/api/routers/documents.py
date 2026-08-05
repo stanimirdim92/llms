@@ -1,5 +1,4 @@
 import asyncio
-from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
@@ -13,23 +12,12 @@ from app.config import get_settings
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
-from app.ingestion.uploads import content_digest, safe_filename, tenant_upload_dir, upload_doc_id
+from app.ingestion.uploads import content_digest, document_upload_path, safe_filename, upload_doc_id, write_upload
 from app.registry.db import get_document_record, list_document_records, stage_document_record
 from app.registry.models import STATUS_PENDING, DocumentRecord
 from app.worker.app import defer_document_ingest
 
 router = APIRouter()
-
-
-def _write_upload(tenant_dir: Path, file_path: Path, file_bytes: bytes) -> None:
-    """Both blocking syscalls, in one offload.
-
-    `mkdir` is here rather than left inline because it was the only blocking filesystem call still
-    sitting in an `async def` after the `write_bytes` offload -- cheap, but the comment at the call
-    site explains why the write moved and would have read as though the function were clean.
-    """
-    tenant_dir.mkdir(parents=True, exist_ok=True)
-    file_path.write_bytes(file_bytes)
 
 
 @router.post(
@@ -63,22 +51,24 @@ async def upload_document(
         raise APIError(f"File exceeds the {settings.max_upload_size_mb}MB limit", code=413)
 
     doc_id = upload_doc_id(tenant_id, file_bytes)
+    digest = content_digest(file_bytes)
 
     # The path helpers are HTTP-agnostic (shared with the Streamlit UI, which builds the
     # same path in process), so their ValueError is translated here rather than there.
     try:
-        tenant_dir = tenant_upload_dir(settings.upload_dir, tenant_id)
         filename = safe_filename(file.filename)
+        file_path = document_upload_path(settings.upload_dir, tenant_id, doc_id, filename)
     except ValueError as exc:
         raise APIError(str(exc)) from exc
-
-    file_path = tenant_dir / filename
     # Written before the transaction below, and the ordering is deliberate: the worker is a
     # separate process that reads this path, so the file has to exist by the time the job
     # becomes visible. The reverse order gives a job that reliably fails on a missing file.
     # The cost of this direction is an orphaned file if the transaction rolls back, which is
     # harmless -- a re-upload of the same bytes by the same tenant derives the same `doc_id`
-    # (see `upload_doc_id`), so it lands on the same path and overwrites it.
+    # (see `upload_doc_id`), so it lands on the same path and overwrites it. **That argument only
+    # ever covered identical bytes**, and the path used to be `<tenant>/<filename>`, so two
+    # *different* documents sharing a filename also shared a path and silently swapped content
+    # between identities -- see `document_upload_path`, which now owns this.
     #
     # `to_thread`, because `write_bytes` is a blocking syscall on up to `MAX_UPLOAD_SIZE_MB` and
     # this is an `async def`: done inline it stalls the event loop for the whole write, so every
@@ -86,14 +76,14 @@ async def upload_document(
     # API's own docs tell clients to make -- waits behind one upload's disk I/O. Same reasoning
     # and same mechanism as `ingest_document`'s offload of Docling and the Qdrant upsert; no new
     # dependency (`aiofiles` would be a second answer to a question this project already answers).
-    await asyncio.to_thread(_write_upload, tenant_dir, file_path, file_bytes)
+    await asyncio.to_thread(write_upload, file_path, file_bytes)
 
     await init_db()
     record = DocumentRecord(
         doc_id=doc_id,
         tenant_id=tenant_id,
         filename=filename,
-        content_hash=content_digest(file_bytes),
+        content_hash=digest,
         file_extension=file_path.suffix,
         file_size_bytes=len(file_bytes),
         status=STATUS_PENDING,
@@ -103,7 +93,9 @@ async def upload_document(
     # See defer_document_ingest's docstring for the two silent failure windows that closes.
     async with get_session() as session:
         await stage_document_record(session, record)
-        await defer_document_ingest(session, doc_id=doc_id, tenant_id=tenant_id, file_path=str(file_path))
+        await defer_document_ingest(
+            session, doc_id=doc_id, tenant_id=tenant_id, file_path=str(file_path), expected_digest=digest
+        )
         await session.commit()
 
     return UploadAcceptedResponse(tenant_id=tenant_id, doc_id=doc_id, status=STATUS_PENDING)

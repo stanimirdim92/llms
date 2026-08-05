@@ -15,6 +15,22 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ### 2026-08-05
 
+#### Security
+
+- **Two documents with the same filename could overwrite each other's content.** Uploading
+  `report.pdf`, then a *different* `report.pdf` before the first finished ingesting, could file the
+  second document's content under the first one's `doc_id` — so a question about the first document
+  was answered from the second, with citations pointing at the first. Nothing reported an error, and
+  the stored content hash was rewritten to match the wrong content, so the swap left no trace.
+  Uploads are now stored under an immutable per-document path and the worker refuses to ingest bytes
+  whose digest does not match what was accepted.
+
+  *Upgrading:* nothing to do, and no data is lost — jobs already queued carry their original path
+  and still complete. Files uploaded before this change stay where they were and are simply no
+  longer read; re-upload anything whose content you doubt. **If you have ever uploaded two different
+  documents with the same filename, check them**: `GET /v1/documents` shows each `doc_id` with its
+  filename, and asking a question scoped to one is the quickest way to see whose content it holds.
+
 #### Added
 
 - **A second rate limit, at nginx, keyed on your IP address rather than your API key.** It sheds
