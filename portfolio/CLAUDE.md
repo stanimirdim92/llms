@@ -65,8 +65,13 @@ because each names a specific file and a specific way that file fails.
 
 ## Subagents
 
-Three in `.claude/agents/`, all read-only, all for breadth. `../CLAUDE.md` holds the rule about
-what is never delegated -- the gate, a failure-contract edit, and the final verdict on a finding.
+Six in `.claude/agents/`, **all read-only**, none permitted to report that it ran anything.
+`../CLAUDE.md` holds the rule about what is never delegated -- the gate, a failure-contract edit,
+and the final verdict on a finding. They are named by *task*, not by job title: a role name
+("senior engineer", "QA") invites persona drift and has no fixed question, which is the property
+that makes delegation work here.
+
+Sweeps -- wide, shallow, one fixed question:
 
 - **`doc-consistency`** — sweeps the document set for claims the code no longer supports or that
   contradict another document. It exists because a sentence that was true when written, in a file
@@ -82,7 +87,29 @@ what is never delegated -- the gate, a failure-contract edit, and the final verd
   that route to a rejected stack, shipped "evaluators" that measure their own toy retriever, and
   descriptions broad enough to fire on every task.
 
-None of them can write, and none may report that they ran anything.
+Per-change checks -- run against a diff or a proposal:
+
+- **`contract-review`** — a diff against § Never, § Failure contracts, § Config invariants and
+  `PATTERNS.md`. Deliberately **not** a general code review: `/code-review`, `/security-review` and
+  `/simplify` already do that and cannot know that dropping one `delete` from `QdrantStore.upsert`
+  leaves retrievable stale points with the suite green. It is told to report nothing a competent
+  outside reviewer would also find.
+- **`test-gaps`** — what the change leaves untested, and which tests would still pass with the guard
+  deleted (rule 15). It **must not run the suite**; a pass reported by an agent is a claim, which is
+  rule 12 one level removed. Carries the three shapes that have fooled this suite before: a boundary
+  test with a limit of one, a membership assertion where an exact-set assertion is possible, and an
+  in-process test of a cross-process race.
+- **`design-review`** — a proposal against `TECHNICAL_DECISIONS.md`, `IDEAS.md`'s rejected table and
+  the epic plans, *before* it is built. Its one required distinction is **revisit** (the reasoning
+  still holds and must be overturned) versus **stale conflict** (the reason expired, as the graphrag
+  Python-floor argument did) — those need opposite responses.
+
+**No coder agent, deliberately.** Every route here touches the tenant boundary, so a writing agent
+hits a failure contract almost immediately, and the surveys run on 2026-08-05 produced good breadth
+*plus* several confident findings that were wrong on inspection — a cost that is one verification pass
+for a read-only sweep and committed code from a coder. When work genuinely is file-disjoint (a rename
+across N call sites, a mechanical migration), spawn worktree-isolated subagents per slice or use
+`/batch`, and integrate and run the gate here. That needs a precise brief, not a role.
 
 **Definitions are picked up at session start only**, and discovery walks **up** from the working
 directory rather than down as skills do. Both measured; the probe detail and the open question about

@@ -234,6 +234,44 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-05 (later still) — three more agents, and why not five
+
+The user proposed a role-based team: two senior engineers, QA, architect, code reviewer. Pushed back
+on the framing and they had already been shown the reason without either of us planning it — the
+`add-endpoint`/`route-audit` incident earlier the same day. Delivered three of the five, re-cut by
+task shape.
+
+**Why not the two coders.** Every route here touches the tenant boundary, so a writing agent hits a
+failure contract almost immediately, and `../CLAUDE.md` says those are never delegated. The decisive
+evidence was local: the two read-only surveys that morning returned excellent breadth *and* several
+confident findings that were wrong on inspection. For a sweep that costs one verification pass. From
+a coder it is committed code. The mechanism that does work for parallel implementation —
+worktree-isolated subagents per file-disjoint slice, or `/batch` — needs a precise brief, not a role,
+so there is nothing to define in advance.
+
+**Why not a generic code reviewer.** `/code-review`, `/security-review`, `/simplify` and `/review`
+already exist. Take one of a pair, not both. What *is* additive is a review against contracts no
+outside reviewer can know, so `contract-review` is explicitly told to report nothing a competent
+reviewer without this repository would also find.
+
+**Named by task, not by role,** and this is the durable part: a job title has no fixed question,
+which is the property that makes a delegated sweep work. It also invites the persona drift that got
+`postgres-pro` and `adversarial-reviewer` rejected in the skills triage — and a reviewer defined by
+its role produces findings to fill the role, which is exactly what `adversarial-reviewer`'s "each
+persona MUST find at least one issue" made explicit. Now written into `../CLAUDE.md` as a general
+rule with the writing-versus-reading asymmetry beside it.
+
+Also checked the docs page the user linked rather than assuming: Claude Code's own basis for
+splitting is who coordinates, whether workers must talk, and whether they touch the same files.
+Agent *teams* — the closest surface to the original proposal — is experimental, disabled by default,
+and does not isolate teammates in worktrees, so file partitioning is manual.
+
+`test-gaps` is the one to reach for most often, and its brief carries the three shapes that have
+already fooled this suite: a boundary test with `limit=1` that cannot tell "some budget returned"
+from "all of it", a membership assertion where an exact-set assertion is possible (the tenant filter
+admitted `global` for months underneath one), and an `asyncio.gather` test of a cross-*process* race
+that passed with the advisory lock removed.
+
 ### 2026-08-05 (later) — a redundancy sweep that mostly found errors
 
 Asked to remove redundant comments from the `.md` and `.py` files. Delegated two read-only surveys

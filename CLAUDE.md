@@ -181,6 +181,19 @@ document set for claims that stopped being true, searching for a symptom across 
 test is whether the work is *wide and shallow with a fixed question*. A 440-candidate scan done
 single-threaded read about a dozen of them properly; that is the case delegation is for.
 
+**Split agents by task shape, never by job title.** A "senior engineer" or "QA" agent has no fixed
+question, which is the property that makes the split work -- so the role name does nothing except
+invite persona drift, and a persona reviewer produces findings to fill its role. Name the question
+instead: what is untested, what contradicts the decision record, which contract does this diff break.
+Claude Code's own guidance splits on who coordinates, whether workers must talk to each other, and
+whether they touch the same files -- not on seniority.
+
+**A writing agent is a different proposition from a reading one, and the difference is the cost of
+being wrong.** A read-only sweep that returns a confident mistake costs one verification pass. The
+same mistake from an agent with `Edit` is committed code. So delegate implementation only when the
+work is genuinely file-disjoint -- a rename across N call sites, a mechanical migration -- give each
+slice `isolation: worktree`, and integrate and gate it yourself. That is a precise brief, not a role.
+
 **Never delegate:**
 
 - **The gate.** An agent reporting "353 passed" is a *claim*, and rule 12 is that a skipped test is
