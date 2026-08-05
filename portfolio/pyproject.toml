@@ -53,9 +53,12 @@ dependencies = [
     "structlog>=26.1.0,<27.0.0",
     "streamlit>=1.60.0,<2.0.0",
     "procrastinate>=3.9",
-    # Declared because `scripts/fetch_corpus.py` imports it, not because anything would be
-    # missing otherwise: `fastapi[standard]`, `anthropic` and `qdrant-client` all pull it in.
-    # It replaced the `arxiv` client, which only ever resolved a URL that is deterministic.
+    # Kept declared, but the reason changed and the old one is now false: it said
+    # `scripts/fetch_corpus.py` imports it, and that script went with the curated corpus. No
+    # runtime module imports httpx directly today -- `fastapi[standard]`, `anthropic` and
+    # `qdrant-client` all pull it in, and the only direct importers are two test modules
+    # (`ASGITransport`/`AsyncClient`). Declared anyway because a test-suite dependency arriving
+    # transitively through a *runtime* package is exactly what breaks when that package drops it.
     "httpx>=0.28.1,<0.29.0",
 ]
 
