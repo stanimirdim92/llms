@@ -15,6 +15,7 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, cast
 
 import pytest
+from structlog.testing import capture_logs
 
 from app.ingestion import pipeline
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
@@ -23,7 +24,6 @@ from app.worker import tasks
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from app.registry.models import DocumentRecord
     from app.vectorstore.qdrant_store import QdrantStore
 
 if TYPE_CHECKING:
@@ -36,13 +36,23 @@ TENANT = "t" * 32
 class _RecordingStore:
     """Stands in for `QdrantStore`. Records rather than asserts, so a test can say *nothing*
     was written -- which is the interesting half of the empty-document case.
+
+    `prune_error` injects a failure into `delete_superseded`, which is the one store call
+    `ingest_document` is allowed to swallow.
     """
 
     def __init__(self) -> None:
-        self.upserted: list[list[object]] = []
+        self.upserted: list[tuple[list[object], str]] = []
+        self.pruned: list[tuple[str, str, str]] = []
+        self.prune_error: Exception | None = None
 
-    def upsert(self, chunks: list[object]) -> None:
-        self.upserted.append(chunks)
+    def upsert(self, chunks: list[object], ingestion_version: str) -> None:
+        self.upserted.append((chunks, ingestion_version))
+
+    def delete_superseded(self, doc_id: str, tenant_id: str, keep_version: str) -> None:
+        if self.prune_error is not None:
+            raise self.prune_error
+        self.pruned.append((doc_id, tenant_id, keep_version))
 
 
 @pytest.fixture
@@ -58,7 +68,7 @@ def store() -> _RecordingStore:
 @pytest.fixture
 def no_chunks(monkeypatch: pytest.MonkeyPatch) -> None:
     """A parse that succeeds and yields nothing -- a scanned, image-only PDF."""
-    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: ([], "hash", 2048))
+    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: [])
 
 
 async def test_a_document_with_no_chunks_is_refused_not_recorded(
@@ -82,9 +92,13 @@ async def test_the_refusal_happens_before_anything_is_written(
     no_chunks: None, store: _RecordingStore, tmp_path: Path
 ) -> None:
     """The order matters, and it is not obvious from reading the function top to bottom: the
-    raise sits between the chunking and the upsert. If it moved below, an empty document would
-    delete every point for its own `doc_id` -- `upsert` deletes first -- and so a re-upload of a
-    document that had ingested correctly once could empty its own index.
+    raise sits between the chunking and the upsert.
+
+    It used to matter more than it does. While `upsert` deleted the document's points before
+    inserting, moving this raise below it meant an empty re-upload emptied the index of a document
+    that had ingested correctly once. `upsert` deletes nothing now, so the same mistake would
+    instead flip the active version to a generation with no points in it -- a document that reports
+    `ingested` and returns nothing. Cheaper, still wrong, and still worth pinning.
     """
     with pytest.raises(EmptyDocumentError):
         await ingest_document(
@@ -297,44 +311,63 @@ def test_the_parse_stage_computes_the_shared_content_digest(tmp_path: Path, monk
     monkeypatch.setattr(pipeline, "chunk_document", lambda *_args, **_kwargs: [object()])
     monkeypatch.setattr(pipeline.get_settings(), "processed_dir", tmp_path)
 
-    _chunks, content_hash, file_size = pipeline._parse_and_chunk(DOC_ID, file_path, TENANT, None)
+    # `_parse_and_chunk` returns chunks only now -- the digest it computes is used to *verify*
+    # against `expected_digest`, not handed back for storage, because the flip updates a row the
+    # upload already staged with the hash. So the assertion moved to the verification: matching
+    # bytes pass, and the mismatch case is covered in `test_upload_paths.py`.
+    chunks = pipeline._parse_and_chunk(DOC_ID, file_path, TENANT, content_digest(payload))
 
-    assert content_hash == content_digest(payload)
-    assert len(content_hash) == 16
-    assert file_size == len(payload)
+    assert chunks, "matching bytes must get past the digest check"
 
 
-async def test_the_terminal_write_records_the_same_content_digest_as_the_router(
-    store: _RecordingStore, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The other half of the `content_hash` unification, and the half that decides what the column
-    actually holds -- `ingest_document`'s write is the one that wins on a successful ingest.
+# ---------------------------------------------------------------------------------------------
+# Publishing by flipping a version, and the two failures either side of the flip
+# ---------------------------------------------------------------------------------------------
+#
+# There used to be a test here asserting `ingest_document` recorded `content_hash`. It doesn't any
+# more: the terminal write is an UPDATE of the row the upload staged, and the hash is written once,
+# by the stager. `test_worker_enqueue.py::test_the_staged_row_stores_a_content_digest_not_the_doc_id`
+# is now the only pin on that column, which is the right number for a value with one writer.
 
-    Reintroducing a second inline `hashlib.sha256(...)[:32]` here left the whole suite green, so
-    only the router side was pinned. `test_worker_enqueue.py` covers the router; this covers the
-    terminal write, and both assert against the same `content_digest`.
+
+@pytest.fixture
+def flip(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, object]]:
+    """Captures the arguments of every `activate_document_version` call, and nothing else.
+
+    No database: what these tests are about is which call happens with which version, and
+    `test_worker_enqueue.py` covers the half that genuinely is a Postgres UPDATE.
     """
-    from app.ingestion.uploads import content_digest  # noqa: PLC0415
-
-    payload = b"%PDF-1.4 the ingested bytes"
-    file_path = tmp_path / "paper.pdf"
-    file_path.write_bytes(payload)
-    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: ([object()], content_digest(payload), 27))
-
-    recorded: list[DocumentRecord] = []
+    calls: list[dict[str, object]] = []
 
     @asynccontextmanager
     async def _session() -> AsyncIterator[object]:
         yield object()
 
-    async def _save(_session: object, record: DocumentRecord) -> None:
-        recorded.append(record)
+    async def _activate(_session: object, **kwargs: object) -> None:
+        calls.append(kwargs)
 
     monkeypatch.setattr(pipeline, "get_session", _session)
-    monkeypatch.setattr(pipeline, "save_document_record", _save)
+    monkeypatch.setattr(pipeline, "activate_document_version", _activate)
     monkeypatch.setattr(pipeline, "init_db", _noop)
+    return calls
 
-    await ingest_document(
+
+async def test_the_published_version_is_the_one_that_was_upserted(
+    store: _RecordingStore, flip: list[dict[str, object]], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One ingest is one version, and the flip must name *that* version.
+
+    This is the whole load-bearing join of the design and it is a single variable, so it looks too
+    obvious to test. Mint a second `new_id()` for the flip -- an easy thing to do while refactoring,
+    since both lines read fine in isolation -- and the upsert writes points under version A while
+    the registry publishes version B. Every point is then filtered out by the version condition and
+    the document reports `ingested` while retrieval finds nothing.
+    """
+    file_path = tmp_path / "paper.pdf"
+    file_path.write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: [object(), object()])
+
+    chunk_count = await ingest_document(
         doc_id=DOC_ID,
         file_path=file_path,
         store=cast("QdrantStore", store),
@@ -342,9 +375,76 @@ async def test_the_terminal_write_records_the_same_content_digest_as_the_router(
         expected_digest=None,
     )
 
-    assert recorded, "the terminal registry write must happen"
-    assert recorded[0].content_hash == content_digest(payload)
-    assert len(recorded[0].content_hash) == 16
+    assert len(store.upserted) == 1
+    _chunks, upserted_version = store.upserted[0]
+    assert flip == [{"doc_id": DOC_ID, "tenant_id": TENANT, "ingestion_version": upserted_version, "chunk_count": 2}]
+    assert chunk_count == 2
+
+
+async def test_a_failed_flip_publishes_nothing_and_prunes_nothing(
+    store: _RecordingStore, flip: list[dict[str, object]], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The flip is the commit point, so a failure there must leave the previous generation serving.
+
+    Two things have to hold, and only the first is obvious. The error must propagate -- swallowing
+    it would report a success that published nothing. And the prune must not run: it deletes every
+    version *except* the one it is told to keep, so pruning to a version that was never activated
+    would delete the generation still serving reads. That is the one way this design can lose data,
+    and it is invisible in a test that only checks the exception.
+    """
+    file_path = tmp_path / "paper.pdf"
+    file_path.write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: [object()])
+
+    async def _explode(_session: object, **_kwargs: object) -> None:
+        raise RuntimeError("update lost the connection")
+
+    monkeypatch.setattr(pipeline, "activate_document_version", _explode)
+
+    with pytest.raises(RuntimeError, match="lost the connection"):
+        await ingest_document(
+            doc_id=DOC_ID,
+            file_path=file_path,
+            store=cast("QdrantStore", store),
+            tenant_id=TENANT,
+            expected_digest=None,
+        )
+
+    assert flip == []
+    assert store.pruned == [], "pruning to an unpublished version would delete the live generation"
+
+
+async def test_a_pruning_failure_does_not_fail_a_published_ingest(
+    store: _RecordingStore, flip: list[dict[str, object]], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Hygiene must not be able to fail a publish that already succeeded.
+
+    Once the flip lands, the superseded points are unreadable -- they carry a version no filter
+    asks for. Leftovers cost storage and nothing else, so raising here would turn a correct,
+    already-visible ingest into a reported failure and (through the worker) a `failed` row for a
+    document that is serving answers. The warning is the whole observable effect, so it is asserted
+    rather than assumed: without it the leak is silent and nothing would ever reclaim the space.
+    """
+    file_path = tmp_path / "paper.pdf"
+    file_path.write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(pipeline, "_parse_and_chunk", lambda *_args: [object()])
+    store.prune_error = RuntimeError("qdrant said no")
+
+    with capture_logs() as logs:
+        chunk_count = await ingest_document(
+            doc_id=DOC_ID,
+            file_path=file_path,
+            store=cast("QdrantStore", store),
+            tenant_id=TENANT,
+            expected_digest=None,
+        )
+
+    assert chunk_count == 1
+    assert len(flip) == 1, "the publish must stand"
+    warnings = [entry for entry in logs if entry["event"] == "ingestion.prune_failed"]
+    assert warnings, f"a swallowed prune failure must still be reported: {logs}"
+    assert warnings[0]["log_level"] == "warning"
+    assert "qdrant said no" in warnings[0]["error"]
 
 
 async def _noop() -> None:

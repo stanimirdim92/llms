@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlmodel import col, select
 
@@ -43,14 +44,6 @@ async def stage_document_record(session: AsyncSession, record: DocumentRecord) -
     await session.exec(_upsert(record))  # SQLModel's Session.exec (not the deprecated raw .execute())
 
 
-async def save_document_record(session: AsyncSession, record: DocumentRecord) -> None:
-    """Upsert and commit -- the path for everything that isn't the queued upload route:
-    `ingest_document`'s terminal write, and Streamlit.
-    """
-    await stage_document_record(session, record)
-    await session.commit()
-
-
 async def mark_document_processing(session: AsyncSession, *, doc_id: str) -> None:
     """Claim a document for a worker.
 
@@ -81,23 +74,67 @@ async def _set_status(session: AsyncSession, *, doc_id: str, status: str, error:
     await session.commit()
 
 
-async def list_ingested_doc_ids(session: AsyncSession, *, tenant_id: str) -> list[str]:
-    """The tenant's documents that are actually searchable: `status == ingested`.
+async def list_active_versions(session: AsyncSession, *, tenant_id: str) -> dict[str, str]:
+    """The tenant's searchable documents, mapped to the generation of points that is live.
 
-    Postgres is authoritative about that; Qdrant cannot be. The two are written in sequence
-    (`ingest_document` upserts points, *then* the registry row), so a crash between them leaves
-    retrievable chunks whose row says `processing` or `failed`. Without this, an unscoped `/ask`
-    searched every point the tenant owned and could answer from a document reported as failed.
+    Postgres is authoritative about both halves and Qdrant can know neither. A document is
+    searchable when `status == ingested` **and** it has an `ingestion_version`, because the version
+    is what the retrieval filter admits: points from any other generation are unreadable.
 
-    Returns `[]` for a tenant with nothing ingested. That is a real answer, not a missing one --
-    see `Retriever.retrieve`, which must not turn it into "search everything".
+    `ingestion_version IS NOT NULL` is not belt-and-braces. A `pending` row has no version yet, and
+    a row could in principle be `ingested` with none -- which must mean "not searchable" rather than
+    "search every generation", since the second reading readmits every superseded point ever
+    written.
+
+    Returns `{}` for a tenant with nothing searchable. A real answer, not a missing one -- see
+    `Retriever.retrieve`, which must not turn it into "search everything".
     """
     statement = (
-        select(DocumentRecord.doc_id)
+        select(DocumentRecord.doc_id, DocumentRecord.ingestion_version)
         .where(col(DocumentRecord.tenant_id) == tenant_id)
         .where(col(DocumentRecord.status) == STATUS_INGESTED)
+        .where(col(DocumentRecord.ingestion_version).is_not(None))
     )
-    return list((await session.exec(statement)).all())
+    rows = (await session.exec(statement)).all()
+    return {doc_id: version for doc_id, version in rows if version is not None}
+
+
+class DocumentNotFoundError(Exception):
+    """The row a write expected is not there."""
+
+
+async def activate_document_version(
+    session: AsyncSession, *, doc_id: str, tenant_id: str, ingestion_version: str, chunk_count: int
+) -> None:
+    """Make `ingestion_version` the live generation; this single UPDATE is the commit point.
+
+    Points for this version are already in Qdrant and unreadable until this lands; nothing before
+    it published anything, and nothing after it is required for correctness. One statement, so a
+    reader in another transaction sees the old version or the new one and never a document that is
+    searchable at no version.
+
+    **Raises rather than no-oping on a missing row**, unlike `_set_status`. There the silence is
+    right -- a job whose document write was rolled back should not resurrect it. Here silence would
+    leave a freshly inserted generation permanently inactive *and* uncollected: invisible to every
+    reader, real to RAM and disk, with nothing to indicate it. `tenant_id` is in the WHERE clause,
+    not checked afterwards, for the same reason every other read here carries it.
+    """
+    statement = (
+        update(DocumentRecord)
+        .where(col(DocumentRecord.doc_id) == doc_id)
+        .where(col(DocumentRecord.tenant_id) == tenant_id)
+        .values(
+            ingestion_version=ingestion_version,
+            chunk_count=chunk_count,
+            status=STATUS_INGESTED,
+            error_message=None,
+        )
+    )
+    result = await session.exec(statement)
+    if result.rowcount == 0:
+        msg = f"no document row for {doc_id} in tenant {tenant_id}: refusing to leave a generation unpublished"
+        raise DocumentNotFoundError(msg)
+    await session.commit()
 
 
 async def list_document_records(session: AsyncSession, *, tenant_id: str, limit: int = 100) -> list[DocumentRecord]:

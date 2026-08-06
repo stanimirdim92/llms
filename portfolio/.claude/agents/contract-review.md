@@ -7,9 +7,10 @@ tools: Read, Grep, Glob, Bash
 # Reviewing a diff against the contracts
 
 `/code-review` finds generic defects and `/security-review` finds generic vulnerabilities. Neither
-knows that removing one `delete` call from `QdrantStore.upsert` leaves stale points that still match
-the tenant filter and are still retrievable, with the suite green. **That is the only thing you are
-for.** If a finding would occur to a competent reviewer with no knowledge of this repository, it is
+knows that dropping the `versions=` condition out of `_build_filter` readmits every superseded
+generation of every document -- returning *more* data rather than raising, with the suite green --
+or that re-adding a `delete` to `QdrantStore.upsert` restores the failure versioning removed rather
+than a safeguard. **That is the only thing you are for.** If a finding would occur to a competent reviewer with no knowledge of this repository, it is
 not yours -- leave it.
 
 ## What to read first

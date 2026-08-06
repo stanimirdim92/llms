@@ -144,11 +144,13 @@ different owner, and the symptom of a break is nearly always "nothing happened".
     # 3. did the worker pick it up?
     docker compose ... logs worker | grep -E "worker.ingest_(start|done|failed)"
 
-    # 4. did the chunks land? (delete-then-insert means a delete precedes the upsert)
-    docker compose ... logs qdrant | grep -E "points/delete|points\?wait"
+    # 4. did the chunks land, and did the flip publish them? An upsert, then ingestion.activated,
+    #    then a best-effort prune -- a missing points/delete is not a failure, the prune may fail.
+    docker compose ... logs qdrant | grep -E "points\?wait|points/delete"
 
-    # 5. did the terminal registry write happen?
-    docker compose ... logs worker | grep ingestion.registered
+    # 5. did the terminal registry write happen? this is the commit point: without it the points
+    #    are stored and unreadable, and the previous generation is still what answers.
+    docker compose ... logs worker | grep -E "ingestion.activated|ingestion.prune_failed"
 
 Reading the combinations:
 

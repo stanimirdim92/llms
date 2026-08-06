@@ -152,9 +152,10 @@ Vendored verbatim, at pinned commits, with provenance and refresh steps in
   so read them before running one, and note `ruff.toml` excludes real `.py` files for it rather than
   fenced blocks. Nothing measures the API yet, so an SLO defined from it today has no SLI behind it.
 - **`postgres-database-migration`** from github.com/timescale/pg-aiguide — one skill of that
-  repo's ten. Read it before writing any `ALTER TABLE` by hand, which is the only way a column
-  gets added here: there is no Alembic and `create_all` never adds one (see the failure contract
-  below). It carries the lock level of every common DDL operation, which is the thing that
+  repo's ten. Read it before authoring a revision that touches a populated table -- columns are
+  added by an Alembic revision and never by hand, because a hand-written `ALTER` leaves
+  `alembic_version` claiming a schema the database no longer has. It carries the lock level of
+  every common DDL operation, which is the thing that
   decides whether a one-millisecond statement stalls the whole API. Note that **`CREATE INDEX
   CONCURRENTLY` cannot run inside a transaction** and `init_db` does all its DDL inside one, so a
   concurrent index needs its own autocommit connection — the skill can't know that.
@@ -194,15 +195,22 @@ All four before pushing. `ty.toml` sets `error-on-warning`, so a warning fails:
 
 **Qdrant's filtering is covered; its network path is not.**
 `tests/unit/test_qdrant_filtering.py` runs `_build_filter` through `qdrant_client`'s in-memory
-engine with fake embeddings, so tenant isolation and the delete-then-insert contract are proved
-by execution, in CI, with no server and no API keys. What remains untested is the real client
+engine with fake embeddings, so tenant isolation, the version filter and the prune selector are
+proved by execution, in CI, with no server and no API keys. What remains untested is the real client
 over the wire -- which is where the point-ID constraint escaped to production -- so don't say
 "Qdrant is tested" without that qualifier.
 
-Five suites hit a real Postgres or Redis and *skip* when unreachable -- auth-touch, rate-limit,
-worker/registry, key-management and the `create_tenant` CLI -- so a green local run may have
-tested far less than it looks (59 tests' worth). CI provides both services and asserts none of
-the five skipped. It asserted three for a while, which let the two newer ones skip in CI silently.
+Six suites hit a real Postgres or Redis and *skip* when unreachable -- auth-touch, rate-limit,
+worker/registry, key-management, migrations and the `create_tenant` CLI -- so a green local run may
+have tested far less than it looks (70 tests' worth, counted 2026-08-06). CI provides both services
+and asserts none of the six skipped. It asserted three for a while, which let two of them skip in CI
+silently.
+
+Their fixtures run **`app.db._migrate_to_head`**, not `SQLModel.metadata.create_all`. That was a
+straight reproduction of the failure Alembic was adopted to end: `create_all` never adds a column to
+an existing table, so `ingestion_version` was simply absent on any developer's `portfolio_test` and
+twelve tests failed with `column ... does not exist`. CI could not see it, because a fresh service
+container has no old table -- which is the worst possible place for that asymmetry to live.
 
 ## Health checks
 
@@ -232,22 +240,39 @@ need provider keys.
 
 - **Never commit `.env`.** It holds a real LangSmith API key. `.env.example` stays a
   template with placeholders only -- no real secrets, ever.
-- **Postgres decides what is searchable; Qdrant cannot.** `ingest_document` upserts points and
-  *then* writes the registry row, so a failure between them leaves retrievable chunks behind a row
-  saying `processing` or `failed`. `Retriever.retrieve` therefore filters on
-  `list_ingested_doc_ids`, and it does so **in the retriever** rather than the router because
-  `/ask` and Streamlit both arrive there -- a check in one caller is a check the other forgets.
+- **Postgres decides what is searchable; Qdrant cannot.** `ingest_document` inserts a generation's
+  points and *then* flips the registry row, so a failure between them leaves points that are stored
+  and unreadable. `Retriever.retrieve` filters on `list_active_versions`, passing **both** the
+  permitted `doc_ids` and the live `versions` into the filter, and it does so **in the retriever**
+  rather than the router because `/ask` and Streamlit both arrive there -- a check in one caller is a
+  check the other forgets.
   **An empty permitted set must return no results, never fall through to an unfiltered search**:
-  `_build_filter` used `if doc_ids:`, so `[]` meant "no document condition at all". It now raises
-  on an empty list, and `tests/unit/test_retrieval_consistency.py` pins both halves.
-- **Never remove the delete step from `QdrantStore.upsert`.** It deletes every point
-  for the document's `doc_id` before inserting, and that is what makes re-ingestion
-  correct -- not the point-id derivation. Chunk ids encode position
-  (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything changing how many chunks a
-  document yields (`chunk_max_tokens`, a Docling upgrade detecting one more figure,
-  toggling `do_ocr`) shifts every later id: the new ids insert cleanly while the old
-  points stay behind, still matching the tenant filter, still retrievable, now stale.
-  There is no other cleanup path.
+  `_build_filter` used `if doc_ids:`, so `[]` meant "no document condition at all". It now raises on
+  an empty `doc_ids` *and* an empty `versions`, and `tests/unit/test_retrieval_consistency.py` pins
+  every half. The `versions` guard is the harder one to test honestly -- `MatchAny(any=[])` returns
+  zero points, so an empty list is accidentally safe, while the mutation that matters (`if versions:`)
+  emits no condition at all. Assert the raise, not the engine's answer.
+- **Never make `QdrantStore.upsert` delete anything.** It inserts one generation, whose
+  `ingestion_version` is hashed into every point id (`uuid5(ns, f"{version}:{chunk_id}")`), and
+  publication is `activate_document_version`'s single UPDATE. Pruning is `delete_superseded`, called
+  after the flip and allowed to fail.
+
+  This replaced delete-then-insert, and the old contract said the exact opposite -- so re-adding a
+  delete here looks like restoring a safeguard. It is not. Deleting first made a document's
+  correctness depend on the *next* statement succeeding: a landed delete plus a failed insert left a
+  working document with no points while its row still said `ingested`, so retrieval permitted the
+  `doc_id`, found nothing, and an unscoped question was answered from the tenant's other documents
+  with no indication. Chunk ids encode position (`{doc_id}-text-0000`, `fig-{page}-{index}`), so
+  anything changing how many chunks a document yields (`chunk_max_tokens`, a Docling upgrade
+  detecting one more figure) still shifts every later id -- the version in the point id is what makes
+  that harmless now, rather than the delete.
+
+  Three consequences to keep: the flip must publish **the version that was upserted** (a second
+  `new_id()` there publishes a generation with no points in it); a failed flip must **not** prune,
+  because `delete_superseded` removes every version *except* the one it keeps and would delete the
+  generation still serving; and a failed prune must **not** fail the ingest, because the leftovers
+  are already unreadable. `tests/unit/test_ingest_failures.py` and `test_qdrant_filtering.py` pin all
+  three, each mutation-confirmed red.
 - **Never put a document's bytes at a path the filename alone determines.** `document_upload_path`
   gives `<root>/<tenant_id>/<doc_id>/<safe filename>`, and `doc_id` is in there because two
   documents sharing a filename otherwise share a path: worker A reads B's bytes, files B's content
@@ -259,9 +284,19 @@ need provider keys.
   **`expected_digest` is the second line and must stay fail-closed**, checked *before* the parse —
   after it, the wrong bytes are already cached under this id. `tests/unit/test_upload_paths.py`
   pins all of it; three mutations were confirmed red, including moving the check after the parse.
-- **Never renumber figure ids** in `figure_extractor.extract_figures`. A picture item
-  with no renderable image still consumes its `enumerate` index on purpose;
-  `tests/unit/test_figure_ids.py` pins this.
+- **Never renumber figure ids** in `figure_extractor.extract_figures`. A picture item with no
+  renderable image still consumes its `enumerate` index on purpose;
+  `tests/unit/test_figure_ids.py` pins this. `figure_id` feeds `chunk_id`, which feeds the point id,
+  so a shift churns every citation the document has ever produced.
+  **Everything addressed by a figure id must therefore also be addressed by its content.** The
+  caption cache is (`caption-<sha256>.txt`, after being handed the caption written for whichever
+  figure previously held its id) and, since 2026-08-06, so is the PNG: `_image_path` is
+  `<figure_id>-<sha256[:16]>.png`. It was `<figure_id>.png`, overwritten in place by the next
+  ingest, which was survivable only while a re-ingest deleted the old chunks at the same moment.
+  Versioned ingestion makes "the previous generation keeps serving" the designed fallback, and the
+  image files do not roll back with it -- so a position-addressed path left a live chunk citing a
+  file that now held a different picture, which `streamlit_app/Home.py` renders directly beside the
+  old caption.
 - **`uv.lock` is committed, and `--locked` is used everywhere** (Dockerfile, CI). It was
   gitignored, which this file previously recorded as deliberate; that was reversed because it
   made builds non-reproducible -- the image re-resolved at build time, so CI could test a
@@ -362,14 +397,17 @@ Things that look correct and aren't:
   `require_scopes` and `rate_limited` both depend on the principal, so overriding the
   narrower dependency leaves them resolving a real key and every authenticated test gets a
   401 -- which reads as a broken route rather than a broken fixture.
-- **`app/db.py::init_db` must import every model module.** `SQLModel.metadata` is
-  populated as an import side effect, so a table whose module was never imported is
-  silently skipped by `create_all` and only fails later as "relation does not exist".
+- **`migrations/env.py` must import every model module** -- not `app/db.py::init_db`, which is where
+  these imports lived under `create_all` and where they no longer belong. `SQLModel.metadata` is
+  populated as an import side effect, so a model whose module is not imported *there* is invisible to
+  `--autogenerate`: the revision comes out empty, `alembic check` is satisfied, and the table only
+  fails later as "relation does not exist".
 - **Schema creation is guarded by a Postgres advisory lock, not just the asyncio one.**
   `init_db`'s `asyncio.Lock` only serializes coroutines inside one process, and the real
   concurrency is `GUNICORN_WORKERS` processes booting at once plus the `worker` container.
-  Both `create_all`'s checkfirst and procrastinate's existence check are check-then-create,
-  so the loser crashes at startup with `DuplicateObject: type "procrastinate_job_status"
+  Both Alembic's version check (`_migrate_to_head`, which the lock now covers) and procrastinate's
+  existence check are check-then-create, so the loser crashes at startup with
+  `DuplicateTable`/`DuplicateObject: type "procrastinate_job_status"
   already exists` -- which reads as a database fault. Observed on the first real boot.
   `pg_advisory_xact_lock` is transaction-scoped on purpose: a session-level lock leaked by a
   crashed process would deadlock every later boot.

@@ -33,7 +33,8 @@ Read before answering:
 Standing decisions a proposal most often collides with: Qdrant as the vector store, Docling
 structure-aware chunking, Voyage embeddings, **Postgres only — no SQLite anywhere**, per-key rather
 than per-tenant rate limiting, no shared tenant, `limits` for counting, procrastinate for the queue,
-no Alembic, and Streamlit retiring when the React UI lands.
+Alembic for schema changes, publishing an ingest by flipping one row rather than by deleting, and
+Streamlit retiring when the React UI lands.
 
 If it does conflict: quote the decision with `path:line`, state whether the proposal is a **revisit**
 (the reasoning still applies and would have to be overturned) or a **stale conflict** (the reason has
@@ -56,7 +57,8 @@ them.
 
 Short and specific. The scale target is **10,000 tenants × 10 documents on 8 vCPU / 16 GB**; check
 the proposal against that number rather than against a vague sense of scale. Then: does it add a
-schema change with no Alembic to apply it? A second way to do something that already has one? A
+schema change with no Alembic revision, or a revision that takes an exclusive lock on a populated
+table? A second way to do something that already has one? A
 dependency that pins against `redis>=8` or the 3.13 floor? An eval claim that cannot be measured until
 Epic 2 exists?
 

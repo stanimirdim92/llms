@@ -9,12 +9,12 @@ import structlog
 
 from app.config import get_settings
 from app.db import get_session, init_db
+from app.ids import new_id
 from app.ingestion.chunker import chunk_document
 from app.ingestion.figure_extractor import extract_figures
 from app.ingestion.parser import load_parsed_document, parse_document, save_parsed_document
 from app.ingestion.uploads import content_digest
-from app.registry.db import save_document_record
-from app.registry.models import DocumentRecord
+from app.registry.db import activate_document_version
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -35,9 +35,7 @@ class ContentMismatchError(Exception):
     """
 
 
-def _parse_and_chunk(
-    doc_id: str, file_path: Path, tenant_id: str, expected_digest: str | None
-) -> tuple[list[Chunk], str, int]:
+def _parse_and_chunk(doc_id: str, file_path: Path, tenant_id: str, expected_digest: str | None) -> list[Chunk]:
     """Everything here is synchronous, CPU-bound work (Docling parsing, chunking) or
     local disk I/O -- run via `asyncio.to_thread` from `ingest_document` so it doesn't
     block the event loop while other requests (e.g. concurrent uploads) are in flight.
@@ -81,7 +79,10 @@ def _parse_and_chunk(
     chunks = chunk_document(document, doc_id=doc_id, figures=figures, tenant_id=tenant_id, filename=file_path.name)
     log.info("ingestion.chunked", doc_id=doc_id, tenant_id=tenant_id, count=len(chunks))
 
-    return chunks, content_hash, len(file_bytes)
+    # Only the chunks. `content_hash` and `file_size_bytes` used to come back here so the terminal
+    # write could store them, but that write is now an UPDATE of a row the upload already staged
+    # with both -- recomputing them would be a second source for a value that is already recorded.
+    return chunks
 
 
 class EmptyDocumentError(Exception):
@@ -99,9 +100,7 @@ async def ingest_document(
     prevent. Pass `None` explicitly and only where there is genuinely nothing to compare against
     -- today that is a job enqueued before this parameter existed (see `worker/tasks.py`).
     """
-    chunks, content_hash, file_size_bytes = await asyncio.to_thread(
-        _parse_and_chunk, doc_id, file_path, tenant_id, expected_digest
-    )
+    chunks = await asyncio.to_thread(_parse_and_chunk, doc_id, file_path, tenant_id, expected_digest)
 
     if not chunks:
         # Recorded as a failure rather than a zero-chunk success, because "ingested" with nothing
@@ -124,24 +123,34 @@ async def ingest_document(
         )
         raise EmptyDocumentError(msg)
 
-    # `QdrantStore.upsert` has no native async client (see qdrant_store.py's own note on
-    # `query`) -- offload it the same way as the parse/chunk work above rather than
-    # blocking the event loop on network I/O.
-    await asyncio.to_thread(store.upsert, chunks)
-    log.info("ingestion.stored", doc_id=doc_id, count=len(chunks))
+    # A new generation per attempt. Minted here rather than by either caller (the worker and
+    # Streamlit both reach this function) so one ingest is one version no matter which entered.
+    ingestion_version = new_id()
+
+    # Inserts without deleting, so the previous generation stays intact and readable until the
+    # flip below. Offloaded because `QdrantStore.upsert` has no native async client.
+    await asyncio.to_thread(store.upsert, chunks, ingestion_version)
+    log.info("ingestion.stored", doc_id=doc_id, count=len(chunks), ingestion_version=ingestion_version)
 
     await init_db()
-    record = DocumentRecord(
-        doc_id=doc_id,
-        tenant_id=tenant_id,
-        filename=file_path.name,
-        content_hash=content_hash,
-        file_extension=file_path.suffix,
-        file_size_bytes=file_size_bytes,
-        chunk_count=len(chunks),
-    )
+    # **The commit point.** Nothing above published anything: the new points are unreadable until
+    # this row says their version is active, and if it never lands the old generation keeps serving.
     async with get_session() as session:
-        await save_document_record(session, record)
-    log.info("ingestion.registered", doc_id=doc_id, tenant_id=tenant_id)
+        await activate_document_version(
+            session,
+            doc_id=doc_id,
+            tenant_id=tenant_id,
+            ingestion_version=ingestion_version,
+            chunk_count=len(chunks),
+        )
+    log.info("ingestion.activated", doc_id=doc_id, tenant_id=tenant_id, ingestion_version=ingestion_version)
+
+    # Hygiene, after the flip, and deliberately not allowed to fail the ingest: the superseded
+    # generation is already unreadable, so leftovers cost storage and nothing else. Failing here
+    # would turn a successful publish into a reported failure.
+    try:
+        await asyncio.to_thread(store.delete_superseded, doc_id, tenant_id, ingestion_version)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("ingestion.prune_failed", doc_id=doc_id, keep_version=ingestion_version, error=str(exc))
 
     return len(chunks)

@@ -24,14 +24,16 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from app import db as app_db
 from app.config import get_settings
 from app.registry.db import (
+    DocumentNotFoundError,
+    activate_document_version,
     get_document_record,
+    list_active_versions,
     list_document_records,
-    list_ingested_doc_ids,
     mark_document_failed,
     mark_document_processing,
-    save_document_record,
     stage_document_record,
 )
 from app.registry.models import (
@@ -74,8 +76,15 @@ async def _postgres_reachable(url: str) -> bool:
         await engine.dispose()
 
 
-def _record(*, tenant_id: str = TENANT_A, doc_id: str = DOC_ID, status: str = STATUS_PENDING) -> DocumentRecord:
+def _record(
+    *,
+    tenant_id: str = TENANT_A,
+    doc_id: str = DOC_ID,
+    status: str = STATUS_PENDING,
+    ingestion_version: str | None = None,
+) -> DocumentRecord:
     return DocumentRecord(
+        ingestion_version=ingestion_version,
         doc_id=doc_id,
         tenant_id=tenant_id,
         filename="paper.pdf",
@@ -84,6 +93,20 @@ def _record(*, tenant_id: str = TENANT_A, doc_id: str = DOC_ID, status: str = ST
         file_size_bytes=1234,
         status=status,
     )
+
+
+async def _seed(session: AsyncSession, record: DocumentRecord) -> None:
+    """Stage a row and commit it, for tests that need one already there.
+
+    Lives here rather than in `registry/db.py`, where it was `save_document_record` until
+    2026-08-06. Its last production caller was `ingest_document`'s terminal write, which is now an
+    UPDATE (`activate_document_version`) -- so it had become a production function with only test
+    callers, described in its own docstring as a production path. That shape is worse than a
+    two-line helper: the next reader takes the docstring as evidence something still writes rows
+    that way.
+    """
+    await stage_document_record(session, record)
+    await session.commit()
 
 
 async def _truncate(engine: AsyncEngine) -> None:
@@ -122,12 +145,18 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     monkeypatch.setattr(worker_app, "app", procrastinate_app)
 
     async with engine.begin() as conn:
-        # `create_all` only, never `drop_all`. Three suites here build the schema on the same
-        # `portfolio_test` database, and a drop in one wipes the tables the next one relies on
-        # `init_db` having created -- which surfaces as `relation "documentrecord" does not
-        # exist` in a test that has nothing to do with whoever dropped it. Isolation comes from
-        # truncating rows below, which is what these tests actually need.
-        await conn.run_sync(SQLModel.metadata.create_all)
+        # The production migration path, not `SQLModel.metadata.create_all`. `create_all` creates
+        # missing *tables* and never missing *columns*, so on an existing `portfolio_test` the
+        # `ingestion_version` column never appeared and every insert here failed with `column ...
+        # does not exist` -- the exact failure Alembic was adopted to end, reproduced inside the
+        # fixture. CI never saw it, because a fresh service container has no old table; only a
+        # developer whose test database predated the column did.
+        #
+        # Migrate, never `drop_all`. Four suites build the schema on this one database, and a drop
+        # in one wipes the tables the next relies on -- which surfaces as `relation
+        # "documentrecord" does not exist` in a test that has nothing to do with whoever dropped
+        # it. Isolation comes from truncating rows below.
+        await app_db._migrate_to_head(conn)
     # Truncate at *setup* as well as teardown. A test that errors mid-way skips its own
     # teardown, and the next test's fixture then collides inserting the same seed rows --
     # which reports as a setup ERROR in an innocent test and hides the original failure.
@@ -236,7 +265,7 @@ async def test_failed_ingest_is_distinguishable_from_never_uploaded(db: SessionF
     would see for one that was never uploaded, and can only report "not found".
     """
     async with db() as session:
-        await save_document_record(session, _record())
+        await _seed(session, _record())
     async with db() as session:
         await mark_document_failed(session, doc_id=DOC_ID, error="DocumentParseError: encrypted PDF")
 
@@ -252,7 +281,7 @@ async def test_failed_ingest_is_distinguishable_from_never_uploaded(db: SessionF
 async def test_a_retry_clears_the_previous_error(db: SessionFactory) -> None:
     """`processing` must not still display the last attempt's error while it runs."""
     async with db() as session:
-        await save_document_record(session, _record())
+        await _seed(session, _record())
     async with db() as session:
         await mark_document_failed(session, doc_id=DOC_ID, error="transient: Voyage timeout")
     async with db() as session:
@@ -272,14 +301,14 @@ async def test_success_after_failure_ends_ingested_with_no_error(db: SessionFact
     beside an `ingested` status.
     """
     async with db() as session:
-        await save_document_record(session, _record())
+        await _seed(session, _record())
     async with db() as session:
         await mark_document_failed(session, doc_id=DOC_ID, error="transient: Qdrant unreachable")
 
     succeeded = _record(status=STATUS_INGESTED)
     succeeded.chunk_count = 42
     async with db() as session:
-        await save_document_record(session, succeeded)
+        await _seed(session, succeeded)
 
     async with db() as session:
         record = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
@@ -298,7 +327,7 @@ async def test_status_is_not_readable_by_another_tenant(db: SessionFactory) -> N
     B while looking entirely correct -- hence `tenant_id` in the WHERE clause.
     """
     async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_A))
+        await _seed(session, _record(tenant_id=TENANT_A))
 
     async with db() as session:
         assert await get_document_record(session, tenant_id=TENANT_B, doc_id=DOC_ID) is None
@@ -410,7 +439,7 @@ async def test_status_transitions_stamp_updated_at(db: SessionFactory) -> None:
     remembering to.
     """
     async with db() as session:
-        await save_document_record(session, _record())
+        await _seed(session, _record())
     async with db() as session:
         first = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
     assert first is not None
@@ -435,9 +464,9 @@ async def test_listing_returns_only_this_tenants_documents(db: SessionFactory) -
     four figure "chunks" that were the vision model saying it couldn't see an image.
     """
     async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
+        await _seed(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
     async with db() as session:
-        await save_document_record(session, _record(tenant_id=TENANT_B, doc_id="b" * 32))
+        await _seed(session, _record(tenant_id=TENANT_B, doc_id="b" * 32))
 
     async with db() as session:
         mine = await list_document_records(session, tenant_id=TENANT_A)
@@ -448,7 +477,7 @@ async def test_listing_returns_only_this_tenants_documents(db: SessionFactory) -
 async def test_listing_respects_the_limit(db: SessionFactory) -> None:
     for index in range(5):
         async with db() as session:
-            await save_document_record(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
+            await _seed(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
 
     async with db() as session:
         limited = await list_document_records(session, tenant_id=TENANT_A, limit=2)
@@ -515,28 +544,104 @@ async def _already_initialised() -> None:
     return
 
 
-async def test_only_ingested_rows_are_offered_to_retrieval(db: SessionFactory) -> None:
-    """`list_ingested_doc_ids` is what stops a failed document reaching an answer.
+async def test_only_ingested_rows_with_a_version_are_offered_to_retrieval(db: SessionFactory) -> None:
+    """`list_active_versions` is what stops a failed document reaching an answer.
 
     Qdrant holds points for anything that got as far as the upsert, including documents whose
     registry write then failed. Postgres is the authority on searchability, so this query is the
     filter -- and it must be tenant-scoped in the WHERE clause like every other read here.
+
+    Two conditions, not one: `ingested` **and** a non-null `ingestion_version`. A row that is
+    `ingested` with no version has no live generation, and admitting it would mean "search every
+    generation this document ever had" -- readmitting every superseded point.
     """
     async with db() as session:
-        for doc_id, status in [
-            ("doc-ingested", STATUS_INGESTED),
-            ("doc-pending", STATUS_PENDING),
-            ("doc-processing", STATUS_PROCESSING),
-            ("doc-failed", STATUS_FAILED),
+        for doc_id, status, version in [
+            ("doc-ingested", STATUS_INGESTED, "v-live"),
+            ("doc-ingested-no-version", STATUS_INGESTED, None),
+            ("doc-pending", STATUS_PENDING, None),
+            ("doc-processing", STATUS_PROCESSING, None),
+            ("doc-failed", STATUS_FAILED, None),
         ]:
-            await stage_document_record(session, _record(doc_id=doc_id, status=status))
-        await stage_document_record(session, _record(doc_id="other-tenant", tenant_id=TENANT_B, status=STATUS_INGESTED))
+            await stage_document_record(session, _record(doc_id=doc_id, status=status, ingestion_version=version))
+        await stage_document_record(
+            session, _record(doc_id="other-tenant", tenant_id=TENANT_B, status=STATUS_INGESTED, ingestion_version="v-b")
+        )
         await session.commit()
 
     async with db() as session:
-        mine = await list_ingested_doc_ids(session, tenant_id=TENANT_A)
+        mine = await list_active_versions(session, tenant_id=TENANT_A)
 
-    assert mine == ["doc-ingested"], "exactly the ingested set, and only this tenant's"
+    assert mine == {"doc-ingested": "v-live"}, "exactly the searchable set with its live generation"
+
+
+async def test_the_flip_publishes_a_version_and_clears_the_previous_error(db: SessionFactory) -> None:
+    """`activate_document_version` is the ingest's commit point, so this is the write that decides
+    whether a document is searchable.
+
+    Against a real Postgres because it is a real UPDATE with a real `rowcount`, which is what the
+    missing-row branch below reads -- an in-process fake supplies whatever rowcount it likes.
+
+    `error_message` must clear in the same statement. A retry that publishes while leaving the
+    previous failure text behind gives `GET /v1/documents` a row that is `ingested` and carries an
+    error, and the reader cannot tell which of the two is current.
+    """
+    async with db() as session:
+        await stage_document_record(session, _record(status=STATUS_PENDING))
+        await session.commit()
+    async with db() as session:
+        await mark_document_failed(session, doc_id=DOC_ID, error="RuntimeError: the first attempt died")
+
+    async with db() as session:
+        await activate_document_version(
+            session, doc_id=DOC_ID, tenant_id=TENANT_A, ingestion_version="v-second", chunk_count=7
+        )
+
+    async with db() as session:
+        row = await get_document_record(session, doc_id=DOC_ID, tenant_id=TENANT_A)
+    assert row is not None
+    assert (row.status, row.ingestion_version, row.chunk_count) == (STATUS_INGESTED, "v-second", 7)
+    assert row.error_message is None, "a published row must not still carry the failed attempt's error"
+
+
+async def test_publishing_a_row_that_is_not_there_raises(db: SessionFactory) -> None:
+    """The opposite of `mark_document_*`, which no-op on a missing row -- and the asymmetry is the
+    point, so it is pinned rather than left to the docstring.
+
+    Silence here would leave a generation that is already inserted in Qdrant permanently inactive
+    and permanently uncollected: invisible to every reader, real to RAM and disk, with nothing
+    anywhere to indicate it exists. The prune only ever removes versions *other* than the one it is
+    told to keep, so nothing would ever reclaim it.
+    """
+    async with db() as session:
+        with pytest.raises(DocumentNotFoundError):
+            await activate_document_version(
+                session, doc_id="never-uploaded", tenant_id=TENANT_A, ingestion_version="v1", chunk_count=1
+            )
+
+
+async def test_the_flip_cannot_publish_into_another_tenants_row(db: SessionFactory) -> None:
+    """`doc_id` is a content hash, so two tenants uploading the same file share one.
+
+    The tenant is in the WHERE clause, not checked after the read -- so a flip aimed at tenant A
+    must not touch tenant B's row even when both hold the same `doc_id`. Filtering afterwards would
+    already have written it.
+    """
+    async with db() as session:
+        await stage_document_record(session, _record(tenant_id=TENANT_B, status=STATUS_PENDING))
+        await session.commit()
+
+    async with db() as session:
+        with pytest.raises(DocumentNotFoundError):
+            await activate_document_version(
+                session, doc_id=DOC_ID, tenant_id=TENANT_A, ingestion_version="v-a", chunk_count=3
+            )
+
+    async with db() as session:
+        theirs = await get_document_record(session, doc_id=DOC_ID, tenant_id=TENANT_B)
+    assert theirs is not None
+    assert theirs.status == STATUS_PENDING, "another tenant's row was published by a flip aimed at this one"
+    assert theirs.ingestion_version is None
 
 
 async def test_a_tenant_with_no_ingested_documents_gets_an_empty_list(db: SessionFactory) -> None:
@@ -550,4 +655,4 @@ async def test_a_tenant_with_no_ingested_documents_gets_an_empty_list(db: Sessio
         await session.commit()
 
     async with db() as session:
-        assert await list_ingested_doc_ids(session, tenant_id=TENANT_A) == []
+        assert await list_active_versions(session, tenant_id=TENANT_A) == {}

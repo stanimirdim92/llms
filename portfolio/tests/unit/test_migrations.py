@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING
 import pytest
 from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import SQLModel
 
 from app import db as app_db
 from app.auth import models as _auth_models  # noqa: F401 -- populates SQLModel.metadata
@@ -27,6 +26,7 @@ from app.registry import models as _registry_models  # noqa: F401
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from sqlalchemy import Connection
     from sqlalchemy.ext.asyncio import AsyncEngine
 
 _OUR_TABLES = ("tenant", "apikey", "documentrecord")
@@ -97,12 +97,58 @@ async def _revision(engine: AsyncEngine) -> str | None:
         return (await conn.execute(text("SELECT version_num FROM alembic_version"))).scalar()
 
 
+def _head_revision() -> str:
+    """The latest revision on disk, read from `migrations/`, never hardcoded.
+
+    Asserting `is not None` was enough while there was exactly one revision, because then
+    "versioned at all", "at head" and "at `_INITIAL_REVISION`" were the same statement. The second
+    revision separated them, and the interesting one is `head`: a stamp that landed and then failed
+    to apply anything on top still leaves a non-null version row.
+    """
+    from alembic.config import Config  # noqa: PLC0415
+    from alembic.script import ScriptDirectory  # noqa: PLC0415
+
+    head = ScriptDirectory.from_config(Config(str(app_db._ALEMBIC_INI))).get_current_head()
+    assert head is not None, "no revisions on disk: migrations/versions is empty"
+    return head
+
+
+async def _has_column(engine: AsyncEngine, table: str, column: str) -> bool:
+    async with engine.connect() as conn:
+        columns = await conn.run_sync(lambda sync_conn: inspect(sync_conn).get_columns(table))
+    return any(col["name"] == column for col in columns)
+
+
+async def _build_schema_at(engine: AsyncEngine, revision: str) -> None:
+    """Materialise the schema exactly as of `revision`, then forget Alembic was ever involved.
+
+    `SQLModel.metadata.create_all` was the obvious way to fake a pre-Alembic database, and it is
+    wrong the moment a second revision exists: it builds *today's* models, so the table it created
+    already had `ingestion_version` and the revision adding that column failed with
+    `DuplicateColumn`. A fake right about the tables and wrong about the columns is the worst
+    possible shape here, because a missing column is precisely what this suite exists to catch.
+    Upgrading and dropping the version row leaves the real historical schema and stays correct as
+    more revisions land.
+    """
+    from alembic import command  # noqa: PLC0415
+    from alembic.config import Config  # noqa: PLC0415
+
+    def _run(sync_conn: Connection) -> None:
+        config = Config(str(app_db._ALEMBIC_INI))
+        config.attributes["connection"] = sync_conn
+        command.upgrade(config, revision)
+
+    async with engine.begin() as conn:
+        await conn.run_sync(_run)
+        await conn.execute(text("DROP TABLE alembic_version"))
+
+
 async def test_a_fresh_database_is_migrated_to_head(engine: AsyncEngine) -> None:
     await app_db.init_db()
 
     for table in _OUR_TABLES:
         assert await _has(engine, table), f"{table} missing after init_db"
-    assert await _revision(engine) is not None, "no alembic_version row: the schema is unversioned"
+    assert await _revision(engine) == _head_revision(), "the schema is not at the latest revision"
 
 
 async def test_a_pre_alembic_database_is_stamped_rather_than_recreated(engine: AsyncEngine) -> None:
@@ -111,15 +157,27 @@ async def test_a_pre_alembic_database_is_stamped_rather_than_recreated(engine: A
     A database built by the old `create_all` has the tables and no `alembic_version`. Delete the
     stamp branch in `_migrate_to_head` and this goes red with
     `DuplicateTable: relation "documentrecord" already exists` -- confirmed by mutation.
+
+    The stamp is at `_INITIAL_REVISION`, but the assertion is on **head**: stamping is only half the
+    job, and a stamp that pinned a later revision would claim migrations had run that never did. The
+    column check is what proves the revisions *after* the stamp actually applied -- `_OUR_TABLES`
+    checks tables only, and a table that already exists is exactly what a missing column hides
+    behind.
     """
+    await _build_schema_at(engine, app_db._INITIAL_REVISION)
     async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.create_all)
         await conn.execute(text("INSERT INTO tenant (id, name) VALUES ('t-existing', 'Acme')"))
     assert await _revision(engine) is None, "precondition: this simulates a database with no alembic_version"
+    assert not await _has_column(engine, "documentrecord", "ingestion_version"), (
+        "precondition: the pre-Alembic schema is the *initial* revision's, not today's models'"
+    )
 
     await app_db.init_db()
 
-    assert await _revision(engine) == app_db._INITIAL_REVISION
+    assert await _revision(engine) == _head_revision()
+    assert await _has_column(engine, "documentrecord", "ingestion_version"), (
+        "stamped but not upgraded: the revisions after the stamp did not apply"
+    )
     async with engine.connect() as conn:
         survived = (await conn.execute(text("SELECT name FROM tenant WHERE id = 't-existing'"))).scalar()
     assert survived == "Acme", "existing rows must survive -- tenants and API keys are not rebuildable"

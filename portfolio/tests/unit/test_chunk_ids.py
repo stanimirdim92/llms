@@ -154,12 +154,16 @@ def test_text_chunks_are_numbered_from_zero_in_order() -> None:
 
 
 def test_a_blank_chunk_is_dropped_and_does_not_consume_a_number() -> None:
-    """The numbering is compacted, not sparse -- which is safe only because
-    `QdrantStore.upsert` deletes every point for the doc_id before inserting. Without that
-    delete, a Docling upgrade that stopped emitting one blank chunk would renumber everything
-    after it and leave the old points behind, retrievable and stale. Note this is the
-    *opposite* convention to `figure_id`, which deliberately keeps skipped indices; if the two
-    ever have to agree, change them together and say which one won.
+    """The numbering is compacted, not sparse.
+
+    That is safe because an ingest publishes a whole generation at once: a Docling upgrade that
+    stopped emitting one blank chunk renumbers everything after it, and the renumbered points become
+    readable only when the flip makes their version live, so there is never a readable half-old set.
+    The cost is that every citation for the document changes. This used to be safe for a different
+    reason -- `upsert` deleted the doc_id's points first -- and that reason is gone.
+
+    Note this is the *opposite* convention to `figure_id`, which deliberately keeps skipped indices;
+    if the two ever have to agree, change them together and say which one won.
     """
     _chunks.extend([_docling_chunk("first"), _docling_chunk("   \n  "), _docling_chunk("third")])
 

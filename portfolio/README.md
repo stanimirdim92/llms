@@ -227,7 +227,7 @@ rather than being quietly ignored. An earlier version accepted a client-supplied
 | Lint/type/test | ruff, `ty`, pytest; CI on every PR touching `portfolio/**` |
 
 Every row above has a reason, several of them counterintuitive (why Qdrant point IDs
-can't be chunk ids, why re-ingestion deletes before inserting, why a plain digest rather than
+can't be chunk ids, why an ingest publishes by flipping one row, why a plain digest rather than
 argon2, why the limiter fails open). Those are in
 [`docs/TECHNICAL_DECISIONS.md`](docs/TECHNICAL_DECISIONS.md), with the alternatives that were
 rejected and what it would take to revisit each one.
@@ -290,8 +290,8 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
   tenant, and Epic 2's golden set needs *some* fixed document set to measure recall against —
   so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists.
   Epic 1's final 15-question prose/table/figure spot-check was never run either.
-- **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation and
-  the delete-then-insert contract run through `qdrant_client`'s in-memory engine in CI — but
+- **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation, the
+  version filter and the prune selector run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to
   production. It's also how a registry-write bug survived until phase 5.1 added the first test
   over that path: every ingest wrote to Qdrant and then crashed before the Postgres row, and
@@ -338,7 +338,7 @@ there; it is scoped to `portfolio/**` so sibling projects in this monorepo don't
 it.
 
 Highest-leverage files to read first: `app/vectorstore/qdrant_store.py` (the tenant filter
-and the delete-then-insert contract), `app/ingestion/chunker.py` (the three chunk kinds),
+and the version filter), `app/ingestion/chunker.py` (the three chunk kinds),
 `app/generation/answer_service.py` (retrieve → rerank → cite), and `app/config.py` (every
 setting, each with the reasoning inline).
 

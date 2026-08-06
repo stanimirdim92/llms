@@ -43,8 +43,10 @@ everything in one embedding space instead of requiring a parallel multimodal ret
 **Figure ids encode position, and that has consequences.** `fig-{page:03d}-{index:02d}`,
 where `index` counts *every* picture item including ones that fail to render. This is
 deliberate and pinned by `tests/unit/test_figure_ids.py`: the id feeds `chunk_id`, which
-feeds the Qdrant point id, so renumbering would orphan previously-stored figures. See the
-delete-then-insert decision below for why that is survivable now.
+feeds the Qdrant point id, so renumbering churns every citation the document has ever produced.
+It also desynchronises anything else addressed by that id -- which is why both the caption cache
+and (since 2026-08-06) the PNG file itself carry a content digest. See the versioned-ingestion
+decision below.
 
 ## Vector store: Qdrant, replacing Chroma
 
@@ -63,28 +65,57 @@ which cost real debugging time:
    for tenant scoping means cross-tenant reads.
 3. **Point ids must be an unsigned integer or a UUID.** Chroma accepted arbitrary strings;
    Qdrant rejects `chunk_id` with a 400. Point ids are therefore
-   `uuid5(fixed_namespace, chunk_id)` — deterministic, so the same chunk maps to the same
-   point. The human-readable `chunk_id` stays in the payload, which is where citations read
-   it from. This one shipped and broke on first real use, because the dev sandbox has no
-   Qdrant to test against.
+   `uuid5(fixed_namespace, f"{ingestion_version}:{chunk_id}")` — deterministic within one
+   generation, deliberately distinct across generations (see the versioned-ingestion decision
+   below). The human-readable `chunk_id` stays in the payload, which is where citations read
+   it from, and is **not** where the version goes: `chunk_id` is a public response field. This
+   one shipped and broke on first real use, because the dev sandbox has no Qdrant to test
+   against.
 
 **No native async client.** `asimilarity_search` is `VectorStore`'s thread-pool shim and
 `upsert` is synchronous, same as Chroma. The gain from Qdrant is Qdrant, not async.
 
-## Re-ingestion: delete-then-insert, not upsert-by-id
+## Re-ingestion: versioned generations, published by one row (2026-08-06)
 
-**Decision.** `QdrantStore.upsert` deletes every point for the document's `doc_id` before
-inserting, and raises if handed chunks spanning more than one document.
+**Decision.** Each ingest mints an `ingestion_version`, hashes it into every point id, and inserts
+without deleting. `DocumentRecord.ingestion_version` names the live generation and one UPDATE
+publishes it; `Retriever` passes that version into the Qdrant filter, so the previous generation is
+unreadable from the moment the UPDATE lands. `delete_superseded` prunes afterwards and is allowed to
+fail. `upsert` still raises on a batch spanning more than one document or tenant, because
+`delete_superseded` derives its selector from the same assumption.
 
-Upserting by id alone is *not* idempotent here, and believing otherwise was a real bug. Chunk
-ids encode position (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything that changes how
-many chunks a document yields — a different `chunk_max_tokens`, a Docling upgrade detecting
-one more figure, toggling `do_ocr` — shifts every subsequent id. The new ids insert cleanly
-while the old points remain, still matching the tenant filter, still retrievable, now stale.
-There was no other cleanup path in the store.
+**Rejected: delete-then-insert**, which is what this replaced, so it is recorded rather than
+dropped. It deleted every point for the `doc_id` before inserting, and the reasoning was sound as far
+as it went: chunk ids encode position (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything
+changing how many chunks a document yields shifts every subsequent id, the new ids insert cleanly,
+and the old points stay behind — retrievable and stale. Upserting by `chunk_id` alone genuinely does
+not fix that.
 
-The multi-document guard exists because delete-by-`doc_id` would otherwise wipe the wrong
-document's points if a future caller batched across documents.
+What it missed is the failure on the other side. The delete and the insert are two operations with no
+transaction around them, so a delete that landed and an insert that failed left a working document
+with **no** points while its registry row still said `ingested`: retrieval permitted the `doc_id`,
+found nothing, and an unscoped question was answered from the tenant's other documents with no
+indication anything had gone wrong. Correctness depended on the *next* statement succeeding, which is
+the property versioning removes. Putting the version in the point id makes the id collision-free
+across attempts, so the insert is no longer destructive and there is something to fall back to.
+
+**Rejected: appending the version to `chunk_id`.** Simpler to read, and wrong: `chunk_id` is a public
+response field (`CitationResponse.chunk_id`, `RetrievedChunkResponse.chunk_id`), documented in
+`README.md` and printed by Streamlit. It would churn every citation on every re-ingest and leak an
+internal attempt id into the API. Only the point id has to differ.
+
+**Rejected: an `ingestion_version` payload index.** It is filtered on every query, which looks like a
+clear case for one, but it is a strictly finer partition of the already-indexed `doc_id` in the same
+`must` — so it discriminates only during the window where two generations coexist. Against that, a
+payload index is resident RAM on a 16GB target, and `_ensure_payload_indexes` runs from `__init__`,
+so on a collection that already holds points the index would land after HNSW is built. Revisit with a
+measurement, not an argument.
+
+**Cost, stated plainly.** Storage for as long as a prune has not run, and no reconciliation for
+orphans in either direction — a generation whose publish UPDATE never landed is inserted, unreadable,
+and uncollected, because the prune only removes versions *other* than the one it keeps. That is why
+`activate_document_version` raises rather than no-oping on a missing row: the raise is the only thing
+that surfaces it. Reconciliation is still open (`docs/IDEAS.md`).
 
 ## Database: Postgres, and only Postgres
 
@@ -117,9 +148,13 @@ matters most: without it, a connection dropped by the server or a proxy surfaces
 `max_connections`, or PgBouncer — called out in `config.py` rather than discovered in
 production.
 
-**No Alembic.** With three tables, a schema change means dropping the volume and
-re-ingesting. That is a real simplification while there is no data worth migrating rather
-than recreating, and it should be revisited the moment there is.
+**Alembic**, adopted 2026-08-05. This said "no Alembic" and treated dropping the volume as the
+migration path, which was defensible only while nothing in Postgres was worth keeping. It stopped
+being defensible once the database held tenants and API keys, and the concrete failure was worse
+than the inconvenience: `create_all` creates missing *tables* and never missing *columns*, so adding
+a model field changed nothing, `init_db` reported success, and the next query failed with `column ...
+does not exist`. `_migrate_to_head` runs `upgrade head` inside the boot advisory lock, and CI runs
+`alembic check` so a model field without a revision fails there rather than in production.
 
 ## Tenant scoping: one field, derived only from auth
 
@@ -822,7 +857,9 @@ asserts the registered name matches the shared constant.
 
 Two costs of this choice, both real:
 
-- procrastinate ships its own SQL migrations, so "no Alembic" below stops being the whole story.
+- procrastinate ships its own SQL migrations, and they are **not** Alembic's -- so adopting Alembic
+  did not absorb them, and `migrations/env.py` has to exclude `procrastinate_*` or autogenerate
+  writes `drop_table` for all four.
   The initial schema is applied from `init_db` behind a `to_regclass` existence check (its
   `schema.sql` uses bare `CREATE TABLE` and is not idempotent), chosen over a deploy step that
   fails as "relation does not exist" when forgotten. **Version upgrades still need

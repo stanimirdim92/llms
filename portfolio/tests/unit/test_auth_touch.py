@@ -24,6 +24,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from app import db as app_db
 from app.auth import service
 from app.auth.keys import display_prefix, generate_key, hash_key
 from app.auth.models import ApiKey, Tenant
@@ -79,12 +80,16 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
     async with engine.begin() as conn:
         # Drop first: a previous failed run may have left rows that would collide on the
         # fixed TENANT_ID primary key.
-        # `create_all` only, never `drop_all`. Three suites here build the schema on the same
-        # `portfolio_test` database, and a drop in one wipes the tables the next one relies on
-        # `init_db` having created -- which surfaces as `relation "documentrecord" does not
-        # exist` in a test that has nothing to do with whoever dropped it. Isolation comes from
-        # truncating rows below, which is what these tests actually need.
-        await conn.run_sync(SQLModel.metadata.create_all)
+        # The production migration path, not `SQLModel.metadata.create_all` -- `create_all` adds
+        # missing tables and never missing columns, so a model field added after this database
+        # existed left every insert failing with `column ... does not exist`. See the longer note in
+        # `test_worker_enqueue.py`, which hit it.
+        #
+        # Migrate, never `drop_all`. Four suites build the schema on this one database, and a drop
+        # in one wipes the tables the next relies on -- which surfaces as `relation
+        # "documentrecord" does not exist` in a test that has nothing to do with whoever dropped
+        # it. Isolation comes from truncating rows below.
+        await app_db._migrate_to_head(conn)
     # Truncate at *setup* as well as teardown. A test that errors mid-way skips its own
     # teardown, and the next test's fixture then collides inserting the same seed rows --
     # which reports as a setup ERROR in an innocent test and hides the original failure.

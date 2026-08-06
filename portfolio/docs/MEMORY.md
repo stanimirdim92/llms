@@ -116,6 +116,11 @@ looks wrong, say so once and proceed.
 - **Explicit document scoping on `/ask`** — pulled forward out of Epic 2 because it fixed an
   observed defect rather than moving a metric. Naming a document by **filename or `doc_id`**
   scopes retrieval to it; an unowned identifier is a 404.
+- **Alembic owns the schema** (2026-08-05), and **ingestion is versioned** (2026-08-06): an ingest
+  inserts a generation and publishes it by flipping `DocumentRecord.ingestion_version`, so a failed
+  re-ingest leaves the previous generation serving. `QdrantStore.upsert` deletes nothing. Both of
+  these reversed a recorded decision, so a reader who half-remembers this project will remember the
+  opposite — `docs/TECHNICAL_DECISIONS.md` records both reversals with the reasoning.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
@@ -256,6 +261,72 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-06 (latest) — versioned ingestion: the write half of review P0 #2
+
+**What shipped.** An ingest mints an `ingestion_version`, hashes it into every point id
+(`uuid5(ns, f"{version}:{chunk_id}")`), inserts without deleting, and publishes with one UPDATE
+(`activate_document_version`). `Retriever` reads `list_active_versions` and passes both `doc_ids` and
+`versions` into the filter. `delete_superseded` prunes after the flip and is allowed to fail. Alembic
+revision `307f47df6135`, which **refuses a non-empty `documentrecord`** -- points written before it
+carry no version and would be permanently unsearchable while still reporting `ingested`. The live
+database was empty, which is the only reason that refusal was affordable.
+
+**Where the version does *not* go: `chunk_id`.** It is a public response field
+(`CitationResponse.chunk_id`) that `README.md` documents and Streamlit prints, so putting the version
+there churns every citation on every re-ingest and leaks an attempt id into the API. Only the point id
+needs to differ. Delegating that question was worth it -- the survey found the third consumer I would
+have missed.
+
+**Three findings I would not have reached alone**, all from delegated read-only sweeps and all
+confirmed at source before being written down:
+
+- **`MatchAny(any=[])` returns zero points and does not widen** (probe-verified). So the empty-list
+  guard cannot be tested through the engine: the dangerous mutation (`if versions:` rather than
+  `is not None`) emits *no condition at all*, and a test asserting "an empty list finds nothing"
+  passes under exactly that mutation. Assert the raise. Both empty-list guards now live in
+  `test_retrieval_consistency.py` with that reasoning written down; I had briefly added a duplicate in
+  `test_qdrant_filtering.py` and removed it in favour of a comment saying why it cannot live there.
+- **The migration boundary is an outage for a populated database**, not just an inconvenience -- hence
+  the refusal above, with the remedy in the message.
+- **`figure_extractor` wrote `<figure_id>.png`**, a position-addressed path in the sticky
+  `processed_dir` cache, with the caption cache *next to it* already content-addressed for exactly
+  this reason. Versioning made it a live defect rather than a latent one: generations now coexist by
+  design, and "the previous generation keeps serving" is the whole fallback -- but the image files do
+  not roll back with it, so a re-ingest that shifted the figure order overwrote a file a live chunk
+  still cited, and `Home.py` renders that path beside the old caption. Now
+  `<figure_id>-<sha256[:16]>.png`. Two tests, both mutation-confirmed. This is the one place where the
+  change I was making *created* the exposure, which is the kind of thing a per-slice agent cannot see
+  and a whole-context read can.
+
+**A defect I introduced and the fixture hid.** The four service-backed suites built their schema with
+`SQLModel.metadata.create_all`, so `ingestion_version` never appeared on an existing `portfolio_test`
+and twelve tests failed with `column ... does not exist` -- the exact failure Alembic was adopted to
+end, reproduced inside the test fixture. **CI could not have caught it**: a fresh service container has
+no old table, so it only bites a developer with a database from last week. All four now run
+`app.db._migrate_to_head`. `test_migrations.py`'s pre-Alembic simulation had the same flaw in reverse:
+`create_all` built *today's* models, so the revision adding the column hit `DuplicateColumn`. It now
+upgrades to `_INITIAL_REVISION` and drops `alembic_version`, which is the real historical schema and
+stays right as revisions land.
+
+**Also corrected:** `delete_superseded` was typed `-> int` and documented as returning points removed,
+while returning a hardcoded `0`. Qdrant's delete answers with a status, not a count. Now `-> None`,
+with the reason recorded.
+
+**Mutations run, all confirmed red on their own test and green elsewhere:** a second `new_id()` for the
+flip; swallowing a failed flip; letting a prune failure propagate; the version dropped out of the point
+id; `if versions:`; the prune selector's `must_not` weakened; the prune losing its tenant condition;
+`rowcount == 0` not raising; the flip's tenant dropped from the WHERE; `error_message` not cleared; the
+stamp pinned at head instead of the initial revision; the stamp branch deleted; the figure path back to
+`<figure_id>.png`. Two of them found real weaknesses in my *tests* rather than the code -- the prune
+test's bystander originally used a different `doc_id`, so it passed with the tenant condition deleted.
+
+**Gate:** 383 passed, **0 skipped** (Postgres and Redis both up locally); ruff, ruff format and ty
+clean. The skip count is the number that matters and it is the one I read.
+
+**Still open:** reconciliation in both directions, now written up in `IDEAS.md` rather than left as a
+sentence in this log -- an orphaned generation is unreadable *and* uncollected, since the prune only
+removes versions other than the one it keeps.
+
 ### 2026-08-06 (later) — the over-commenting pass, and what it found
 
 The user said the code is hard to read; the external review's §7 says the same ("reviewers must read
@@ -288,9 +359,10 @@ and `figure_extractor.py` (35), neither examined yet.
 
 **P0 #2 — Qdrant and Postgres disagreeing about what is searchable.** Points are upserted, *then*
 the registry row is written, so a failure between them leaves retrievable chunks behind a row saying
-`processing` or `failed`. `Retriever.retrieve` now filters on `list_ingested_doc_ids`, in the
-retriever rather than the router because `/ask` and Streamlit both arrive there -- same lesson as the
-upload path.
+`processing` or `failed`. `Retriever.retrieve` now filters on the registry, in the retriever rather
+than the router because `/ask` and Streamlit both arrive there -- same lesson as the upload path.
+(The function was `list_ingested_doc_ids`; the versioned-ingestion entry above replaced it with
+`list_active_versions`, so don't grep for the old name.)
 
 The trap was the empty case. `_build_filter` used `if doc_ids:`, so an empty allow-list fell through
 to *no* document condition: "nothing is ingested" would have become "search everything", worse than
@@ -302,9 +374,9 @@ because the second covered it. A guard whose removal keeps the suite green is do
 are one branch now; re-mutated, deleting it turns two red. That is rule 15 catching *redundant code*
 rather than a missing test, which is the use I had not seen before.
 
-Only the read path. Versioned ingestion and a reconciliation command for orphans in either direction
-are still open -- the write path can lose a searchable version if the delete succeeds and the insert
-fails.
+Only the read path. **Closed later the same day** -- versioned ingestion shipped (see the entry above),
+so `upsert` no longer deletes and the write path can no longer lose a searchable version. Reconciliation
+for orphans in either direction is still open and now lives in `IDEAS.md`.
 
 **P0 #3 — Alembic.** `init_db` runs `alembic upgrade head` inside the advisory lock, replacing
 `create_all`. Four things that took real care, each verified rather than assumed:

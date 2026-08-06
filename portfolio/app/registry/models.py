@@ -42,6 +42,17 @@ class DocumentRecord(SQLModel, table=True):
     """0 until ingestion finishes -- a queued document has no chunks yet. Defaulted rather than
     nullable so callers don't have to handle None for a count.
     """
+    ingestion_version: str | None = Field(default=None, index=True)
+    """Which generation of this document's Qdrant points is live, or None if none is.
+
+    Nullable because a `pending` row genuinely has no generation yet. **None means "not
+    searchable"** -- `list_active_versions` requires it, and the retrieval filter admits only
+    active versions, so a null here excludes the document rather than admitting all of its
+    generations. The opposite reading would readmit every superseded point ever written.
+
+    Set by `registry.db.activate_document_version`, which is the single UPDATE that publishes an
+    ingest. Indexed because it is read on the `/ask` path for every request.
+    """
     status: str = Field(default=STATUS_INGESTED, index=True)
     """One of the four constants above.
 
@@ -70,9 +81,9 @@ class DocumentRecord(SQLModel, table=True):
         default=None, sa_column=Column(DateTime(timezone=True), server_default=func.now())
     )
     """Left unset on the Python side -- the DB's `server_default=now()` fills it in on
-    first insert. Deliberately excluded from the upsert's UPDATE clause (see
-    `db.save_document_record`) so a re-ingested document keeps its original ingestion
-    timestamp rather than looking freshly created every time.
+    first insert. Deliberately excluded from the upsert's UPDATE clause (see `db._upsert`) so a
+    re-ingested document keeps its original ingestion timestamp rather than looking freshly
+    created every time.
     """
     updated_at: datetime | None = Field(
         default=None,

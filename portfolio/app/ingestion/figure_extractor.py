@@ -170,6 +170,29 @@ def _caption_path(output_dir: Path, image_bytes: bytes) -> Path:
     return output_dir / f"caption-{hashlib.sha256(image_bytes).hexdigest()[:32]}.txt"
 
 
+def _image_path(output_dir: Path, figure_id: str, image_bytes: bytes) -> Path:
+    """Where a figure's PNG lives: the id for a human, the digest for correctness.
+
+    The digest is the same fix as `_caption_path` above, one file later, and it was missing here
+    while the caption next to it had it. The path used to be `{figure_id}.png`, which is pure
+    position and so is overwritten in place by the next ingest. That was survivable while a
+    re-ingest deleted the previous generation's chunks at the same moment it overwrote the file.
+
+    It stopped being survivable when generations began to coexist. `ingest_document` now inserts a
+    new generation and publishes it with one UPDATE, and its whole point is that **the previous
+    generation keeps serving when that UPDATE never lands**. The images are not versioned, so a
+    position-addressed path was the one thing that did *not* roll back with the generation it
+    belonged to: if the figure ordering shifted, the surviving old chunk kept citing a path whose
+    bytes were now a different picture, and `streamlit_app/Home.py` renders that path directly
+    beside the old caption. A wrong image under a confident caption -- the same failure
+    `_caption_path` exists to prevent, moved from retrieval to the screen.
+
+    `figure_id` stays as the prefix so the directory is still readable by a human tracing one
+    figure. Stale files accumulate, as they already did; nothing here reclaims them.
+    """
+    return output_dir / f"{figure_id}-{hashlib.sha256(image_bytes).hexdigest()[:16]}.png"
+
+
 def _cached_caption(path: Path) -> str | None:
     """A usable cached caption, or None -- which means "not cached", for any reason.
 
@@ -332,7 +355,6 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
         page_no = provenance.page_no if provenance else 0
 
         figure_id = f"fig-{page_no:03d}-{index:02d}"
-        image_path = output_dir / f"{figure_id}.png"
 
         # Encoded once, then written. It used to be encoded twice -- once via `image.save(path)`
         # and once into a buffer for the vision call -- which is PNG compression run twice per
@@ -343,6 +365,8 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
         buffer = io.BytesIO()
         image.save(buffer, "PNG")
         image_bytes = buffer.getvalue()
+        # The path is derived from the bytes, so it has to come after the encode -- see `_image_path`.
+        image_path = _image_path(output_dir, figure_id, image_bytes)
         image_path.write_bytes(image_bytes)
         rendered.append((figure_id, page_no, image_path, image_bytes))
 

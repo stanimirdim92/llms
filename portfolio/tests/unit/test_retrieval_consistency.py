@@ -33,8 +33,18 @@ class _RecordingStore:
     def __init__(self) -> None:
         self.calls: list[dict[str, Any]] = []
 
-    async def query(self, query: str, top_k: int, tenant_id: str, doc_ids: list[str] | None) -> list[Any]:
-        self.calls.append({"query": query, "top_k": top_k, "tenant_id": tenant_id, "doc_ids": doc_ids})
+    async def query(
+        self,
+        query: str,
+        top_k: int,
+        tenant_id: str,
+        *,
+        doc_ids: list[str] | None = None,
+        versions: list[str] | None = None,
+    ) -> list[Any]:
+        self.calls.append(
+            {"query": query, "top_k": top_k, "tenant_id": tenant_id, "doc_ids": doc_ids, "versions": versions}
+        )
         return ["a chunk"]
 
 
@@ -52,11 +62,11 @@ def stub_registry(monkeypatch: pytest.MonkeyPatch):  # noqa: ANN201
     monkeypatch.setattr(retriever_module, "init_db", _noop)
     monkeypatch.setattr(retriever_module, "get_session", _session)
 
-    def _set(ingested: list[str]) -> None:
-        async def _list(_session: object, *, tenant_id: str) -> list[str]:
-            return ingested
+    def _set(active: dict[str, str]) -> None:
+        async def _list(_session: object, *, tenant_id: str) -> dict[str, str]:
+            return active
 
-        monkeypatch.setattr(retriever_module, "list_ingested_doc_ids", _list)
+        monkeypatch.setattr(retriever_module, "list_active_versions", _list)
 
     return _set
 
@@ -68,7 +78,7 @@ async def test_a_tenant_with_nothing_ingested_searches_nothing(stub_registry) ->
     `_build_filter` used to fall through to *no* document condition, so "nothing is ingested"
     would have meant "search every point this tenant owns".
     """
-    stub_registry([])
+    stub_registry({})
     store = _RecordingStore()
 
     results = await Retriever(store=store).retrieve("anything", tenant_id=TENANT)  # ty: ignore[invalid-argument-type]
@@ -79,7 +89,7 @@ async def test_a_tenant_with_nothing_ingested_searches_nothing(stub_registry) ->
 
 async def test_only_ingested_documents_reach_the_filter(stub_registry) -> None:  # noqa: ANN001
     """A document mid-ingest or failed has points in Qdrant and must stay out of the answer."""
-    stub_registry(["doc-ingested"])
+    stub_registry({"doc-ingested": "v1"})
     store = _RecordingStore()
 
     await Retriever(store=store).retrieve("anything", tenant_id=TENANT)  # ty: ignore[invalid-argument-type]
@@ -87,9 +97,28 @@ async def test_only_ingested_documents_reach_the_filter(stub_registry) -> None: 
     assert store.calls[0]["doc_ids"] == ["doc-ingested"]
 
 
+async def test_the_live_generation_of_each_permitted_document_is_what_is_searched(stub_registry) -> None:  # noqa: ANN001
+    """The registry decides *which generation*, not only which document.
+
+    Both halves have to travel: `doc_ids` alone permits every generation of a permitted document,
+    which is exactly the state a failed publish leaves behind. Versions of documents the caller did
+    not ask for must not travel either -- one document's active version would then readmit another's
+    superseded points, since the two conditions are ANDed per point and not paired.
+    """
+    stub_registry({"doc-a": "va", "doc-b": "vb", "doc-c": "vc"})
+    store = _RecordingStore()
+
+    await Retriever(store=store).retrieve(  # ty: ignore[invalid-argument-type]
+        "anything", tenant_id=TENANT, doc_ids=["doc-a", "doc-b"]
+    )
+
+    assert store.calls[0]["doc_ids"] == ["doc-a", "doc-b"]
+    assert store.calls[0]["versions"] == ["va", "vb"], "the unrequested document's version leaked into the filter"
+
+
 async def test_a_caller_scope_is_intersected_not_trusted(stub_registry) -> None:  # noqa: ANN001
     """Defence in depth: the router 409s an unready document, but this must not depend on that."""
-    stub_registry(["doc-a", "doc-b"])
+    stub_registry({"doc-a": "va", "doc-b": "vb"})
     store = _RecordingStore()
 
     await Retriever(store=store).retrieve(  # ty: ignore[invalid-argument-type]
@@ -105,7 +134,7 @@ async def test_a_scope_that_is_no_longer_ingested_refuses_rather_than_widening(s
     Falling back to the tenant's other documents would answer a question about document X from
     document Y -- rule 11, and indistinguishable from a correct answer at the point of use.
     """
-    stub_registry(["doc-a"])
+    stub_registry({"doc-a": "va"})
     store = _RecordingStore()
 
     results = await Retriever(store=store).retrieve(  # ty: ignore[invalid-argument-type]
@@ -132,3 +161,26 @@ def test_a_populated_doc_id_list_still_narrows() -> None:
     conditions = must if isinstance(must, list) else [must]
     keys = [c.key for c in conditions if isinstance(c, FieldCondition)]
     assert keys == ["metadata.tenant_id", "metadata.doc_id"]
+
+
+def test_the_version_condition_is_added_not_substituted() -> None:
+    """Three conditions, all ANDed. The version is what excludes a superseded generation, and the
+    other two are what stop a cross-tenant or cross-document read -- none replaces another.
+    """
+    must = _build_filter(chunk_types=None, tenant_id=TENANT, doc_ids=["doc-a"], versions=["v1"]).must
+    assert must is not None
+    conditions = must if isinstance(must, list) else [must]
+    keys = [c.key for c in conditions if isinstance(c, FieldCondition)]
+    assert keys == ["metadata.tenant_id", "metadata.ingestion_version", "metadata.doc_id"]
+
+
+def test_an_empty_version_list_is_refused_by_the_filter() -> None:
+    """The companion to the doc_ids guard.
+
+    Change `if versions is not None:` to `if versions:` and this goes red -- and note the engine
+    would NOT catch it: `MatchAny(any=[])` returns zero points, so a test asserting "an empty
+    version list finds nothing" passes under the dangerous mutation, because that mutation emits no
+    condition at all rather than an empty one.
+    """
+    with pytest.raises(ValueError, match="every generation"):
+        _build_filter(chunk_types=None, tenant_id=TENANT, doc_ids=["doc-a"], versions=[])

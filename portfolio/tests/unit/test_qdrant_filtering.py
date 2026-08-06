@@ -38,6 +38,9 @@ if TYPE_CHECKING:
     from langchain_qdrant import QdrantVectorStore
 
 VECTOR_SIZE = 4
+VERSION = "v" * 32
+"""One generation, for the tests that do not care which. The ones that do define their own."""
+
 TENANT_A = "a" * 32
 TENANT_B = "b" * 32
 
@@ -69,14 +72,17 @@ def client() -> QdrantClient:
     return qdrant
 
 
-def _insert(qdrant: QdrantClient, *chunks: Chunk) -> None:
+def _insert(qdrant: QdrantClient, *chunks: Chunk, version: str = VERSION) -> None:
+    """Writes one generation, exactly as `QdrantStore.upsert` does -- id and payload both derived
+    from the same `version`, because splitting them is the one way this design breaks silently.
+    """
     qdrant.upsert(
         "test",
         points=[
             models.PointStruct(
-                id=_point_id(chunk.chunk_id),
+                id=_point_id(chunk.chunk_id, version),
                 vector=[1.0] * VECTOR_SIZE,
-                payload={"page_content": chunk.text, "metadata": _chunk_metadata(chunk)},
+                payload={"page_content": chunk.text, "metadata": _chunk_metadata(chunk, version)},
             )
             for chunk in chunks
         ],
@@ -117,54 +123,65 @@ def test_chunk_type_narrows_within_the_tenant_not_across_it(client: QdrantClient
     assert visible == ["doc-a-table-0000"]
 
 
-def test_point_ids_are_deterministic_and_collision_free() -> None:
-    """Qdrant rejects arbitrary strings as point ids, so `_point_id` derives a uuid5. Two
-    properties matter: the same chunk id must always map to the same point (or re-ingestion
-    would duplicate instead of overwrite), and different chunk ids must not collide.
+def test_point_ids_are_collision_free_within_a_generation_and_across_them() -> None:
+    """Qdrant rejects arbitrary strings as point ids, so `_point_id` derives a uuid5 -- but *of
+    what* is the design, not a detail.
+
+    Within one `ingestion_version` it is deterministic, so re-running an interrupted ingest
+    overwrites rather than duplicating. Across versions the same chunk id deliberately maps to a
+    *different* point, which is what lets two generations coexist while Postgres decides which is
+    live. Collapse the version out of the derivation and the new insert overwrites the old points in
+    place: the insert becomes the delete, and there is nothing to fall back to when it fails.
     """
-    assert _point_id("doc-text-0000") == _point_id("doc-text-0000")
-    assert _point_id("doc-text-0000") != _point_id("doc-text-0001")
-    uuid.UUID(str(_point_id("doc-text-0000")))  # raises if it isn't a valid UUID
+    other_version = "w" * 32
+    assert _point_id("doc-text-0000", VERSION) == _point_id("doc-text-0000", VERSION)
+    assert _point_id("doc-text-0000", VERSION) != _point_id("doc-text-0001", VERSION)
+    assert _point_id("doc-text-0000", VERSION) != _point_id("doc-text-0000", other_version)
+    uuid.UUID(str(_point_id("doc-text-0000", VERSION)))  # raises if it isn't a valid UUID
 
 
-def test_reingesting_fewer_chunks_leaves_no_stale_points(client: QdrantClient) -> None:
-    """The delete-then-insert contract, executed.
+def test_a_shorter_re_ingest_leaves_no_readable_stale_points(client: QdrantClient) -> None:
+    """The contract that replaced delete-then-insert, executed against the real engine.
 
-    Chunk ids encode position, so a document that yields fewer chunks the second time (different
-    `chunk_max_tokens`, a Docling upgrade, toggling `do_ocr`) leaves the higher-numbered points
-    behind -- still matching the tenant filter, still retrievable, now stale. Upserting by id
-    cannot fix that; only deleting by `doc_id` first can.
+    Chunk ids encode position, so a document that yields fewer chunks the second time (a different
+    `chunk_max_tokens`, a Docling upgrade, one more figure detected) used to leave the
+    higher-numbered points behind -- still matching the tenant filter, still retrievable, now stale.
+    A delete before the insert was the old fix and cost a document its points whenever the insert
+    that followed failed.
+
+    Nothing is deleted here. Both generations are present and only the active one is *readable*,
+    which is the whole trade: storage for the ability to fall back. The count assertion is the half
+    that would otherwise go untested -- an implementation that quietly deleted would satisfy the
+    visibility assertion perfectly.
     """
-    _insert(
-        client,
-        *(_chunk(doc_id="doc-a", tenant_id=TENANT_A, index=i) for i in range(3)),
-    )
-    assert len(_search(client, _build_filter(None, TENANT_A))) == 3
+    new_version = "n" * 32
+    _insert(client, *(_chunk(doc_id="doc-a", tenant_id=TENANT_A, index=i) for i in range(3)))
+    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0), version=new_version)
 
-    # What QdrantStore.upsert does first: delete every point for the doc_id.
-    client.delete(
-        "test",
-        points_selector=models.FilterSelector(
-            filter=models.Filter(
-                must=[models.FieldCondition(key="metadata.doc_id", match=models.MatchValue(value="doc-a"))]
-            )
-        ),
-    )
-    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0))
+    visible = _search(client, _build_filter(None, TENANT_A, versions=[new_version]))
 
-    visible = _search(client, _build_filter(None, TENANT_A))
-
-    assert visible == ["doc-a-text-0000"], "stale points from the longer first ingest survived"
+    assert visible == ["doc-a-text-0000"], "a superseded generation's points were readable"
+    assert client.count("test", exact=True).count == 4, "the superseded points must still be there to fall back to"
 
 
-def test_without_the_delete_step_stale_points_survive(client: QdrantClient) -> None:
-    """The inverse of the test above, pinning *why* the delete exists rather than trusting the
-    comment. Re-inserting only the first chunk leaves the other two retrievable.
+def test_omitting_the_version_condition_readmits_every_generation(client: QdrantClient) -> None:
+    """The inverse, pinning *why* `versions=` is not optional -- and it is the dangerous kind of
+    optional, because omitting it returns more data rather than raising.
+
+    A retrieval path that forgot the condition would answer from three generations of one document
+    at once: the same passage two or three times, differing wherever the chunker did, ranked against
+    each other. The tenant filter alone does not exclude any of it.
     """
     _insert(client, *(_chunk(doc_id="doc-a", tenant_id=TENANT_A, index=i) for i in range(3)))
-    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0))  # upsert, no delete
+    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0), version="n" * 32)
 
-    assert len(_search(client, _build_filter(None, TENANT_A))) == 3
+    assert len(_search(client, _build_filter(None, TENANT_A))) == 4
+
+
+# The empty-`versions` guard is pinned in `test_retrieval_consistency.py`, next to its `doc_ids`
+# twin, and deliberately not here: it is an assertion about a raise, and this engine cannot
+# strengthen it. Probed -- `MatchAny(any=[])` returns zero points, so the dangerous mutation
+# (`if versions:`, which emits no condition at all) is invisible to any query-based test.
 
 
 def test_upsert_refuses_a_batch_spanning_two_tenants() -> None:
@@ -182,7 +199,7 @@ def test_upsert_refuses_a_batch_spanning_two_tenants() -> None:
     ]
 
     with pytest.raises(ValueError, match="exactly one tenant"):
-        store.upsert(mixed)
+        store.upsert(mixed, VERSION)
 
 
 def test_upsert_still_refuses_a_batch_spanning_two_documents() -> None:
@@ -194,7 +211,7 @@ def test_upsert_still_refuses_a_batch_spanning_two_documents() -> None:
     ]
 
     with pytest.raises(ValueError, match="exactly one document"):
-        store.upsert(mixed)
+        store.upsert(mixed, VERSION)
 
 
 def test_the_delete_selector_carries_the_tenant(client: QdrantClient) -> None:
@@ -222,6 +239,38 @@ def test_the_delete_selector_carries_the_tenant(client: QdrantClient) -> None:
 
     assert _search(client, _build_filter(None, TENANT_A)) == []
     assert _search(client, _build_filter(None, TENANT_B)) == ["collide-text-0001"]
+
+
+def test_pruning_keeps_the_live_generation_and_drops_the_rest(client: QdrantClient) -> None:
+    """`delete_superseded` is the only delete on the ingest path, and its selector is inverted
+    (`must_not` the version to keep) -- so getting it backwards deletes precisely the generation
+    that is serving reads, which is the one way this design can lose data.
+
+    Driven through the real method rather than a hand-built selector, because a hand-built copy
+    passes with the production selector broken. Three generations, so "keeps the live one" is
+    distinguishable from "keeps the newest" and from "keeps one arbitrarily".
+
+    The bystander is another tenant holding the **same `doc_id`**, not a different document -- with a
+    different id the `doc_id` condition alone protects it and the test passes with the tenant
+    condition deleted. Verified by mutation: that was this test's first shape.
+    """
+    live = "n" * 32
+    superseded = "1" * 32
+    for version, index in ((superseded, 0), ("2" * 32, 1), (live, 2)):
+        _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=index), version=version)
+    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_B, index=9), version=superseded)
+    assert client.count("test", exact=True).count == 4
+
+    store = QdrantStore.__new__(QdrantStore)  # no __init__: it bills a probe embedding
+    store._store = cast("QdrantVectorStore", SimpleNamespace(client=client, collection_name="test"))
+
+    store.delete_superseded("doc-a", TENANT_A, live)
+
+    assert _search(client, _build_filter(None, TENANT_A, versions=[live])) == ["doc-a-text-0002"]
+    assert _search(client, _build_filter(None, TENANT_B, versions=[superseded])) == ["doc-a-text-0009"], (
+        "another tenant's points were pruned by a delete scoped to this tenant's document"
+    )
+    assert client.count("test", exact=True).count == 2, "both of this tenant's superseded points should be gone"
 
 
 def test_the_tenant_field_is_indexed_as_a_tenant_field() -> None:

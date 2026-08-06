@@ -119,16 +119,28 @@ whenever Voyage was. `health.py` uses a bare cached `AsyncQdrantClient` instead.
 **Prevents:** restart loops, and a health check that costs money and lies about which
 dependency failed.
 
-## 7. Idempotence by deletion, not by id collision
+## 7. Publish by flipping one row, never by depending on a delete
 
-`QdrantStore.upsert` deletes every point for a `doc_id` before inserting. It is tempting to
-think deterministic point ids make that redundant — they don't. Chunk ids encode position
-(`{doc_id}-text-0000`), so anything changing how many chunks a document yields — a different
-`chunk_max_tokens`, a Docling upgrade detecting one more figure, toggling `do_ocr` — shifts
-every later id. The new ids insert cleanly while the old points remain, still matching the
-tenant filter, still retrievable, now stale.
+An ingest mints an `ingestion_version`, hashes it into every point id
+(`uuid5(ns, f"{version}:{chunk_id}")`), and inserts. Nothing is deleted, and nothing is published:
+the new points carry a version no filter asks for. Publication is one Postgres UPDATE
+(`activate_document_version`), and `_build_filter`'s `versions=` condition is what makes the
+previous generation unreadable the instant that lands. `delete_superseded` prunes afterwards and is
+allowed to fail.
 
-**Prevents:** stale chunks that survive re-ingestion. There is no other cleanup path.
+This inverted an earlier pattern in this file, "idempotence by deletion, not by id collision", and
+the reason is worth keeping: deleting first made a document's correctness depend on the *next*
+statement succeeding. Chunk ids encode position (`{doc_id}-text-0000`), so a re-ingest that yields
+fewer chunks does leave the higher-numbered points behind — but a delete-then-insert that failed
+halfway left a working document with **no** points and a row still saying `ingested`, so retrieval
+permitted the `doc_id`, found nothing, and answered from the tenant's other documents.
+
+The general shape: when a write has to become visible atomically across two stores, put the switch in
+the transactional one and make the non-transactional store's contents inert until it flips. The cost
+is storage for as long as a prune has not run, which is the cheap half of the trade.
+
+**Prevents:** a failed re-ingest taking a working document down with it. Also the inverse — a stale
+generation staying readable — because the version travels in the filter, not in a cleanup step.
 
 ## 8. Content-addressed ids for documents, time-ordered ids for rows
 
@@ -146,7 +158,7 @@ tenants, and B-tree fragmentation on the hot tables.
 ## 9. Blocking work is offloaded, not wrapped in `async def`
 
 `ingest_document` calls `asyncio.to_thread(_parse_and_chunk, ...)` and
-`asyncio.to_thread(store.upsert, chunks)`. Docling parsing is CPU-bound and
+`asyncio.to_thread(store.upsert, chunks, ingestion_version)`. Docling parsing is CPU-bound and
 `QdrantVectorStore.upsert` is synchronous; marking either `async def` frees nothing and one
 upload stalls every other request on that worker.
 
@@ -165,10 +177,11 @@ nothing failing.
 
 ## 11. Cross-process coordination uses the database, not the process
 
-`init_db` takes `pg_advisory_xact_lock` before `create_all`. An `asyncio.Lock` only serializes
-coroutines within one process, and the real concurrency is `GUNICORN_WORKERS` processes plus
-the worker container booting together. Both `create_all`'s checkfirst and procrastinate's
-existence check are check-then-create, so the loser crashes with `DuplicateObject`.
+`init_db` takes `pg_advisory_xact_lock` before `_migrate_to_head` and procrastinate's schema apply.
+An `asyncio.Lock` only serializes coroutines within one process, and the real concurrency is
+`GUNICORN_WORKERS` processes plus the worker container booting together. Alembic's version check and
+procrastinate's existence check are both check-then-create, so the loser crashes with
+`DuplicateTable`/`DuplicateObject`.
 
 Transaction-scoped on purpose: a session-level lock leaked by a crashed process would deadlock
 every later boot.
@@ -236,10 +249,11 @@ entries, so that is a **collision**, not a miss. Measured before the fix: a newl
 was handed the caption written for whatever used to sit at index 0.
 
 The same shape applies to `content_hash` in the registry (a digest of the bytes, answering "did
-the content change under a stable id") and, in the negative, to Qdrant point ids — which *are*
-derived from position (`{doc_id}-text-0000`) and are only safe because `upsert` deletes every
-point for the document first. Two conventions, one of them safe for a different reason; see
-"Never remove the delete step" in `CLAUDE.md`.
+the content change under a stable id"), to the figure PNG (`<figure_id>-<sha256[:16]>.png`, fixed
+2026-08-06 — it was `<figure_id>.png`, overwritten in place while the previous generation's chunks
+still cited it), and, in the negative, to Qdrant point ids — which *are* derived from position
+(`{doc_id}-text-0000`) and are made safe by hashing `ingestion_version` into the id rather than by
+any cleanup. See "Never renumber figure ids" in `CLAUDE.md`.
 
 **Prevents:** a cache entry describing something other than what asked for it — which reads as
 perfectly good content at every point of use. Also, deduplicate *within* a batch and not only
@@ -307,7 +321,6 @@ otherwise "fix":
 | Repository/DAO classes | `registry/db.py` is module-level functions taking an `AsyncSession`. There is one backend and no second implementation to swap; a class would add a layer with no seam behind it. |
 | A service layer over the routers | Routers are thin and call one collaborator. An intermediate layer would be pass-through. |
 | Dependency-injection container | FastAPI's `Depends` plus `@lru_cache` factories cover it. |
-| Alembic migrations | One `create_all` at startup, called out as a simplification worth revisiting when the schema starts changing under live data. Recorded, not forgotten. |
 | ORM lazy loading | Async SQLAlchemy makes implicit IO-on-attribute-access a trap; queries are explicit. |
 | SQLite anywhere | Postgres-only, including tests. `DateTime(timezone=True)` round-tripping an aware value is a Postgres guarantee. |
 | Mocking the vector store in unit tests | The in-memory Qdrant engine is real and free. |

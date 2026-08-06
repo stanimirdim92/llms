@@ -31,6 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from app import db as app_db
 from app.auth.keys import hash_key
 from app.auth.models import ApiKey, Tenant
 from app.config import get_settings
@@ -142,7 +143,10 @@ async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[SessionFactory]:
 
     engine = create_async_engine(url)
     async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.create_all)
+        # The production migration path, not `create_all` -- see the note in
+        # `test_worker_enqueue.py`'s fixture. `create_all` never adds a column to a table that
+        # already exists, so an existing `portfolio_test` silently keeps an old schema.
+        await app_db._migrate_to_head(conn)
     # At setup as well as teardown: a test that errors mid-way skips its own teardown, and the
     # next one then collides on a fixed primary key and reports as a setup ERROR elsewhere.
     await _truncate(engine)

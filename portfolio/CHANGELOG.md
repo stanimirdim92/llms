@@ -13,6 +13,27 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-08-06
+
+#### Fixed
+
+- **A re-ingest that fails partway no longer empties a working document.** Re-uploading a document
+  used to delete its existing chunks before writing the new ones, so a failure in between left the
+  document reporting `ingested` with nothing to search: a question scoped to it returned an answer
+  grounded in nothing, and an unscoped question was answered from your *other* documents with no
+  indication. Each ingest now writes a new generation alongside the existing one and becomes visible
+  only when it completes; until then the previous version keeps answering. A failed re-ingest is
+  visible as `failed` on `GET /v1/documents/{doc_id}` while the document stays searchable.
+- **A figure could be shown with the wrong caption after a re-ingest.** Figure images were stored at
+  a path derived from the figure's position in the document, so a re-ingest that changed the figure
+  order overwrote the image while the previous version's caption still pointed at it. The Streamlit
+  answer view then rendered the new picture under the old caption. Image files now carry a digest of
+  their own pixels.
+
+  *Upgrading:* no action, and no data is lost. Images written before this change are simply no longer
+  referenced; a re-upload writes the new-style filenames. Disk under `data/processed/<doc_id>/figures`
+  is not reclaimed automatically — deleting that directory is safe and costs one re-parse.
+
 ### 2026-08-05
 
 #### Security

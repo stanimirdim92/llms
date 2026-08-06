@@ -74,11 +74,11 @@ _initialized = False
 
 
 async def init_db() -> None:
-    """Create tables that don't exist yet. Cheap to call repeatedly -- it does real work
-    once per process and returns immediately afterwards.
+    """Bring the schema to head. Cheap to call repeatedly -- it does real work once per process
+    and returns immediately afterwards.
 
     The run-once guard is not just tidiness: callers include `ingest_document`, so without
-    it every single document ingest would pay a `create_all` metadata round-trip. The lock
+    it every single document ingest would pay an Alembic version-check round-trip. The lock
     makes concurrent first calls (two uploads racing on a fresh process) do the DDL once
     rather than both attempting it.
 

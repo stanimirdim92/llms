@@ -195,12 +195,25 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 
 ## Ops
 
+- **Reconcile Postgres against Qdrant, in both directions.** *(M)* Versioned ingestion (2026-08-06)
+  removed the failure where a re-ingest could lose a working document, and left two kinds of
+  divergence behind, both silent. **Orphaned generations:** points inserted for a version whose
+  publish UPDATE never landed, or whose `delete_superseded` failed. They are unreadable, so nothing
+  ever asks for them, and the prune only removes versions *other* than the one it keeps -- so nothing
+  reclaims them either. **Missing generations:** a row claiming an `ingestion_version` for which
+  Qdrant holds no points, which reports `ingested` and answers nothing. A command that lists the
+  distinct `metadata.ingestion_version` values per `doc_id` and diffs them against
+  `documentrecord.ingestion_version` finds both, and can delete the first class and re-queue the
+  second. Neither is reachable through the API, so this is an operator tool, not an endpoint.
+  Wanted before an orphan can cost real money in resident memory -- i.e. not urgent at six
+  documents, and squarely on the path to the 10k-tenant target.
+
 - **Dedup concurrent enqueues for one document.** *(S)* Two uploads of the same bytes by the same
   tenant, close together, derive the same `doc_id` and stage the same row -- but each defers its
-  own job, so two workers can ingest one document at once. Qdrant survives it (`upsert` is
-  delete-then-insert, and the later writer wins), but figure captioning is non-deterministic LLM
-  output, so the two runs need not produce identical chunk sets and the interleaving decides which
-  survives. Inferred from reading the code, not reproduced. The fix is one `SELECT ... FOR UPDATE`
+  own job, so two workers can ingest one document at once. Qdrant survives it -- each attempt inserts
+  its own generation and the later flip wins -- but figure captioning is non-deterministic LLM output,
+  so the two runs need not produce identical chunk sets, and the loser's points are pruned only if its
+  own `delete_superseded` happened to run last. Inferred from reading the code, not reproduced. The fix is one `SELECT ... FOR UPDATE`
   on the existing row inside the transaction that already wraps the stage-and-defer, skipping the
   defer when the status is already `pending` or `processing`; the care needed is that a *genuine*
   re-upload after a completed ingest must still enqueue.
@@ -254,4 +267,4 @@ Kept so they don't come back without new information.
 | An agentic answer path | Deliberately not. `/ask` is a fixed retrieve → rerank → generate sequence; adaptive judgment is Epic 3's job and would buy nondeterminism here for nothing. |
 | Making `/ask` scoping use a model to guess the document | Not yet. Deterministic matching handles explicit names; semantic reference ("the flyer", "my CV") genuinely needs a model **and** needs the eval harness to show the guessing helps more than it hurts. |
 | **HMAC-with-pepper instead of a plain digest for API keys** | Rejected — correct advice, wrong threat model. A pepper defeats *offline brute force*, which requires the hashed input to be guessable; an API key here is 256 bits of CSPRNG output, so a stolen `key_hash` is already useless without inverting the digest. It also cannot be rotated: re-deriving `HMAC(new_pepper, key)` needs the plaintext keys, which we deliberately do not store, so changing the pepper invalidates every key at once. That is a worse operational position than today, bought for no gain. Revisit only if key entropy is ever reduced. |
-| **Storing `key_hash` as `BYTEA` instead of hex** | Rejected. Saves 32 bytes/row — under 1 MB at the 10k-tenant target — against a real cost: the column stops being readable in `psql`, and there is no Alembic, so it is a hand-written migration on the auth table. The genuinely useful halves of that suggestion were already done (`unique=True, index=True`, plus `prefix`/`last_used_at`/`revoked_at`) or have since shipped (expiry, scopes). |
+| **Storing `key_hash` as `BYTEA` instead of hex** | Rejected. Saves 32 bytes/row — under 1 MB at the 10k-tenant target — against a real cost: the column stops being readable in `psql`. Cheaper to apply than it was (Alembic landed 2026-08-05, so this is a revision rather than a hand-written `ALTER`), but the readability cost stands and the saving is still under 1 MB. The genuinely useful halves of that suggestion were already done (`unique=True, index=True`, plus `prefix`/`last_used_at`/`revoked_at`) or have since shipped (expiry, scopes). |

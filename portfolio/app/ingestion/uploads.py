@@ -63,7 +63,9 @@ def content_digest(file_bytes: bytes) -> str:
     the terminal write. Same column, two values with different
     meanings and different lengths, reconciled only by whichever write happened last. Harmless
     while nothing reads the field -- and that is exactly the state in which a column quietly
-    becomes unusable, because the first reader inherits both conventions.
+    becomes unusable, because the first reader inherits both conventions. There is one writer now:
+    the terminal write became an UPDATE that does not touch this column, so the stager is the only
+    thing that sets it.
 
     Unsalted on purpose: `doc_id` already carries identity and isolation (see `upload_doc_id`),
     so what is left for this field is the one question the id cannot answer -- did the bytes

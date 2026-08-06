@@ -31,25 +31,47 @@ if TYPE_CHECKING:
 
 log = structlog.get_logger(__name__)
 
-# Fixed, arbitrary namespace for deriving Qdrant point IDs from our own chunk_id strings
-# via uuid5 -- never regenerate this, or every existing point ID changes and re-ingesting
-# unchanged documents would duplicate rather than upsert. Qdrant point IDs must be an
-# unsigned integer or a UUID (unlike Chroma, which accepted arbitrary strings); our
-# chunk_id values ("{doc_id}-text-0000" etc.) are neither, so they can't be used as the
-# point ID directly. uuid5 (not uuid4) keeps this deterministic: the same chunk_id always
-# maps to the same point ID, which is what makes re-ingesting identical content an upsert
-# rather than a duplicate. The human-readable chunk_id itself is unaffected -- it's still
-# stored in the payload (_chunk_metadata below) and is what citations actually read.
+# Fixed, arbitrary namespace for deriving Qdrant point IDs via uuid5 -- never regenerate this, or
+# every stored point becomes an orphan no filter and no prune can reach. Qdrant point IDs must be an
+# unsigned integer or a UUID (unlike Chroma, which accepted arbitrary strings); our chunk_id values
+# ("{doc_id}-text-0000" etc.) are neither, so they can't be used as the point ID directly.
+#
+# uuid5 (not uuid4) for determinism, but note *of what*: the input is
+# f"{ingestion_version}:{chunk_id}", so it is deterministic within one generation and deliberately
+# different across generations -- see `_point_id`. The human-readable chunk_id is unaffected: it stays
+# in the payload (_chunk_metadata below) and is what citations actually read.
 _POINT_ID_NAMESPACE = uuid.UUID("6f2d7e2a-9b1a-4c3e-8f7a-1d2e3c4b5a6f")
 
 
-def _point_id(chunk_id: str) -> str:
-    return str(uuid.uuid5(_POINT_ID_NAMESPACE, chunk_id))
+def _point_id(chunk_id: str, ingestion_version: str) -> str:
+    """A point id per (chunk, ingestion attempt).
+
+    The version is hashed in, **not** appended to `chunk_id`. `chunk_id` is a public response field
+    (`CitationResponse.chunk_id`, `RetrievedChunkResponse.chunk_id`) that `README.md` documents and
+    Streamlit prints, so moving it would churn every citation on every re-ingest and leak an
+    internal attempt id into the API. Only the *point* id has to differ per attempt, and this is
+    the single boundary where it is derived.
+
+    Without the version, a re-ingest would overwrite the previous generation in place -- the insert
+    would *be* the delete, and there would be nothing to fall back to when it failed.
+    """
+    return str(uuid.uuid5(_POINT_ID_NAMESPACE, f"{ingestion_version}:{chunk_id}"))
 
 
 # Payload fields that carry a filter on a production path, and therefore need an index. Every
 # query in this module filters on `metadata.tenant_id`; `metadata.doc_id` is filtered by
-# `delete_document` (once per re-ingest) and by `/ask`'s document scoping.
+# `delete_superseded` (once per re-ingest) and by `/ask`'s document scoping.
+#
+# **`metadata.ingestion_version` is filtered on every query and is deliberately NOT indexed.** It
+# is a strictly finer partition of `metadata.doc_id`, which is indexed and sits in the same `must`,
+# so the version condition only discriminates during the window where two generations coexist and
+# against orphans a prune failed to collect. Against that: a payload index is *resident* memory
+# rather than reclaimable page cache, on a 16GB target; and `_ensure_payload_indexes` runs from
+# `__init__` against whatever collection exists, so on any instance that already holds points the
+# index would be created *after* HNSW is built, which `qdrant-performance-optimization` says breaks
+# the filterable vector index -- and its documented remedy is a re-index that nothing here
+# triggers, with creation failures already swallowed below by design. Same test that rejected an
+# index on `metadata.chunk_type`. Revisit only with a measurement.
 #
 # **`is_tenant=True` on the tenant field is the load-bearing part**, and it is not a synonym for
 # "indexed": it tells Qdrant the field identifies tenants, so each tenant's vectors are stored
@@ -101,8 +123,9 @@ def _ensure_payload_indexes(client: QdrantClient, collection_name: str) -> None:
             log.warning("qdrant.payload_index_failed", field=field, error=str(exc))
 
 
-def _chunk_metadata(chunk: Chunk) -> dict:
+def _chunk_metadata(chunk: Chunk, ingestion_version: str) -> dict:
     metadata: dict = {
+        "ingestion_version": ingestion_version,
         "chunk_id": chunk.chunk_id,
         "doc_id": chunk.doc_id,
         "chunk_type": chunk.chunk_type,
@@ -126,11 +149,16 @@ def _chunk_metadata(chunk: Chunk) -> dict:
     return metadata
 
 
-def _to_document(chunk: Chunk) -> Document:
-    return Document(page_content=chunk.text, metadata=_chunk_metadata(chunk))
+def _to_document(chunk: Chunk, ingestion_version: str) -> Document:
+    return Document(page_content=chunk.text, metadata=_chunk_metadata(chunk, ingestion_version))
 
 
-def _build_filter(chunk_types: list[str] | None, tenant_id: str, doc_ids: list[str] | None = None) -> Filter:
+def _build_filter(
+    chunk_types: list[str] | None,
+    tenant_id: str,
+    doc_ids: list[str] | None = None,
+    versions: list[str] | None = None,
+) -> Filter:
     """Matches exactly one tenant's chunks. Nothing else is readable.
 
     This is the entire retrieval security boundary: it is what stops one tenant reading
@@ -157,6 +185,14 @@ def _build_filter(chunk_types: list[str] | None, tenant_id: str, doc_ids: list[s
     must = [FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id))]
     if chunk_types:
         must.append(FieldCondition(key="metadata.chunk_type", match=MatchAny(any=chunk_types)))
+    if versions is not None:
+        # ANDed, never replacing the others. This is the third condition whose omission is
+        # *silent* rather than an error, and the one that decides whether a superseded generation
+        # of points is readable -- so it is built here rather than left to callers to remember.
+        if not versions:
+            msg = "versions is empty: refusing to build a filter that would match every generation"
+            raise ValueError(msg)
+        must.append(FieldCondition(key="metadata.ingestion_version", match=MatchAny(any=versions)))
     if doc_ids is not None:
         # `is not None`, not truthiness: an empty list means "no document is permitted", and under
         # `if doc_ids:` it fell through to no document condition at all -- i.e. every document the
@@ -189,8 +225,7 @@ class QdrantStore:
         _ensure_payload_indexes(self._store.client, self._store.collection_name)
 
     def delete_document(self, doc_id: str, tenant_id: str) -> None:
-        """Remove every point belonging to `doc_id` *within one tenant*, whatever its chunk
-        ids were.
+        """Remove every point belonging to `doc_id` within one tenant, whatever its chunk ids were.
 
         `tenant_id` is required, not optional, and it is ANDed into the selector rather than
         checked by the caller. Today `doc_id` is tenant-salted so a cross-tenant delete is
@@ -199,13 +234,9 @@ class QdrantStore:
         A write that can erase data deserves at least the guard a read has: if the id scheme
         ever changes, this fails closed instead of deleting a stranger's points.
 
-        Upserting by id alone is NOT sufficient to make re-ingestion idempotent: chunk ids
-        encode position (`{doc_id}-text-0000`, `fig-{page}-{index}`), so anything that
-        changes how many chunks a document yields -- a different `chunk_max_tokens`, a
-        Docling upgrade that detects one more figure, toggling `do_ocr` -- shifts the ids.
-        The new ids upsert cleanly while the *old* points stay behind, still matching the
-        session filter, still retrievable, now stale. Deleting by `doc_id` first makes
-        re-ingestion correct regardless of how the chunk ids moved.
+        Deletes **every** generation of the document, so this is not the re-ingest path -- see
+        `delete_superseded`, which keeps the active one. No production caller today; it exists for
+        the planned delete endpoint (`docs/EPIC_4_PLAN.md` 5.5).
         """
         self._store.client.delete(
             collection_name=self._store.collection_name,
@@ -219,18 +250,57 @@ class QdrantStore:
             ),
         )
 
-    def upsert(self, chunks: list[Chunk]) -> None:
-        """Replace a document's points: delete-then-insert, not insert-by-id.
+    def delete_superseded(self, doc_id: str, tenant_id: str, keep_version: str) -> None:
+        """Drop every generation of `doc_id` except `keep_version`.
 
-        See `delete_document` for why the delete is required rather than paranoid. All
-        chunks passed in one call must share a `doc_id` **and** a `tenant_id` -- that's how
-        every caller uses it (`ingest_document` handles exactly one document for one
-        tenant), and the guards make the assumption fail loudly here rather than silently
-        deleting the wrong document's points if a future caller batches across either.
+        Returns nothing, and deliberately does not report how many points went: Qdrant's delete
+        answers with an operation status, not a count, so the only honest number would need a
+        `count` before and after. The caller logs and moves on either way.
 
-        The tenant guard is the one that was missing: without it a mixed batch would have
-        derived its delete selector from `doc_ids.pop()` alone and taken out whichever
-        tenant's points matched.
+        Hygiene, not correctness, and the distinction is the point: a superseded generation is
+        already unreadable because `_build_filter` admits only active versions, so a failure here
+        leaves points that cost storage and nothing else. Callers log and continue rather than
+        failing an ingest that has already published successfully.
+
+        `must_not` rather than a second `must`: the selector is "this document, this tenant, any
+        version but the live one". Getting that inverted deletes exactly the generation that is
+        serving reads, so the tenant condition is ANDed in for the same reason `delete_document`
+        carries it -- a write that can erase data gets at least the guard a read has.
+        """
+        result = self._store.client.delete(
+            collection_name=self._store.collection_name,
+            points_selector=FilterSelector(
+                filter=Filter(
+                    must=[
+                        FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id)),
+                        FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id)),
+                    ],
+                    must_not=[FieldCondition(key="metadata.ingestion_version", match=MatchValue(value=keep_version))],
+                )
+            ),
+        )
+        log.info("qdrant.superseded_pruned", doc_id=doc_id, keep_version=keep_version, status=str(result.status))
+
+    def upsert(self, chunks: list[Chunk], ingestion_version: str) -> None:
+        """Insert one generation of a document's points, deleting **nothing**.
+
+        This replaced delete-then-insert. The old shape made a document's correctness depend on
+        a delete having succeeded: if the delete landed and the insert failed, a working document
+        lost its points while its registry row still said `ingested`, so retrieval permitted the
+        `doc_id` and found nothing -- and an unscoped question was answered from the tenant's
+        *other* documents with no indication.
+
+        Now nothing is destroyed here. `ingestion_version` is hashed into every point id, so this
+        generation cannot collide with the previous one, and both coexist until Postgres flips
+        which is active (`registry.db.activate_document_version`). That flip is the commit point;
+        this method publishes nothing on its own.
+
+        **`ingestion_version` is a parameter, not a field on `Chunk`.** It describes the *attempt*,
+        not the chunk -- and as a scalar it makes a mixed-version batch impossible rather than
+        something a guard has to catch.
+
+        The doc_id/tenant guards remain: one call is one document for one tenant, which is how both
+        callers use it, and `delete_superseded` derives its selector the same way.
         """
         if not chunks:
             return
@@ -243,18 +313,25 @@ class QdrantStore:
             msg = f"upsert() expects chunks from exactly one tenant, got {sorted(tenant_ids)}"
             raise ValueError(msg)
 
-        self.delete_document(doc_ids.pop(), tenant_ids.pop())
-        documents = [_to_document(chunk) for chunk in chunks]
-        self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id) for chunk in chunks])
+        documents = [_to_document(chunk, ingestion_version) for chunk in chunks]
+        self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id, ingestion_version) for chunk in chunks])
 
-    async def query(
+    async def query(  # noqa: PLR0913 -- each parameter is one filter condition; see below
         self,
         query: str,
         top_k: int,
         tenant_id: str,
+        *,
         chunk_types: list[str] | None = None,
         doc_ids: list[str] | None = None,
+        versions: list[str] | None = None,
     ) -> list[Document]:
+        # Six parameters, and bundling three of them into a filter object is the obvious tidy-up
+        # that must not happen: each one is a condition `_build_filter` ANDs into the security
+        # boundary, and a bundle makes "the caller forgot `versions`" and "the caller passed a
+        # filter with no version condition" the same call site. Keyword-only from `tenant_id` on,
+        # so no condition can be supplied positionally into the wrong slot.
+        #
         # `chunk_types` has no production caller today -- `Retriever` never passes it, so every
         # `/ask` searches text, tables and figures together, which is the intended behaviour.
         # Kept, and said out loud rather than left as an unexplained unused parameter, because
@@ -267,7 +344,7 @@ class QdrantStore:
         # still `VectorStore`'s thread-pool-shimmed default. Kept async regardless: it's
         # free (no extra dependency, no behavior change either way) and keeps this
         # call's signature consistent with the rest of the already-async /ask chain.
-        where = _build_filter(chunk_types, tenant_id, doc_ids)
+        where = _build_filter(chunk_types, tenant_id, doc_ids, versions)
         return await self._store.asimilarity_search(query, k=top_k, filter=where)
 
     # There is deliberately no `as_retriever()`. One existed, returning

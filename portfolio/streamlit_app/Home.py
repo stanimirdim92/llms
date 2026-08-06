@@ -21,7 +21,7 @@ from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_uplo
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import content_digest, document_upload_path, upload_doc_id, write_upload
 from app.logs import configure_logging
-from app.registry.db import list_document_records
+from app.registry.db import list_document_records, stage_document_record
 
 # Runtime import, not TYPE_CHECKING. This module has no `from __future__ import
 # annotations`, so `-> list[DocumentRecord]` on `_list_documents` is evaluated when the
@@ -29,7 +29,7 @@ from app.registry.db import list_document_records
 # time and Streamlit never starts. Same trap as `datetime` in the model modules -- see
 # CLAUDE.md's failure contracts. ruff only catches it when target-version is the real
 # floor (py313); on py314 PEP 649 defers the annotation and the bug is invisible.
-from app.registry.models import DocumentRecord
+from app.registry.models import STATUS_PENDING, DocumentRecord
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import QdrantStore
 
@@ -65,6 +65,13 @@ async def _scope_candidates(tenant_id: str) -> list[DocumentRecord]:
     await init_db()
     async with get_session() as session:
         return await list_document_records(session, tenant_id=tenant_id, limit=200)
+
+
+async def _stage(record: DocumentRecord) -> None:
+    """Write the `pending` row the flip will later update. Mirrors the API route's staging."""
+    await init_db()
+    async with get_session() as session:
+        await stage_document_record(session, record)
 
 
 async def _list_documents(tenant_id: str) -> list[DocumentRecord]:
@@ -120,14 +127,32 @@ with st.expander("Upload your own documents (visible to your tenant only)", expa
             # its own copy of the bug the API route had, which is what having two copies produces.
             file_path = document_upload_path(settings.upload_dir, tenant_id, doc_id, uploaded_file.name)
             write_upload(file_path, file_bytes)
+
+            # Stage the row before ingesting, exactly as `POST /v1/documents` does. `ingest_document`
+            # publishes by *flipping* an existing row's active version -- an UPDATE that raises
+            # rather than inventing a row -- so without this every Streamlit upload would fail at
+            # the commit point. It bypasses the queue, not the registry.
+            asyncio.run(
+                _stage(
+                    DocumentRecord(
+                        doc_id=doc_id,
+                        tenant_id=tenant_id,
+                        filename=file_path.name,
+                        content_hash=digest,
+                        file_extension=file_path.suffix,
+                        file_size_bytes=len(file_bytes),
+                        status=STATUS_PENDING,
+                    )
+                )
+            )
             if doc_id not in st.session_state.uploaded_docs:
                 with st.spinner(f"Ingesting {uploaded_file.name}..."):
                     # Deliberately still synchronous, unlike POST /v1/documents, which now
                     # returns 202 and lets a worker do this. Streamlit blocks its own script
                     # run either way, so a queue would buy nothing here beyond a status-polling
                     # loop to write -- and this UI retires when the React app lands
-                    # (docs/EPIC_4_PLAN.md Phase 6). It writes the row itself via ingest_document's
-                    # terminal upsert, so the two paths agree on what a finished row looks like.
+                    # (docs/EPIC_4_PLAN.md Phase 6). The row is published by ingest_document's
+                    # version flip either way, so the two paths agree on what a finished row is.
                     #
                     # Streamlit's script model has no event loop of its own, same reason
                     # the /ask call below needs asyncio.run() rather than a plain await.

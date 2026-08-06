@@ -1,9 +1,9 @@
 """Background job definitions. One task today: ingest an uploaded document.
 
 Status ownership is split deliberately. This task owns `processing` and `failed`;
-`ingest_document` itself owns the terminal `ingested` write (it already upserted the row
-before this queue existed, and it still needs to for Streamlit, which calls it directly and
-not through a queue). One writer per state, no duplicated logic.
+`ingest_document` itself owns the terminal `ingested` write, which is now the version flip
+(`activate_document_version`) rather than an upsert -- it has to stay there because Streamlit calls
+`ingest_document` directly and not through a queue. One writer per state, no duplicated logic.
 """
 
 from __future__ import annotations

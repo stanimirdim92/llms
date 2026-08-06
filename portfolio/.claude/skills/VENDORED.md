@@ -199,13 +199,15 @@ Refresh:
 
 ## Why this one, and why it is not premature
 
-It lands on a gap this project has already written down twice. `app/db.py::init_db`'s docstring
-says there is no Alembic and that a schema change currently means dropping the volume; `CLAUDE.md`
-carries the contract that **`create_all` creates missing *tables*, never missing *columns***, so
-adding a field to an existing model changes nothing, `init_db` reports success, and the next query
-fails with `column ... does not exist`. `ApiKey.expires_at` was added by hand under exactly that
-rule — against an empty table, which is why it cost nothing. The next one will not be: at the
-10k-tenant × 10-document target, `documentrecord` holds 100k rows.
+It landed on a gap this project had written down twice, and that gap closed days later: `create_all`
+creates missing *tables* and never missing *columns*, so adding a field to an existing model changed
+nothing, `init_db` reported success, and the next query failed with `column ... does not exist`.
+Alembic replaced `create_all` on 2026-08-05, so the skill's subject changed from "the only way a
+column gets added here" to "what a revision costs when it runs". That makes it **more** relevant
+rather than less: `ApiKey.expires_at` and `DocumentRecord.ingestion_version` were both added against
+effectively empty tables, which is why neither cost anything. At the 10k-tenant × 10-document target
+`documentrecord` holds 100k rows, and the lock level of the `ALTER` is what decides whether a
+one-millisecond statement stalls the whole API.
 
 So the division of labour is: **rule 8 governs what a new column must *mean*** (absent data reads
 as the pre-existing behaviour, then check the inverse); this skill governs **how to add it without

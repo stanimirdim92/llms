@@ -1,10 +1,14 @@
-"""Pins the figure_id numbering scheme.
+"""Pins the figure_id numbering scheme, and the two things addressed by it.
 
-`figure_id` feeds `chunk_id`, which feeds the Qdrant point id (`uuid5` of it). The store
-has no delete path, so if this numbering ever shifts for an unchanged document, a
-re-ingest writes *new* points and silently leaves the old ones behind -- still matching
-the session filter, still retrievable, now stale. These tests exist so that regression
-fails here instead of in production retrieval.
+`figure_id` feeds `chunk_id`, which feeds the Qdrant point id, so shifting the numbering for an
+unchanged document churns every stored point and every citation the document has ever produced.
+
+It used to matter for a second reason that no longer applies: the store had no delete path, so a
+renumbered re-ingest left the old points behind, still retrievable and now stale. Ingestion is
+versioned now -- a generation is published by one Postgres UPDATE and superseded points are
+unreadable -- so that particular consequence is gone. What replaced it is that generations
+*coexist*, which is why the figure PNG is content-addressed as well as numbered: see
+`test_a_figures_image_path_is_addressed_by_its_pixels`.
 
 The caption cache is here because it was *wrongly* keyed on `figure_id` -- see
 `test_a_figure_never_receives_a_caption_written_for_a_different_figure`, which is the test the
@@ -475,8 +479,44 @@ def test_the_cache_entry_sits_in_the_figure_directory(tmp_path: Path) -> None:
     """
     figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
 
-    assert (tmp_path / "fig-000-00.png").exists()
+    assert len(list(tmp_path.glob("fig-000-00-*.png"))) == 1
     assert len(list(tmp_path.glob("caption-*.txt"))) == 1
+
+
+def test_a_figures_image_path_is_addressed_by_its_pixels(tmp_path: Path) -> None:
+    """Two different pictures at the same `figure_id` must not share a file.
+
+    `fig-000-00.png` was the path until versioned ingestion landed, and it was overwritten in place
+    by the next ingest. That was survivable only because the old generation's chunks were deleted at
+    the same moment. Now the old generation deliberately keeps serving when the publish UPDATE does
+    not land -- so an overwritten file leaves a *live* chunk citing a path holding a different
+    picture, and `streamlit_app/Home.py` renders that path straight into the answer. The caption
+    beside it would be the old one.
+
+    The digest, not just a distinct id: `figure_id` is `fig-{page}-{index}`, and index shifting is
+    precisely the case where the pixels at one id change.
+    """
+    first = figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    second = figure_extractor.extract_figures(_document_yielding([_picture_of(20)]), tmp_path)
+
+    assert first[0].figure_id == second[0].figure_id == "fig-000-00", "the ids are meant to collide here"
+    assert first[0].image_path != second[0].image_path
+    assert first[0].image_path.exists(), "the first generation's image must survive the second ingest"
+    assert first[0].image_path.read_bytes() != second[0].image_path.read_bytes()
+
+
+def test_an_unchanged_figure_reuses_its_image_file(tmp_path: Path) -> None:
+    """The other half: content addressing must not turn every re-ingest into a new file.
+
+    Identical bytes give an identical path, so re-ingesting an unchanged document rewrites the same
+    file rather than accumulating one PNG per attempt. Nothing reclaims stale images, so a
+    per-attempt name would grow `processed_dir` without bound.
+    """
+    first = figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+    second = figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
+
+    assert first[0].image_path == second[0].image_path
+    assert len(list(tmp_path.glob("*.png"))) == 1
 
 
 def test_a_caption_cut_off_at_the_token_ceiling_is_not_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -535,7 +575,7 @@ def test_the_cache_filename_is_the_digest_of_the_png_that_was_written(
 
     figure_extractor.extract_figures(_document_yielding([_picture_of(10)]), tmp_path)
 
-    png = (tmp_path / "fig-000-00.png").read_bytes()
+    png = next(tmp_path.glob("fig-000-00-*.png")).read_bytes()
     entry = next(path for path in tmp_path.glob("caption-*.txt"))
     assert entry.name == f"caption-{hashlib.sha256(png).hexdigest()[:32]}.txt"
 

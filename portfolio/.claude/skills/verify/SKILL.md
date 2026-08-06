@@ -39,19 +39,21 @@ if a CI run is red, the seed is in its log.
 
 ## Trap 1: skipped tests look identical to passing ones
 
-Five suites **skip** when their service is unreachable: `test_auth_touch.py`,
-`test_rate_limit.py`, `test_worker_enqueue.py`, `test_key_management.py` and
-`test_create_tenant.py`. A run reporting `288 passed, 59 skipped` has not tested auth, rate
-limiting, the job queue, key management or the bootstrap CLI -- most of the security-relevant
-surface. (It was three for a while, and CI asserted only those three, so the two newer ones could
-skip silently -- including the only test of `{"scopes": null}`.)
+Six suites **skip** when their service is unreachable: `test_auth_touch.py`,
+`test_rate_limit.py`, `test_worker_enqueue.py`, `test_key_management.py`, `test_create_tenant.py`
+and `test_migrations.py`. A run that skips them has not tested auth, rate limiting, the job queue,
+key management, the bootstrap CLI or the migration path -- most of the security-relevant surface.
+(It was three for a while, and CI asserted only those three, so the newer ones could skip silently
+-- including the only test of `{"scopes": null}`. `test_migrations.py` joined when Alembic replaced
+`create_all`.) Those suites are **70 tests** together, counted 2026-08-06.
 
-**Always read the skip count.** The full suite should report **`370 passed, 0 skipped`**. (Treat
+**Always read the skip count.** The full suite should report **`383 passed, 0 skipped`** (2026-08-06).
+(Treat
 the number as a floor that drifts upward, not a checksum — what matters is the *skip* count being
 zero. An earlier version of this line said "249 tests ... `116 passed`", two numbers that already
 disagreed with each other, which is what a hand-maintained count does.) With no services reachable
-the suite reports `308 passed, 59 skipped` across those five files, so a green run then has tested
-almost none of the security-relevant surface. Start them rather than shipping:
+the suite skips all six of those files, so a green run then has tested almost none of the
+security-relevant surface. Start them rather than shipping:
 
     pg_isready -h localhost -p 5433 -U portfolio || \
       su postgres -c '/usr/lib/postgresql/16/bin/pg_ctl -D /tmp/pgtest -o "-p 5433" -l /tmp/pgtest/server.log start'
@@ -59,11 +61,15 @@ almost none of the security-relevant surface. Start them rather than shipping:
 
     DB_PORT=5433 REDIS_PORT=6380 uv run pytest tests/unit -q
 
+The service-backed fixtures run **`app.db._migrate_to_head`**, not `create_all`, so a `portfolio_test`
+database from before a schema change is brought forward rather than left one column short. If one of
+them fails with `column ... does not exist`, that is a fixture that has been changed back.
+
 They die repeatedly in a long session (idle reclamation), so re-check before *each* run, not
 once at the start. `pg_ctl` refuses to run as root -- hence the `su postgres`.
 
 Outside this container, the compose Postgres/Redis serve the same purpose and need no port
-overrides. CI provides both and asserts none of the five suites skipped.
+overrides. CI provides both and asserts none of the six suites skipped.
 
 ## Trap 2: build the dev venv on 3.13, not 3.14
 
