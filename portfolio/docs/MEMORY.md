@@ -271,7 +271,49 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
-### 2026-08-06 (latest) — versioned ingestion: the write half of review P0 #2
+### 2026-08-06 (evening) — the stack from scratch, and a healthcheck that could not fail
+
+The user hit `FATAL: database "portfolio" does not exist` on `api` and `worker`, crash-looping, after
+deleting the tables and the database by hand. Two mechanisms, and separating them is the whole
+diagnosis:
+
+- **The database cannot come back on restart.** postgres' entrypoint bootstraps only when `PGDATA` is
+  empty (it tests for `PG_VERSION`), so a later start skips `initdb`, `CREATE DATABASE
+  $POSTGRES_DB` and `docker-entrypoint-initdb.d` alike. The recorded contract said this about
+  *changing* `POSTGRES_*`; dropping the database by hand is the same failure from the other side, and
+  that half was not written down. `down -v` is the fix, because the volume is the state.
+- **The tables were a symptom, not a second fault.** `init_db` runs `alembic upgrade head` at api
+  boot and cannot connect at all while the database is missing, so nothing migrates.
+
+**And the reason nothing warned: `pg_isready` does not connect to the database it is given.** Measured
+in the running container -- `pg_isready -d absolutely_no_such_db` exits **0** ("accepting
+connections") where `psql -d absolutely_no_such_db -c 'select 1'` exits **2**. So `-d "$POSTGRES_DB"`
+in the healthcheck was decoration and `depends_on: service_healthy` gated on nothing: compose called
+postgres healthy and started api and worker into a crash loop whose message reads as an application
+fault. Healthcheck is now `psql … -tAc 'select 1'`. Mutation-confirmed in both directions on the same
+container and the same volume, using a compose override that points `POSTGRES_DB` at a name the
+volume never created: **unhealthy** under `psql` (exit 2, `FATAL` visible in the health log),
+**healthy** under `pg_isready`. Nothing was destroyed to prove it.
+
+**Then the gate caught its own trap.** The first post-reset run reported `330 passed, 53 skipped`:
+`down -v` destroys `portfolio_test` and `portfolio_migrations_test` too, the fixtures read an
+unreachable database as "no service, skip", and the run looks green. Recreated both with `createdb`
+-> `383 passed, 0 skipped`. Recorded in the `verify` skill, because reading the skip count is the only
+reason it was noticed.
+
+**What could not be done here: the images do not build.** `nginx`, `api`, `worker` and `streamlit` all
+`apt-get`, and this environment's egress policy answers `403 Forbidden` for `deb.debian.org:80`. The
+proxy README says to report a 403 rather than route around it, so the stack was verified with
+`postgres`/`qdrant`/`redis` in containers (no apt needed) and the application code from the local
+venv. **Nothing about the images themselves is verified by this session** -- the earlier note that the
+nginx config is unvalidated without a working build still stands.
+
+*Also observed:* the six `portfolio/.claude/skills/` skills and this project's subagents are **not**
+visible at the start of a repo-root session, but the skills appeared mid-session once files under
+`portfolio/` were being edited -- directory-scoped discovery, resolving late. Open question #2 is
+about the agents, which did **not** appear the same way; worth re-testing deliberately.
+
+### 2026-08-06 (late afternoon) — versioned ingestion: the write half of review P0 #2
 
 **What shipped.** An ingest mints an `ingestion_version`, hashes it into every point id
 (`uuid5(ns, f"{version}:{chunk_id}")`), inserts without deleting, and publishes with one UPDATE

@@ -336,8 +336,24 @@ Things that look correct and aren't:
   process chowns `/var/cache/nginx` even though the entrypoint scripts don't);
   postgres needs `CHOWN, SETUID, SETGID, DAC_OVERRIDE, FOWNER`. Drop any of those
   and the container crash-loops.
-- **postgres `initdb` runs once, on an empty volume.** Changing `POSTGRES_*` after
-  first boot does nothing until `docker compose down -v`.
+- **postgres `initdb` runs once, on an empty volume.** The entrypoint bootstraps only when
+  `PGDATA` is empty (it tests for `PG_VERSION`), so on any later start it skips `initdb`,
+  `CREATE DATABASE $POSTGRES_DB` *and* `/docker-entrypoint-initdb.d` entirely. Two consequences,
+  and the second is the one that surprises people: changing `POSTGRES_*` after first boot does
+  nothing, and **dropping the database by hand is equally unrecoverable** — no number of restarts
+  will recreate it. `docker compose down -v` is the fix for both, because the volume is the state.
+  Tables are a separate mechanism (`init_db` → `alembic upgrade head`) that cannot run at all
+  while the database is missing, so "the tables didn't get created either" is a symptom of this,
+  not a second fault.
+- **The postgres healthcheck must connect to the database, not just to the server.** It is
+  `psql … -tAc 'select 1'` and must not go back to `pg_isready`, which reports success for a
+  database that does not exist: measured in the running container, `pg_isready -d
+  absolutely_no_such_db` exits **0** ("accepting connections") where `psql` exits **2**. With the
+  weak check, `depends_on: postgres: condition: service_healthy` gated on nothing — compose called
+  postgres healthy, started api and worker on that signal, and both crash-looped with `FATAL:
+  database "portfolio" does not exist`, which reads as an application fault rather than an
+  uninitialised volume. Confirmed by mutation 2026-08-06: the same container is `unhealthy` under
+  `psql` and `healthy` under `pg_isready`.
 - **postgres 18+ wants the volume at `/var/lib/postgresql`, not `.../data`.** From 18 the
   official images store data in a major-version-specific subdirectory so `pg_upgrade --link`
   doesn't cross a mount boundary. The pre-18 mount path makes the entrypoint refuse to start

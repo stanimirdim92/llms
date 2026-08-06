@@ -17,6 +17,20 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 #### Fixed
 
+- **A Postgres volume with no application database no longer reports the stack as ready.** The
+  `postgres` healthcheck used `pg_isready`, which answers for the server and ignores the database
+  name it is given — so compose called Postgres healthy, started `api` and `worker` on that signal,
+  and both crash-looped with `FATAL: database "portfolio" does not exist`, which reads as an
+  application bug. The container now reports **unhealthy** and its health log carries the actual
+  `FATAL`, so dependent services never start.
+
+  *Upgrading:* nothing to do. If Postgres now reports unhealthy where it previously reported
+  healthy, the database really was missing — the volume's `initdb` ran before `POSTGRES_DB` had its
+  current value, or the database was dropped by hand. Neither is recoverable by restarting, because
+  the entrypoint initialises only an empty data directory: `docker compose down -v` and start again,
+  which recreates the database and re-runs the migrations. Note this destroys tenants, API keys and
+  the job queue, so re-mint a key afterwards.
+
 - **A re-ingest that fails partway no longer empties a working document.** Re-uploading a document
   used to delete its existing chunks before writing the new ones, so a failure in between left the
   document reporting `ingested` with nothing to search: a question scoped to it returned an answer

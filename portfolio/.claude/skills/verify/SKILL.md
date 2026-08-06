@@ -71,6 +71,20 @@ once at the start. `pg_ctl` refuses to run as root -- hence the `su postgres`.
 Outside this container, the compose Postgres/Redis serve the same purpose and need no port
 overrides. CI provides both and asserts none of the six suites skipped.
 
+**`docker compose down -v` makes the next run skip 53 tests, silently.** The suites use
+`portfolio_test` and `portfolio_migrations_test`, which live in the same cluster as the application
+database and are destroyed with the volume. They then fail to *connect*, which these fixtures treat
+as "no service, skip" -- so a run right after a volume reset reports `330 passed, 53 skipped` and
+looks green. Recreate them before believing it:
+
+    C="docker compose -f .docker/docker-compose.yml --env-file .env exec -T postgres"
+    $C createdb -U portfolio portfolio_test
+    $C createdb -U portfolio portfolio_migrations_test
+
+Nothing creates them automatically, on purpose: a fixture that created its own database would need
+CREATEDB rights and would mask an unreachable server as a pass. Observed 2026-08-06, immediately
+after the volume reset that fixed a missing application database.
+
 ## Trap 2: build the dev venv on 3.13, not 3.14
 
 `requires-python` is `>=3.13` while Docker and CI run 3.14. **`.python-version` pins the local

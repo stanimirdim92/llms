@@ -141,13 +141,30 @@ services:
       - DAC_OVERRIDE
       - FOWNER
     healthcheck:
-      # $POSTGRES_USER/$POSTGRES_DB here are the *container's own* shell-expanded env
-      # vars at healthcheck-execution time (single $, evaluated inside the container by
-      # CMD-SHELL) -- not compose's `${...}` substitution, which (see the env_file note
-      # above) can't see ../.env. Using compose substitution here would check the
-      # fallback default even when the container itself is running with a real
-      # ../.env-provided override, breaking the healthcheck for anyone who customizes it.
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      # `psql ... select 1`, NOT `pg_isready`, and the difference is a whole class of outage.
+      # **`pg_isready` does not connect to the database it is given.** It asks the server whether
+      # it is accepting connections and reports success even when `-d` names a database that does
+      # not exist. Measured in this exact container: `pg_isready -d absolutely_no_such_db` exits
+      # **0** ("accepting connections") where `psql -d absolutely_no_such_db -c 'select 1'` exits
+      # **2**. So the `-d "$$POSTGRES_DB"` this used to pass was decoration, and
+      # `depends_on: postgres: condition: service_healthy` gated on nothing that could catch it.
+      #
+      # The failure it hid, observed 2026-08-06: a volume whose `initdb` had already run held no
+      # `portfolio` database (the entrypoint bootstraps only an *empty* PGDATA -- see the volume
+      # note above -- so neither changing `POSTGRES_DB` nor dropping the database by hand is
+      # recoverable by restarting). Compose reported postgres healthy, started api and worker on
+      # that signal, and both then died in a loop with `FATAL: database "portfolio" does not
+      # exist` -- which reads as an application fault rather than an uninitialised volume.
+      #
+      # $POSTGRES_USER/$POSTGRES_DB are the *container's own* shell-expanded env vars at
+      # healthcheck-execution time (single `$`, evaluated inside the container by CMD-SHELL) --
+      # not compose's `${...}` substitution, which (see the env_file note above) cannot see
+      # ../.env. Using compose substitution here would check the fallback default even when the
+      # container itself runs with a real ../.env override.
+      #
+      # stdout is discarded and stderr is not: psql's own message is what `docker inspect`'s
+      # health log should carry when this fails.
+      test: ["CMD-SHELL", "psql -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -tAc 'select 1' > /dev/null"]
       interval: 10s
       timeout: 5s
       retries: 5

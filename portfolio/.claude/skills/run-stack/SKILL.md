@@ -245,6 +245,26 @@ registry, so nothing will ever read or delete them.
 empty volume. `docker compose down -v` first; note this now destroys the job queue as
 well as the registry, since both live in Postgres.
 
+**`api` and `worker` crash-looping with `FATAL: database "portfolio" does not exist`, and
+`postgres` reporting `unhealthy`** -- the volume's cluster was initialised without that database,
+either because `POSTGRES_DB` changed after first boot or because someone dropped the database by
+hand. The entrypoint bootstraps only an *empty* `PGDATA`, so restarting cannot recreate it and no
+amount of `up -d` will help:
+
+    docker compose -f .docker/docker-compose.yml --env-file .env down -v
+    docker compose -f .docker/docker-compose.yml --env-file .env up -d
+
+The tables not existing either is the same fault, not a second one: `init_db` runs `alembic
+upgrade head` at api boot and cannot connect at all while the database is missing, so nothing gets
+migrated. A clean volume creates the database, the api migrates to head on its own, and
+`select tablename from pg_tables where schemaname='public'` shows eight tables.
+
+Until 2026-08-06 postgres reported **healthy** in this state -- `pg_isready` answers for the
+server, not for `-d`, so `depends_on: service_healthy` started api and worker on a signal that
+could not see the problem. The healthcheck is `psql … -tAc 'select 1'` now, and the health log
+carries the `FATAL` itself: `docker inspect -f '{{range .State.Health.Log}}{{.Output}}{{end}}'
+portfolio-postgres-1`.
+
 **Permission errors writing `data/uploads` or `data/raw_pdfs`** -- the images run as
 non-root `appuser` and a bind mount inherits host ownership. Either
 `chmod -R o+rwX data` once on the host, or switch the volume to a named volume. The
