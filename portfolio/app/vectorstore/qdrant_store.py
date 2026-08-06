@@ -138,23 +138,18 @@ def _build_filter(chunk_types: list[str] | None, tenant_id: str, doc_ids: list[s
     `api/deps.py::current_tenant` -- i.e. from a verified API key, never from a request body.
     Accepting a caller-supplied scope here is exactly the vulnerability this replaced.
 
-    **One tenant, via `MatchValue`, not a list via `MatchAny`.** Until the curated corpus was
-    removed this matched `[GLOBAL_TENANT, tenant_id]`, so every read also returned documents
-    nobody had uploaded. That is gone, and with it the only reason this was ever a list -- a
-    single-element `MatchAny` would work identically and would invite someone to add a second
-    element later, which is precisely the leak this function exists to prevent.
+    **One tenant, via `MatchValue`, not a single-element `MatchAny`.** A list invites a second
+    element, which is exactly the leak this function exists to prevent. It *was* a list, matching
+    `[GLOBAL_TENANT, tenant_id]`, until the shared corpus was removed.
 
-    **`tenant_id` is required and must be non-empty.** It used to accept `None`, which meant
-    "corpus only" and was safe *because* the corpus existed. With the corpus gone the same
-    permissive shape would mean "no tenant condition at all" -- every tenant's chunks, from a
-    caller who supplied nothing. Raising is the only defensible reading of a missing tenant on
-    the one code path that decides who may read what.
+    **`tenant_id` is required and must be non-empty.** It once accepted `None`, meaning "corpus
+    only" -- safe because the corpus existed. Without it, the same permissive shape means no tenant
+    condition at all: every tenant's chunks, to a caller who supplied nothing.
 
-    `QdrantVectorStore`'s dict-based filter shorthand only supports flat equality
-    matching (no `$in`/`$and`) and is deprecated by the library itself -- building a
-    real `qdrant_client.models.Filter` directly is the supported path. `must=[...]` is
-    the AND, `MatchAny` is the IN. Metadata lives under LangChain's `metadata` payload
-    key, hence the `metadata.<field>` key prefix.
+    Must be a real `qdrant_client.models.Filter`. `QdrantVectorStore`'s dict shorthand supports only
+    flat equality (no `$in`/`$and`) and is deprecated by the library; getting that wrong does not
+    error, it silently breaks tenant scoping. `must=[...]` is the AND, `MatchAny` the IN, and
+    LangChain nests metadata under a `metadata` payload key -- hence the `metadata.` prefix.
     """
     if not tenant_id:
         msg = "tenant_id is required: an absent tenant would build a filter matching every tenant"

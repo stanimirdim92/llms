@@ -79,25 +79,17 @@ _DOC_ID_MARKER = re.compile(r"\bdoc[_\s-]?id\s*[=:]\s*([^\s,;]+)", re.IGNORECASE
 # closed, but on the form the API docs tell callers to use.
 _ID_EDGE_NOISE = "\"'`.,;:!?)]}>"
 
-# A candidate token only counts as an id if it contains a digit -- applied to bare `_DOC_ID_SHAPE`
-# matches as well as to marker captures, though only the marker form is loose enough for it to
-# matter. Every id this project mints is `{32 hex}-{32 hex}`, so "contains a digit" rather than
-# "starts with" one: either run can in principle be digit-free hex, which is vanishingly unlikely
-# ((6/16)^32) but not impossible, so this is a heuristic and not a guarantee. Prose does not:
-# a question quoting SQL -- "why does `WHERE doc_id = 'x'` return nothing?" -- or a template
-# (`doc_id=%(doc_id)s`) used to be read as naming a document, fail to match any row, and refuse
-# the entire question with a 404 that named a document the user had not asked about. Refusing
-# rather than answering is right when a document *was* named (rule 11); this is about not
-# hallucinating that one was.
+# A candidate token counts as an id only if it contains a digit. A **heuristic, not a guarantee**:
+# ids are `{32 hex}-{32 hex}`, and an all-letter hex run is possible at ~(6/16)^32. It exists
+# because prose does not contain digits where ids do -- a question quoting SQL
+# (`WHERE doc_id = 'x'`) or a template (`doc_id=%(doc_id)s`) was read as naming a document and
+# refused the whole question with a 404 naming something the user never asked about. Refusing is
+# right when a document *was* named; this stops us inventing that one was.
 _ID_MUST_CONTAIN_A_DIGIT = re.compile(r"\d")
 
-# The shape `upload_doc_id` generates: `{tenant_id}-{sha256[:32]}`, where tenant_id is a
-# `uuid7().hex`. Matched bare so an id pasted straight out of `GET /v1/documents` works without
-# the marker. Two fixed-length hex runs are specific enough not to collide with prose.
-#
-# The `|global` alternative that used to sit in this pattern went with the shared corpus. It was
-# there because corpus documents were tagged `global`, so their ids were `global-{32 hex}` -- a
-# shape no tenant can produce now, since `global` is not a `uuid7().hex`.
+# The shape `upload_doc_id` generates: `{tenant_id}-{sha256[:32]}`, tenant_id being a `uuid7().hex`.
+# Matched bare so an id pasted out of `GET /v1/documents` works without the marker. Two
+# fixed-length hex runs are specific enough not to collide with prose.
 _DOC_ID_SHAPE = re.compile(r"\b[0-9a-f]{32}-[0-9a-f]{32}\b", re.IGNORECASE)
 
 
@@ -213,15 +205,13 @@ def resolve_scope(question: str, records: list[DocumentRecord]) -> DocumentScope
     accepting it safe, since a `doc_id` embeds a tenant prefix and would otherwise look
     authoritative enough to trust.
     """
-    # Filenames are matched by *substring against the real names*, not by pulling
-    # filename-shaped tokens out of the prose. The token regex cannot span a space or a
-    # parenthesis, so `Draft Report.pdf` used to yield only `Report.pdf` -- which resolved to
-    # a different, real document and answered confidently about the wrong file. Matching the
-    # known names against the question inverts that: whatever characters a filename contains,
-    # it is found, because the candidate set is closed and small.
+    # Matched by substring against the **real names**, not by pulling filename-shaped tokens out of
+    # the prose: the token regex cannot span a space, so `Draft Report.pdf` yielded `Report.pdf`,
+    # which resolved to a *different real document* and answered confidently about the wrong file.
+    # Inverting it works because the candidate set is closed and small.
     #
-    # Longest first, and each match is masked out of the remaining text, so `Report.pdf` does
-    # not also fire inside `Draft Report.pdf` and scope to two documents.
+    # Longest first, each match masked out of the remaining text, so `Report.pdf` does not also fire
+    # inside `Draft Report.pdf` and scope to two documents.
     remaining = question
     # (position in the question, record, label) so results come back in the order the user
     # named them rather than in match order -- `scoped_to` echoes this straight back, and

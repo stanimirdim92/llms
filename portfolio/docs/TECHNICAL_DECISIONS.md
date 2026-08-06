@@ -588,6 +588,60 @@ must not become the API's outage. The tradeoff is that protection disappears exa
 load may be why Redis is struggling, which is why the log is loud and why `docker-compose.yml`
 gates `api` on redis being healthy — otherwise the gap would be silently open at startup.
 
+## Secrets in Settings, and the config comments that moved here
+
+**Decision.** Every credential on `Settings` is a `SecretStr`. Not defence in depth for its own
+sake -- it closes one specific, easy accident. That object holds a live Anthropic key, a Voyage key,
+a LangSmith key and the Postgres password, so anything rendering it renders all four: a
+`log.info(..., settings=settings)` while debugging, a `repr()` in a traceback frame a crash reporter
+serialises, an exception from `model_validator` quoting the model. `SecretStr` prints `**********`
+for all of those, and **this repository is public**, so a key reaching a log someone pastes is
+disclosed the moment it is pasted.
+
+The cost is that code genuinely needing the characters says `.get_secret_value()`, which is a
+readable marker of exactly where a secret escapes. **Grep for it; do not trust a count.** A count
+lived in `config.py` claiming eight and naming four, and it was wrong in both halves -- a number
+nobody can reconcile is worse than no number, because the reader assumes the list is the stale part
+and the count is right.
+
+The provider clients need no change: `ChatAnthropic.anthropic_api_key`,
+`VoyageAIEmbeddings.voyage_api_key` and `VoyageAIRerank.voyage_api_key` are declared `SecretStr`
+themselves (verified against the installed packages), so passing these through removes a coercion
+rather than adding one.
+
+### Why this section exists
+
+`app/config.py` carried 99 comment lines against 270 of code, and an external review named the
+density as the main thing harming maintainability: "reviewers must read historical incident reports
+to understand small functions". The rule the comments were trimmed against is the repo's own rule 15
+-- *a comment records the failure, not the mechanism*, and not the history of how the mechanism
+arrived. So each one kept the sentence saying what breaks, and the narrative around it landed here.
+
+Nothing was deleted outright. What moved:
+
+- **`figure_caption_concurrency`** was ingestion's sequential stage: a 15-figure paper meant 15
+  Anthropic round-trips back to back, which no amount of CPU touches. Bounded rather than unbounded
+  because the ceiling is Anthropic's rate limit and a 429 storm is slower than running serially.
+- **`figure_min_dimension_px = 64`** came from a real one-page CV that yielded five "figures", all
+  ~20x20px icons; each cost a vision call and became a retrievable chunk, and the vision model
+  answered each with "I'm not able to see the image", which then *won reranking*.
+- **`db_pool_size`/`db_max_overflow`** are sized for one gunicorn worker's own engine --
+  `--preload` does not eagerly open a connection, so pools are not shared across forks.
+- **`docling_num_threads`** reuses Docling's own `DOCLING_NUM_THREADS` (its `AcceleratorOptions` is
+  a `BaseSettings` with `env_prefix="DOCLING_"`), so one value configures both paths instead of two
+  competing knobs. Docling's own default of 4 leaves most of a modern box idle during layout and
+  table inference, which is the CPU-bound bulk of ingestion.
+- **`worker_concurrency` was once a field** here, read by nothing, whose default coincidentally
+  matched the worker CMD's `${WORKER_CONCURRENCY:-2}` fallback -- so the two agreed by accident and
+  a `.env` change would have moved only one. Deleted; the CMD is the single source.
+- **CORS defaults** drifted from the original hardcoded `CORSMiddleware` call as `DELETE` and the
+  rate-limit `expose_headers` were added. `DELETE` is there because revocation is the first thing a
+  browser client needs and the one call nobody wants to debug under pressure.
+- **`redis_max_connections`** was added after measuring `limits` 5.8.0's default of 100 and its
+  `MaxConnectionsError` on exhaustion rather than queueing.
+- **`manifest_path` and `raw_pdf_dir`** pointed at `data/manifest.json` and the PDFs
+  `scripts/fetch_corpus.py` downloaded; both went with the curated corpus (2026-08-03).
+
 ## Async design: where it helps and where it doesn't
 
 The `/ask` path is genuinely I/O-bound end to end (Qdrant, Voyage, Anthropic) and is async

@@ -17,24 +17,12 @@ DATA_DIR = PACKAGE_ROOT / "data"
 class Settings(BaseSettings):
     """Every credential is a `SecretStr`, not a `str`.
 
-    Not defence in depth for its own sake -- it closes a specific, easy accident. `Settings` is
-    one object holding a live Anthropic key, a Voyage key, a LangSmith key and the Postgres
-    password, and anything that renders it renders all four: a `log.info(..., settings=settings)`
-    while debugging, a `repr()` in a traceback frame that a crash reporter serialises, an
-    exception from `model_validator` that quotes the model. `SecretStr` makes all of those print
-    `**********`, and this repository is public, so a key that reaches a log someone pastes is
-    disclosed. The cost is that the places genuinely needing the characters say
-    `.get_secret_value()`, which is a readable marker of exactly where a secret escapes. There are
-    six, and grep rather than trust this list: four in this file (`redis_url`,
-    `_assemble_database_url`, the LangSmith bridge, `require_provider_credentials`), plus
-    `app/db.py`'s engine and `app/worker/app.py`'s procrastinate DSN. It said eight/six before,
-    which was wrong in both halves while naming only four places -- a count nobody can reconcile
-    is worse than no count, because the reader assumes the list is the stale part.
+    One object holds four live secrets, so anything that renders it renders all four -- a
+    `log.info(..., settings=settings)`, a `repr()` in a serialised traceback frame. This repository
+    is public. `.get_secret_value()` therefore marks every point a secret escapes; grep for it
+    rather than trusting any count written down here.
 
-    The provider clients need no change: `ChatAnthropic.anthropic_api_key`,
-    `VoyageAIEmbeddings.voyage_api_key` and `VoyageAIRerank.voyage_api_key` are all declared
-    `SecretStr` themselves (verified against the installed packages), so passing these through
-    stops one coercion from happening rather than adding one.
+    `docs/TECHNICAL_DECISIONS.md` § Secrets in Settings has the rest.
     """
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
@@ -42,23 +30,19 @@ class Settings(BaseSettings):
     anthropic_api_key: SecretStr = Field(default=SecretStr(""))
     answer_model: str = Field(default="claude-sonnet-5")
     figure_caption_model: str = Field(default="claude-sonnet-5")
-    # Figure captions are one Anthropic call per figure and were the sequential stage of
-    # ingestion -- a 15-figure paper meant 15 round-trips back to back, which no amount of
-    # CPU or GPU touches. Kept modest rather than unbounded: the ceiling here is Anthropic's
-    # rate limit, and a 429 storm would be slower than running sequentially.
+    # Bounded, not unbounded: the ceiling is Anthropic's rate limit, and a 429 storm is slower
+    # than running sequentially.
     figure_caption_concurrency: int = Field(default=5)
 
-    # Docling's PictureItem covers *any* embedded image region, which includes contact icons,
-    # logos, bullet glyphs and decorative rules. A one-page CV yielded 5 "figures" this way, all
-    # icons, and each cost a vision call and became a retrievable chunk. Both dimensions must
-    # clear this to be captioned. At images_scale=1.5 a 16pt icon renders around 33px, so 64
-    # excludes icons while leaving any real chart or micrograph (hundreds of px) untouched.
+    # Docling's PictureItem is *any* embedded image region -- icons, logos, rules included. Both
+    # dimensions must clear this. At images_scale=1.5 a 16pt icon renders ~33px, so 64 excludes
+    # icons and leaves real charts (hundreds of px) untouched. Lower it and decorative glyphs
+    # become vision calls and retrievable chunks.
     figure_min_dimension_px: int = Field(
         default=64, description="Skip captioning images smaller than this in either dimension."
     )
-    # A caption is the figure's *only* searchable text, so an unusable one is worse than none:
-    # it becomes a chunk that competes with real content in retrieval. Anything shorter than this
-    # cannot describe a figure usefully.
+    # A caption is the figure's *only* searchable text, so an unusable one is worse than none --
+    # it becomes a chunk competing with real content in retrieval.
     figure_min_caption_chars: int = Field(
         default=40, description="Captions shorter than this are treated as unusable and dropped."
     )
@@ -82,18 +66,9 @@ class Settings(BaseSettings):
     qdrant_url: str = Field(default="http://localhost:6333")
     qdrant_collection: str = Field(default="portfolio_rag")
 
-    # Split vars are the configurable surface (e.g. rotate POSTGRES_PASSWORD alone
-    # without touching a DSN string); DATABASE_URL is an escape hatch that overrides all
-    # of them at once when set. `postgresql+psycopg` (psycopg 3, already pinned in
-    # pyproject.toml) has native asyncio support in the same package -- unlike MySQL's
-    # psycopg2/aiomysql split, there's no separate async driver to add for Postgres.
-    #
-    # postgres_user/password/db deliberately reuse the exact env var names
-    # (POSTGRES_USER/PASSWORD/DB) the official `postgres` docker image itself reads to
-    # initialize the database -- one credential trio serves both consumers instead of
-    # a second DB_USER/PASSWORD/NAME copy that has to be kept in sync with it.
-    # db_host/db_port/db_driver have no such upstream name to reuse (the postgres image
-    # doesn't take a "what port am I on" env var), so those stay ours alone.
+    # `POSTGRES_USER`/`PASSWORD`/`DB` are the names the official postgres image reads itself, so
+    # one trio serves both consumers -- do not reintroduce a parallel `DB_USER`/`PASSWORD`/`NAME`.
+    # `DATABASE_URL` overrides all of them at once when set.
     db_driver: str = Field(default="postgresql+psycopg")
     db_host: str = Field(default="localhost")
     db_port: int = Field(default=5432)
@@ -105,21 +80,15 @@ class Settings(BaseSettings):
         description="Full DSN override. If unset, built from db_host/db_port/db_driver/postgres_user/password/db.",
     )
 
-    # Sized for a single gunicorn worker's own engine (each worker gets its own pool --
-    # api/Dockerfile's --preload doesn't eagerly open a connection, so this isn't shared
-    # across forks). GUNICORN_WORKERS * (db_pool_size + db_max_overflow) must stay under
-    # Postgres's max_connections (100 by default): at the default of 2 workers that's 30,
-    # comfortably under; a real deployment running the ~17 workers an 8vCPU box wants
-    # (2*cpu+1) would hit ~255 and needs either a lower db_pool_size here, a raised
-    # Postgres max_connections, or a pooler (PgBouncer) in front -- not added speculatively.
+    # Per gunicorn worker, not shared across forks. **`GUNICORN_WORKERS * (pool_size +
+    # max_overflow)` must stay under Postgres's `max_connections`** (100 by default): 2 workers is
+    # 30, but the ~17 an 8-vCPU box wants would reach ~255 and exhaust it. Raising workers means
+    # lowering this, raising `max_connections`, or adding PgBouncer.
     db_pool_size: int = Field(default=10)
     db_max_overflow: int = Field(default=5)
     db_pool_timeout: int = Field(default=30)
     db_pool_recycle: int = Field(default=1800)
 
-    # `manifest_path` and `raw_pdf_dir` were removed with the curated corpus: they pointed at
-    # `data/manifest.json` (the arXiv id list) and the PDFs `scripts/fetch_corpus.py` downloaded
-    # into `data/raw_pdfs`. Nothing reads either now -- every document arrives as an upload.
     processed_dir: Path = Field(default=DATA_DIR / "processed")
     upload_dir: Path = Field(default=DATA_DIR / "uploads")
     max_upload_size_mb: int = Field(default=20)
@@ -129,50 +98,31 @@ class Settings(BaseSettings):
 
     chunk_max_tokens: int = Field(default=700)
 
-    # Docling's own AcceleratorOptions defaults num_threads to 4, which leaves most of a
-    # modern box idle during layout/table inference (the CPU-bound bulk of ingestion).
-    # None means "detect at runtime" -- see parser.py. Note the env var for this field,
-    # DOCLING_NUM_THREADS, is deliberately the same one Docling's AcceleratorOptions
-    # reads itself (it's a BaseSettings with env_prefix="DOCLING_"), so setting it once
-    # configures both paths consistently rather than having two competing knobs.
+    # `DOCLING_NUM_THREADS` is the same env var Docling's own `AcceleratorOptions` reads
+    # (`env_prefix="DOCLING_"`), so one setting configures both paths rather than two competing
+    # knobs. Docling's own default is 4, which leaves a modern box idle; `None` detects at runtime.
     docling_num_threads: int | None = Field(
         default=None, description="CPU threads for Docling model inference. None = os.cpu_count()."
     )
 
-    # WORKER_CONCURRENCY is deliberately NOT a field here. It is read straight from the
-    # container environment by the worker's CMD (`procrastinate --concurrency
-    # ${WORKER_CONCURRENCY:-2}`), because procrastinate's concurrency is a CLI argument and
-    # nothing in Python ever sees it. There *was* a `worker_concurrency` field, never read by
-    # anything, whose default happened to match the CMD's fallback -- so the two agreed by
-    # coincidence and a `.env` change would have moved only one of them. The reasoning that
-    # field carried is worth keeping, though: neither knob means anything alone. Their *product*
-    # competes for cores, so on the 8-vCPU target 2 x 4 fits and 4 x 8 oversubscribes by 4x,
-    # making concurrent ingests slower than running them one at a time -- context-switching on
-    # top of thread contention inside Docling's layout and table-structure passes. Raise one
-    # only alongside lowering the other.
+    # **`WORKER_CONCURRENCY` is deliberately not a field here** -- procrastinate takes it as a CLI
+    # argument, so nothing in Python reads it and a field would be a second value drifting from the
+    # CMD's fallback. Its *product* with `docling_num_threads` competes for cores: on the 8-vCPU
+    # target 2x4 fits and 4x8 oversubscribes 4x, making concurrent ingests slower than serial ones.
+    # Raise one only alongside lowering the other.
 
-    # Defaults no longer match the original hardcoded CORSMiddleware call: DELETE and the
-    # rate-limit expose-headers were added below, for the reasons given there. Kept close to it
-    # otherwise --
-    # override via .env once there's a real frontend origin to lock this down to.
-    #
-    # The wildcard default is inert *today* and must not survive a browser UI. It is inert
-    # because cors_allow_credentials is False and cors_allow_headers is empty: a browser
-    # can't attach `x-api-key` to a cross-origin request without it being allow-listed, so
-    # the preflight fails and the underlying request 401s. Nothing authenticated is
-    # reachable, so no data is exposed. What makes it dangerous is turning on credentials
-    # -- see the validator below.
+    # **The wildcard default is inert only while `cors_allow_credentials` is False and
+    # `cors_allow_headers` is empty** -- a browser then cannot attach `x-api-key`, so nothing
+    # authenticated is reachable. It must not survive a browser UI; the validator below refuses the
+    # dangerous pair.
     cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])
-    # DELETE is in the list because `DELETE /v1/keys/{key_id}` exists: the key-management page
-    # is the first thing a browser client needs, and revocation is the one action there whose
-    # failure matters. It was omitted, which is inert today (no browser client) and would have
-    # surfaced as a preflight rejection on the one call nobody wants to debug in a hurry.
+    # DELETE because `DELETE /v1/keys/{key_id}` exists -- omitting it surfaces as a preflight
+    # rejection on revocation, the one call nobody wants to debug in a hurry.
     cors_allow_methods: list[str] = Field(default_factory=lambda: ["GET", "POST", "DELETE"])
     cors_allow_headers: list[str] = Field(default_factory=list)
-    # `X-RateLimit-*` is on every response by design (see `rate_limit.py`), but a browser cannot
-    # *read* a non-safelisted response header unless it is exposed here -- so without this the
-    # headers arrive and `fetch` cannot see them, which reads as the API not sending them.
-    # `Retry-After` for the same reason: it is what a client paces itself on after a 429.
+    # A browser cannot *read* a non-safelisted response header unless it is exposed here, so
+    # without this the `X-RateLimit-*` headers arrive and `fetch` cannot see them -- which reads as
+    # the API not sending them. `Retry-After` likewise: it is what a client paces itself on.
     cors_expose_headers: list[str] = Field(
         default_factory=lambda: ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"]
     )
@@ -183,21 +133,16 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO")
     log_json: bool = Field(default=False)  # True in containers; console-friendly locally
 
-    # Redis backs rate limiting (app/rate_limit.py) -- its first real consumer; the service
-    # had been running as unused infra. Counters must be shared, not per-process: with
-    # GUNICORN_WORKERS > 1, in-process counters would let through workers x limit requests.
+    # Counters must be shared, not per-process: with `GUNICORN_WORKERS > 1`, in-process counters
+    # let through workers x limit requests.
     redis_host: str = Field(default="localhost")
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
     redis_username: str = Field(default="")
     redis_password: SecretStr = Field(default=SecretStr(""))
-    # Passed to the `limits` Redis storage explicitly because **`limits` defaults it to 100**
-    # (measured against 5.8.0, not read off a doc page), and its pool raises
-    # `MaxConnectionsError: Too many connections` rather than queueing -- so the failure mode is
-    # 500s under exactly the concurrency rate limiting exists to absorb. This is per *process*,
-    # so the real ceiling is this times GUNICORN_WORKERS; sized above the gunicorn worker's own
-    # concurrency rather than tuned, because an idle pooled connection costs almost nothing and
-    # an exhausted pool costs a request.
+    # Passed explicitly because **`limits` defaults it to 100** (measured against 5.8.0) and its
+    # pool raises `MaxConnectionsError` rather than queueing -- so the default turns burst load into
+    # 500s, under exactly the concurrency rate limiting exists to absorb. Per *process*.
     redis_max_connections: int = Field(default=512)
 
     # Per-key request budgets, per `rate_limit_window_seconds`. Uploads get a much

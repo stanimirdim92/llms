@@ -256,6 +256,34 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-06 (later) — the over-commenting pass, and what it found
+
+The user said the code is hard to read; the external review's §7 says the same ("reviewers must read
+historical incident reports to understand small functions"). Both are right, and I had been making it
+worse all session -- every fix landed with a ten-line comment.
+
+The rule applied: rule 15 says a comment records the *failure*, not the mechanism -- and not the
+history of how the mechanism arrived. So each comment kept the sentence saying what breaks, and the
+narrative moved to `docs/TECHNICAL_DECISIONS.md` § Secrets in Settings, which now also carries an
+explicit list of what was displaced from where. Nothing was deleted outright.
+
+**`app/config.py`: 369 -> 314 lines, 99 -> 56 comment lines.** The clear win, and the file the review
+named. What went: a `get_secret_value()` count that was wrong in both halves, the `worker_concurrency`
+field's obituary, `manifest_path`/`raw_pdf_dir` archaeology, and the CORS defaults' drift narrative.
+What stayed, tightened: every "must stay under", "do not reintroduce", "defaults it to 100".
+
+**And the useful negative result: the other two files mostly did not need it.**
+`document_scope.py` lost 10 lines, `qdrant_store.py` 5. Their comments explain non-obvious *regex*
+and *filter* behaviour -- first-match-wins alternation ordering, why filenames are matched against
+real names rather than pulled from prose, why an empty `MatchAny` is not the same as no condition.
+That is exactly where a comment earns its place, so trimming further would have deleted constraints
+to hit a number. Only the archaeology went: the `|global` alternative, the corpus-era filter shape.
+
+Worth stating plainly: **the repo-wide comment count barely moved** (599/5495 -> 610/6345), because
+this session added `retriever.py`, the migrations and three test suites, all commented. The ratio
+improved from 10.9% to 9.6%. The remaining density is concentrated in `streamlit_app/Home.py` (55)
+and `figure_extractor.py` (35), neither examined yet.
+
 ### 2026-08-06 — review P0 #2 and #3: cross-store reads, and Alembic
 
 **P0 #2 — Qdrant and Postgres disagreeing about what is searchable.** Points are upserted, *then*
