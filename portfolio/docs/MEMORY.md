@@ -226,6 +226,16 @@ more discussion.
    is why they work. If a fresh session cannot see the three agents, move them to the repo-root
    `.claude/agents/` and accept that their descriptions then load for the three dormant course
    directories too. One restart answers it.
+
+   **Answered, mostly, 2026-08-06.** A session started at the repo root listed *only* the built-in
+   agent types (`claude`, `Explore`, `general-purpose`, `Plan`, `claude-code-guide`,
+   `statusline-setup`) — none of the six in `portfolio/.claude/agents/`. So walk-up discovery is
+   real and the definitions are invisible from a repo-root session, exactly as predicted. The
+   delegated sweep that session had to run as `general-purpose` with the brief written inline, which
+   worked well but pays none of the definitions' accumulated false-positive suppression. Still
+   unmeasured: whether a session started **in `portfolio/`** sees them; that is the other half, and
+   the decision (move to repo root vs. always start in `portfolio/`) waits on it. Cheap test: start
+   a session there and read the agent list.
 3. **`processed_dir` disk footprint at 100k documents.** Still unmeasured — the attempt failed
    (Docling `partial_success`, 1/16 pages, fifteen timeouts on arXiv 2008.10896). Needs
    hardware that can finish a parse. Determines whether processed artefacts can stay on local
