@@ -947,12 +947,6 @@ critical.** Not diminishing returns -- round 3 was the most valuable. In order:
 passes under a correctness bug. Assert content, and make the fixture able to distinguish wrong
 content from right -- captions derived from the input, not from batch position.
 
-**Also learned about the tooling:** four of the ~40 numbers I wrote into comments this session
-were wrong on checking (`libssl3` "a few hundred KB" -- it is already in the base image;
-"six transitive packages" -- two; "32-char doc_id" -- 65; "hangs with no timeout" --
-`huggingface_hub` sets a 10s ETag timeout). Rule 13 applies to prose in comments, not just to
-dependency claims.
-
 **Standing gaps this session did not close:** whether Anthropic truncates the *citation list*
 along with the text under `max_tokens` is asserted in three places and unverified; and the nginx
 image's `apt-get` layer cannot build behind this sandbox's proxy (the config itself is proven to

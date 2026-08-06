@@ -288,7 +288,7 @@ services:
         # Both must match what the api service runs with -- nginx sits in front, so
         # whichever limit is smaller is the one that actually applies, silently. See
         # nginx/Dockerfile for what each failure looks like when they drift.
-        REQUEST_TIMEOUT: ${GUNICORN_TIMEOUT:-600}
+        REQUEST_TIMEOUT: ${GUNICORN_TIMEOUT:-100}
         MAX_UPLOAD_MB: ${MAX_UPLOAD_SIZE_MB:-20}
         # Edge flood shield, per IP. Deliberately NOT derived from RATE_LIMIT_* -- those are
         # per-API-key fairness budgets and these are volume limits; nginx/Dockerfile explains why

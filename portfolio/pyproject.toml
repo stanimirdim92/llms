@@ -29,7 +29,8 @@ dependencies = [
     # `implementation="redispy"` uses the redis-py already here.
     "limits>=5.8.0,<6.0.0",
     "fastapi[standard]>=0.141.1,<0.150.0",
-    "uvicorn>=0.51.0,<0.60.0",
+    "uvicorn>=0.52.0,<0.60.0",
+    "uvicorn-worker>=0.4.0,<=1.0.0",
     "sqlmodel>=0.0.39,<0.0.50",
 
     # AI Engineer Portfolio (track) — RAG / eval / agent additions.

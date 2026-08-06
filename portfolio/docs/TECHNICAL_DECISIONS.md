@@ -765,17 +765,17 @@ error anywhere. This is the same class of bug as the postgres healthcheck readin
 fallback password while the container ran with the real one.
 
 **Timeouts are wired together rather than set independently.** nginx's `proxy_read_timeout`
-derives from the same value as gunicorn's `--timeout` (600s), because whichever is shorter
+derives from the same value as gunicorn's `--timeout` (100s), because whichever is shorter
 silently becomes the real budget: nginx first gives a 504 while the worker keeps burning CPU
 on an abandoned request; gunicorn first SIGKILLs the worker mid-parse, so the client gets a
 bare connection failure that never names the timeout. `proxy_connect_timeout` is deliberately
 *not* wired to it and stays at 75s — nginx documents that this one "cannot usually exceed 75
 seconds", so the 315s previously configured there was never real.
 
-`client_body_timeout` was 32s and is now also 600s. It bounds the gap between reads of the
+`client_body_timeout` was 32s and is now also 100s. It bounds the gap between reads of the
 request body, and 32s kills real uploads from a phone on mobile data — a 408 that reads as a
 server fault. **It is the one timeout an async job queue will not make irrelevant**: the bytes
-still have to arrive over the wire regardless of what processes them afterwards. The 600s
+still have to arrive over the wire regardless of what processes them afterwards. The 100s
 gunicorn timeout, by contrast, is a stopgap for synchronous ingestion and should come back
 down once uploads are jobs (`docs/EPIC_4_PLAN.md` 5.1) — a 10-minute worker timeout means one
 stuck request holds a worker for ten minutes.

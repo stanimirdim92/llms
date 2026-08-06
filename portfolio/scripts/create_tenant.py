@@ -34,7 +34,6 @@ async def _mint_key(tenant_id: str, name: str, expires_in_days: int | None) -> s
     only its hash is stored, so it cannot be recovered later, only revoked and replaced.
     """
     key = generate_key()
-    expires_at = deadline(expires_in_days)
     async with get_session() as session:
         session.add(
             ApiKey(
@@ -43,7 +42,7 @@ async def _mint_key(tenant_id: str, name: str, expires_in_days: int | None) -> s
                 key_hash=hash_key(key),
                 prefix=display_prefix(key),
                 name=name,
-                expires_at=expires_at,
+                expires_at=deadline(expires_in_days),
             )
         )
         await session.commit()
