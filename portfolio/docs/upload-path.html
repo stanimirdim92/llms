@@ -1,0 +1,937 @@
+<title>Upload path, file by file</title>
+
+<style>
+  :root {
+    --paper: #F1F4F3;
+    --raised: #FFFFFF;
+    --sunk: #E7EBEA;
+    --ink: #171E1D;
+    --ink-soft: #556260;
+    --ink-faint: #7C8886;
+    --rule: #D2DAD8;
+    --accent: #0A6560;
+    --accent-soft: #E2EDEB;
+    --boundary: #98470F;
+    --boundary-soft: #F6EAE0;
+    --lane-api: #0A6560;
+    --lane-worker: #454A88;
+    --lane-ui: #8A5A0C;
+
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0E1413;
+      --raised: #161E1D;
+      --sunk: #1B2422;
+      --ink: #E2E9E7;
+      --ink-soft: #9BA9A6;
+      --ink-faint: #7A8785;
+      --rule: #283432;
+      --accent: #55B4AC;
+      --accent-soft: #16302E;
+      --boundary: #DE9660;
+      --boundary-soft: #2E2115;
+      --lane-api: #55B4AC;
+      --lane-worker: #9096DC;
+      --lane-ui: #D8A45E;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #0E1413;
+    --raised: #161E1D;
+    --sunk: #1B2422;
+    --ink: #E2E9E7;
+    --ink-soft: #9BA9A6;
+    --ink-faint: #7A8785;
+    --rule: #283432;
+    --accent: #55B4AC;
+    --accent-soft: #16302E;
+    --boundary: #DE9660;
+    --boundary-soft: #2E2115;
+    --lane-api: #55B4AC;
+    --lane-worker: #9096DC;
+    --lane-ui: #D8A45E;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #F1F4F3;
+    --raised: #FFFFFF;
+    --sunk: #E7EBEA;
+    --ink: #171E1D;
+    --ink-soft: #556260;
+    --ink-faint: #7C8886;
+    --rule: #D2DAD8;
+    --accent: #0A6560;
+    --accent-soft: #E2EDEB;
+    --boundary: #98470F;
+    --boundary-soft: #F6EAE0;
+    --lane-api: #0A6560;
+    --lane-worker: #454A88;
+    --lane-ui: #8A5A0C;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .measure { max-width: 42rem; }
+
+  /* ---- masthead ---- */
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(1.75rem, 4vw, 2.6rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+    margin-top: 0.5rem;
+  }
+
+  .standfirst {
+    font-size: 1.06rem;
+    color: var(--ink-soft);
+    margin-top: 1rem;
+  }
+
+  .masthead-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .masthead-meta b { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---- headings ---- */
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  h3 {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  section { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  p { max-width: 42rem; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--sunk);
+    padding: 0.1em 0.32em;
+    border-radius: 2px;
+  }
+
+  /* ---- diagram ---- */
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+
+  .scroller { overflow-x: auto; }
+
+  figure svg {
+    display: block;
+    font-family: var(--sans);
+    min-width: 640px;
+    max-width: 100%;
+    height: auto;
+    color: var(--ink-soft);
+  }
+
+  figcaption {
+    font-size: 0.87rem;
+    color: var(--ink-soft);
+    max-width: 42rem;
+  }
+
+  /* ---- steps ---- */
+
+  .steps { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 0 1.25rem;
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--lane);
+    padding: 1.15rem 1.35rem;
+  }
+
+  .step[data-lane="api"] { --lane: var(--lane-api); }
+  .step[data-lane="worker"] { --lane: var(--lane-worker); }
+  .step[data-lane="ui"] { --lane: var(--lane-ui); }
+  .step[data-lane="boot"] { --lane: var(--rule); }
+
+  .step-n {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--lane);
+    padding-top: 0.05rem;
+  }
+
+  .step-body { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+
+  .step-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; }
+
+  .file {
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  .lane-chip {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lane);
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .step p { margin: 0; font-size: 0.95rem; max-width: 46rem; }
+
+  .step ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .step li { font-size: 0.93rem; max-width: 44rem; }
+
+  .guards {
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    border-top: 1px dotted var(--rule);
+    padding-top: 0.5rem;
+  }
+
+  .guards b {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+    margin-right: 0.4rem;
+  }
+
+  .step.is-boundary {
+    background: var(--boundary-soft);
+    border-color: var(--boundary);
+    border-left-color: var(--boundary);
+  }
+
+  .step.is-boundary .step-n { color: var(--boundary); }
+
+  /* ---- table ---- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  thead th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+    padding: 0 0.9rem 0.5rem 0;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  tbody td {
+    padding: 0.6rem 0.9rem 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  tbody td:first-child {
+    font-family: var(--mono);
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+
+  tbody td:nth-child(2) {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  /* ---- callout ---- */
+
+  .note {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .note p { max-width: 44rem; }
+  .note p + p { margin-top: 0.6rem; }
+
+  a { color: var(--accent); }
+  a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">portfolio · ingestion</div>
+    <h1>The upload path, file by file</h1>
+    <p class="standfirst">
+      What actually runs between a client sending bytes and those bytes becoming answerable.
+      Traced from source at commit <code>6f9e3ab</code> — not from the README, which describes
+      the shape rather than the order.
+    </p>
+    <div class="masthead-meta">
+      <span><b>Two doors:</b> HTTP + worker, or Streamlit in-process</span>
+      <span><b>Three processes</b></span>
+      <span><b>Two atomic boundaries</b></span>
+    </div>
+  </header>
+
+  <figure>
+    <div class="scroller">
+      <svg viewBox="0 0 960 410" role="img"
+           aria-label="The upload path across three processes. The api authenticates, hashes and writes the file, then commits the document row and the queue job in one transaction and returns 202. The worker claims the job, parses and chunks, inserts a new generation of points into Qdrant that is not yet readable, then flips one Postgres row to publish it. Streamlit runs the same ingestion code in its own process, staging the row itself and skipping the queue.">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor" />
+          </marker>
+          <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#98470F" />
+          </marker>
+        </defs>
+
+        <!-- lane labels -->
+        <text x="104" y="84" text-anchor="end" font-family="ui-monospace, monospace" font-size="11"
+              letter-spacing="1.2" fill="currentColor">API</text>
+        <text x="104" y="98" text-anchor="end" font-family="ui-monospace, monospace" font-size="9.5"
+              fill="currentColor" opacity="0.6">gunicorn</text>
+
+        <text x="104" y="214" text-anchor="end" font-family="ui-monospace, monospace" font-size="11"
+              letter-spacing="1.2" fill="currentColor">WORKER</text>
+        <text x="104" y="228" text-anchor="end" font-family="ui-monospace, monospace" font-size="9.5"
+              fill="currentColor" opacity="0.6">procrastinate</text>
+
+        <text x="104" y="334" text-anchor="end" font-family="ui-monospace, monospace" font-size="11"
+              letter-spacing="1.2" fill="currentColor">UI</text>
+        <text x="104" y="348" text-anchor="end" font-family="ui-monospace, monospace" font-size="9.5"
+              fill="currentColor" opacity="0.6">streamlit</text>
+
+        <!-- ROW A : api -->
+        <g fill="none" stroke="currentColor" stroke-width="1.25">
+          <rect x="120" y="60" width="148" height="56" rx="2" />
+          <rect x="288" y="60" width="148" height="56" rx="2" />
+          <rect x="456" y="60" width="148" height="56" rx="2" />
+          <rect x="792" y="60" width="148" height="56" rx="2" />
+        </g>
+        <rect x="624" y="60" width="148" height="56" rx="2" fill="none" stroke="#98470F" stroke-width="2" />
+
+        <g font-size="12.5" text-anchor="middle" fill="currentColor">
+          <text x="194" y="84">authenticate</text>
+          <text x="362" y="84">hash + validate</text>
+          <text x="530" y="84">write bytes</text>
+          <text x="698" y="84" fill="#98470F" font-weight="600">row + job, one TX</text>
+          <text x="866" y="84">202 pending</text>
+        </g>
+        <g font-family="ui-monospace, monospace" font-size="10" text-anchor="middle" fill="currentColor" opacity="0.65">
+          <text x="194" y="101">api/deps.py</text>
+          <text x="362" y="101">ingestion/uploads.py</text>
+          <text x="530" y="101">write_upload()</text>
+          <text x="698" y="101">routers/documents.py</text>
+          <text x="866" y="101">api/schemas.py</text>
+        </g>
+
+        <g stroke="currentColor" stroke-width="1.25" marker-end="url(#ah)">
+          <line x1="268" y1="88" x2="286" y2="88" />
+          <line x1="436" y1="88" x2="454" y2="88" />
+          <line x1="604" y1="88" x2="622" y2="88" />
+          <line x1="772" y1="88" x2="790" y2="88" />
+        </g>
+
+        <!-- A4 -> B1 : the queue -->
+        <polyline points="698,116 698,150 194,150 194,188" fill="none" stroke="#98470F"
+                  stroke-width="1.75" marker-end="url(#ahb)" />
+        <text x="690" y="142" text-anchor="end" font-family="ui-monospace, monospace" font-size="10"
+              fill="#98470F">procrastinate_jobs · same transaction</text>
+
+        <!-- ROW B : worker -->
+        <g fill="none" stroke="currentColor" stroke-width="1.25">
+          <rect x="120" y="190" width="148" height="56" rx="2" />
+          <rect x="288" y="190" width="148" height="56" rx="2" />
+          <rect x="792" y="190" width="148" height="56" rx="2" />
+        </g>
+        <rect x="456" y="190" width="148" height="56" rx="2" fill="none" stroke="currentColor"
+              stroke-width="1.25" stroke-dasharray="5 3" />
+        <rect x="624" y="190" width="148" height="56" rx="2" fill="none" stroke="#98470F" stroke-width="2" />
+
+        <g font-size="12.5" text-anchor="middle" fill="currentColor">
+          <text x="194" y="214">claim job</text>
+          <text x="362" y="214">parse · figures · chunk</text>
+          <text x="530" y="214">insert generation</text>
+          <text x="698" y="214" fill="#98470F" font-weight="600">flip active version</text>
+          <text x="866" y="214">searchable</text>
+        </g>
+        <g font-family="ui-monospace, monospace" font-size="10" text-anchor="middle" fill="currentColor" opacity="0.65">
+          <text x="194" y="231">worker/tasks.py</text>
+          <text x="362" y="231">ingestion/pipeline.py</text>
+          <text x="530" y="231">qdrant_store.upsert</text>
+          <text x="698" y="231">registry/db.py</text>
+          <text x="866" y="231">retrieval/retriever.py</text>
+        </g>
+
+        <g stroke="currentColor" stroke-width="1.25" marker-end="url(#ah)">
+          <line x1="268" y1="218" x2="286" y2="218" />
+          <line x1="436" y1="218" x2="454" y2="218" />
+          <line x1="772" y1="218" x2="790" y2="218" />
+        </g>
+        <line x1="604" y1="218" x2="622" y2="218" stroke="#98470F" stroke-width="1.75" marker-end="url(#ahb)" />
+
+        <text x="530" y="264" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10"
+              fill="currentColor" opacity="0.75">not readable yet</text>
+        <text x="698" y="264" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10"
+              fill="#98470F">one UPDATE publishes it</text>
+
+        <!-- ROW C : streamlit -->
+        <g fill="none" stroke="currentColor" stroke-width="1.25">
+          <rect x="120" y="310" width="148" height="56" rx="2" />
+        </g>
+        <text x="194" y="334" text-anchor="middle" font-size="12.5"
+              fill="currentColor">stage row inline</text>
+        <text x="194" y="351" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10"
+              fill="currentColor" opacity="0.65">streamlit_app/Home.py</text>
+
+        <polyline points="194,310 194,284 362,284 362,248" fill="none" stroke="currentColor"
+                  stroke-width="1.25" stroke-dasharray="4 3" marker-end="url(#ah)" />
+        <text x="374" y="288" font-family="ui-monospace, monospace" font-size="10" fill="currentColor"
+              opacity="0.75">same helpers, no queue, no HTTP</text>
+      </svg>
+    </div>
+    <figcaption>
+      Both amber boxes are places where two writes have to land together or not at all: the
+      document row with its queue job, and the Qdrant generation with the row that publishes it.
+      Everything between them is recoverable — the dashed box holds points that exist and cannot
+      be read, which is what lets a failed re-ingest leave the previous version answering.
+    </figcaption>
+  </figure>
+
+  <section>
+    <h2>Door A — the HTTP path</h2>
+
+    <p class="measure">
+      This is the production path. It ends at <code>202</code> before any parsing happens, so the
+      request is short and the expensive work belongs to a different process.
+    </p>
+
+    <div class="steps">
+
+      <div class="step" data-lane="boot">
+        <div class="step-n">00</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/api/main.py</span>
+            <span class="lane-chip">boot, once</span>
+          </div>
+          <p>
+            The lifespan runs before the first request: <code>require_provider_credentials()</code>
+            and <code>require_reranker_backend()</code> abort the process when a key is missing,
+            then <code>init_db()</code> takes a Postgres advisory lock, runs
+            <code>alembic upgrade head</code> and installs procrastinate's schema. Routers mount
+            with <code>/v1</code> prefixes; health mounts unprefixed and unauthenticated.
+          </p>
+          <div class="guards">
+            <b>guards</b> A container with no Anthropic or Voyage key would otherwise start,
+            pass its health check, accept uploads, and fail every one of them individually.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="api">
+        <div class="step-n">01</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/api/deps.py</span>
+            <span class="lane-chip">api</span>
+          </div>
+          <p>
+            Three dependencies resolve before the handler body runs. <code>CurrentTenant</code>
+            reads the <code>x-api-key</code> header, resolves it through
+            <code>auth/service.py::resolve_principal</code>, and 401s on anything wrong with one
+            message for every failure mode. <code>require_scopes(DOCUMENTS_WRITE)</code> 403s and
+            names the missing scope. <code>rate_limited("upload", …)</code> counts in Redis and
+            fails open.
+          </p>
+          <div class="guards">
+            <b>guards</b> The returned <code>tenant_id</code> is the only input to retrieval
+            scoping. Nothing from the body or query string may reach it — a client-chosen scope
+            reads another tenant's documents. nginx has already applied a separate per-IP
+            <code>limit_req</code> at the edge, keyed differently on purpose.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="api">
+        <div class="step-n">02</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/ingestion/formats.py</span>
+            <span class="lane-chip">api</span>
+          </div>
+          <p>
+            <code>is_supported_upload(filename)</code> checks the extension against a
+            <em>pinned</em> allowlist. The whole file deliberately imports nothing from Docling;
+            deriving the list from Docling's own mapping cost ~2s of startup and ~157MB of RSS per
+            api process. A test compares the pinned list against Docling's real mapping in CI,
+            where importing it is free.
+          </p>
+          <div class="guards">
+            <b>guards</b> Both the accidental cost and the quiet risk: a derived list means a
+            routine dependency bump widens what a public endpoint accepts.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="api">
+        <div class="step-n">03</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/ingestion/uploads.py</span>
+            <span class="lane-chip">api</span>
+          </div>
+          <p>Bytes are read into memory, size-checked against <code>MAX_UPLOAD_SIZE_MB</code> (413), then four pure helpers give the document its identity:</p>
+          <ul>
+            <li><code>upload_doc_id</code> — <code>f"{tenant_id}-{sha256(tenant_id + NUL + bytes)[:32]}"</code>. Deterministic, so re-uploading identical content is an update; tenant-salted, so two tenants never share a row or a point set, and comparing ids cannot reveal they uploaded the same file.</li>
+            <li><code>content_digest</code> — plain <code>sha256(bytes)[:16]</code>, no salt. Answers the one question the id cannot: did the bytes change while the id stayed the same?</li>
+            <li><code>safe_filename</code> — <code>Path(name).name</code>, rejecting empty and hidden names, because a client-supplied <code>../../evil.py</code> is an arbitrary file write.</li>
+            <li><code>document_upload_path</code> — <code>&lt;root&gt;/&lt;tenant&gt;/&lt;doc_id&gt;/&lt;file&gt;</code>, containment-checked at both levels.</li>
+          </ul>
+          <div class="guards">
+            <b>guards</b> <code>doc_id</code> is in the path because a filename is not an identity.
+            Without it, two documents named <code>report.pdf</code> share a path, worker A reads B's
+            bytes, and B's content is filed under A's id with B's hash recorded as A's — so nothing
+            afterwards looks wrong. The damage is sticky, because the parse cache is keyed by
+            <code>doc_id</code> too.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="api">
+        <div class="step-n">04</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">uploads.py::write_upload</span>
+            <span class="lane-chip">api → thread</span>
+          </div>
+          <p>
+            Called through <code>asyncio.to_thread</code>, because it blocks. It writes
+            <code>.&lt;name&gt;.partial</code> and then <code>os.replace</code>s it into position.
+          </p>
+          <div class="guards">
+            <b>guards</b> The rename is the point. A direct write is visible to the worker from the
+            first block, so a worker that dequeues mid-write parses a truncated document and records
+            the truncation as the document.
+          </div>
+        </div>
+      </div>
+
+      <div class="step is-boundary" data-lane="api">
+        <div class="step-n">05</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/api/routers/documents.py</span>
+            <span class="lane-chip">api</span>
+          </div>
+          <p>
+            One session, two writes, one commit. <code>stage_document_record</code> upserts the row
+            at status <code>pending</code> and deliberately does <em>not</em> commit;
+            <code>defer_document_ingest</code> inserts the queue job on the same raw psycopg
+            connection; then <code>session.commit()</code>.
+          </p>
+          <div class="guards">
+            <b>guards</b> The two failure windows this closes are both silent. Row committed and
+            enqueue failed leaves a document in <code>pending</code> forever, indistinguishable from
+            one still queued. Enqueue committed and row rolled back leaves a job whose document does
+            not exist. This is the reason the queue is Postgres-backed at all.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="api">
+        <div class="step-n">06</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/worker/app.py</span>
+            <span class="lane-chip">api</span>
+          </div>
+          <p>
+            The api reaches the queue through this module and <strong>never imports
+            <code>tasks.py</code></strong>. It defers by task <em>name</em> with
+            <code>allow_unknown=True</code>, so the implementation — and Docling, and torch — stay
+            in the worker image. <code>expected_digest</code> travels with the job.
+          </p>
+          <div class="guards">
+            <b>guards</b> Measured: the first upload spent ~10s importing Docling inside the
+            request. The trade is that a wrong task name is no longer an import error but a job no
+            worker claims, so one constant serves both sides and a test asserts they match.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="api">
+        <div class="step-n">07</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/api/schemas.py</span>
+            <span class="lane-chip">api</span>
+          </div>
+          <p>
+            <code>202 Accepted</code> with <code>{tenant_id, doc_id, status: "pending"}</code>.
+            <code>GET /v1/documents/{doc_id}</code> is how a client follows the rest, and its query
+            carries <code>tenant_id</code> in the WHERE clause so another tenant's document is a
+            404 rather than a row.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Then the worker</h2>
+
+    <div class="steps">
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">08</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/worker/tasks.py</span>
+            <span class="lane-chip">worker</span>
+          </div>
+          <p>
+            The registered task. <code>init_db()</code>,
+            <code>mark_document_processing</code>, <code>require_provider_credentials()</code>, then
+            <code>ingest_document</code>. On any exception it tries to write
+            <code>failed</code> with the message and re-raises so procrastinate retries
+            (3 attempts, exponential backoff).
+          </p>
+          <div class="guards">
+            <b>guards</b> Without the record, a failed ingest looks identical to a document never
+            uploaded. Without the re-raise, procrastinate marks the job succeeded and never retries
+            the transient cases. Two things it deliberately cannot fix: an unreachable Postgres
+            (recording that needs the database) and cancellation, which is a <code>BaseException</code>
+            and is left for a legitimate retry.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">09</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/ingestion/pipeline.py</span>
+            <span class="lane-chip">worker → thread</span>
+          </div>
+          <p>
+            <code>_parse_and_chunk</code> runs in a thread — it is CPU-bound, and marking it
+            <code>async def</code> would free nothing. It reads the file once, and its
+            <em>first</em> act is to compare <code>content_digest(bytes)</code> against
+            <code>expected_digest</code>.
+          </p>
+          <div class="guards">
+            <b>guards</b> The hash happens <em>before</em> the parse, and the ordering is the whole
+            guard: verifying afterwards detects the swap and leaves a poisoned cache under this
+            <code>doc_id</code>, which every later re-ingest reads from.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">10</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/ingestion/parser.py</span>
+            <span class="lane-chip">worker</span>
+          </div>
+          <p>
+            Cache first: <code>processed_dir/&lt;doc_id&gt;.json</code>. On a miss, Docling converts
+            with <code>generate_picture_images=True</code> and a 90s
+            <code>document_timeout</code>, and the result is saved to that path.
+          </p>
+          <div class="guards">
+            <b>guards</b> Anything other than <code>ConversionStatus.SUCCESS</code> raises. Docling
+            reports a timeout by <em>returning</em> — a warning, a TIMEOUT error item,
+            <code>PARTIAL_SUCCESS</code>, and no further pages — and a truncated document is
+            indistinguishable from a complete one here. Accepting it would persist the truncation
+            permanently, since the next ingest loads the cache.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">11</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/ingestion/figure_extractor.py</span>
+            <span class="lane-chip">worker · vision call</span>
+          </div>
+          <p>
+            Every <code>PictureItem</code> is enumerated; images below
+            <code>figure_min_dimension_px</code> are dropped <em>while still consuming their
+            index</em>. Each surviving image is PNG-encoded once, written to
+            <code>&lt;figure_id&gt;-&lt;sha256[:16]&gt;.png</code>, and captioned by one Anthropic
+            vision call or from the <code>caption-&lt;sha256&gt;.txt</code> cache. Captions that read
+            as refusals, or are too short, are dropped after the call.
+          </p>
+          <div class="guards">
+            <b>guards</b> A caption is a figure's only searchable text, so an unusable one is worse
+            than no figure: a one-page CV produced five "figures" — all ~20×20px icons — whose
+            captions were the model saying it could not see the image, and those refusals then won
+            reranking. Both the caption and the image file are content-addressed, so a shifted index
+            can never serve one figure's bytes under another's caption.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">12</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/ingestion/chunker.py</span>
+            <span class="lane-chip">worker</span>
+          </div>
+          <p>
+            <code>HybridChunker</code> over the parsed document, sized by a HuggingFace tokenizer at
+            <code>chunk_max_tokens</code>. Three kinds come out: text chunks
+            (<code>{doc_id}-text-NNNN</code>, blanks skipped), tables as one atomic markdown chunk
+            each, and figures as their caption. Every chunk carries <code>filename</code>.
+          </p>
+          <div class="guards">
+            <b>guards</b> Tables are never split mid-row. <code>filename</code> is on every chunk
+            because without it the only label is a 65-character <code>doc_id</code> — a question
+            naming a file gets "I have no document by that name" alongside a summary of that exact
+            document. Observed in production.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">13</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">pipeline.py::ingest_document</span>
+            <span class="lane-chip">worker</span>
+          </div>
+          <p>
+            No chunks means <code>EmptyDocumentError</code>, raised before anything is written.
+            Otherwise a fresh <code>ingestion_version = new_id()</code> is minted here — not by
+            either caller — so one ingest is one version whichever door it came through.
+          </p>
+          <div class="guards">
+            <b>guards</b> A scanned, image-only PDF parses fine and yields nothing: a real 2MB flyer
+            extracted 30 characters. Recording that as <code>ingested</code> with
+            <code>chunk_count=0</code> is a lie the user can only find by asking a question and
+            getting someone else's document.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">14</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/vectorstore/qdrant_store.py</span>
+            <span class="lane-chip">worker → thread</span>
+          </div>
+          <p>
+            <code>upsert(chunks, ingestion_version)</code> refuses a batch spanning two documents or
+            two tenants, then writes each chunk with a point id of
+            <code>uuid5(ns, f"{version}:{chunk_id}")</code> and a payload stamped with the version,
+            tenant, doc, chunk id and filename. Embeddings come from
+            <code>app/embeddings/voyage.py</code>, one call per batch.
+          </p>
+          <div class="guards">
+            <b>guards</b> It deletes nothing. The version in the point id is what keeps this
+            generation from colliding with the previous one, so the insert is not destructive and
+            there is something to fall back to. Nothing here is readable yet — the version is not
+            the active one.
+          </div>
+        </div>
+      </div>
+
+      <div class="step is-boundary" data-lane="worker">
+        <div class="step-n">15</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">app/registry/db.py</span>
+            <span class="lane-chip">worker</span>
+          </div>
+          <p>
+            <code>activate_document_version</code> — one UPDATE, with <code>tenant_id</code> in the
+            WHERE clause, setting the version, the chunk count, status <code>ingested</code>, and
+            clearing any previous error. It raises <code>DocumentNotFoundError</code> when
+            <code>rowcount == 0</code>.
+          </p>
+          <div class="guards">
+            <b>guards</b> This is the commit point: one statement, so a concurrent reader sees the
+            old version or the new one and never a document searchable at no version. It raises
+            where <code>mark_document_*</code> stay silent, because silence here leaves a generation
+            that is inserted, invisible, and uncollectable.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-lane="worker">
+        <div class="step-n">16</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">qdrant_store.delete_superseded</span>
+            <span class="lane-chip">worker · best effort</span>
+          </div>
+          <p>
+            After the flip, every generation of this document <em>except</em> the live one is
+            deleted. Wrapped in <code>try/except</code>: a failure logs
+            <code>ingestion.prune_failed</code> and the ingest still succeeds.
+          </p>
+          <div class="guards">
+            <b>guards</b> Two ways to get this wrong. Pruning <em>before</em> the flip would delete
+            the generation still serving reads. Letting it raise would turn a published, working
+            document into a reported failure.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Door B — Streamlit</h2>
+
+    <div class="steps">
+      <div class="step" data-lane="ui">
+        <div class="step-n">B</div>
+        <div class="step-body">
+          <div class="step-head">
+            <span class="file">streamlit_app/Home.py</span>
+            <span class="lane-chip">streamlit</span>
+          </div>
+          <p>
+            This UI calls the pipeline <em>in process</em>, so no FastAPI dependency runs for it. It
+            asks for an API key and resolves it through the same
+            <code>auth.service.resolve_tenant</code> the dependency uses, builds its path with the
+            same <code>document_upload_path</code> and <code>write_upload</code>, stages the pending
+            row itself, and then calls <code>ingest_document</code> synchronously — bypassing the
+            queue but not the registry.
+          </p>
+          <div class="guards">
+            <b>guards</b> It must never mint its own tenant id; that is exactly the
+            client-chooses-its-own-scope hole the API closed. And it previously built
+            <code>&lt;tenant&gt;/&lt;filename&gt;</code> — its own copy of the path-collision bug —
+            which is why those helpers live in a shared module rather than in the router.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <p>
+        <strong>Where it becomes answerable.</strong> <code>app/retrieval/retriever.py</code> reads
+        <code>list_active_versions</code> for the tenant and passes both the permitted
+        <code>doc_ids</code> and their live <code>versions</code> into
+        <code>_build_filter</code>. Postgres decides what is searchable; Qdrant cannot.
+      </p>
+      <p>
+        So the answer to "why isn't my document showing up" is almost always a row: status
+        <code>pending</code> means the worker has not claimed it, <code>processing</code> means it is
+        mid-parse, and <code>ingested</code> with a null version is the one state that should be
+        impossible.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every file on the path</h2>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>File</th><th>Process</th><th>What it contributes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>app/api/main.py</td><td>api</td><td>Lifespan: credential checks, schema migration, router mounting, the error handlers that keep every failure on the <code>{"detail": …}</code> contract.</td></tr>
+          <tr><td>app/api/deps.py</td><td>api</td><td>Key → principal → tenant, scope check, rate limit. Dependencies rather than middleware so tests can override them and OpenAPI can see them.</td></tr>
+          <tr><td>app/api/routers/documents.py</td><td>api</td><td>The endpoint. Validation, identity, the atomic stage-and-defer, and the 202. Also the two read routes.</td></tr>
+          <tr><td>app/api/schemas.py</td><td>api</td><td>Response models, every field described — the OpenAPI schema is the contract the planned React client generates from.</td></tr>
+          <tr><td>app/ingestion/formats.py</td><td>api</td><td>The pinned upload allowlist. Imports no Docling, on purpose.</td></tr>
+          <tr><td>app/ingestion/uploads.py</td><td>api + ui</td><td>doc_id, content digest, filename sanitising, containment-checked paths, atomic write. Shared so there is one implementation, not two.</td></tr>
+          <tr><td>app/db.py</td><td>all</td><td>The async engine and session, plus <code>init_db</code>: advisory lock, <code>alembic upgrade head</code>, procrastinate schema.</td></tr>
+          <tr><td>app/worker/app.py</td><td>api + worker</td><td>The procrastinate app, the retry strategy, and <code>defer_document_ingest</code> — which enqueues on the caller's own transaction.</td></tr>
+          <tr><td>app/worker/tasks.py</td><td>worker</td><td>The registered task. Owns <code>processing</code> and <code>failed</code>; imports the ingestion stack, which is why the api must not import it.</td></tr>
+          <tr><td>app/ingestion/pipeline.py</td><td>worker + ui</td><td>Orchestration: digest check, parse, figures, chunks, version mint, insert, flip, prune.</td></tr>
+          <tr><td>app/ingestion/parser.py</td><td>worker</td><td>Docling conversion and the parse cache. Refuses anything short of full success.</td></tr>
+          <tr><td>app/ingestion/figure_extractor.py</td><td>worker</td><td>Renders picture items, drops unusable ones, captions via Anthropic, content-addresses both the caption and the PNG.</td></tr>
+          <tr><td>app/ingestion/chunker.py</td><td>worker</td><td>Text, table and figure chunks with stable position-encoded ids and the filename stamped on each.</td></tr>
+          <tr><td>app/ingestion/models.py</td><td>worker</td><td>The <code>Chunk</code> shape. Dependency-free so it is testable without Docling.</td></tr>
+          <tr><td>app/embeddings/voyage.py</td><td>worker</td><td>The embedding client the store uses.</td></tr>
+          <tr><td>app/vectorstore/qdrant_store.py</td><td>worker</td><td>Point ids, payload metadata, the tenant/doc/version filter, the prune, and the payload indexes.</td></tr>
+          <tr><td>app/registry/db.py</td><td>all</td><td>Stage, mark processing, mark failed, publish a version, read a tenant's documents — every query tenant-scoped in the WHERE clause.</td></tr>
+          <tr><td>app/registry/models.py</td><td>all</td><td><code>DocumentRecord</code>: status vocabulary, <code>ingestion_version</code>, the database-maintained timestamps.</td></tr>
+          <tr><td>app/retrieval/retriever.py</td><td>api + ui</td><td>Not on the write path, but where the write becomes visible. Turns the registry into the filter.</td></tr>
+          <tr><td>streamlit_app/Home.py</td><td>streamlit</td><td>The second door: own auth, own staging, synchronous ingest.</td></tr>
+          <tr><td>app/config.py</td><td>all</td><td>Every setting with its reasoning, and the credential checks the api boot depends on.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

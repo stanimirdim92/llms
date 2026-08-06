@@ -53,6 +53,13 @@ the end of any session that changed something** -- the protocol is at the top of
   plus a *considered and rejected* table so dead ideas don't come back. Add freely; an idea
   that graduates moves into an epic plan and is deleted from there.
 - `docs/IMPLEMENTATION_PLAN.md` -- the original plan, kept as history and outdated on purpose.
+- `docs/upload-path.html` -- the upload path traced file by file, in *execution order*, with the
+  process each step runs in and the failure each guard exists for. Open it in a browser; GitHub
+  will not render it. It exists because the ordering and the process boundaries are the part nobody
+  can reconstruct from `README.md` (which describes the system as a shape) or `PATTERNS.md` (which
+  describes recurring shapes, not one sequence). **It is a snapshot, dated in its own header, and it
+  is the file most likely to rot** -- so when the write path changes, either update it in the same
+  commit or delete it. A stale execution trace is worse than none, because it reads as authoritative.
 
 A durable imperative rule goes *here*. Current state goes in `docs/MEMORY.md`. Mixing them buries
 the rules in changelog.
