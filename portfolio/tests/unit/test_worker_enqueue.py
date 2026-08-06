@@ -28,6 +28,7 @@ from app.config import get_settings
 from app.registry.db import (
     get_document_record,
     list_document_records,
+    list_ingested_doc_ids,
     mark_document_failed,
     mark_document_processing,
     save_document_record,
@@ -512,3 +513,41 @@ async def _already_initialised() -> None:
     *real* DATABASE_URL, which is what it would do here.
     """
     return
+
+
+async def test_only_ingested_rows_are_offered_to_retrieval(db: SessionFactory) -> None:
+    """`list_ingested_doc_ids` is what stops a failed document reaching an answer.
+
+    Qdrant holds points for anything that got as far as the upsert, including documents whose
+    registry write then failed. Postgres is the authority on searchability, so this query is the
+    filter -- and it must be tenant-scoped in the WHERE clause like every other read here.
+    """
+    async with db() as session:
+        for doc_id, status in [
+            ("doc-ingested", STATUS_INGESTED),
+            ("doc-pending", STATUS_PENDING),
+            ("doc-processing", STATUS_PROCESSING),
+            ("doc-failed", STATUS_FAILED),
+        ]:
+            await stage_document_record(session, _record(doc_id=doc_id, status=status))
+        await stage_document_record(session, _record(doc_id="other-tenant", tenant_id=TENANT_B, status=STATUS_INGESTED))
+        await session.commit()
+
+    async with db() as session:
+        mine = await list_ingested_doc_ids(session, tenant_id=TENANT_A)
+
+    assert mine == ["doc-ingested"], "exactly the ingested set, and only this tenant's"
+
+
+async def test_a_tenant_with_no_ingested_documents_gets_an_empty_list(db: SessionFactory) -> None:
+    """An empty result is a real answer.
+
+    `Retriever.retrieve` turns it into "search nothing"; the bug it replaced turned it into
+    "search everything".
+    """
+    async with db() as session:
+        await stage_document_record(session, _record(doc_id="doc-pending", status=STATUS_PENDING))
+        await session.commit()
+
+    async with db() as session:
+        assert await list_ingested_doc_ids(session, tenant_id=TENANT_A) == []

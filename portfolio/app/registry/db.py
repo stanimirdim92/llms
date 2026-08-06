@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlmodel import col, select
 
-from app.registry.models import STATUS_FAILED, STATUS_PROCESSING, DocumentRecord
+from app.registry.models import STATUS_FAILED, STATUS_INGESTED, STATUS_PROCESSING, DocumentRecord
 
 if TYPE_CHECKING:
     from sqlalchemy.dialects.postgresql import Insert
@@ -79,6 +79,25 @@ async def _set_status(session: AsyncSession, *, doc_id: str, status: str, error:
     record.error_message = error
     session.add(record)
     await session.commit()
+
+
+async def list_ingested_doc_ids(session: AsyncSession, *, tenant_id: str) -> list[str]:
+    """The tenant's documents that are actually searchable: `status == ingested`.
+
+    Postgres is authoritative about that; Qdrant cannot be. The two are written in sequence
+    (`ingest_document` upserts points, *then* the registry row), so a crash between them leaves
+    retrievable chunks whose row says `processing` or `failed`. Without this, an unscoped `/ask`
+    searched every point the tenant owned and could answer from a document reported as failed.
+
+    Returns `[]` for a tenant with nothing ingested. That is a real answer, not a missing one --
+    see `Retriever.retrieve`, which must not turn it into "search everything".
+    """
+    statement = (
+        select(DocumentRecord.doc_id)
+        .where(col(DocumentRecord.tenant_id) == tenant_id)
+        .where(col(DocumentRecord.status) == STATUS_INGESTED)
+    )
+    return list((await session.exec(statement)).all())
 
 
 async def list_document_records(session: AsyncSession, *, tenant_id: str, limit: int = 100) -> list[DocumentRecord]:

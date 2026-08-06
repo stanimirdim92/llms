@@ -17,6 +17,13 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 #### Security
 
+- **A document that failed to ingest can no longer influence an answer.** Chunks reach Qdrant just
+  before the registry row is written, so a crash between the two left a document searchable while
+  `GET /v1/documents/{doc_id}` reported `processing` or `failed`. `POST /v1/ask` now searches only
+  documents the registry says are `ingested`. Two visible consequences: a tenant whose documents are
+  all still ingesting gets an answer grounded in nothing rather than a partial one, and naming a
+  document that has since failed answers from nothing rather than silently falling back to your
+  other documents.
 - **Two documents with the same filename could overwrite each other's content.** Uploading
   `report.pdf`, then a *different* `report.pdf` before the first finished ingesting, could file the
   second document's content under the first one's `doc_id` — so a question about the first document

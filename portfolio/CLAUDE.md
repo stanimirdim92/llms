@@ -232,6 +232,14 @@ need provider keys.
 
 - **Never commit `.env`.** It holds a real LangSmith API key. `.env.example` stays a
   template with placeholders only -- no real secrets, ever.
+- **Postgres decides what is searchable; Qdrant cannot.** `ingest_document` upserts points and
+  *then* writes the registry row, so a failure between them leaves retrievable chunks behind a row
+  saying `processing` or `failed`. `Retriever.retrieve` therefore filters on
+  `list_ingested_doc_ids`, and it does so **in the retriever** rather than the router because
+  `/ask` and Streamlit both arrive there -- a check in one caller is a check the other forgets.
+  **An empty permitted set must return no results, never fall through to an unfiltered search**:
+  `_build_filter` used `if doc_ids:`, so `[]` meant "no document condition at all". It now raises
+  on an empty list, and `tests/unit/test_retrieval_consistency.py` pins both halves.
 - **Never remove the delete step from `QdrantStore.upsert`.** It deletes every point
   for the document's `doc_id` before inserting, and that is what makes re-ingestion
   correct -- not the point-id derivation. Chunk ids encode position

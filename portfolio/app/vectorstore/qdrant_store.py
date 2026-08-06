@@ -162,7 +162,14 @@ def _build_filter(chunk_types: list[str] | None, tenant_id: str, doc_ids: list[s
     must = [FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id))]
     if chunk_types:
         must.append(FieldCondition(key="metadata.chunk_type", match=MatchAny(any=chunk_types)))
-    if doc_ids:
+    if doc_ids is not None:
+        # `is not None`, not truthiness: an empty list means "no document is permitted", and under
+        # `if doc_ids:` it fell through to no document condition at all -- i.e. every document the
+        # tenant owns. Callers now pass the tenant's *ingested* set here, so that difference is the
+        # difference between searching nothing and searching documents the registry says failed.
+        if not doc_ids:
+            msg = "doc_ids is empty: refusing to build a filter that would match every document"
+            raise ValueError(msg)
         # ANDed with the tenant condition above, never replacing it: a doc_id is resolved from
         # the caller's own registry rows, but this filter is the security boundary and must not
         # depend on that being true somewhere upstream.
