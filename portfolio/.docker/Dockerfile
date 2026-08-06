@@ -203,7 +203,7 @@ CMD ["bash", "-c", "exec gunicorn app.api.main:app \
     --workers ${GUNICORN_WORKERS:-2} \
     --worker-class uvicorn_worker.UvicornWorker \
     --bind 0.0.0.0:${PORT:-8000} \
-    --timeout ${GUNICORN_TIMEOUT:-100} \
+    --timeout ${GUNICORN_TIMEOUT:-120} \
     --graceful-timeout ${GUNICORN_GRACEFUL_TIMEOUT:-630} \
     --keep-alive 5 \
     --max-requests 1000 \

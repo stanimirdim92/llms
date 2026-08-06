@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     is public. `.get_secret_value()` therefore marks every point a secret escapes; grep for it
     rather than trusting any count written down here.
 
-    `docs/TECHNICAL_DECISIONS.md` § Secrets in Settings has the rest.
+    `docs/TECHNICAL_DECISIONS.md` Secrets in Settings has the rest.
     """
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
