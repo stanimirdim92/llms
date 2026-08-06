@@ -21,7 +21,7 @@ from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_uplo
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import content_digest, document_upload_path, upload_doc_id, write_upload
 from app.logs import configure_logging
-from app.registry.db import list_document_records, stage_document_record
+from app.registry.db import list_document_records, save_document_record
 
 # Runtime import, not TYPE_CHECKING. This module has no `from __future__ import
 # annotations`, so `-> list[DocumentRecord]` on `_list_documents` is evaluated when the
@@ -68,10 +68,18 @@ async def _scope_candidates(tenant_id: str) -> list[DocumentRecord]:
 
 
 async def _stage(record: DocumentRecord) -> None:
-    """Write the `pending` row the flip will later update. Mirrors the API route's staging."""
+    """Write **and commit** the `pending` row the flip will later update.
+
+    `save_document_record`, not `stage_document_record`. The staging variant deliberately does not
+    commit, because the API route has to commit the row and the queue job in one transaction -- and
+    this path has no job. Using it here meant the row was rolled back when the session closed, so
+    every upload wrote its points to Qdrant and then failed at the flip with `DocumentNotFoundError`,
+    leaving an orphaned generation behind. The API path was unaffected, which is what made it look
+    like a Streamlit bug rather than a missing commit.
+    """
     await init_db()
     async with get_session() as session:
-        await stage_document_record(session, record)
+        await save_document_record(session, record)
 
 
 async def _list_documents(tenant_id: str) -> list[DocumentRecord]:

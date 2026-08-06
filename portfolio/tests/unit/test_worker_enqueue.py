@@ -34,6 +34,7 @@ from app.registry.db import (
     list_document_records,
     mark_document_failed,
     mark_document_processing,
+    save_document_record,
     stage_document_record,
 )
 from app.registry.models import (
@@ -93,20 +94,6 @@ def _record(
         file_size_bytes=1234,
         status=status,
     )
-
-
-async def _seed(session: AsyncSession, record: DocumentRecord) -> None:
-    """Stage a row and commit it, for tests that need one already there.
-
-    Lives here rather than in `registry/db.py`, where it was `save_document_record` until
-    2026-08-06. Its last production caller was `ingest_document`'s terminal write, which is now an
-    UPDATE (`activate_document_version`) -- so it had become a production function with only test
-    callers, described in its own docstring as a production path. That shape is worse than a
-    two-line helper: the next reader takes the docstring as evidence something still writes rows
-    that way.
-    """
-    await stage_document_record(session, record)
-    await session.commit()
 
 
 async def _truncate(engine: AsyncEngine) -> None:
@@ -265,7 +252,7 @@ async def test_failed_ingest_is_distinguishable_from_never_uploaded(db: SessionF
     would see for one that was never uploaded, and can only report "not found".
     """
     async with db() as session:
-        await _seed(session, _record())
+        await save_document_record(session, _record())
     async with db() as session:
         await mark_document_failed(session, doc_id=DOC_ID, error="DocumentParseError: encrypted PDF")
 
@@ -281,7 +268,7 @@ async def test_failed_ingest_is_distinguishable_from_never_uploaded(db: SessionF
 async def test_a_retry_clears_the_previous_error(db: SessionFactory) -> None:
     """`processing` must not still display the last attempt's error while it runs."""
     async with db() as session:
-        await _seed(session, _record())
+        await save_document_record(session, _record())
     async with db() as session:
         await mark_document_failed(session, doc_id=DOC_ID, error="transient: Voyage timeout")
     async with db() as session:
@@ -301,14 +288,14 @@ async def test_success_after_failure_ends_ingested_with_no_error(db: SessionFact
     beside an `ingested` status.
     """
     async with db() as session:
-        await _seed(session, _record())
+        await save_document_record(session, _record())
     async with db() as session:
         await mark_document_failed(session, doc_id=DOC_ID, error="transient: Qdrant unreachable")
 
     succeeded = _record(status=STATUS_INGESTED)
     succeeded.chunk_count = 42
     async with db() as session:
-        await _seed(session, succeeded)
+        await save_document_record(session, succeeded)
 
     async with db() as session:
         record = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
@@ -327,7 +314,7 @@ async def test_status_is_not_readable_by_another_tenant(db: SessionFactory) -> N
     B while looking entirely correct -- hence `tenant_id` in the WHERE clause.
     """
     async with db() as session:
-        await _seed(session, _record(tenant_id=TENANT_A))
+        await save_document_record(session, _record(tenant_id=TENANT_A))
 
     async with db() as session:
         assert await get_document_record(session, tenant_id=TENANT_B, doc_id=DOC_ID) is None
@@ -439,7 +426,7 @@ async def test_status_transitions_stamp_updated_at(db: SessionFactory) -> None:
     remembering to.
     """
     async with db() as session:
-        await _seed(session, _record())
+        await save_document_record(session, _record())
     async with db() as session:
         first = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
     assert first is not None
@@ -464,9 +451,9 @@ async def test_listing_returns_only_this_tenants_documents(db: SessionFactory) -
     four figure "chunks" that were the vision model saying it couldn't see an image.
     """
     async with db() as session:
-        await _seed(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
+        await save_document_record(session, _record(tenant_id=TENANT_A, doc_id="a" * 32))
     async with db() as session:
-        await _seed(session, _record(tenant_id=TENANT_B, doc_id="b" * 32))
+        await save_document_record(session, _record(tenant_id=TENANT_B, doc_id="b" * 32))
 
     async with db() as session:
         mine = await list_document_records(session, tenant_id=TENANT_A)
@@ -477,7 +464,7 @@ async def test_listing_returns_only_this_tenants_documents(db: SessionFactory) -
 async def test_listing_respects_the_limit(db: SessionFactory) -> None:
     for index in range(5):
         async with db() as session:
-            await _seed(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
+            await save_document_record(session, _record(tenant_id=TENANT_A, doc_id=f"{index:032d}"))
 
     async with db() as session:
         limited = await list_document_records(session, tenant_id=TENANT_A, limit=2)
@@ -602,6 +589,34 @@ async def test_the_flip_publishes_a_version_and_clears_the_previous_error(db: Se
     assert row is not None
     assert (row.status, row.ingestion_version, row.chunk_count) == (STATUS_INGESTED, "v-second", 7)
     assert row.error_message is None, "a published row must not still carry the failed attempt's error"
+
+
+async def test_the_two_row_writers_differ_only_in_whether_they_commit(db: SessionFactory) -> None:
+    """`stage_document_record` must not commit and `save_document_record` must.
+
+    The whole difference between them, and it is invisible inside one session: SQLAlchemy sees the
+    staged row on the connection that wrote it either way. Both halves are therefore read from a
+    **second** session, which is the only place the distinction exists.
+
+    This is the test that was missing. Streamlit's upload path called the staging variant, so its
+    `pending` row was rolled back when the session closed -- and `ingest_document` had already
+    written the generation to Qdrant by the time the flip raised `DocumentNotFoundError`. Reported
+    from a first run of the app, 2026-08-06. The API path was fine because it commits explicitly
+    after deferring the job, which is exactly why nothing here caught it.
+    """
+    async with db() as session:
+        await stage_document_record(session, _record(doc_id="staged-not-committed"))
+    async with db() as session:
+        assert await get_document_record(session, doc_id="staged-not-committed", tenant_id=TENANT_A) is None, (
+            "stage_document_record committed: the upload route can no longer be atomic with its job insert"
+        )
+
+    async with db() as session:
+        await save_document_record(session, _record(doc_id="saved-and-committed"))
+    async with db() as session:
+        row = await get_document_record(session, doc_id="saved-and-committed", tenant_id=TENANT_A)
+    assert row is not None, "save_document_record did not commit: Streamlit's flip will not find a row"
+    assert row.status == STATUS_PENDING
 
 
 async def test_publishing_a_row_that_is_not_there_raises(db: SessionFactory) -> None:

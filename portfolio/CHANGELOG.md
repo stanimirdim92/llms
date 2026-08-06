@@ -17,6 +17,16 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 #### Fixed
 
+- **Uploading through the Streamlit UI failed on every document.** The upload wrote its chunks to
+  Qdrant and then aborted with `DocumentNotFoundError: no document row for ...`, leaving the document
+  absent from `My documents` and its points unreachable. The row the UI staged was never committed,
+  so the step that publishes it had nothing to update. Uploads through `POST /v1/documents` were
+  never affected.
+
+  *Upgrading:* re-upload anything that failed this way. Points from a failed attempt are invisible to
+  search (they belong to a generation that was never published) but still occupy Qdrant; the
+  quickest way to reclaim them on a small install is to drop the Qdrant collection and re-upload.
+
 - **A Postgres volume with no application database no longer reports the stack as ready.** The
   `postgres` healthcheck used `pg_isready`, which answers for the server and ignores the database
   name it is given — so compose called Postgres healthy, started `api` and `worker` on that signal,

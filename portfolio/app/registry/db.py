@@ -44,6 +44,30 @@ async def stage_document_record(session: AsyncSession, record: DocumentRecord) -
     await session.exec(_upsert(record))  # SQLModel's Session.exec (not the deprecated raw .execute())
 
 
+async def save_document_record(session: AsyncSession, record: DocumentRecord) -> None:
+    """Write the row **and commit it**. For a caller with nothing to commit alongside it.
+
+    That is Streamlit, and it is the only one: it bypasses the queue, so it has no job insert to be
+    atomic with, but it still has to leave a real `pending` row behind because `ingest_document`
+    publishes by *updating* one.
+
+    **Deleted 2026-08-06 and restored the same day**, which is the part worth keeping. It was
+    removed as dead code after `ingest_document`'s terminal write became an UPDATE -- a reverse
+    search found only tests calling it, so it looked like production code kept alive by its own test
+    suite. The reverse search was right and the conclusion was wrong: the caller existed, in
+    `streamlit_app/Home.py`, and it was calling `stage_document_record` instead. So every Streamlit
+    upload wrote points to Qdrant and then died on the flip with `DocumentNotFoundError`, because the
+    staged row was never committed and vanished when the session closed. The missing caller was a
+    *symptom of the bug*, not evidence there was no caller.
+
+    Two lessons, both cheap to state and expensive to relearn: a function whose only callers are
+    tests may mean a broken caller rather than a dead function, and Streamlit is the one write path
+    with no test, so "nothing references this" is weakest exactly where it is least verifiable.
+    """
+    await stage_document_record(session, record)
+    await session.commit()
+
+
 async def mark_document_processing(session: AsyncSession, *, doc_id: str) -> None:
     """Claim a document for a worker.
 

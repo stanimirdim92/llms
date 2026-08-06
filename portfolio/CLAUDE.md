@@ -280,6 +280,18 @@ need provider keys.
   generation still serving; and a failed prune must **not** fail the ingest, because the leftovers
   are already unreadable. `tests/unit/test_ingest_failures.py` and `test_qdrant_filtering.py` pin all
   three, each mutation-confirmed red.
+- **`stage_document_record` does not commit; `save_document_record` does. Streamlit needs the
+  second one.** The distinction is invisible from inside the writing session -- SQLAlchemy shows the
+  row on its own connection either way -- so it can only be tested from a *second* session, and
+  `test_the_two_row_writers_differ_only_in_whether_they_commit` is where that lives. Streamlit called
+  the staging variant for one commit's worth of time: its `pending` row was rolled back when the
+  session closed, and by the time the flip raised `DocumentNotFoundError` the generation was already
+  in Qdrant, orphaned. **The API path was unaffected**, because it commits explicitly after deferring
+  the job -- which is why nothing caught it.
+  **Streamlit is the one write path with no test**, so a reverse search over it proves less than it
+  looks: `save_document_record` was deleted the same morning as "no production caller", and the
+  caller existed -- it was the broken one. A function whose only callers are tests can mean a broken
+  caller, not a dead function.
 - **Never put a document's bytes at a path the filename alone determines.** `document_upload_path`
   gives `<root>/<tenant_id>/<doc_id>/<safe filename>`, and `doc_id` is in there because two
   documents sharing a filename otherwise share a path: worker A reads B's bytes, files B's content

@@ -271,6 +271,38 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-06 (night) — the Streamlit upload was broken by my own change, for one commit
+
+Reported from a genuine first run: `DocumentNotFoundError: no document row for ...`, Qdrant holding a
+collection with points, Postgres holding nothing. **Streamlit only; the API path was fine.**
+
+**Cause, entirely mine.** When `ingest_document`'s terminal write became an UPDATE, Streamlit needed a
+committed `pending` row for the flip to update, so I added a `_stage` helper -- and pointed it at
+`stage_document_record`, which **deliberately does not commit** (the API route commits the row and the
+queue job together, and that is the whole reason the staging variant exists). The row was rolled back
+when the session closed, the upsert had already written the generation to Qdrant, and the flip raised.
+Every Streamlit upload, orphaning a generation each time.
+
+**And I made it harder to find, the same morning.** A reverse search for `save_document_record` -- the
+stage-and-commit function -- found only tests, so I deleted it as production code kept alive by its own
+suite and moved a copy into the test module. The search was correct and the inference was wrong: the
+caller existed and was the broken one. **A function whose only callers are tests can mean a broken
+caller rather than a dead function**, and the reverse search is weakest exactly where the code is
+untested. Restored, with the incident in its docstring.
+
+**Fixed, and the test that was missing now exists.** The two writers differ *only* in whether they
+commit, which is invisible from inside the writing session -- SQLAlchemy shows the row on its own
+connection either way -- so
+`test_the_two_row_writers_differ_only_in_whether_they_commit` reads both from a **second** session.
+Mutation-confirmed in both directions: drop the commit from `save_document_record` and 8 tests go red
+(1 of them only this one meaningfully); add a commit to `stage_document_record` and the
+rollback-atomicity test plus this one go red. It is the only test that catches both.
+
+**The standing gap this exposed:** Streamlit is the one write path with **no test at all**, and it is
+also the path that reaches `ingest_document` directly. Both times a write-path contract moved this
+week, Streamlit was the caller left behind. Either it gets a smoke test or it retires with Phase 6 --
+recorded in `CLAUDE.md`'s failure contracts, since "nothing references this" is not evidence there.
+
 ### 2026-08-06 (evening) — the stack from scratch, and a healthcheck that could not fail
 
 The user hit `FATAL: database "portfolio" does not exist` on `api` and `worker`, crash-looping, after
