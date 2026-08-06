@@ -60,6 +60,9 @@ dependencies = [
     # (`ASGITransport`/`AsyncClient`). Declared anyway because a test-suite dependency arriving
     # transitively through a *runtime* package is exactly what breaks when that package drops it.
     "httpx>=0.28.1,<0.29.0",
+    # Versioned migrations. Not optional-extra material: `init_db` runs `upgrade head` at boot on
+    # every api and worker process, so it is a runtime dependency of the image.
+    "alembic>=1.18.0,<2.0.0",
 ]
 
 [project.optional-dependencies]

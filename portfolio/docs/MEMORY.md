@@ -256,6 +256,54 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-06 — review P0 #2 and #3: cross-store reads, and Alembic
+
+**P0 #2 — Qdrant and Postgres disagreeing about what is searchable.** Points are upserted, *then*
+the registry row is written, so a failure between them leaves retrievable chunks behind a row saying
+`processing` or `failed`. `Retriever.retrieve` now filters on `list_ingested_doc_ids`, in the
+retriever rather than the router because `/ask` and Streamlit both arrive there -- same lesson as the
+upload path.
+
+The trap was the empty case. `_build_filter` used `if doc_ids:`, so an empty allow-list fell through
+to *no* document condition: "nothing is ingested" would have become "search everything", worse than
+the bug. It now raises on an empty list.
+
+**Mutation testing earned its keep, twice.** My first version had two guards -- an early return for
+an empty ingested set, then a check on the intersection -- and deleting the first changed no test,
+because the second covered it. A guard whose removal keeps the suite green is documentation, so they
+are one branch now; re-mutated, deleting it turns two red. That is rule 15 catching *redundant code*
+rather than a missing test, which is the use I had not seen before.
+
+Only the read path. Versioned ingestion and a reconciliation command for orphans in either direction
+are still open -- the write path can lose a searchable version if the delete succeeds and the insert
+fails.
+
+**P0 #3 — Alembic.** `init_db` runs `alembic upgrade head` inside the advisory lock, replacing
+`create_all`. Four things that took real care, each verified rather than assumed:
+
+- **`include_object` excludes `procrastinate_*`.** They are not in `SQLModel.metadata`, so
+  autogenerate reads them as "should not exist". Removed the filter and regenerated: it emitted
+  `drop_table` for all four. It would have deleted the job queue on the next migration.
+- **A pre-Alembic database is stamped, not migrated.** `create_all` left tables and no
+  `alembic_version`; `upgrade head` there raises `DuplicateTable` on *every* boot. Mutation-confirmed
+  by disabling the stamp branch. Verified end to end with a seeded tenant row that survived.
+- **`alembic.ini` and `migrations/` must be COPYed into the image.** The Dockerfile copies explicit
+  paths, so they were absent and the container would have booted and failed at the first query. Found
+  by checking the COPY list, not by a test.
+- **The commands need the *sync* connection.** `run_sync` provides it; handing them the
+  `AsyncConnection` fails inside `Dialect.has_table` with a message about internal dialect use, which
+  reads as an alembic bug.
+
+Also dropped `fileConfig` from `env.py`: alembic's template calls it, it needs logging sections in
+the ini, and this project configures logging once through structlog.
+
+CI gained `alembic check` (mutation-verified: adding a model field without a revision fails it) and
+`test_migrations.py` joined the skip guard, now six suites. That guard has been wrong twice in this
+file's history, so the count is worth watching.
+
+**Still open from the review:** P0 #4 is the AI quality gate, which is Epic 2 entire -- a golden set,
+recall@k, the CI regression gate -- not a patch. Sections 2-8 untouched.
+
 ### 2026-08-05 (end of day, later) — the same-filename content swap (external review P0 #1)
 
 The user supplied a deep external review and said to take **point 1 only**. Verified it at source

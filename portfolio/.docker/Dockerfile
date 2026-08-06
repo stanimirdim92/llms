@@ -158,6 +158,13 @@ WORKDIR /app
 COPY --from=builder --chown=appuser:app /opt/venv /opt/venv
 COPY --chown=appuser:app app ./app
 COPY --chown=appuser:app streamlit_app ./streamlit_app
+# `init_db` runs `alembic upgrade head` on every api and worker boot, so these are runtime files,
+# not development tooling. Without them the container starts and fails at the first database call
+# with `No such file or directory: '/app/alembic.ini'` -- which reads as a packaging error rather
+# than a missing migration. `migrations/versions/` is append-only, so this also means an image is
+# pinned to the revisions it was built with.
+COPY --chown=appuser:app alembic.ini ./alembic.ini
+COPY --chown=appuser:app migrations ./migrations
 
 USER appuser
 

@@ -38,6 +38,15 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
   documents with the same filename, check them**: `GET /v1/documents` shows each `doc_id` with its
   filename, and asking a question scoped to one is the quickest way to see whose content it holds.
 
+#### Changed
+
+- **Schema changes no longer require dropping the database.** Tables are managed by Alembic
+  migrations, applied automatically when the api or worker starts, instead of a create-if-missing
+  step that could add a table but never a column. Nothing to do on upgrade: an existing database is
+  detected and adopted at the initial revision, and **your tenants, API keys and document records are
+  left untouched**. Previously the documented way to change the schema was to delete the volume,
+  which destroyed all three.
+
 #### Added
 
 - **A second rate limit, at nginx, keyed on your IP address rather than your API key.** It sheds

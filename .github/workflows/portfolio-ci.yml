@@ -74,7 +74,7 @@ jobs:
         run: uv run ty check .
 
   # ---------------------------------------------------------------------------------------------
-  # Service-backed. The five suites that touch Postgres/Redis SKIP when unreachable, so this job
+  # Service-backed. The six suites that touch Postgres/Redis SKIP when unreachable, so this job
   # exists to make them actually run -- and then asserts they did. Keep this count in step with the
   # loop below; it said three while the loop guarded five.
   # ---------------------------------------------------------------------------------------------
@@ -181,17 +181,38 @@ jobs:
         # reproduce a red run locally, take that seed and pass `--randomly-seed=<it>`.
         run: uv run pytest tests/unit -v
 
+      - name: Create the migrations test database
+        # test_migrations.py drops and recreates `public` on every test, so it needs a database of
+        # its own -- doing that to the one the other suites share would delete their schema
+        # mid-run. Created here rather than in the fixture because CREATE DATABASE cannot run
+        # inside a transaction and the fixture is async.
+        env:
+          PGPASSWORD: portfolio
+        run: psql -h localhost -U portfolio -d postgres -c 'CREATE DATABASE portfolio_migrations_test' || true
+
+      - name: Fail if models and migrations have drifted
+        # `alembic check` compares the models against the migrations and exits non-zero when a
+        # revision is missing. Without it, adding a field to a model and forgetting the migration
+        # is invisible until a query fails in production with `column ... does not exist` -- which
+        # is the exact failure Alembic was adopted to end, so leaving it uncaught in CI would
+        # reintroduce it one level up.
+        run: |
+          uv run alembic upgrade head
+          uv run alembic check
+
       - name: Fail if the service-backed tests skipped
         # These suites skip when their service is unreachable, so broken service wiring would
         # look identical to a pass in the summary. Assert they actually ran.
         run: |
-          # All five suites that skip on an unreachable service. It guarded three, so
+          # All six suites that skip on an unreachable service. It guarded three, so
           # test_key_management.py and test_create_tenant.py could skip silently in CI -- and
           # test_key_management.py holds the only proof that `{"scopes": null}` mints a
-          # correctly-scoped key rather than an unrestricted one.
+          # correctly-scoped key rather than an unrestricted one. test_migrations.py joined when
+          # Alembic replaced create_all: it holds the only proof that a database built by the old
+          # create_all is stamped rather than re-created, and that path fails *every* boot.
           for suite in tests/unit/test_auth_touch.py tests/unit/test_rate_limit.py \
                        tests/unit/test_worker_enqueue.py tests/unit/test_key_management.py \
-                       tests/unit/test_create_tenant.py; do
+                       tests/unit/test_create_tenant.py tests/unit/test_migrations.py; do
             uv run pytest "$suite" -q --no-header -rN | tee /dev/stderr | grep -q "skipped" \
               && { echo "::error::$suite skipped -- service wiring is broken"; exit 1; }
           done

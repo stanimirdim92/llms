@@ -333,12 +333,24 @@ Things that look correct and aren't:
   assumption (`test_stored_timestamps_come_back_timezone_aware`) so a schema change that
   drops `timezone=True` fails loudly. Substituting SQLite in tests would hide exactly this
   class of bug.
-- **`create_all` creates missing *tables*, never missing *columns*.** Adding a field to an
-  existing model changes nothing on a database that already has the table -- `init_db`
-  reports success and the next query fails with `column ... does not exist`. There is no
-  Alembic, so a new column means dropping the table (fine while it holds nothing worth
-  keeping) or writing the `ALTER TABLE` by hand. `ApiKey.expires_at` was added this way,
-  against an empty table.
+- **Schema changes go through Alembic, and `migrations/env.py` must exclude `procrastinate_*`.**
+  `init_db` runs `alembic upgrade head` inside the advisory lock; it used to run
+  `SQLModel.metadata.create_all`, which creates missing *tables* and never missing *columns*, so
+  adding a field changed nothing and the next query failed with `column ... does not exist`.
+  Four things not to undo:
+  - **`include_object` filters out `procrastinate_*`.** Those tables are not in `SQLModel.metadata`,
+    so `--autogenerate` reads them as "should not exist" -- verified by removing the filter, which
+    produced `drop_table` for all four. It would delete the job queue.
+  - **A database with no `alembic_version` but with `documentrecord` is *stamped*, not migrated.**
+    That is what the old `create_all` left behind; `upgrade head` there fails with
+    `DuplicateTable`, on every boot. Rule 8, and mutation-confirmed.
+  - **`alembic.ini` and `migrations/` are COPYed into the image.** They are runtime files, not
+    tooling. Absent, the container boots and fails at the first database call.
+  - **CI runs `alembic check`.** Adding a model field without a revision is otherwise invisible
+    until production -- the exact failure Alembic was adopted to end.
+
+  `migrations/env.py` imports every model module, because that is where `SQLModel.metadata` gets
+  populated now; a model missing there is silently omitted from the migration.
 - **An empty `ApiKey.scopes` list means EVERY scope, not none.** Same rule as `expires_at
   IS NULL` meaning never: absent data must mean the pre-existing behaviour, or adding a
   column becomes an outage for every key minted before it. `auth/scopes.py::granted` is the

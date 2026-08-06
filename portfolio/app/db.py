@@ -12,11 +12,12 @@ from __future__ import annotations
 import asyncio
 from contextlib import asynccontextmanager
 from functools import lru_cache
+from pathlib import Path
 from typing import TYPE_CHECKING
 
-from sqlalchemy import text
+import structlog
+from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
-from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.config import get_settings
@@ -24,7 +25,20 @@ from app.config import get_settings
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from sqlalchemy import Connection
     from sqlalchemy.ext.asyncio import AsyncConnection
+
+log = structlog.get_logger(__name__)
+
+_ALEMBIC_INI = Path(__file__).resolve().parent.parent / "alembic.ini"
+"""Resolved from this file, not the process's working directory. The api runs from `/app`, the CLI
+from the repo root, and pytest from wherever it was invoked -- a relative path works in some of
+those and silently picks up nothing in the others."""
+
+_INITIAL_REVISION = "2adf560892da"
+"""The revision whose schema `SQLModel.metadata.create_all` used to produce. Only used to stamp a
+database that predates Alembic; see `_migrate_to_head`. Do not repoint this at a later revision --
+it would claim migrations had run that never did."""
 
 # Advisory-lock key serializing schema creation across processes. Arbitrary, but must be
 # identical in every process: Postgres advisory locks are bare int64 keys in one global
@@ -68,15 +82,11 @@ async def init_db() -> None:
     makes concurrent first calls (two uploads racing on a fresh process) do the DDL once
     rather than both attempting it.
 
-    The imports below are load-bearing too: `SQLModel.metadata` is populated as a side
-    effect of importing a model module, so a table whose module has never been imported is
-    silently absent from `create_all` and only fails later, at query time, as a confusing
-    "relation does not exist". Every table module must be imported here.
-
-    Still no Alembic for our own tables. That's a real simplification rather than a shrug --
-    with three tables a schema change means dropping the volume and re-ingesting. Revisit when
-    there is data worth migrating rather than recreating. (procrastinate's tables are the
-    exception; see `_apply_procrastinate_schema`.)
+    Alembic owns our tables now (`_migrate_to_head`), procrastinate owns its own
+    (`_apply_procrastinate_schema`). The model modules are imported by `migrations/env.py` rather
+    than here, because that is where `SQLModel.metadata` has to be populated -- a model whose module
+    is not imported there is invisible to `--autogenerate` and its table is silently omitted from the
+    migration, which is the same failure this used to warn about for `create_all`.
     """
     global _initialized  # noqa: PLW0603
     if _initialized:
@@ -85,9 +95,6 @@ async def init_db() -> None:
     async with _init_lock:
         if _initialized:  # another coroutine won the race while we waited
             return
-        from app.auth import models as _auth_models  # noqa: F401, PLC0415
-        from app.registry import models as _registry_models  # noqa: F401, PLC0415
-
         # The asyncio lock above only serializes coroutines *within one process*, which is not
         # the concurrency that matters here: gunicorn boots GUNICORN_WORKERS processes at once,
         # each running this lifespan, and the `worker` container runs it too. All of them raced
@@ -101,11 +108,52 @@ async def init_db() -> None:
         # session-level lock leaked by a crashed process would deadlock every later boot.
         async with get_engine().begin() as conn:
             await conn.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": _SCHEMA_LOCK_KEY})
-            await conn.run_sync(SQLModel.metadata.create_all)
+            await _migrate_to_head(conn)
             # Inside the lock on purpose: a process that waited here must re-check rather than
             # act on what it saw before the winner ran.
             await _apply_procrastinate_schema(conn)
         _initialized = True
+
+
+async def _migrate_to_head(conn: AsyncConnection) -> None:
+    """Bring our own tables to the latest Alembic revision. Must hold `_SCHEMA_LOCK_KEY`.
+
+    Replaced `SQLModel.metadata.create_all`, which creates missing *tables* and never missing
+    *columns*: adding a field to an existing model changed nothing, this function reported success,
+    and the next query failed with `column ... does not exist`. Dropping the volume was the
+    documented workaround, and it stopped being acceptable once Postgres held tenants and API keys,
+    which are not rebuildable.
+
+    Runs on the caller's connection so the migration is inside the transaction already holding the
+    advisory lock. Alembic would otherwise open its own, and the lock would not cover the DDL at all.
+
+    **A database built by the old `create_all` has the tables but no `alembic_version`.** Running
+    `upgrade head` there would try to create tables that already exist and fail every boot, so it is
+    stamped at the initial revision instead and later revisions apply normally. Rule 8: the absent
+    version row has to mean "this is the schema the first revision describes", which is what
+    `create_all` produced.
+    """
+    from alembic import command  # noqa: PLC0415 -- keeps import cost off every non-boot import
+    from alembic.config import Config  # noqa: PLC0415
+    from alembic.runtime.migration import MigrationContext  # noqa: PLC0415
+
+    def _run(sync_conn: Connection) -> None:
+        # All of it inside one `run_sync`: alembic's commands are synchronous and
+        # `context.configure(connection=...)` wants a sync `Connection`. Handing them the
+        # `AsyncConnection` fails inside `Dialect.has_table` with a message about internal dialect
+        # use, which reads as an alembic bug rather than the wrong connection type.
+        config = Config(str(_ALEMBIC_INI))
+        config.attributes["connection"] = sync_conn
+
+        if MigrationContext.configure(sync_conn).get_current_revision() is None and inspect(sync_conn).has_table(
+            "documentrecord"
+        ):
+            log.info("db.stamping_pre_alembic_schema", revision=_INITIAL_REVISION)
+            command.stamp(config, _INITIAL_REVISION)
+
+        command.upgrade(config, "head")
+
+    await conn.run_sync(_run)
 
 
 async def _apply_procrastinate_schema(conn: AsyncConnection) -> None:
