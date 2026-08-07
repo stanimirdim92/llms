@@ -332,6 +332,30 @@ unrelated to anything touched here, not investigated further).
 (never committed) came back clean. `ruff check .` fails, but identically with this session's diff
 stashed — see above, not this session's regression.
 
+**Addendum, same session, asked to keep going.** Fixed the `ruff` failure from above properly:
+`ruff.toml`'s `extend-select` never included `BLE` (flake8-blind-except) — `B` is bugbear, a
+different plugin — so the ten `# noqa: BLE001` comments across the codebase never suppressed
+anything real, and `RUF100` (unused noqa) has presumably been true for as long as they existed.
+Fixed by hand, not `ruff --fix`: the auto-fix deletes the whole comment, including the reasoning
+after `--` ("any Redis failure must not take down the API," etc.) that rule 15 exists to keep.
+Whether `BLE` should actually be turned on — which would newly enforce blind-except detection
+project-wide and could surface unrelated findings — is a separate decision, not made here.
+
+Then re-checked clusters A/B/D from the sweep before cutting them, and didn't: `README.md`'s
+tenant-isolation sentence serves a first-time reader who shouldn't have to open `CLAUDE.md`, and
+`CLAUDE.md`'s corpus-removal and tenant-boundary entries are condensed failure-contract context
+(6-8 lines, not near-verbatim copies of `TECHNICAL_DECISIONS.md`'s longer version) — the same
+"already right-sized" shape the 2026-08-05 sweep found for `document_scope.py` and
+`qdrant_store.py`. Not every flagged duplicate is bloat; these earn their repetition.
+
+Gate with the noqa fix applied: ruff clean, ty clean, `pytest tests/unit` — 313 passed, 68
+skipped, 3 failed. The 3 failures (`test_api_contract.py`, budget/header assertions) need a live
+Postgres/Redis this sandbox doesn't have and are **not** among the six documented skip-guarded
+suites, so they fail outright rather than skip; confirmed identical via `git stash` with this
+session's changes removed, so pre-existing and not investigated further. The `verify` skill was
+not invoked to work around this — it's reserved for explicit user invocation and its workflow
+isn't to be replicated by other means.
+
 ### 2026-08-07 — reviewing the user's manual commits, and a timeout number that drifted twice in one day
 
 Handoff session, asked to check seven commits that landed on `main` outside a documented session
