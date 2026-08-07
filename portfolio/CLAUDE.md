@@ -487,13 +487,18 @@ Things that look correct and aren't:
   `PORT=9000` in `.env` alone gives gunicorn on 9000, a mapping of `8000:8000`, and
   an nginx upstream on `api:8000`.
 - **Timeouts are one value, not three.** gunicorn `--timeout` and nginx's
-  `proxy_read_timeout`/`client_body_timeout` are all 190s from `GUNICORN_TIMEOUT`,
+  `proxy_read_timeout`/`client_body_timeout` are all 120s from `GUNICORN_TIMEOUT`,
   because the shorter one silently becomes the real budget: nginx-first is a 504 with
   the worker still burning CPU, gunicorn-first is a SIGKILL mid-parse that reaches the
   client as a bare connection failure naming nothing. `proxy_connect_timeout` stays 75s
   on purpose -- nginx caps it there regardless, so a larger number is decoration.
-  The 100s gunicorn value is a stopgap for synchronous ingestion; `client_body_timeout`
-  is not (bytes still arrive over the wire once uploads become jobs).
+  The 120s gunicorn value is a stopgap for synchronous ingestion; `client_body_timeout`
+  is not (bytes still arrive over the wire once uploads become jobs). `--graceful-timeout`
+  (630s, `GUNICORN_GRACEFUL_TIMEOUT`) is a fourth, unrelated number -- how long a worker
+  gets to finish in-flight requests after a reload signal before being force-killed, not
+  the per-request ceiling above. It has no recorded reasoning for 630s and was not
+  re-derived when `GUNICORN_TIMEOUT` last changed; it only needs to stay `>=
+  GUNICORN_TIMEOUT`.
 - **`cors_allow_credentials` + `"*"` origins is refused at startup.** Starlette answers
   that pair by reflecting the caller's own `Origin` with `Allow-Credentials: true`, so
   every site on the internet becomes trusted. The wildcard default is only inert while

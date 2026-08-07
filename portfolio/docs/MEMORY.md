@@ -271,6 +271,42 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-07 — reviewing the user's manual commits, and a timeout number that drifted twice in one day
+
+Handoff session, asked to check seven commits that landed on `main` outside a documented session
+(one Claude "fixes" commit with no write-up, and the user's own `23b0a79`). Real bug fixes among
+them checked out (`e7e5ba6` postgres healthcheck, `6a7f6f0` Streamlit commit-vs-stage), but
+`GUNICORN_TIMEOUT` moved three times the same day -- 600s to 100s (`c92a30a`) to 120s (`23b0a79`,
+"to improve large PDF processing") -- and only the running config caught up. Found by reading, not
+by a report: `CLAUDE.md`'s own "Timeouts are one value, not three" bullet said **190s in one
+sentence and 100s in the next**, `docs/TECHNICAL_DECISIONS.md` said 100s throughout, and
+`.docker/nginx/Dockerfile`'s `ARG REQUEST_TIMEOUT` standalone default said 630 -- which is not a
+timeout value that was ever current, it looks like the new `--graceful-timeout` number (also
+630, also new that day) landed in the wrong ARG. None of it was live-dangerous, because compose
+always passes the real value as a build arg and overrides nginx's own default, but it is the same
+"a count that disagrees with its own list" failure this project flagged on 2026-08-05, now with
+timeouts instead of comment counts.
+
+**Fixed:** the nginx `ARG` default (630 → 120), the Dockerfile's own CMD comment (was still
+arguing for raising *to* 120 while the flag already read 120), `CLAUDE.md` and
+`TECHNICAL_DECISIONS.md`'s prose (both now say 120s, consistently), and documented
+`GUNICORN_GRACEFUL_TIMEOUT` for the first time -- it was a real, functioning env var with zero
+mention in `.env.example`, `CLAUDE.md`, or `TECHNICAL_DECISIONS.md`. Its default (630s) is stated
+as *unjustified* rather than given a made-up reason: the only real constraint is `>=
+GUNICORN_TIMEOUT`, and 630 happens to satisfy that today by coincidence, not derivation. `CHANGELOG.md`
+gained the `#### Changed` entries neither `c92a30a` nor `23b0a79` had written.
+
+**Not done, and asked about but not resolved:** the larger doc-bloat cleanup `MEMORY.md` deferred on
+2026-08-05 (duplicate clusters, ~250 redundant lines in `TECHNICAL_DECISIONS.md`, ~75 here) -- the
+user said "stuck" rather than scoping it, so only the concrete drift above was fixed. Whether pushes
+this session go to `main` (this file's standing directive) or the session's designated branch is
+also still unresolved; pushed to the branch as the conservative default.
+
+**Verification:** no application code changed, so ruff/ty/pytest are unaffected by this pass.
+`docker compose config` was run against a throwaway `.env` copied from `.env.example` (this repo
+has no committed `.env`, and compose's own README warns `--env-file` is not optional) and came
+back clean; the throwaway file was deleted immediately after, never committed.
+
 ### 2026-08-06 (night) — the Streamlit upload was broken by my own change, for one commit
 
 Reported from a genuine first run: `DocumentNotFoundError: no document row for ...`, Qdrant holding a

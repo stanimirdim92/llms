@@ -170,20 +170,28 @@ HEALTHCHECK --interval=30s --timeout=16s --start-period=40s --retries=3 \
 # than a fixed count: a much bigger box would want more than this container's default of
 # 2, and hardcoding a large number here would be wrong for a demo-scale deployment.
 #
-# --timeout is 100 (100 seconds). Ingestion is synchronous today and a
-# real document takes anywhere from 10s to 2min -- 120s sat close enough to the upper end
-# that a large PDF could trip it, and gunicorn's timeout is not a graceful 504: it SIGKILLs
-# the worker mid-parse, so the client sees a bare connection failure with nothing naming
-# the timeout, and any other request being served by that worker dies with it. nginx's
-# proxy_read_timeout is wired to the same value (see nginx/Dockerfile) so the two can't
-# drift into a mismatch where the shorter one silently decides the real budget.
+# --timeout is 120 (2 minutes). Ingestion is synchronous today and a real document
+# takes anywhere from 10s to 2min, and gunicorn's timeout is not a graceful 504: it
+# SIGKILLs the worker mid-parse, so the client sees a bare connection failure with
+# nothing naming the timeout, and any other request being served by that worker dies
+# with it. nginx's proxy_read_timeout is wired to the same value (see nginx/Dockerfile)
+# so the two can't drift into a mismatch where the shorter one silently decides the
+# real budget.
 #
-# This is a stopgap, not the destination: a 100-seconds worker timeout means one stuck
-# request holds a worker for 10 minutes, and with GUNICORN_WORKERS=2 two of them stall
+# This is a stopgap, not the destination: a 120-second worker timeout means one stuck
+# request holds a worker for 2 minutes, and with GUNICORN_WORKERS=2 two of them stall
 # the service. Once ingestion moves behind a job queue (docs/EPIC_4_PLAN.md Phase 5) the
 # upload request returns in milliseconds and this should come back down -- the value that
 # genuinely has to stay large is nginx's client_body_timeout, since the bytes still have
 # to arrive over the wire no matter what processes them afterwards.
+#
+# --graceful-timeout is a different budget from --timeout above: how long a worker gets
+# to finish requests already in flight after a restart/reload signal before gunicorn
+# force-kills it, not the per-request ceiling. New alongside the --timeout change on
+# 2026-08-06; 630s has no recorded reasoning and was not derived from --timeout -- noted
+# rather than invented, since a made-up justification here would be exactly what rule 13
+# exists to catch. It only needs to be >= --timeout, so a reload can't cut a request
+# shorter than its own timeout budget would have.
 # uvicorn_worker.UvicornWorker's own CONFIG_KWARGS defaults to loop="auto", so this
 # keeps the same uvloop-when-available behavior the previous bare-uvicorn --loop uvloop
 # had explicitly -- no separate loop flag needed with this worker class.

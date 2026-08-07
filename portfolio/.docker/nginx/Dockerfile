@@ -23,7 +23,7 @@ RUN sed -i "s/__API_PORT__/${API_PORT}/" /etc/nginx/nginx.conf
 #   first (client_max_body_size), so if it is the smaller of the two the app's own limit
 #   is dead code and raising MAX_UPLOAD_SIZE_MB appears to do nothing: every upload over
 #   nginx's figure gets a 413 from nginx that looks exactly like the app's own 413.
-ARG REQUEST_TIMEOUT=630
+ARG REQUEST_TIMEOUT=120
 ARG MAX_UPLOAD_MB=20
 
 # Edge rate limiting. These are NOT wired to the app's RATE_LIMIT_* settings and must not be:

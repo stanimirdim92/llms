@@ -15,6 +15,22 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ### 2026-08-06
 
+#### Changed
+
+- **`GUNICORN_TIMEOUT`'s default is now 120s** (2 minutes), to give large PDF ingestion more
+  headroom before gunicorn SIGKILLs the worker mid-parse. It moved twice the same day — 600s to
+  100s and then to 120s — and nginx's `proxy_read_timeout`/`client_body_timeout` move with it, as
+  always.
+
+  *Upgrading:* if you set `GUNICORN_TIMEOUT` explicitly in `.env`, this doesn't affect you. If you
+  were relying on the previous 600s default, set it explicitly.
+
+- **A new `GUNICORN_GRACEFUL_TIMEOUT` env var** (default 630s) bounds how long a worker gets to
+  finish in-flight requests after a restart/reload signal before gunicorn force-kills it — a
+  different budget from `GUNICORN_TIMEOUT`, which bounds one request. Not yet exposed in
+  `.env.example`; see `docs/TECHNICAL_DECISIONS.md` § Deployment for what its default does and
+  does not have behind it.
+
 #### Fixed
 
 - **Uploading through the Streamlit UI failed on every document.** The upload wrote its chunks to
