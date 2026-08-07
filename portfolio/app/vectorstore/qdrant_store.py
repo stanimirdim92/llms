@@ -119,7 +119,7 @@ def _ensure_payload_indexes(client: QdrantClient, collection_name: str) -> None:
                 field_name=field,
                 field_schema=KeywordIndexParams(type=PayloadSchemaType.KEYWORD, is_tenant=is_tenant),
             )
-        except Exception as exc:  # an index is performance, not correctness
+        except Exception as exc:  # noqa: BLE001 -- an index is performance, not correctness
             log.warning("qdrant.payload_index_failed", field=field, error=str(exc))
 
 

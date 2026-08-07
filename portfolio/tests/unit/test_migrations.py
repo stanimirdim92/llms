@@ -42,7 +42,7 @@ async def _reachable(url: str) -> bool:
     try:
         async with engine.connect():
             return True
-    except Exception:
+    except Exception:  # noqa: BLE001
         return False
     finally:
         await engine.dispose()

@@ -227,7 +227,7 @@ async def check(scope: str, subject: str, limit: int) -> Budget | None:
     try:
         allowed = await limiter.hit(item, scope, subject)
         stats = await limiter.get_window_stats(item, scope, subject)
-    except Exception as exc:  # any Redis failure must not take down the API
+    except Exception as exc:  # noqa: BLE001 -- any Redis failure must not take down the API
         log.warning("rate_limit.unavailable", scope=scope, error=str(exc))
         return None
 

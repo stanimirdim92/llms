@@ -150,7 +150,7 @@ async def ingest_document(
     # would turn a successful publish into a reported failure.
     try:
         await asyncio.to_thread(store.delete_superseded, doc_id, tenant_id, ingestion_version)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log.warning("ingestion.prune_failed", doc_id=doc_id, keep_version=ingestion_version, error=str(exc))
 
     return len(chunks)

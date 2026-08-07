@@ -71,7 +71,7 @@ async def _postgres_reachable(url: str) -> bool:
     try:
         async with engine.connect():
             return True
-    except Exception:  # any connection failure means "skip", not "fail"
+    except Exception:  # noqa: BLE001 -- any connection failure means "skip", not "fail"
         return False
     finally:
         await engine.dispose()
@@ -636,11 +636,14 @@ async def test_publishing_a_row_that_is_not_there_raises(db: SessionFactory) -> 
 
 
 async def test_the_flip_cannot_publish_into_another_tenants_row(db: SessionFactory) -> None:
-    """`doc_id` is a content hash, so two tenants uploading the same file share one.
+    """A shared `doc_id` must not let one tenant's flip touch another's row.
 
-    The tenant is in the WHERE clause, not checked after the read -- so a flip aimed at tenant A
-    must not touch tenant B's row even when both hold the same `doc_id`. Filtering afterwards would
-    already have written it.
+    Constructed here rather than reached naturally -- `upload_doc_id` salts with `tenant_id`,
+    so two tenants uploading the same file get different ids (see `test_tenant_scoping.py`).
+    The guard this pins doesn't depend on that: `activate_document_version` puts `tenant_id` in
+    the WHERE clause rather than checking it after the read, so a flip aimed at tenant A cannot
+    reach tenant B's row even in the case its own inputs are trusted to rule out. Filtering
+    afterwards would already have written it.
     """
     async with db() as session:
         await stage_document_record(session, _record(tenant_id=TENANT_B, status=STATUS_PENDING))

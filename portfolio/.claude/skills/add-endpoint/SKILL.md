@@ -23,8 +23,10 @@ raises. That is the entire reason this checklist exists.
    budget than reads because they cost Docling CPU plus a vision call per figure plus an
    embedding call per chunk. Buckets are **per key**, not per tenant, so a tenant with N keys
    has N times the budget -- fairness between clients, not a cost ceiling.
-4. **Declare the scope it needs**: `Depends(require_scopes(<SCOPE>))` from `app.auth.scopes`,
-   in the same `dependencies=[...]` list. A route without one is reachable by every key.
+4. **Declare the scope it needs**: `Depends(require_scopes(<SCOPE>))`. `require_scopes` is in
+   `app.api.deps`, alongside `CurrentTenant` and `rate_limited`; the scope constant (e.g.
+   `DOCUMENTS_WRITE`) is what comes from `app.auth.scopes`. Same `dependencies=[...]` list. A
+   route without one is reachable by every key.
    `tests/unit/test_scopes.py` walks the route table and fails on any `/v1` route with no
    requirement -- add yours to `EXPECTED_ROUTE_SCOPES` there. Scope failures are **403** (the
    caller is entitled to the tenant and merely lacks a capability); another tenant's resource

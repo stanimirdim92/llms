@@ -332,29 +332,54 @@ unrelated to anything touched here, not investigated further).
 (never committed) came back clean. `ruff check .` fails, but identically with this session's diff
 stashed — see above, not this session's regression.
 
-**Addendum, same session, asked to keep going.** Fixed the `ruff` failure from above properly:
-`ruff.toml`'s `extend-select` never included `BLE` (flake8-blind-except) — `B` is bugbear, a
-different plugin — so the ten `# noqa: BLE001` comments across the codebase never suppressed
-anything real, and `RUF100` (unused noqa) has presumably been true for as long as they existed.
-Fixed by hand, not `ruff --fix`: the auto-fix deletes the whole comment, including the reasoning
-after `--` ("any Redis failure must not take down the API," etc.) that rule 15 exists to keep.
-Whether `BLE` should actually be turned on — which would newly enforce blind-except detection
-project-wide and could surface unrelated findings — is a separate decision, not made here.
+**Addendum, same session, asked to keep going — and a mistake made and then caught.** First
+attempt: diagnosed the ten `RUF100` "unused noqa" errors as `ruff.toml` never having selected
+`BLE` (flake8-blind-except), reasoning that `B` (bugbear) is a different plugin. **Wrong.**
+`ruff`'s `extend-select` matches by raw *code prefix string*, not by plugin identity, so `"B"`
+also matches `BLE001` — it is not bugbear-only. Removed the ten `# noqa: BLE001` comments by
+hand (preserving the reasoning after `--`, unlike `ruff --fix`, which deletes the whole comment)
+and got "All checks passed!" — which was `.ruff_cache` serving a stale result, not the true
+state. Caught only because a *later*, unrelated task (reviewing `add-endpoint`) happened to
+re-run `ruff check` on a single file and got a different answer than the just-checked whole
+project; `rm -rf .ruff_cache && ruff check --no-cache .` settled it: all ten sites are real
+`BLE001` violations, correctly suppressed the whole time. **Reverted** — all ten `# noqa:
+BLE001` comments restored verbatim, verified clean with `--no-cache` this time. The commit that
+removed them (`d1e1742`) is wrong and superseded by the revert; not force-rewritten since it was
+already pushed to `main`. Whether `BLE001` should actually be enforced project-wide, now that
+it demonstrably already is, was never the question here.
 
-Then re-checked clusters A/B/D from the sweep before cutting them, and didn't: `README.md`'s
-tenant-isolation sentence serves a first-time reader who shouldn't have to open `CLAUDE.md`, and
-`CLAUDE.md`'s corpus-removal and tenant-boundary entries are condensed failure-contract context
-(6-8 lines, not near-verbatim copies of `TECHNICAL_DECISIONS.md`'s longer version) — the same
-"already right-sized" shape the 2026-08-05 sweep found for `document_scope.py` and
-`qdrant_store.py`. Not every flagged duplicate is bloat; these earn their repetition.
+**The lesson worth keeping:** "All checks passed" from a tool that caches is not the same claim
+as "all checks passed against the current state," and the difference is invisible until a second,
+unrelated run exposes it. `--no-cache` (or clearing `.ruff_cache`) is the honest way to ask ruff
+the question this project actually needs answered after an edit that could change lint results.
 
-Gate with the noqa fix applied: ruff clean, ty clean, `pytest tests/unit` — 313 passed, 68
-skipped, 3 failed. The 3 failures (`test_api_contract.py`, budget/header assertions) need a live
-Postgres/Redis this sandbox doesn't have and are **not** among the six documented skip-guarded
-suites, so they fail outright rather than skip; confirmed identical via `git stash` with this
-session's changes removed, so pre-existing and not investigated further. The `verify` skill was
-not invoked to work around this — it's reserved for explicit user invocation and its workflow
-isn't to be replicated by other means.
+Then, on the *actual* remaining work: re-checked clusters A/B/D from the sweep before cutting
+them, and didn't. `README.md`'s tenant-isolation sentence serves a first-time reader who
+shouldn't have to open `CLAUDE.md`, and `CLAUDE.md`'s corpus-removal and tenant-boundary entries
+are condensed failure-contract context (6-8 lines, not near-verbatim copies of
+`TECHNICAL_DECISIONS.md`'s longer version) — the same "already right-sized" shape the 2026-08-05
+sweep found for `document_scope.py` and `qdrant_store.py`. Not every flagged duplicate is bloat;
+these earn their repetition.
+
+Gate, with the noqa comments correctly back in place: ruff clean (`--no-cache`), ty clean,
+`pytest tests/unit` — 313 passed, 68 skipped, 3 failed. The 3 failures (`test_api_contract.py`,
+budget/header assertions) need a live Postgres/Redis this sandbox doesn't have and are **not**
+among the six documented skip-guarded suites, so they fail outright rather than skip; confirmed
+identical via `git stash` with this session's changes removed, so pre-existing and not
+investigated further. The `verify` skill was not invoked to work around this — it's reserved for
+explicit user invocation and its workflow isn't to be replicated by other means.
+
+**Then asked whether `add-endpoint` is correct, especially the tenant part — it is, verified
+against source.** Item 5's WHERE-clause reasoning and item 7's 404-vs-403 claim both match
+`get_document_record`'s docstring, `upload_doc_id`'s actual salting, `PATTERNS.md` §2, and
+`test_naming_an_unowned_document_is_404_through_http` exactly. One real regression found in the
+process, in code the skill points to rather than in the skill itself:
+`test_worker_enqueue.py::test_the_flip_cannot_publish_into_another_tenants_row` still opened with
+"`doc_id` is a content hash, so two tenants uploading the same file share one" — the exact false
+claim `PATTERNS.md` §2 documents as corrected on 2026-08-05, quietly reintroduced in a test
+docstring a markdown-only sweep would never reach. Fixed. Also tightened the skill's item 4,
+which read as if `require_scopes` comes `from app.auth.scopes` — it's in `app.api.deps`; only the
+scope constants live in `app.auth.scopes`.
 
 ### 2026-08-07 — reviewing the user's manual commits, and a timeout number that drifted twice in one day
 

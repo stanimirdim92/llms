@@ -44,6 +44,12 @@ extend-exclude = [
 ]
 
 [lint]
+# Selection is by code PREFIX STRING, not by plugin identity -- "B" matches every code
+# starting with B, which includes flake8-blind-except's BLE001 as well as bugbear's own B0xx.
+# Confirmed by removing every `# noqa: BLE001` in the repo and running `ruff check --no-cache .`:
+# all ten came back as real violations. `ruff check` without `--no-cache` had reported them as
+# unused (RUF100) instead, from a stale `.ruff_cache` -- so "all checks passed" from a cached run
+# is not evidence of the current state after an edit that could change lint results.
 extend-select = [
     "ANN",
     "A",
