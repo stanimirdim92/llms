@@ -396,13 +396,10 @@ Things that look correct and aren't:
   lint, or type check sees it. Import `datetime` normally and `# noqa: TC003` the linter.
   `tests/unit/test_worker_enqueue.py` now covers the registry write path.
 - **Postgres is the only database engine.** No SQLite anywhere -- not for tests, not for
-  Epic 3's checkpointer or incoming queue. Datetime arithmetic in `auth/service.py` relies
-  on `DateTime(timezone=True)` round-tripping an aware value, which is a *Postgres*
-  guarantee; SQLite returns naive datetimes and would raise "can't subtract offset-naive
-  and offset-aware datetimes". Rather than defensively normalizing, a test pins the
-  assumption (`test_stored_timestamps_come_back_timezone_aware`) so a schema change that
-  drops `timezone=True` fails loudly. Substituting SQLite in tests would hide exactly this
-  class of bug.
+  Epic 3's checkpointer or incoming queue. `test_stored_timestamps_come_back_timezone_aware`
+  pins the reason (a Postgres-only datetime guarantee `auth/service.py` relies on); the full
+  story, plus the FK-enforcement bug a SQLite fixture also hid, is in
+  `docs/TECHNICAL_DECISIONS.md` § Database.
 - **Schema changes go through Alembic, and `migrations/env.py` must exclude `procrastinate_*`.**
   `init_db` runs `alembic upgrade head` inside the advisory lock; it used to run
   `SQLModel.metadata.create_all`, which creates missing *tables* and never missing *columns*, so
@@ -492,8 +489,10 @@ Things that look correct and aren't:
   the worker still burning CPU, gunicorn-first is a SIGKILL mid-parse that reaches the
   client as a bare connection failure naming nothing. `proxy_connect_timeout` stays 75s
   on purpose -- nginx caps it there regardless, so a larger number is decoration.
-  The 120s gunicorn value is a stopgap for synchronous ingestion; `client_body_timeout`
-  is not (bytes still arrive over the wire once uploads become jobs). `--graceful-timeout`
+  The 120s gunicorn value predates Phase 5.1 (uploads became jobs the same day it was last
+  raised) and no longer has a stated reason to exceed a normal default -- `client_body_timeout`
+  is different, since bytes still arrive over the wire regardless of what processes them.
+  `--graceful-timeout`
   (630s, `GUNICORN_GRACEFUL_TIMEOUT`) is a fourth, unrelated number -- how long a worker
   gets to finish in-flight requests after a reload signal before being force-killed, not
   the per-request ceiling above. It has no recorded reasoning for 630s and was not
@@ -587,9 +586,9 @@ rather than raising -- it fails silently, as cross-tenant data access.
   reports `X-RateLimit-Reset: 0` on the first request of a fresh window (`120 % 60 == 0` against a
   2x-window TTL), which needed a clamp that the exact strategy makes unnecessary. Two tests hold
   the line, both red in 5 of 5 mutation runs: the full-budget-returns test and the 1x-vs-2x TTL
-  bound in the expiry test. It costs 1464 bytes per key against the counter's 120 -- ~29 MB at
-  10k tenants x 2 scopes, which is nothing on 16 GB. `FixedWindowRateLimiter` is cheaper again and
-  wrong: a caller straddles the boundary and spends two budgets back to back.
+  bound in the expiry test. `FixedWindowRateLimiter` is cheaper again and wrong for a different
+  reason: a caller straddles the boundary and spends two budgets back to back. Byte-cost numbers
+  are in `docs/TECHNICAL_DECISIONS.md` § Rate limiting, not repeated here.
 - **Pass `max_connections`.** `limits` defaults it to 100 and its pool raises
   `MaxConnectionsError` rather than queueing, so the default turns burst load into 500s.
 - **`X-RateLimit-*` goes on successes too, not just 429s**, or the budget is only discoverable

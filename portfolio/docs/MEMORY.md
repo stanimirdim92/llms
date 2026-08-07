@@ -271,6 +271,67 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-07 (later) — the deferred doc-bloat cleanup, and a stale claim my own prior commit repeated
+
+Asked to do the bloat-reduction pass `MEMORY.md` deferred on 2026-08-05 (~250 lines in
+`TECHNICAL_DECISIONS.md` § rate limiting, ~75 here re-narrating the rate-limiter swap, 113 lines
+of superseded Phase 1 plan in `EPIC_4_PLAN.md`, fifteen cross-file duplicate clusters). Re-measured
+rather than trusted the two-day-old count, per rule 13 — this project's own habit of re-deriving
+rather than believing a prior number paid off immediately (see below).
+
+**What actually moved:** `EPIC_4_PLAN.md` 690 → 590 lines (Phase 1's superseded original-plan
+appendix collapsed from ~112 lines to a 10-line pointer at current code; its 1.7/1.8/Verification
+subsections deleted outright — `test_auth_scoping.py` was never created, the real file is
+`test_tenant_scoping.py`, so that appendix wasn't just stale, it named a file that doesn't exist;
+Phase 5.1's own original-plan section similarly condensed; the "Risks" section lost four
+Phase-1 risks that are resolved and one procrastinate-migration risk that Alembic's adoption
+already closed). This file's own rate-limiter-swap entry: 76 lines → 14, pointing at
+`docs/TECHNICAL_DECISIONS.md` § Rate limiting where every fact in it now lives in fuller form.
+`TECHNICAL_DECISIONS.md` itself: removed a near-verbatim `MaxConnectionsError` repeat, a
+dangling self-referential note ("this paragraph said X" pointing at itself, post-correction),
+and one of three restatements of the 26×-vs-2× memory correction. `CLAUDE.md`'s Postgres-only
+and Docling-import-measurement failure contracts now point at `TECHNICAL_DECISIONS.md` for the
+"why" instead of restating it — consistent with the document-set's own split, which CLAUDE.md
+apparently doesn't yet follow for every entry.
+
+**Delegated the cross-file sweep** (11 files, excluding this one and `.claude/`) to a read-only
+agent rather than eyeballing ~3,150 lines myself — a textbook wide-shallow-fixed-question case.
+It found the "document set" table claim doesn't reproduce inside the files it scanned at all —
+the 2026-08-05 "five places" count was almost certainly counting root `/home/user/llms/CLAUDE.md`
+and this file, both excluded from that sweep's scope, so a fresh full-repo sweep would be needed
+to actually close that item. It confirmed Postgres-only (6 locations, not the claimed number
+either) and the Docling-import measurement (4, not ~6), and surfaced five more clusters of the
+same shape not on the original list (tenant-isolation core sentence, the `session_id`
+vulnerability history, Qdrant point-id UUID requirement, the corpus-removal narrative, the
+`MovingWindow`-vs-Counter measurement). Only the top two and one light trim got fixed this
+session — the rest are named above for whoever picks this up next, not because they're wrong to
+fix, but because this pass already ran long and every edit needs the same "does this actually
+still say the true thing" check the next finding required.
+
+**The finding that mattered more than the line count.** While fixing `EPIC_4_PLAN.md`'s stale
+Phase 1 appendix, read the actual `POST /v1/documents` handler to check a claim before deleting
+it, and it does exactly what Phase 5.1 says: writes the file and returns 202, no Docling call in
+that process at all. That made three separate documents' stated reason for `GUNICORN_TIMEOUT`
+provably false — "ingestion is synchronous today" — including **my own commit from earlier
+today**, which raised the same claim forward without checking it against Phase 5.1 having shipped
+the same day the timeout was last bumped. Docling's own `document_timeout=90` (hardcoded in
+`app/ingestion/parser.py`) is what actually bounds a large-PDF parse now, and it runs in `worker`,
+which has no gunicorn timeout at all. Corrected in `.docker/Dockerfile`, `.env.example`,
+`CLAUDE.md` and `TECHNICAL_DECISIONS.md` — flagged as "looks vestigial, not silently changed",
+since lowering a value the user just deliberately set is a different call than documenting it
+accurately, and this file doesn't get to make that call unilaterally.
+
+**Not done, named rather than silently skipped:** clusters A/B/D from the sweep (tenant-isolation
+sentence in README+CLAUDE.md, the `session_id` vuln history in 3-4 files, the corpus-removal
+narrative in 3 files); the "document set" table's real duplicate locations, which need a sweep
+that includes root `CLAUDE.md` and this file; and the pre-existing `ruff check` failure (10
+`RUF100` "unused noqa" errors, confirmed present with this session's changes stashed out —
+unrelated to anything touched here, not investigated further).
+
+**Verification:** no application code touched. `docker compose config` against a throwaway `.env`
+(never committed) came back clean. `ruff check .` fails, but identically with this session's diff
+stashed — see above, not this session's regression.
+
 ### 2026-08-07 — reviewing the user's manual commits, and a timeout number that drifted twice in one day
 
 Handoff session, asked to check seven commits that landed on `main` outside a documented session
@@ -908,82 +969,23 @@ admitted `global` -- and a new parametrized test pins the empty-tenant `ValueErr
 upload for the non-root `appuser` with an error pointing at the application. Added `data/.gitkeep`
 explaining exactly that.
 
-### 2026-08-03 (later) — the rate limiter moved onto `limits`
+### 2026-08-03 (later) — the rate limiter moved onto `limits`, then its strategy changed hours later
 
-The user asked why a battle-tested library was not being used, was given the tradeoff, and
-called it: switch. Done, and the interesting part is what the switch cost, because "use the
-library" undersells it.
+Switched the hand-rolled Lua limiter to `limits` on the user's call, then switched its *strategy*
+again the same day: `SlidingWindowCounterRateLimiter` was chosen first, on a memory argument, and
+turned out not to honour its own `Retry-After` — measured, not reasoned about, so worth stating
+as the actual finding: a client that waited exactly as long as the header said still got a 429.
+Replaced with `MovingWindowRateLimiter`. Pruned from here 2026-08-07 because every fact in this
+entry — the slowapi comparison, the two bugs the swap introduced (an `X-RateLimit-Reset: 0` edge
+case, fail-open needing to be re-added since `limits` fails closed), the corrected 26×-vs-2×
+memory figure, and the mutation-test guard-reliability numbers — is now in
+`docs/TECHNICAL_DECISIONS.md` § Rate limiting, in more complete form than this narrated it.
 
-**`limits` supplies counting and has no opinion about anything else.** Fail-open, the headers,
-the per-loop client, and the settings-driven limits all stayed ours — and those are where all
-four of this project's historical rate-limit bugs lived. The library replaced the ~45 lines that
-had never broken.
+Gate: 372 passed / 0 skipped.
 
-**Two bugs were found during the swap that the old code did not have**, both from trusting
-`limits`' output rather than checking it:
-
-1. `get_window_stats` derives the reset as `current_expires_in % expiry` against a TTL of *twice*
-   the window. Correct inside the window; at the instant one opens it computes `120 % 60 == 0`,
-   so the **first request against a fresh key advertised `X-RateLimit-Reset: 0`** — retry now,
-   with the budget already spent. For a low-traffic key that is the common request. Clamped in
-   `_reset_seconds`, with a mutation-tested guard.
-2. `limits` fails **closed**. An unreachable Redis raises out of `hit()`, so the `except` in
-   `check` is now load-bearing in a way it was not before, and there is a second test for a
-   failure *between* `hit` and `get_window_stats` — that window would otherwise 500 a caller
-   whose budget was already spent.
-
-**One test was deleted rather than weakened.** The concurrency test asserted that grants report
-distinct `remaining` values counting down to zero. That held when one Lua call returned the
-decision and the numbers together; it cannot now, because `remaining` is a second round trip.
-The assertion is gone and the reason is written where it was. Under concurrency the advertised
-`remaining` can disagree with what the next request is granted — a real regression, accepted.
-
-**One test changed shape.** The window-boundary test injected a clock, which worked while the
-trim was arithmetic we wrote. `limits` rolls on Redis key expiry, so a time-injected version
-would pass with the mechanism entirely broken. It now uses a real one-second window and really
-waits (~1.2 s of suite time) — one point on the line instead of the exact boundary.
-
-**And an IDEAS entry went stale within the hour.** "Shorten the rate-limit ZSET member" was
-written from the memory measurement, and the same measurement then argued for adopting `limits`,
-which deleted the ZSET. Left struck through as an example rather than silently removed.
-
-Gate: 372 passed / 0 skipped, three consecutive runs.
-
-**Then the strategy was wrong, and reading the `limits` docs is what caught it.** The user asked
-whether we should change strategy. `SlidingWindowCounterRateLimiter` had been chosen hours earlier
-purely on memory (120 bytes/key against 1464 for the exact one) — and an approximation adopted to
-save 27 MB on a 16 GB box should have been suspicious on its face. Measured properly, the counter
-**does not honour its own `Retry-After`**: spend a 10-request/2-second budget, both strategies say
-"reset in 2.00 s", and after waiting 2.2 s the exact one grants 10/10 while the counter grants
-**2/10**, not recovering fully until 4.2 s. A client that does exactly what the header says still
-gets a 429, and the natural reaction is a tight retry loop — the precise failure the sliding
-window exists to prevent. Switched to `MovingWindowRateLimiter`; the `X-RateLimit-Reset: 0` clamp
-became dead code and was deleted rather than left looking defensive.
-
-Three things worth carrying forward from that:
-
-1. **The 26× memory headline was a bad comparison** and I wrote it into four files. It put
-   `limits`' *cheapest* strategy against *our* implementation. Like for like it is 2×, and the
-   26× is what bought the wrong strategy. Corrected everywhere.
-2. **A test with `limit=1` cannot tell "some budget returned" from "all budget returned".** The
-   first version of the window test used a single slot, which the counter also returns — so it
-   passed while the strategy was broken. It now spends four and asserts all four come back.
-3. **Guard reliability is itself measurable.** Reinstating the counter:
-   full-budget-returns red 5/5, the 1×-vs-2× TTL bound red 5/5, the fresh-window-reset test red
-   only **8/10** (the modulo lands on zero only within a millisecond of the window opening). The
-   third is documented as a hint, not a guard, rather than being counted as one.
-
-**And the "run it three times" agreement was retired the same day**, because the user asked what
-the third run was actually doing and the answer was "the same thing as the first". pytest orders
-tests identically every run, so three passes can catch timing races and state leaking *between*
-runs, and nothing about a test that passes only because another ran first -- which is the flake
-the rule existed for. Worse, the two flakes that originally motivated it (a shared test database
-and a `DROP SCHEMA` race) were both order flakes, found by reading the failure rather than by
-repetition. Replaced with `pytest-randomly`: one pass, random order, `random` reseeded per test.
-Verified it is not inert (two seeds give different collection orders) and that the suite survives
-it (five seeds, 372 passed each). CI runs `-v` on purpose -- `-q` suppresses the seed line, and
-without the seed a randomised failure cannot be reproduced. Locally, `--randomly-seed=last`
-replays and `-p no:randomly` answers "was it the order or the test?".
+Also retired the "run the suite three times" agreement the same day, once asked what the third
+run was actually catching (nothing a single randomised run wouldn't). Replaced with
+`pytest-randomly`; the reasoning is in `../CLAUDE.md` § Working agreements now, not here.
 
 ### 2026-08-03 — the remaining 21 review findings, and three rounds of agent review
 

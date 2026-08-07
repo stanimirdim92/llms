@@ -170,20 +170,24 @@ HEALTHCHECK --interval=30s --timeout=16s --start-period=40s --retries=3 \
 # than a fixed count: a much bigger box would want more than this container's default of
 # 2, and hardcoding a large number here would be wrong for a demo-scale deployment.
 #
-# --timeout is 120 (2 minutes). Ingestion is synchronous today and a real document
-# takes anywhere from 10s to 2min, and gunicorn's timeout is not a graceful 504: it
-# SIGKILLs the worker mid-parse, so the client sees a bare connection failure with
-# nothing naming the timeout, and any other request being served by that worker dies
-# with it. nginx's proxy_read_timeout is wired to the same value (see nginx/Dockerfile)
-# so the two can't drift into a mismatch where the shorter one silently decides the
-# real budget.
+# --timeout is 120 (2 minutes), and the "large PDFs need headroom" reasoning that raised it
+# to 120 on 2026-08-06 no longer applies to this process: `POST /v1/documents` has returned
+# 202 and enqueued to the worker since Phase 5.1 shipped -- the same day -- so gunicorn never
+# blocks on Docling at all. `app/ingestion/parser.py`'s own `document_timeout=90` is the knob
+# that actually bounds a large-PDF parse now, and it runs in `worker`, which has no gunicorn
+# timeout to raise. Nothing else in the api process is known to run longer than the ~11s
+# measured for `/ask` (`docs/MEMORY.md` § Measurements taken), so 120s looks vestigial rather
+# than load-bearing -- flagged rather than silently lowered, since changing a value someone
+# just deliberately set is a bigger call than documenting it accurately. gunicorn's timeout is
+# not a graceful 504 regardless of the number: it SIGKILLs the worker mid-request, so the
+# client sees a bare connection failure naming nothing, and any other request on that worker
+# dies with it. nginx's proxy_read_timeout is wired to the same value (see nginx/Dockerfile)
+# so the two can't drift into a mismatch where the shorter one silently decides the real
+# budget -- that part of the reasoning still holds regardless of what the number should be.
 #
-# This is a stopgap, not the destination: a 120-second worker timeout means one stuck
-# request holds a worker for 2 minutes, and with GUNICORN_WORKERS=2 two of them stall
-# the service. Once ingestion moves behind a job queue (docs/EPIC_4_PLAN.md Phase 5) the
-# upload request returns in milliseconds and this should come back down -- the value that
-# genuinely has to stay large is nginx's client_body_timeout, since the bytes still have
-# to arrive over the wire no matter what processes them afterwards.
+# The value that genuinely has to stay large is nginx's client_body_timeout, since the bytes
+# still have to arrive over the wire no matter what processes them afterwards -- that one
+# was never about ingestion being synchronous.
 #
 # --graceful-timeout is a different budget from --timeout above: how long a worker gets
 # to finish requests already in flight after a restart/reload signal before gunicorn

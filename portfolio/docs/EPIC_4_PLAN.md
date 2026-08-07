@@ -56,10 +56,8 @@ Delivered as planned, with these deviations worth recording:
   silent regression means cross-tenant reads. CI runs a `postgres:18-alpine` service and
   asserts these tests did **not** skip, since a silently-skipped auth suite looks identical
   to a passing one.
-  An interim version used in-memory SQLite instead, which did surface a real tz-comparison
-  bug -- but testing auth on an engine the app never runs is how backend-specific bugs hide,
-  so it was replaced. The assumption that bug exposed is now pinned by an explicit test
-  (`test_stored_timestamps_come_back_timezone_aware`) rather than by defensive code.
+  An interim version used in-memory SQLite instead, replaced after it hid a real tz bug —
+  see `docs/TECHNICAL_DECISIONS.md` § Database for why Postgres-only extends to tests.
 - `langgraph-checkpoint-sqlite` swapped for `langgraph-checkpoint-postgres`, and Epic 3's
   planned SQLite `incoming_queue` becomes a Postgres table: one database engine, project-wide.
 - 1.6 (streaming upload) **not** done, as flagged optional. The size check still runs after
@@ -74,87 +72,18 @@ over the wire under concurrency, and the nginx config's syntax.
 
 ### Original plan (for reference)
 
-The security-critical phase. Everything else in Epic 4 is additive; this one closes two
-live holes: `/ask` accepts a client-supplied `session_id` (any caller can read another
-tenant's documents), and `session_id`/`file.filename` flow unvalidated into filesystem
-paths (arbitrary file write).
-
-### 1.1 Models — `app/auth/models.py` (new)
-
-```python
-class Tenant(SQLModel, table=True):
-    id: str = Field(primary_key=True)  # uuid7 hex, server-generated
-    name: str
-    created_at: datetime | None = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now()))
-
-
-class ApiKey(SQLModel, table=True):
-    id: str = Field(primary_key=True)  # uuid7 hex
-    tenant_id: str = Field(foreign_key="tenant.id", index=True)
-    key_hash: str = Field(index=True, unique=True)  # sha512 hex of the full key
-    expires_at: datetime | None  # NULL = never; checked in the WHERE clause, DB clock
-    prefix: str  # first ~12 chars, for display only
-    name: str  # human label ("ci", "laptop")
-    created_at: datetime | None = ...
-    last_used_at: datetime | None = None
-    revoked_at: datetime | None = None
-```
-
-**Gotcha:** `SQLModel.metadata` is global, so `init_db()` only creates these if the module
-has been imported. `registry/db.py::init_db` must import `app.auth.models` explicitly, or
-the tables silently never exist.
-
-**Hashing:** a plain digest (SHA-512), deliberately *not* argon2/bcrypt. Keys are 256 bits of
-`secrets.randbits(256)` — there is nothing to brute-force, and a slow KDF on every
-request is self-inflicted latency. Argon2 becomes correct only in Phase 5's password login,
-where the secret is low-entropy.
-
-**Key format:** `pf_live_` + 43 base62 chars (256 bits) + a 6-char CRC32 = 57 characters.
-Prefixed so leaked keys are greppable and detectable; base62 so a `-` never truncates a
-double-click selection; checksummed so a mistyped or fabricated key is rejected offline.
-`prefix` stored separately so the UI can list keys without holding the secret. Rationale and
-the sources it is drawn from are in `docs/TECHNICAL_DECISIONS.md`.
-
-### 1.2 Dependency — `app/api/deps.py` (new)
-
-```python
-async def current_tenant(x_api_key: Annotated[str | None, Header()] = None) -> str
-```
-
-- Missing header → 401.
-- `sha512(key)` → single indexed lookup on `key_hash` where `revoked_at IS NULL`. O(1).
-- Miss → 401 with an identical message and timing path to a revoked key (don't leak which).
-- Stash `request.state.tenant_id` for Phase 2's rate-limit `key_func`.
-- Return `tenant_id`.
-
-`last_used_at`: a DB write on every request is a real cost. Update at most once per minute
-per key (compare in Python, skip the write), or defer entirely — decide when measured, and
-note the choice in the code rather than silently writing every request.
-
-### 1.3 Scope rename — `session_id` -> `tenant_id`
-
-Mechanical but touches the security boundary, so it gets tests rather than trust:
-
-- `app/ingestion/models.py`: `Chunk.session_id` -> `tenant_id`; `GLOBAL_SESSION` -> `GLOBAL_TENANT` (value stays `"global"`).
-- `app/vectorstore/qdrant_store.py`: `_chunk_metadata` emits `metadata.tenant_id`; `_build_filter(chunk_types, tenant_id)` filters `MatchAny(any=[GLOBAL_TENANT, tenant_id])`.
-- `app/ingestion/pipeline.py`, `chunker.py`, `figure_extractor.py`, `scripts/ingest.py`: parameter rename.
-- `app/registry/models.py`: `DocumentRecord.session_id` -> `tenant_id`.
-- Requires a re-ingest (`docker compose down -v`). Safe now: `upsert` already deletes by `doc_id` first, and there is no production data.
-
-### 1.4 Router changes
-
-- `AskRequest.session_id`: **deleted**, not made optional — absent fields can't be spoofed.
-- `documents.py`: drop the `session_id` Form field; add `tenant_id: Annotated[str, Depends(current_tenant)]`.
-- `UploadResponse.session_id` -> `tenant_id` (informational; the caller already knows who it is).
-- Both routers gain the dependency; `_build_filter` is reachable only from it.
-
-### 1.5 Filesystem hardening
-
-Needed regardless of auth, since `file.filename` is client-controlled under every design:
-
-- `file.filename` -> `Path(file.filename).name`; reject empty, `.`, `..`, and dotfiles.
-- Validate `tenant_id` against `^[0-9a-f]{32}$` before it becomes a path segment — belt and braces, since it is now server-generated.
-- After joining, assert `resolved.is_relative_to(settings.upload_dir.resolve())` and refuse otherwise. Cheap, and catches any future path-building mistake.
+Condensed rather than reproduced in full, because two of its central design choices no longer
+hold and an unflagged code sketch reads as current when it isn't. It specified
+`GLOBAL_TENANT`/a shared corpus matched via `MatchAny` — removed 2026-08-03, there is no shared
+tenant now, see `CLAUDE.md` § The tenant boundary — and its `ApiKey` sketch predates per-key
+`scopes` entirely. What it got right and is still true: SHA-512 over argon2 (keys are
+high-entropy, not passwords, so a slow KDF buys nothing until Phase 5's password login), the
+`pf_live_`-prefixed base62+CRC32 key format, and `app/api/deps.py` over middleware so tests can
+override per route. The real models, dependency and filter are `app/auth/models.py`,
+`app/api/deps.py::current_tenant`, and `app/vectorstore/qdrant_store.py::_build_filter` — read
+those and `docs/TECHNICAL_DECISIONS.md` § Authentication rather than this section.
+`last_used_at`'s write-frequency question, open when this was written, is resolved in
+`app/auth/service.py`'s own docstring.
 
 ### 1.6 Optional, same handler — streaming upload
 
@@ -165,25 +94,9 @@ stream to disk in chunks with a running SHA-256 and an incremental size check th
 mid-stream. Included here only because it edits the same handler — split it out if Phase 1
 is getting long.
 
-### 1.7 Tenant/key CLI — `scripts/create_tenant.py` (new)
-
-Creates a tenant plus its first key and prints the key **once**. Also `revoke_key.py`, or a
-`--revoke` flag. Enough to use the API before Phase 5's UI exists.
-
-### 1.8 Tests — `tests/unit/test_auth_scoping.py` (new)
-
-The cross-tenant test is the one that matters:
-
-- No `x-api-key` -> 401; unknown key -> 401; revoked key -> 401.
-- **Tenant A's key cannot retrieve tenant B's chunks** — assert on the built filter, so it holds without a live Qdrant.
-- Corpus chunks (`GLOBAL_TENANT`) remain visible to every tenant.
-- A traversal filename (`../../evil.py`) is reduced to a basename and stays under `upload_dir`.
-- `AskRequest` **rejects** an extra `session_id` field rather than ignoring it (guards against the old shape creeping back).
-
-### Verification
-
-`ruff` + `ty` + `pytest tests/unit`, then manually: `curl` without a key -> 401; with a key
--> 200; ingest as tenant A and confirm tenant B's `/ask` cannot cite A's document.
+The planned CLI and test suite are both built and superseded by the real files: `scripts/create_tenant.py`
+and `tests/unit/test_tenant_scoping.py` (the plan named `test_auth_scoping.py`, which was never
+created — the cross-tenant assertion landed under the name above instead).
 
 ---
 
@@ -316,12 +229,9 @@ Delivered as specified. Deviations and findings worth recording:
   ~10s inside the first upload request. Fixed by deferring **by name** with no `import_paths`,
   and pointing the worker CLI at `app.worker.tasks.app` instead. A test pins that the name
   matches the registered task, since that check moved from import time to runtime.
-- **`app/ingestion/formats.py` was the other Docling importer** — it derived its extension list
-  from Docling's `FormatToExtensions` at import time. The README's claim that these helpers are
-  "deliberately dependency-free (no docling import)" was simply false. Now a pinned list with a
-  drift check in the test suite: `import app.api.main` went 8.74s/830MB → 6.78s/673MB. Pinning
-  is also the better posture for an upload allowlist, which shouldn't silently widen on a
-  dependency bump.
+- **`app/ingestion/formats.py` was the other Docling importer**, found the same day — full
+  measurement and reasoning in `docs/TECHNICAL_DECISIONS.md` § Keeping the ingestion stack out
+  of the api process rather than restated here.
 - **Found a pre-existing bug that had never worked:** `save_document_record` raised
   `PydanticUserError` on every call, because `model_dump()` needs `datetime` resolvable at
   runtime and `registry/models.py` imported it under `TYPE_CHECKING`. Every ingest wrote to
@@ -339,25 +249,13 @@ Delivered as specified. Deviations and findings worth recording:
 
 ### 5.1 Original plan (for reference)
 
-Today `POST /v1/documents` blocks for the whole ingest (10s–2min measured). A browser UI
-cannot hold that: no progress, no cancel, and one worker occupied per upload. The 10-minute
-gunicorn/nginx timeout now in place is the stopgap that keeps today's behaviour from
-failing outright; it is not the fix.
-
-- `DocumentRecord.status` grows `pending` / `processing` / `failed` alongside `ingested`,
-  plus `error_message` and `updated_at`. The status column already exists and is already
-  written — this widens its vocabulary rather than adding a concept.
-- `POST /v1/documents` writes the row and enqueues in one transaction, returns **202** with
-  the `doc_id`. `GET /v1/documents/{doc_id}` reports status. Polling is enough; SSE for
-  upload progress is not worth a second streaming surface.
-- Failures must land as `status="failed"` with a message. Right now nothing catches
-  exceptions inside `ingest_document`, so a failed ingest leaves no row at all and the UI
-  cannot distinguish "failed" from "never uploaded".
-- `worker` becomes a compose service on the same image, `depends_on` postgres.
-- **Bound the concurrency.** Docling is CPU-bound and already uses `DOCLING_NUM_THREADS`
-  (default `os.cpu_count()`). Worker concurrency × Docling threads must not exceed the
-  box's cores, or parallel ingests get slower than sequential ones. On the target 8-vCPU
-  machine: 2 concurrent jobs × 4 threads.
+Condensed: it described a synchronous `POST /v1/documents` (blocking for the whole 10s–2min
+ingest, with the gunicorn/nginx timeout as the only thing standing between that and an outright
+failure) as the problem 5.1 solves, and every bullet under it — the widened status vocabulary,
+the 202 response, failure landing as `status="failed"`, `worker` as a compose service, and
+bounding worker concurrency against `DOCLING_NUM_THREADS` — is now built, verified, and
+(the concurrency bound) already explained in `docs/TECHNICAL_DECISIONS.md` § Ingestion latency
+rather than restated here.
 
 ### 5.2 Identity — the open decision, with a recommendation
 
@@ -663,12 +561,10 @@ No new dependency for Phase 1: `secrets` and `hashlib` are stdlib, `sqlmodel` an
 
 ## Risks
 
-- **The scope rename touches the security boundary.** A silent mistake in `_build_filter`
-  leaks across tenants without erroring — which is why 1.8 asserts on the filter directly.
-- **`init_db()` won't create the auth tables** unless `app.auth.models` is imported. Fails
-  as a confusing runtime error, not at startup.
-- **`last_used_at` writes** add a DB write per request if implemented naively.
-- **Re-ingest required** after 1.3. Harmless now, would need a migration path with real data.
+Phase 1's risks (the scope-rename filter mistake, `init_db()` needing `app.auth.models`
+imported, `last_used_at` write cost, the 1.3 re-ingest) are gone from this list because Phase 1
+is built and each one resolved into either a test or a shipped mitigation — see the phase's own
+section rather than a risk register for work that's done.
 
 Added for Phases 5-6:
 
@@ -678,13 +574,12 @@ Added for Phases 5-6:
 - **Cookie auth plus permissive CORS is a total bypass**, because Starlette answers
   wildcard-plus-credentials by reflecting the caller's own origin. Guarded in `config.py`
   as of this phase's groundwork, with `tests/unit/test_cors.py` pinning it.
-- **A 10-minute gunicorn timeout means one stuck request holds a worker for 10 minutes.**
-  With `GUNICORN_WORKERS=2`, two of them stall the service. This is why 5.1 is a
-  prerequisite and not a later optimisation.
 - **Worker concurrency × `DOCLING_NUM_THREADS` can oversubscribe the box**, making parallel
   ingests slower than sequential ones. Neither number is meaningful alone.
 - **Share links outlive the intent behind them.** A live (non-snapshot) shared link keeps
   querying the owner's corpus, so it leaks documents uploaded after it was created. The
   snapshot requirement in 5.8 is the mitigation and it is not optional.
-- **procrastinate brings schema migrations** into a project that deliberately had none.
-  Deploys gain a schema-apply step, and forgetting it fails at runtime as a missing table.
+- **procrastinate's schema needed a deploy step of its own** — resolved by 5.1 shipping, not by
+  this phase: `init_db` applies it automatically (guarded by a `to_regclass` existence check),
+  the same way Alembic now owns every other table's schema. Left here as the reason that
+  guard exists, not as an open risk.

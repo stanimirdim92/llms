@@ -488,10 +488,10 @@ trip, exact windows, fail-open and the headers. Parked in `docs/IDEAS.md`.
 calls a bare `self.limiter.hit(...)` at `extension.py:514` — checked in the published wheel.
 `limits[async-redis]>=5` and `redis[hiredis]>=8,<9` **do** resolve together (coredis 5.7.0
 alongside redis 8.1.0), and with `implementation="redispy"` coredis is not needed at all. The
-`MaxConnectionsError` ceiling reproduces with the counter strategy too, so it is a property of
-the storage bridge and not of the strategy. And `limits` fails **closed**: an unreachable
-Redis raises `redis.exceptions.ConnectionError` straight out of `hit()`, so adopting it means
-writing the fail-open wrapper ourselves — the opposite of the usual "the library handles it".
+`MaxConnectionsError` ceiling (item 3 below) reproduces with the counter strategy too. And
+`limits` fails **closed**: an unreachable Redis raises `redis.exceptions.ConnectionError`
+straight out of `hit()`, so adopting it means writing the fail-open wrapper ourselves — the
+opposite of the usual "the library handles it".
 
 *The rest of the survey.* `fastapi-limiter` 0.2.0 (2026-02) is the only other maintained,
 async-native, redis-8-compatible option: it delegates to `pyrate-limiter` 4.x, which has a real
@@ -516,11 +516,9 @@ tradeoff was laid out. "One round trip instead of two" is a latency argument on 
 never the bottleneck, and shedding ~45 lines of Lua plus a sorted-set expiry contract onto a
 library with 98 releases is worth two round trips.
 
-**The memory argument that first justified it was framed wrongly, and is corrected below.** It
-compared `limits`' *cheapest* strategy (120 bytes/key) against *our* implementation (3120) and
-called it 26×. Like for like — exact against exact — `limits`' `MovingWindowRateLimiter` costs
-1464 bytes, so the honest figure is **2× cheaper than the ZSET**, not 26×. That mattered, because
-the 26× bought a strategy that was wrong.
+**The memory argument that first justified it was framed wrongly** — 26× (table above), comparing
+`limits`' *cheapest* strategy against our ZSET rather than its exact one. That mattered, because
+the 26× is what bought a strategy (below) that turned out to be wrong.
 
 *What adoption actually cost, since "use the battle-tested library" undersells it.* `limits`
 supplies the counting and has no opinion about anything else, so all of the following stayed
@@ -609,8 +607,8 @@ is the one part that was never the problem here.
 
 **Keyed per API key**, not per tenant and not per IP — an IP key punishes shared corporate egress
 and is trivially evaded, and a tenant key lets one client exhaust another's budget (see § Per key,
-not per tenant above; this paragraph said "per tenant" and contradicted it). **Per scope** too, so
-exhausting the upload budget does not also block questions.
+not per tenant, above). **Per scope** too, so exhausting the upload budget does not also block
+questions.
 Uploads get a much tighter budget (10/min vs 60/min) because they cost Docling CPU plus one
 Anthropic vision call per figure plus one Voyage embedding call per chunk; `/ask` is a
 retrieve, a rerank, and one generation.
@@ -778,10 +776,16 @@ real.
 `client_body_timeout` was 32s and is now also 120s. It bounds the gap between reads of the
 request body, and 32s kills real uploads from a phone on mobile data — a 408 that reads as a
 server fault. **It is the one timeout an async job queue will not make irrelevant**: the bytes
-still have to arrive over the wire regardless of what processes them afterwards. The 120s
-gunicorn timeout, by contrast, is a stopgap for synchronous ingestion and should come back
-down once uploads are jobs (`docs/EPIC_4_PLAN.md` 5.1) — a 2-minute worker timeout means one
-stuck request holds a worker for 2 minutes.
+still have to arrive over the wire regardless of what processes them afterwards.
+
+**The 120s gunicorn `--timeout`, by contrast, no longer has a stated reason to be that high.**
+It was raised on 2026-08-06 to give large PDFs headroom, the same day Phase 5.1 shipped
+(`docs/EPIC_4_PLAN.md` 5.1) — so `POST /v1/documents` already returns 202 and hands parsing to
+the `worker` process before this value was last changed. Nothing in the api process is known to
+run longer than the ~11s measured for `/ask` (`docs/MEMORY.md` § Measurements taken), so the
+justification and the fix crossed same-day and neither commit noticed. Not lowered here — that's
+a runtime change, not a documentation one — but recorded so the next person doesn't re-derive
+"synchronous ingestion" as a live reason.
 
 **`--graceful-timeout` (`GUNICORN_GRACEFUL_TIMEOUT`, default 630s) is a fourth number, added
 2026-08-06, and it is not the same knob.** `--timeout` above bounds one request;
