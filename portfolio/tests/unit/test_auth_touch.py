@@ -50,7 +50,7 @@ async def _postgres_reachable(url: str) -> bool:
     try:
         async with engine.connect():
             return True
-    except Exception:  # noqa: BLE001 -- any connection failure means "skip", not "fail"
+    except Exception:  # any connection failure means "skip", not "fail"
         return False
     finally:
         await engine.dispose()

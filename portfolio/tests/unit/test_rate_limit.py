@@ -31,7 +31,7 @@ async def _redis_reachable() -> bool:
     try:
         client = rate_limit._client()
         await client.ping()
-    except Exception:  # noqa: BLE001 -- unreachable means skip, not fail
+    except Exception:  # unreachable means skip, not fail
         return False
     return True
 

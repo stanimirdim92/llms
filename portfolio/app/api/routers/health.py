@@ -95,7 +95,7 @@ async def _run_probe(
 ) -> tuple[str, DependencyStatus]:
     try:
         await asyncio.wait_for(probe(), timeout=_PROBE_TIMEOUT_SECONDS)
-    except Exception as exc:  # noqa: BLE001 -- any failure means "down"; the type is for the detail
+    except Exception as exc:  # any failure means "down"; the type is for the detail
         log.warning("health.dependency_down", dependency=name, error=str(exc))
         return name, DependencyStatus(status="down", required=required, detail=f"{type(exc).__name__}: {exc}")
     return name, DependencyStatus(status="ok", required=required)
