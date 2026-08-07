@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import update
+from sqlalchemy import text, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlmodel import col, select
 
@@ -15,6 +15,31 @@ from app.registry.models import STATUS_FAILED, STATUS_INGESTED, STATUS_PROCESSIN
 if TYPE_CHECKING:
     from sqlalchemy.dialects.postgresql import Insert
     from sqlmodel.ext.asyncio.session import AsyncSession
+
+
+async def _set_tenant_context(session: AsyncSession, tenant_id: str) -> None:
+    """Set Postgres' per-transaction `app.tenant_id`, so `documentrecord`'s row-level-security
+    policy (migration `a4f8c1d92e07`) can see which tenant this query is allowed to touch.
+
+    `set_config(..., is_local=true)` scopes the value to the *current transaction*, not the
+    session -- it is unset again on commit or rollback. Every function below calls this as its
+    first statement rather than trusting a caller to have set it, which is the same reasoning
+    as `tenant_id` living in the WHERE clause here instead of at each call site: one place to
+    get right instead of N.
+
+    Harmless against `get_admin_engine()`'s connection too (used by migrations, never by these
+    functions) -- `set_config` always succeeds, it's only meaningful to a role RLS actually
+    applies to.
+    """
+    # Neither `session.exec()` nor `session.execute()`: `.exec()`'s typed overloads cover
+    # `Select`/`SelectOfScalar`/`UpdateBase` only, so `ty` rejects a plain `text()` construct
+    # even though the implementation accepts it at runtime -- and SQLModel deprecates
+    # `.execute()` itself (`@deprecated` on `AsyncSession.execute`), which `ty` also treats as
+    # an error under `ty.toml`'s `error-on-warning`. `session.connection()` returns the plain
+    # SQLAlchemy `AsyncConnection` underneath, which SQLModel does not wrap at all -- the same
+    # object `app/db.py`'s own raw-SQL calls (`pg_advisory_xact_lock`) already use.
+    connection = await session.connection()
+    await connection.execute(text("SELECT set_config('app.tenant_id', :tenant_id, true)"), {"tenant_id": tenant_id})
 
 
 def _upsert(record: DocumentRecord) -> Insert:
@@ -41,6 +66,7 @@ async def stage_document_record(session: AsyncSession, record: DocumentRecord) -
     added as a `commit: bool` flag so the atomicity requirement stays legible at the call site
     instead of hiding in an argument.
     """
+    await _set_tenant_context(session, record.tenant_id)
     await session.exec(_upsert(record))  # SQLModel's Session.exec (not the deprecated raw .execute())
 
 
@@ -68,28 +94,41 @@ async def save_document_record(session: AsyncSession, record: DocumentRecord) ->
     await session.commit()
 
 
-async def mark_document_processing(session: AsyncSession, *, doc_id: str) -> None:
+async def mark_document_processing(session: AsyncSession, *, doc_id: str, tenant_id: str) -> None:
     """Claim a document for a worker.
 
     Also clears `error_message`, because a retry still displaying the previous attempt's error
     while it runs is actively misleading.
     """
-    await _set_status(session, doc_id=doc_id, status=STATUS_PROCESSING, error=None)
+    await _set_status(session, doc_id=doc_id, tenant_id=tenant_id, status=STATUS_PROCESSING, error=None)
 
 
-async def mark_document_failed(session: AsyncSession, *, doc_id: str, error: str) -> None:
-    await _set_status(session, doc_id=doc_id, status=STATUS_FAILED, error=error)
+async def mark_document_failed(session: AsyncSession, *, doc_id: str, tenant_id: str, error: str) -> None:
+    await _set_status(session, doc_id=doc_id, tenant_id=tenant_id, status=STATUS_FAILED, error=error)
 
 
-async def _set_status(session: AsyncSession, *, doc_id: str, status: str, error: str | None) -> None:
+async def _set_status(session: AsyncSession, *, doc_id: str, tenant_id: str, status: str, error: str | None) -> None:
     """Deliberately an UPDATE of an existing row rather than an upsert.
 
     If the row is missing this does nothing, which is the correct outcome rather than a
     swallowed error: the only way to get here without a row is a job whose document write was
     rolled back, and inventing a row for it would resurrect a document nobody uploaded.
     `updated_at` is left to the column's `onupdate`.
+
+    Reads by `doc_id` alone used to be safe without a tenant filter -- `upload_doc_id` salts on
+    `tenant_id`, so it is globally unique -- but `tenant_id` is required here now for two
+    reasons that don't depend on that: it is what the row-level-security policy needs set before
+    touching this table (`_set_tenant_context`), and `session.get()` cannot express a second
+    WHERE condition even if it weren't. `doc_id`'s own tenant column still has to match what the
+    caller passed -- a mismatch means the caller has the wrong tenant for this document, not a
+    document to update.
     """
-    record = await session.get(DocumentRecord, doc_id)
+    await _set_tenant_context(session, tenant_id)
+    statement = select(DocumentRecord).where(
+        col(DocumentRecord.doc_id) == doc_id,
+        col(DocumentRecord.tenant_id) == tenant_id,
+    )
+    record = (await session.exec(statement)).first()
     if record is None:
         return
     record.status = status
@@ -113,6 +152,7 @@ async def list_active_versions(session: AsyncSession, *, tenant_id: str) -> dict
     Returns `{}` for a tenant with nothing searchable. A real answer, not a missing one -- see
     `Retriever.retrieve`, which must not turn it into "search everything".
     """
+    await _set_tenant_context(session, tenant_id)
     statement = (
         select(DocumentRecord.doc_id, DocumentRecord.ingestion_version)
         .where(col(DocumentRecord.tenant_id) == tenant_id)
@@ -143,6 +183,7 @@ async def activate_document_version(
     reader, real to RAM and disk, with nothing to indicate it. `tenant_id` is in the WHERE clause,
     not checked afterwards, for the same reason every other read here carries it.
     """
+    await _set_tenant_context(session, tenant_id)
     statement = (
         update(DocumentRecord)
         .where(col(DocumentRecord.doc_id) == doc_id)
@@ -183,6 +224,7 @@ async def list_document_records(session: AsyncSession, *, tenant_id: str, limit:
     scoping path asks for 200 where `GET /v1/documents` asks for 100. That is the only surviving
     difference, and it lives at the call site where it can be seen.
     """
+    await _set_tenant_context(session, tenant_id)
     statement = (
         select(DocumentRecord)
         .where(DocumentRecord.tenant_id == tenant_id)
@@ -207,6 +249,7 @@ async def get_document_record(session: AsyncSession, *, tenant_id: str, doc_id: 
     the tenant in the WHERE clause that returns tenant A's filename, size and status to tenant B,
     while looking entirely correct. With it, it is a 404.
     """
+    await _set_tenant_context(session, tenant_id)
     statement = select(DocumentRecord).where(
         DocumentRecord.doc_id == doc_id,
         DocumentRecord.tenant_id == tenant_id,

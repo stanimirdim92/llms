@@ -87,7 +87,7 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str, expe
         # spinner that never resolves and nothing anywhere says why.
         await init_db()
         async with get_session() as session:
-            await mark_document_processing(session, doc_id=doc_id)
+            await mark_document_processing(session, doc_id=doc_id, tenant_id=tenant_id)
 
         # Inside the try, and after the row is marked, so a missing key lands in
         # `error_message` like any other failure -- the person who uploaded the document reads
@@ -104,7 +104,9 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str, expe
         log.exception("worker.ingest_failed", doc_id=doc_id, tenant_id=tenant_id)
         try:
             async with get_session() as session:
-                await mark_document_failed(session, doc_id=doc_id, error=f"{type(exc).__name__}: {exc}")
+                await mark_document_failed(
+                    session, doc_id=doc_id, tenant_id=tenant_id, error=f"{type(exc).__name__}: {exc}"
+                )
         except Exception:
             # The recording of a failure must not replace the failure. Now that the database
             # writes above are inside the try, the commonest reason to arrive here at all is

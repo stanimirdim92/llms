@@ -505,7 +505,10 @@ Things that look correct and aren't:
   it; don't relax the guard to make a frontend work -- name the origins.
 - **`POSTGRES_USER`/`PASSWORD`/`DB` is one set serving two consumers**: the postgres
   image, and `app/config.py`'s `Settings`, which assembles `DATABASE_URL` from them.
-  Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME`.
+  Don't reintroduce a parallel `DB_USER`/`DB_PASSWORD`/`DB_NAME` **for this pair**.
+  `APP_DB_USER`/`APP_DB_PASSWORD` (2026-08-07) are not that: a second, deliberately distinct
+  role for a different purpose -- see § Row-level security below for why one credential set
+  stopped being enough.
 - **Every credential in `Settings` is a `SecretStr`**, and `.get_secret_value()` marks each
   point where one escapes (six: four in `config.py`, one each in `db.py` and `worker/app.py` --
   this said eight, and `config.py`'s own copy of the count was wrong too). One object
@@ -554,6 +557,54 @@ rather than raising -- it fails silently, as cross-tenant data access.
 - `tests/unit/test_tenant_scoping.py` asserts on the built filter directly, which is why
   it catches leaks without a live Qdrant. It asserts the permitted set **exactly** -- the weaker
   `a in / b not in` form passed for months while the filter also admitted `global`.
+
+## Row-level security: a second, database-enforced layer (2026-08-07)
+
+Everything above is application-level: a query built without `tenant_id` in its WHERE clause
+leaks, and the only thing standing between that and production is a human remembering the
+rule, `add-endpoint`'s checklist, and `route-audit`. Postgres can enforce the same boundary
+itself, independently of whether any given query remembered its filter -- migration
+`a4f8c1d92e07` adds that as a second, redundant layer on `documentrecord`, not a replacement
+for the WHERE clauses above.
+
+- **RLS is real only because request-time queries run as a non-superuser role.**
+  `postgres_user` (`app/db.py::get_admin_engine`) is the postgres image's bootstrap account,
+  always a superuser, and superusers bypass row-level security unconditionally -- `FORCE ROW
+  LEVEL SECURITY` does not touch them either. `app_db_user` (`app/db.py::get_engine`, used by
+  `get_session()` and therefore every request-time query, api and worker alike) is the
+  ordinary role RLS actually applies to. **Never point `get_session()`/`get_engine()` at
+  `database_url`/`postgres_user`** -- that would make every RLS check pass for the wrong
+  reason (nothing was ever checking) rather than the right one.
+- **`app/registry/db.py::_set_tenant_context` runs first in every function that touches
+  `documentrecord`.** `SELECT set_config('app.tenant_id', tenant_id, true)`, scoped to the
+  current transaction only (`is_local=true`). Centralized in the module that already owns
+  every query against this table, rather than pushed to call sites, for the same reason the
+  WHERE clause lives there: one place to get right instead of N.
+- **`current_setting('app.tenant_id', true)` fails closed on a missing context.** The `true`
+  (missing_ok) makes an unset variable read as SQL `NULL`, and `tenant_id = NULL` is never
+  true -- so a bug that forgets to call `_set_tenant_context` returns *zero rows*, not every
+  tenant's. Dropping the `true` turns that into a hard error instead (`unrecognized
+  configuration parameter`) rather than "everything visible" -- still not the dangerous
+  direction, but worth knowing which failure mode a given mutation produces.
+  `tests/unit/test_row_level_security.py` pins this against a real Postgres, connected as
+  `app_db_user`, with a deliberately unscoped query -- RLS cannot be simulated in-memory the
+  way Qdrant's filter can.
+- **`tenant`/`apikey` deliberately do NOT get this policy.** Authentication resolves
+  `tenant_id` *from* a row in `apikey`, by `key_hash`, before the caller's tenant is known at
+  all -- a policy requiring `app.tenant_id` to already be set would make the lookup that
+  establishes it impossible. RLS's value here is specifically the retrieval/document-access
+  path; auth resolution is a single indexed lookup keyed on a 256-bit hash, a different threat
+  model.
+- **`app_db_user`'s grants are broad on purpose (`SELECT`/`INSERT`/`UPDATE`/`DELETE` on every
+  table, via `ALTER DEFAULT PRIVILEGES` for future ones too), not narrowed per-table.** RLS is
+  what does the narrowing for `documentrecord`; a second, hand-maintained grant list per table
+  would be one more thing to remember when a migration adds a table, which is exactly the
+  silent-gap shape this project keeps finding elsewhere.
+- **`tests/unit/test_structural_boundaries.py` is the other half**, and doesn't need
+  Postgres at all: an AST sweep asserting `DocumentRecord` is queried (`select`/`update`/
+  `delete`/`session.get`) from `app/registry/db.py` alone. RLS is a backstop for a query that
+  forgot its filter; this catches a *new* query built outside the one module that centralizes
+  them, before it ships.
 
 ## Rate limiting
 

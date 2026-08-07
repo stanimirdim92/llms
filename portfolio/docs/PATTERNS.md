@@ -51,7 +51,17 @@ what makes that a 404 instead of a row. Filtering after the query — `if row.te
 
 Worth flagging as a documentation failure in its own right: this project treats its own docs as
 verified fact, so a wrong *reason* attached to a right *rule* is how the rule gets "simplified"
-away later by someone who checks the reason and finds it doesn't hold.
+away later by someone who checks the reason and finds it doesn't hold. It recurred once already
+in a test docstring (`test_worker_enqueue.py`, found and fixed 2026-08-07) — a markdown-only
+sweep never reaches source comments, which is part of why this pattern now has a second,
+database-enforced copy rather than resting on application code alone (below).
+
+**Second layer, added 2026-08-07: Postgres row-level security on `documentrecord`, enforced
+against a role that isn't the schema owner.** The application-level filter above is still the
+first line and still has to be right; RLS is what stops a query that got it wrong from leaking
+rows instead of just returning nothing useful. Full reasoning, including why this needed a new
+non-superuser role and not just a `CREATE POLICY`, is in `docs/TECHNICAL_DECISIONS.md` § Row-level
+security; the rule itself is in `../CLAUDE.md` § Row-level security.
 
 **Prevents:** cross-tenant reads. This class of bug returns data instead of raising, so it is
 invisible until someone reports seeing a stranger's document.

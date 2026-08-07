@@ -254,7 +254,9 @@ async def test_failed_ingest_is_distinguishable_from_never_uploaded(db: SessionF
     async with db() as session:
         await save_document_record(session, _record())
     async with db() as session:
-        await mark_document_failed(session, doc_id=DOC_ID, error="DocumentParseError: encrypted PDF")
+        await mark_document_failed(
+            session, doc_id=DOC_ID, tenant_id=TENANT_A, error="DocumentParseError: encrypted PDF"
+        )
 
     async with db() as session:
         record = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
@@ -270,9 +272,9 @@ async def test_a_retry_clears_the_previous_error(db: SessionFactory) -> None:
     async with db() as session:
         await save_document_record(session, _record())
     async with db() as session:
-        await mark_document_failed(session, doc_id=DOC_ID, error="transient: Voyage timeout")
+        await mark_document_failed(session, doc_id=DOC_ID, tenant_id=TENANT_A, error="transient: Voyage timeout")
     async with db() as session:
-        await mark_document_processing(session, doc_id=DOC_ID)
+        await mark_document_processing(session, doc_id=DOC_ID, tenant_id=TENANT_A)
 
     async with db() as session:
         record = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
@@ -290,7 +292,7 @@ async def test_success_after_failure_ends_ingested_with_no_error(db: SessionFact
     async with db() as session:
         await save_document_record(session, _record())
     async with db() as session:
-        await mark_document_failed(session, doc_id=DOC_ID, error="transient: Qdrant unreachable")
+        await mark_document_failed(session, doc_id=DOC_ID, tenant_id=TENANT_A, error="transient: Qdrant unreachable")
 
     succeeded = _record(status=STATUS_INGESTED)
     succeeded.chunk_count = 42
@@ -326,7 +328,7 @@ async def test_marking_a_missing_document_does_nothing(db: SessionFactory) -> No
     nothing is the intended behaviour, so it's pinned rather than left to be rediscovered.
     """
     async with db() as session:
-        await mark_document_failed(session, doc_id="does-not-exist", error="boom")
+        await mark_document_failed(session, doc_id="does-not-exist", tenant_id=TENANT_A, error="boom")
 
     async with db() as session:
         assert await get_document_record(session, tenant_id=TENANT_A, doc_id="does-not-exist") is None
@@ -433,7 +435,7 @@ async def test_status_transitions_stamp_updated_at(db: SessionFactory) -> None:
     assert first.updated_at is not None
 
     async with db() as session:
-        await mark_document_processing(session, doc_id=DOC_ID)
+        await mark_document_processing(session, doc_id=DOC_ID, tenant_id=TENANT_A)
     async with db() as session:
         second = await get_document_record(session, tenant_id=TENANT_A, doc_id=DOC_ID)
 
@@ -577,7 +579,9 @@ async def test_the_flip_publishes_a_version_and_clears_the_previous_error(db: Se
         await stage_document_record(session, _record(status=STATUS_PENDING))
         await session.commit()
     async with db() as session:
-        await mark_document_failed(session, doc_id=DOC_ID, error="RuntimeError: the first attempt died")
+        await mark_document_failed(
+            session, doc_id=DOC_ID, tenant_id=TENANT_A, error="RuntimeError: the first attempt died"
+        )
 
     async with db() as session:
         await activate_document_version(

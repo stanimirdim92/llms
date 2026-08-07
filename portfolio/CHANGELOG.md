@@ -13,6 +13,30 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-08-07
+
+#### Added
+
+- **Row-level security on document rows, enforced by Postgres itself.** A new database role
+  (`APP_DB_USER`/`APP_DB_PASSWORD`, default `portfolio_app`) now handles every request-time query;
+  `POSTGRES_USER` is reserved for schema migrations. This is a second, independent layer on top of
+  the existing per-request tenant filter — not a replacement for it — so a query that somehow
+  missed its own tenant check still cannot return another tenant's document.
+
+  *Upgrading:* nothing to do for a fresh install — `.env.example` already has working defaults for
+  the new variables, and the migration that creates the role runs automatically at boot, same as
+  every other schema change. An **existing** deployment that customizes `.env` should add
+  `APP_DB_USER`/`APP_DB_PASSWORD` explicitly rather than relying on the default password. The api
+  and worker containers need no other changes; `docker-compose.yml`'s `env_file:` already forwards
+  every `.env` variable to them.
+
+#### Changed
+
+- **`GET /health/ready`'s Postgres check now runs as the same role real traffic uses**
+  (`APP_DB_USER`), not the migration role. A connection failure specific to that role — a wrong
+  password, a revoked grant — now shows up in readiness instead of only surfacing on the first real
+  request.
+
 ### 2026-08-06
 
 #### Changed

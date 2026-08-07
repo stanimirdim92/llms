@@ -49,17 +49,54 @@ _SCHEMA_LOCK_KEY = 8_242_197_531_004_112
 
 @lru_cache
 def get_engine() -> AsyncEngine:
+    """The app's own connection, as `app_db_user` -- never `postgres_user`.
+
+    This is what makes `documentrecord`'s row-level-security policy real rather than
+    decorative. `postgres_user` is the postgres image's bootstrap account, which the official
+    image always creates as a superuser, and a superuser bypasses RLS regardless of `FORCE ROW
+    LEVEL SECURITY` -- silently, with no error to notice. Every request-time query (this
+    engine, via `get_session()`) has to run as a role RLS actually applies to, or the whole
+    point of the migration that creates `app_db_user` is theatre. `get_admin_engine()` below is
+    the deliberate exception, confined to schema DDL.
+    """
     settings = get_settings()
     # Postgres' own client encoding is negotiated automatically by psycopg 3 and matches
     # the server's (UTF8, per docker-compose.yml's postgres POSTGRES_INITDB_ARGS) -- there
     # isn't a `charset` connect param the way MySQL needs `utf8mb4` to opt into full
     # 4-byte Unicode; plain Postgres UTF8 already covers that, so nothing to set here.
     return create_async_engine(
-        settings.database_url.get_secret_value(),
+        settings.app_database_url.get_secret_value(),
         pool_pre_ping=True,  # reconnect instead of surfacing a dead-connection error
         pool_recycle=settings.db_pool_recycle,
         pool_size=settings.db_pool_size,
         max_overflow=settings.db_max_overflow,
+        pool_timeout=settings.db_pool_timeout,
+    )
+
+
+@lru_cache
+def get_admin_engine() -> AsyncEngine:
+    """The schema-owning connection, as `postgres_user` -- for DDL only.
+
+    Used by `init_db` (Alembic, procrastinate's one-time schema apply) and nothing else.
+    Row-level security does not stop this role from seeing every tenant's rows -- it is the
+    postgres image's bootstrap superuser, and superusers bypass RLS unconditionally. That is
+    correct for a migration; it would be the opposite of correct for a request. Do not reach
+    for this engine from `app/api/` or `app/worker/tasks.py` -- if a query needs it, that query
+    needs to go through `get_engine()` and a documented reason it's exempt from RLS, not a
+    quieter way to bypass the policy this file exists to enforce.
+    """
+    settings = get_settings()
+    return create_async_engine(
+        settings.database_url.get_secret_value(),
+        pool_pre_ping=True,
+        pool_recycle=settings.db_pool_recycle,
+        # Deliberately small and separate from the request-serving pool's budget: this engine
+        # exists for the one boot-time migration burst, not for steady traffic, and its
+        # connections must not compete with `get_engine()`'s for a share of Postgres'
+        # `max_connections` (see `db_pool_size`'s own docstring for that arithmetic).
+        pool_size=2,
+        max_overflow=1,
         pool_timeout=settings.db_pool_timeout,
     )
 
@@ -106,7 +143,7 @@ async def init_db() -> None:
         # A Postgres advisory lock is the cross-process equivalent. Transaction-scoped
         # (`_xact_`), so it releases when this block exits even if the DDL raises -- a
         # session-level lock leaked by a crashed process would deadlock every later boot.
-        async with get_engine().begin() as conn:
+        async with get_admin_engine().begin() as conn:
             await conn.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": _SCHEMA_LOCK_KEY})
             await _migrate_to_head(conn)
             # Inside the lock on purpose: a process that waited here must re-check rather than

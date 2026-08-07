@@ -90,6 +90,13 @@ looks wrong, say so once and proceed.
   is "blast radius is self-inflicted", which weakens sharply with real tenants; and the Dependabot
   backlog stops being background noise. A server-backed eval or observability platform also stops
   being an imposition if a deployment exists anyway.
+- **Monetizing the app is now the plan (2026-08-07), not a maybe** — firmer than the hosting signal
+  above, and it upgrades the "lower priority, don't build yet" items from the tenant-architecture
+  review from speculative to genuinely on the roadmap: a user/role layer distinct from the
+  API-key-is-the-tenant model (Phase 5.2's open question), an audit log, tenant-tiered rate/quota
+  plans and billing hooks, and a siloed-deployment escape hatch for a customer who can't share
+  infrastructure. None built yet. Row-level security (this session) and backups (above) both move
+  up the list for the same reason a paying customer's data raises the cost of getting either wrong.
 - Streamlit retires when the React UI lands (Epic 4 Phase 6). Don't invest in it beyond parity.
 - Commit-signing warnings from the stop hook are expected and were accepted — signing cannot
   work in this container. Don't re-raise.
@@ -270,6 +277,88 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-08-07 (evening) — row-level security, a second Postgres role, and a structural regression test
+
+Asked directly, independent of this project's own docs, whether there's a better production/
+enterprise way to do tenant isolation than the pure application-level filter. Answer: the
+application filter is the correct *first* layer and stays; what's missing is a database-enforced
+second layer, so a query that forgot its own tenant check leaks nothing instead of leaking rows.
+Implemented both pieces the user asked for.
+
+**Row-level security on `documentrecord`** (migration `a4f8c1d92e07`), and the one fact that
+decides the whole design: **Postgres superusers bypass RLS unconditionally, `FORCE ROW LEVEL
+SECURITY` included** -- and the official postgres image always makes `POSTGRES_USER` a superuser.
+A policy on a table whose queries run as that role would pass its own smoke test for the wrong
+reason. So this needed a genuinely new, non-superuser role (`app_db_user`) that every
+request-time query now connects as (`app/db.py::get_engine`, used by `get_session()`, api and
+worker alike), while `get_admin_engine()` keeps `postgres_user` for Alembic and procrastinate's
+one-time schema apply. That's a real reversal of `../CLAUDE.md`'s "one set of Postgres
+credentials, don't reintroduce a parallel `DB_USER`" rule -- recorded as a stated exception
+there and in `docs/TECHNICAL_DECISIONS.md`, not a silent one: that rule was about two names
+drifting apart for the *same* credential, and this is a second credential for a different job.
+
+**`app/registry/db.py::_set_tenant_context`** (`SELECT set_config('app.tenant_id', tenant_id,
+true)`) runs first in every function touching `documentrecord`, centralized in the module that
+already owns every query there. Two functions had never taken `tenant_id` at all --
+`mark_document_processing`/`mark_document_failed` (`_set_status`) looked up by `doc_id` alone,
+safe only because `upload_doc_id` makes it globally unique, not because the WHERE clause said so.
+Now both take `tenant_id` and filter by it, matching every other function here, and `worker/
+tasks.py`'s two call sites were updated to pass it (`tenant_id` was already sitting in scope,
+unused for this).
+
+**Two real mistakes, caught before landing rather than after:**
+
+1. `ALTER ROLE ... WITH PASSWORD :password` doesn't accept a bind parameter -- it's DDL, and
+   Postgres's wire protocol has no placeholder support there. Failed with a syntax error
+   pointing at the placeholder itself rather than explaining why. Fixed with proper SQL-literal
+   escaping (doubling embedded `'`), safe here because the value is an operator-controlled
+   deployment secret, not request input.
+2. My own mutation test for the `WITH CHECK` clause was wrong before it was right: I claimed
+   deleting `WITH CHECK` (keeping `USING`) would let a cross-tenant insert through, and mutating
+   it that way left the test **green**, not red. Postgres defaults an omitted `WITH CHECK` to the
+   `USING` expression for a policy covering every command, which this one does -- so the clause
+   I wrote is documentation, not the thing actually stopping the write. Found the real gap
+   (`WITH CHECK (true)`, which overrides the default with a permissive one) and rewrote the
+   test's own docstring to say so, rather than leaving a passing mutation test whose stated
+   reasoning was false. This is rule 15 catching itself: a test that would pass with its own
+   claimed guard deleted is documentation, and the mutation is what proved it.
+
+**Structural enforcement, the other half of what was asked** (`tests/unit/
+test_structural_boundaries.py`, no Postgres needed): an AST sweep asserting `DocumentRecord` is
+queried (`select`/`update`/`delete`/`session.get`) from `app/registry/db.py` alone. Deliberately
+narrower than "never reference `DocumentRecord`" -- an early version flagged `streamlit_app/
+Home.py` and `documents.py` for legitimately *constructing* a row to pass to
+`stage_document_record`, which is not the risk this test exists to catch. Mutation-confirmed by
+injecting a throwaway `select(DocumentRecord)` into `documents.py` and reverting.
+
+**A pre-existing gap found in passing, not fixed:** `../CLAUDE.md`'s connection-budget arithmetic
+(`GUNICORN_WORKERS * (db_pool_size + db_max_overflow)`) didn't account for the new admin engine's
+own small pool. Noted in `docs/EPIC_4_PLAN.md` rather than recalculated precisely -- in practice it
+holds at most the one or two connections `init_db()` checks out once per process, but the ceiling
+is real and this arithmetic should be re-derived if the exact number ever matters.
+
+**Verified against a real Postgres**, brought up directly in this sandbox for the purpose (not
+via the `verify` skill, which is reserved for explicit user invocation) -- `postgres:18-alpine` +
+`redis:8-alpine`, both test databases created by hand. Full suite: **390 passed, 0 skipped**,
+including the three `test_api_contract.py` tests that could only fail-for-lack-of-services before
+this session (now genuinely passing against live infrastructure). `ruff --no-cache`, `ruff
+format --check`, and `ty check` all clean. One `ty` wrinkle worth remembering:
+`session.exec(text(...))`'s typed overloads don't cover a plain `Executable`, and SQLModel's
+`session.execute()` carries a `@deprecated` decorator that `ty` treats as an error under this
+project's `error-on-warning` -- the fix was `(await session.connection()).execute(...)`, the
+plain SQLAlchemy `AsyncConnection` underneath, which SQLModel doesn't wrap at all.
+
+**Standing directive updated:** the user said monetization is planned, which is why the "lower
+priority" items from the earlier architecture review (user/role layer, audit log, tenant-tiered
+quotas, a siloed-deployment tier) are staying on the list rather than being deprioritized as
+speculative -- none built this session, all still open.
+
+**Not done, named rather than dropped:** a startup assertion for the connection-budget ceiling
+(already flagged before this session, unrelated to RLS); re-deriving the exact new ceiling with
+the admin engine included; deciding whether `BLE001`-style blind-except detection should actually
+be turned on now that it demonstrably already is (a live question from the ruff mistake earlier
+today, not resolved here).
 
 ### 2026-08-07 (later) — the deferred doc-bloat cleanup, and a stale claim my own prior commit repeated
 

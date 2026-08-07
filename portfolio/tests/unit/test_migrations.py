@@ -65,7 +65,11 @@ async def engine(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[AsyncEngine]:
         await conn.execute(text("CREATE SCHEMA public"))
 
     monkeypatch.setattr(app_db, "_initialized", False)
-    monkeypatch.setattr(app_db, "get_engine", lambda: engine)
+    # `init_db` runs its DDL on `get_admin_engine()`, not `get_engine()`, since 2026-08-07's
+    # row-level-security migration -- patching the wrong one here would leave this fixture's
+    # isolated database untouched while `init_db()` migrated whatever `database_url` really
+    # points at, silently.
+    monkeypatch.setattr(app_db, "get_admin_engine", lambda: engine)
 
     # Point procrastinate at this database too. `_apply_procrastinate_schema` checks for its tables on
     # the connection it is handed but applies the schema on procrastinate's *own* pool -- fine in

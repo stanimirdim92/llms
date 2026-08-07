@@ -206,6 +206,69 @@ until someone uploads. And Epic 2's golden set now has no fixed document set to 
 against, so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists —
 recorded in the README's known-gaps list.
 
+## Row-level security on `documentrecord`, and the role split it required
+
+**Decision (2026-08-07).** Postgres `CREATE POLICY` on `documentrecord`, enforced against a new,
+deliberately non-superuser role (`app_db_user`) that every request-time query now connects as.
+Asked directly, independent of this project's own docs: "is there a production/enterprise way of
+doing this," and the answer was that application-level tenant filtering (everything in the
+previous section) is the industry-standard *first* layer, but a second, database-enforced layer is
+the standard hardening on top of it once a single missed WHERE clause is judged too expensive to
+risk — which it is, here: this project has already shipped one cross-tenant read
+(the `session_id` bug) and found a second near-miss (a test docstring quietly reintroducing the
+"doc_id is a content hash" false premise, 2026-08-07) without a live exploit either time. RLS
+does not remove the need for the application-level filter — a query that also has no tenant
+condition is still a functional bug, just no longer a *leak*.
+
+**The single fact that decides everything else: Postgres superusers bypass RLS unconditionally,
+`FORCE ROW LEVEL SECURITY` included.** The official postgres Docker image always creates
+`POSTGRES_USER` as a superuser. `app/db.py::get_admin_engine` (Alembic, procrastinate's one-time
+schema apply) keeps connecting as that role; `app/db.py::get_engine` (`get_session()`, every
+request-time query, api and worker) had to move to a role RLS actually applies to, or the whole
+migration would pass its own smoke test for a reason that has nothing to do with the policy — the
+table owner was simply never subject to it. This is why the change is a role split and a new
+credential, not a one-line `ALTER TABLE`, and why `../CLAUDE.md`'s "no parallel `DB_USER`" rule
+needed a stated exception rather than a silent one: that rule was about two names for the *same*
+credential drifting apart, and this is a second credential for a genuinely different purpose.
+
+**What was rejected, and why.**
+
+- **A structural (type-level) rewrite instead** — a repository/query-object layer that makes an
+  unscoped query impossible to construct at all, rather than caught by a policy after the fact.
+  Not rejected outright: `tests/unit/test_structural_boundaries.py` implements the cheap version
+  (an AST sweep asserting `DocumentRecord` is queried from `app/registry/db.py` alone), because
+  that centralization already existed in practice — no router had ever bypassed it. A full
+  repository-object rewrite was judged not to buy enough over that, given every current caller
+  already goes through one module's functions.
+- **RLS on `tenant`/`apikey` too, for uniformity.** Rejected on the mechanics, not the principle:
+  authentication resolves `tenant_id` *from* a row in `apikey`, by `key_hash`, before the caller's
+  tenant is known — a policy requiring `app.tenant_id` already set would make the lookup that
+  establishes it impossible. These tables are a different threat model (a single indexed lookup
+  keyed on a 256-bit hash, not a filter over rows the caller might paste an id into).
+- **Per-tenant grants instead of one broad grant plus RLS.** Considered maintaining a
+  table-by-table privilege list for `app_db_user`, narrower than "everything." Rejected because
+  RLS is what does the actual narrowing for the table that matters, and a hand-maintained grant
+  list is one more place a future migration's new table goes unnoticed — the same silent-gap
+  shape this project keeps finding in other layers (the payload index, the CORS defaults, the
+  skip-guard count). `ALTER DEFAULT PRIVILEGES` covers future tables automatically instead.
+- **A siloed (database- or collection-per-tenant) deployment tier**, for a hypothetical customer
+  needing physical isolation (data residency, a compliance requirement stricter than a shared
+  schema). Not built: nothing in this project's current scale target (10k tenants × 10 documents,
+  `docs/MEMORY.md` § Standing directives) calls for it, and Qdrant's own multitenancy guidance
+  recommends payload partitioning for exactly this tenant shape (many, similarly sized) —
+  collection-per-tenant is for *heterogeneous* tenants, which this isn't. Revisit if a real
+  contract requires it; don't build it speculatively.
+- **A separate migration/backfill role vs. reusing `postgres_user` for DDL.** Considered a third
+  role (neither `postgres_user` nor `app_db_user`) scoped to schema changes only. Rejected as
+  unnecessary complexity: `postgres_user` already exists, already owns the schema, and DDL
+  privilege is not the thing this decision is trying to take away from it — only request-time
+  *data* access is.
+
+**What this does not cover.** User-level identity within a tenant (roles, SSO/OIDC, per-human
+audit) is unrelated to RLS and is Epic 4 Phase 5.2's open question, not this one's. An audit log
+and tenant-tiered rate/quota plans are both still absent — flagged as real gaps once monetization
+is on the table (`docs/MEMORY.md`), not solved by this change.
+
 ## Authentication: database-backed API keys
 
 **Decision.** `tenants` + `api_keys` tables; an `x-api-key` header resolved to a tenant by a

@@ -531,6 +531,12 @@ numbers -- but each needs a decision that has not been made:
   PgBouncer in front -- and the decision is which, not whether. Nothing enforces the
   invariant at startup today, so exceeding it surfaces as connection errors under load
   rather than as a boot failure; a startup assertion is the cheap half of the fix.
+  **`get_admin_engine()` (2026-08-07, row-level security) adds a small, separate pool per
+  process** (`pool_size=2, max_overflow=1`, deliberately not sharing `get_engine()`'s budget) --
+  in practice it holds at most the one or two connections `init_db()` actually checks out, since
+  nothing calls it again after the first successful boot, but it is a ceiling this arithmetic did
+  not include before and should be re-added if the exact number ever matters (worst case
+  `+3 * GUNICORN_WORKERS`).
 - **Disk. Still unmeasured, and an attempt to measure it failed informatively.**
   `processed_dir` holds one parsed Docling JSON per document plus a PNG per surviving
   figure; `upload_dir` holds the original upload. Per-document cost is therefore driven by

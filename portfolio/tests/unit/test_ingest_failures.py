@@ -146,10 +146,12 @@ class _Recorder:
         self.calls: list[tuple[str, str]] = []
         self.fail_on: str | None = None
 
-    async def processing(self, _session: object, *, doc_id: str) -> None:
+    async def processing(self, _session: object, *, doc_id: str, tenant_id: str) -> None:
+        del tenant_id  # accepted for signature parity with the real function, not asserted here
         self._record("processing", doc_id)
 
-    async def failed(self, _session: object, *, doc_id: str, error: str) -> None:
+    async def failed(self, _session: object, *, doc_id: str, tenant_id: str, error: str) -> None:
+        del tenant_id
         self._record("failed", error)
 
     def _record(self, kind: str, detail: str) -> None:

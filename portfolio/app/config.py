@@ -67,7 +67,9 @@ class Settings(BaseSettings):
     qdrant_collection: str = Field(default="portfolio_rag")
 
     # `POSTGRES_USER`/`PASSWORD`/`DB` are the names the official postgres image reads itself, so
-    # one trio serves both consumers -- do not reintroduce a parallel `DB_USER`/`PASSWORD`/`NAME`.
+    # one trio serves both consumers -- do not reintroduce a parallel `DB_USER`/`PASSWORD`/`NAME`
+    # for *this* pair. `APP_DB_USER`/`APP_DB_PASSWORD` below are not that: they are a second,
+    # deliberately distinct role for a different purpose (see `database_url` vs `app_database_url`).
     # `DATABASE_URL` overrides all of them at once when set.
     db_driver: str = Field(default="postgresql+psycopg")
     db_host: str = Field(default="localhost")
@@ -78,6 +80,22 @@ class Settings(BaseSettings):
     database_url: SecretStr = Field(
         default=SecretStr(""),
         description="Full DSN override. If unset, built from db_host/db_port/db_driver/postgres_user/password/db.",
+    )
+
+    # A second Postgres role, non-superuser, created by migration 20260807_add_row_level_security.
+    # `postgres_user` above is the postgres image's bootstrap account, which the official image
+    # always makes a superuser -- and a superuser bypasses row-level security regardless of
+    # `FORCE ROW LEVEL SECURITY`, silently. RLS on `documentrecord` is therefore only real
+    # protection if the connection issuing ordinary queries is *not* that role. `app_user` is
+    # what `get_engine()` connects as for every request-time query (api and worker alike);
+    # `postgres_user`/`database_url` stay reserved for Alembic and procrastinate's one-time
+    # schema apply, which need table-owner rights that `app_user` deliberately does not have.
+    app_db_user: str = Field(default="portfolio_app")
+    app_db_password: SecretStr = Field(default=SecretStr("portfolio_app"))
+    app_database_url: SecretStr = Field(
+        default=SecretStr(""),
+        description="Full DSN override for the low-privilege runtime role. If unset, built from "
+        "db_host/db_port/db_driver/app_db_user/app_db_password/postgres_db.",
     )
 
     # Per gunicorn worker, not shared across forks. **`GUNICORN_WORKERS * (pool_size +
@@ -212,6 +230,20 @@ class Settings(BaseSettings):
                     drivername=self.db_driver,
                     username=self.postgres_user,
                     password=self.postgres_password.get_secret_value(),
+                    host=self.db_host,
+                    port=self.db_port,
+                    database=self.postgres_db,
+                ).render_as_string(hide_password=False)
+            )
+        if not self.app_database_url:
+            # Same host/port/driver/database as above -- only the role differs. Kept in a
+            # second field rather than derived by string-editing `database_url`, so a caller that
+            # already parsed a `DATABASE_URL` override doesn't have to be reverse-engineered.
+            self.app_database_url = SecretStr(
+                URL.create(
+                    drivername=self.db_driver,
+                    username=self.app_db_user,
+                    password=self.app_db_password.get_secret_value(),
                     host=self.db_host,
                     port=self.db_port,
                     database=self.postgres_db,
