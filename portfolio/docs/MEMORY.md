@@ -278,6 +278,47 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-08 — a ChatGPT review of `docker compose up`'s output, checked point by point
+
+Three findings, none taken at face value.
+
+**#1 (flagged "high priority" by the review): "don't run Alembic migrations from every Gunicorn
+worker."** Checked against the actual log the user pasted, not just the review's summary of it.
+Worker 24 logs `Running upgrade 307f47df6135 -> a4f8c1d92e07`; worker 29's log has **no**
+migration-running line at all -- it goes straight from `Context impl PostgresqlImpl` to
+`api.started`. That is the `pg_advisory_xact_lock` (`CLAUDE.md` § Alembic, and
+`test_concurrent_processes_can_initialise_the_schema`, which deliberately uses real subprocesses
+because an `asyncio.gather` version passes even with the lock removed) working exactly as
+designed, not two workers racing and one happening to win. The review's framing ("it happened to
+be fine here") describes a coin flip; the log shows a lock. Asked the user directly whether to
+still move to a separate pre-boot migration step anyway (a legitimate production pattern
+independent of whether the current one is broken) -- answer: **keep as-is**, recorded here so it
+isn't re-litigated next time this exact review resurfaces.
+
+**#2: `vm.overcommit_memory` must be enabled.** Real, and reproduced by running the base
+`redis:8-alpine` image directly -- the warning fires regardless of this project's `redis.conf`.
+Not fixable from `docker-compose.yml`, and said so rather than pretending otherwise:
+`vm.overcommit_memory` is global kernel state, not a namespaced sysctl, so Docker's `sysctls:`
+won't accept it and a container writing it would mutate the whole host. Documented as a host
+prerequisite in `redis/redis.conf` and `README.md`'s known-gaps list -- currently low-stakes
+since `save ""`/`appendonly no` mean nothing here schedules the fork Redis is warning about, but
+worth doing before real traffic, not after.
+
+**#3: Redis reachable from any IP.** Checked against `docker-compose.yml` before agreeing or
+disagreeing, and the review is simply wrong about this repository: the redis service already
+publishes `127.0.0.1:${REDIS_PORT}:...`, not `0.0.0.0`, with a comment on that exact line
+already explaining why (`protected-mode no` / no `requirepass` is "survivable... because of"
+that binding). The warning text in the logs is Redis's own generic caution -- it can't see how
+Docker networking is configured -- not evidence of an actual exposure here. No change made.
+
+**The pattern worth naming, since it's now the third external review/article checked this
+session (the FastAPI RLS post, Supabase's RLS guide, now this one):** every one of them was
+partially right and partially wrong about *this specific codebase*, and the wrong parts were
+wrong in different directions -- one showed code that fails on real Postgres, one showed advice
+that measures slower here, this one described a safe mechanism as a near-miss. None of the three
+were worth accepting or rejecting wholesale; each needed the specific claim checked against this
+repository's actual state before either.
+
 ### 2026-08-07 (night) — two composite indexes, measured against a whale tenant rather than the average
 
 Asked to follow up on "db performance is a must" from an article comparison, specifically a

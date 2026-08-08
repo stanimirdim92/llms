@@ -306,6 +306,10 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
   mid-`processing` visible, and nothing yet sweeps or re-enqueues those.
 - nginx is HTTP-only. There is no domain yet to provision certificates against; the TLS
   scaffolding is in place and `conf.d/default.conf` documents the remaining steps.
+- **The Docker host itself needs `vm.overcommit_memory = 1`** before real traffic — Redis
+  warns "Memory overcommit must be enabled!" on every boot otherwise. Not fixable from
+  `docker-compose.yml`: this is global kernel state, not a per-container sysctl Docker can set.
+  `sudo sysctl vm.overcommit_memory=1`, persisted via `/etc/sysctl.d/` on the host.
 
 ## Layout
 
