@@ -198,6 +198,23 @@ async def test_init_db_is_idempotent(engine: AsyncEngine) -> None:
     assert await _revision(engine) == first
 
 
+async def test_the_tenant_hot_path_indexes_exist(engine: AsyncEngine) -> None:
+    """Existence, not performance -- `docs/TECHNICAL_DECISIONS.md` § Database has the measured
+    numbers (migration `c7e2a9f13b58`), and a benchmark number is not something CI should gate on
+    (it depends on hardware, cache state, and data shape in ways a merge check cannot control
+    for). What CI *can* pin is that the index this project measured a real improvement from is
+    still the one actually applied after a fresh migration run.
+    """
+    await app_db.init_db()
+
+    async with engine.connect() as conn:
+        indexes = await conn.run_sync(lambda sync_conn: inspect(sync_conn).get_indexes("documentrecord"))
+        names = {row["name"] for row in indexes}
+
+    for expected in ("ix_documentrecord_tenant_active_version", "ix_documentrecord_tenant_uploaded_at"):
+        assert expected in names, f"{expected} missing after init_db -- see migration c7e2a9f13b58"
+
+
 async def test_procrastinates_tables_are_left_alone(engine: AsyncEngine) -> None:
     """`migrations/env.py::include_object` filters them out of every comparison.
 

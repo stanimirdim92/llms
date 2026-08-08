@@ -156,6 +156,48 @@ a model field changed nothing, `init_db` reported success, and the next query fa
 does not exist`. `_migrate_to_head` runs `upgrade head` inside the boot advisory lock, and CI runs
 `alembic check` so a model field without a revision fails there rather than in production.
 
+**Composite indexes on `documentrecord`, added 2026-08-07** (migration `c7e2a9f13b58`), for the
+two queries that run per tenant on every request path: `list_active_versions` (every `/ask`) and
+`list_document_records` (`GET /v1/documents`, and `/ask`'s document-name scoping).
+
+**Measured, not assumed, and the first measurement was the wrong question.** This project's own
+scale target — 10,000 tenants × 10 documents, `docs/MEMORY.md` § Standing directives — is too
+small an *average* to show either query struggling: seeded exactly that shape and both ran in
+well under 0.25ms on the existing single-column `tenant_id` index alone, whole table included.
+The question that actually matters once monetization means a real, unevenly-sized customer base
+is the tail, not the average — so a second, deliberate "whale" tenant with 20,000 documents (a
+plausible top-of-distribution account, not the mean) is what the numbers below are against:
+
+| Query | Before | After (warmed, not first-run — rule 14) | Plan change |
+|---|---|---|---|
+| `list_active_versions` | 6.06 ms | 2.2–3.9 ms | `Bitmap Heap Scan` + filter → `Index Only Scan`, 0 heap fetches |
+| `list_document_records` | 6.04 ms | 0.39–0.56 ms | `Bitmap Heap Scan` + sort → `Index Scan` in output order, stops at `LIMIT` |
+
+The two queries improved by very different amounts for a structural reason, not a tuning
+difference: `list_document_records` has a `LIMIT`, so an index that already produces rows in
+`uploaded_at DESC` order lets Postgres stop after 100 rows without ever touching the other 19,900
+— that is where the ~11–15× comes from. `list_active_versions` has no `LIMIT` — it must return
+every active document a tenant has, by design (the retrieval filter needs the complete
+`doc_id → version` map) — so indexing removes the heap I/O and the in-memory filter but cannot
+remove work proportional to the tenant's own active-document count. **That is worth stating as a
+standing limit, not just a measurement**: a tenant with tens of thousands of active documents
+makes every one of their own `/ask` calls pay for materialising all of their ids, and no index
+changes that. Revisit if a real tenant's document count grows large enough for this to show up in
+`/ask` latency — the fix at that point is capping or paginating the active-version map, not a
+better index.
+
+Confirmed the existing average-case tenant (10 documents) is not regressed: both queries stay
+under 0.25ms there, and the planner picks whichever index it judges cheaper for that row count
+without being told to.
+
+**`CREATE INDEX`, not `CREATE INDEX CONCURRENTLY` — a stated tradeoff, not an oversight.** A plain
+`CREATE INDEX` takes `ShareLock` and blocks writes to `documentrecord` for the build's duration;
+`CONCURRENTLY` avoids that but is disallowed inside a transaction, and `init_db()` deliberately
+runs the entire migration chain inside one transaction so `pg_advisory_xact_lock` covers it
+atomically (see "Alembic" above). Harmless today — there is no production data yet — but a real
+deployment carrying live traffic needs `CREATE INDEX CONCURRENTLY` run outside this chain before
+adding a table-blocking index to it, not a migration that runs unattended at boot.
+
 ## Tenant scoping: one field, derived only from auth
 
 **Decision.** `tenant_id` replaced `session_id` entirely. `AskRequest` has no scope field at
@@ -263,6 +305,21 @@ credential drifting apart, and this is a second credential for a genuinely diffe
   unnecessary complexity: `postgres_user` already exists, already owns the schema, and DDL
   privilege is not the thing this decision is trying to take away from it — only request-time
   *data* access is.
+- **Wrapping the policy's `current_setting()` in `(SELECT ...)`.** Widely-cited RLS advice
+  (Supabase's own performance guide, checked because the user found it): write `(select
+  auth.uid()) = user_id` rather than `auth.uid() = user_id`, so Postgres evaluates the function
+  once per statement (an `InitPlan`) instead of once per row — their own numbers claim up to
+  99.99% on `auth.uid()`, which internally parses a JWT claim out of a GUC. Tested against this
+  policy specifically rather than applied on the strength of that number: on the same 20,000-row
+  whale tenant, the wrapped form measured **7.1–9.0ms across six runs, the unwrapped form 7.1–7.2ms**
+  — the wrap made this policy slightly *slower*, not faster, and the plan confirms why
+  (`Index Cond: tenant_id = (InitPlan 1).col1` vs. the unwrapped plan pushing `current_setting()`
+  straight into the index condition with no separate plan node). `current_setting()` reading a
+  session GUC is already about as cheap as a per-row function call gets; the InitPlan mechanism
+  has its own setup cost, and there is no expensive per-row work here to amortize the way there is
+  behind `auth.uid()`. The advice is real and worth applying to a policy whose predicate is
+  actually expensive per row — it is not free to apply reflexively to every RLS policy regardless
+  of what the predicate does, which is the form the advice tends to travel in.
 
 **What this does not cover.** User-level identity within a tenant (roles, SSO/OIDC, per-human
 audit) is unrelated to RLS and is Epic 4 Phase 5.2's open question, not this one's. An audit log

@@ -17,6 +17,19 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 #### Added
 
+- **Two new indexes speed up the per-tenant document list and the `/ask` retrieval-scope
+  lookup for tenants with many documents.** No effect on behavior or response shape — same
+  results, faster once a tenant's document count grows past the low tens. Measured on a 20,000-
+  document tenant: the document list is ~11–15× faster, the `/ask`-path lookup ~1.5–2.8×
+  (bounded lower because that query returns every active document regardless of indexing — see
+  `docs/TECHNICAL_DECISIONS.md` § Database for why). No change for typical, small tenants.
+
+  *Upgrading:* nothing to do — the migration runs automatically at boot, same as every other
+  schema change. It briefly blocks writes to the document-registry table while it builds
+  (`CREATE INDEX`, not the non-blocking `CONCURRENTLY` form — see the same section for why); on
+  an empty or lightly-loaded table this is not noticeable, but a deployment with real write
+  traffic should account for a brief pause during the upgrade.
+
 - **Row-level security on document rows, enforced by Postgres itself.** A new database role
   (`APP_DB_USER`/`APP_DB_PASSWORD`, default `portfolio_app`) now handles every request-time query;
   `POSTGRES_USER` is reserved for schema migrations. This is a second, independent layer on top of

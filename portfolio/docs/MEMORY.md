@@ -278,6 +278,70 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-07 (night) — two composite indexes, measured against a whale tenant rather than the average
+
+Asked to follow up on "db performance is a must" from an article comparison, specifically a
+composite `(tenant_id, created_at)`-style index suggested by that article for a similar table.
+
+**The scale target itself was the wrong benchmark, and measuring first caught it.** Seeded
+exactly this project's own standing target — 10,000 tenants × 10 documents — and both candidate
+queries (`list_active_versions`, `list_document_records`) ran under 0.25ms on the existing
+single-column `tenant_id` index alone, because 10 rows is nothing to filter or sort regardless of
+indexing. An *average* of 10 documents/tenant is not the case that matters once monetization means
+real, unevenly-sized tenants — so added one deliberate 20,000-document "whale" tenant and remeasured
+against that. Real numbers, warmed up (repeated runs, not the first cold one -- rule 14):
+`list_active_versions` 6.06ms → 2.2-3.9ms, `list_document_records` 6.04ms → 0.39-0.56ms. The gap
+between those two improvements is structural, not incidental: the second query has a `LIMIT`, so
+an index in output order lets Postgres stop after 100 rows; the first has none, by design (the
+retrieval filter needs every active document's id), so indexing removes the heap I/O but not the
+work proportional to the tenant's own document count. Recorded as a standing limit in
+`docs/TECHNICAL_DECISIONS.md`, not something this pass fixes.
+
+**Migration `c7e2a9f13b58`: a partial covering index and a plain composite.**
+`ix_documentrecord_tenant_active_version` matches `list_active_versions`'s exact predicate
+(`tenant_id`, `INCLUDE (doc_id, ingestion_version)`, `WHERE status = 'ingested' AND
+ingestion_version IS NOT NULL`) for an index-only scan; `ix_documentrecord_tenant_uploaded_at` is
+`(tenant_id, uploaded_at DESC)` for `list_document_records`. Confirmed the average-case tenant is
+not regressed — both queries still resolve in well under 0.25ms there, and the planner picks
+whichever index it judges cheaper without being told to.
+
+**A second migration-transaction constraint found, this time before it caused damage.**
+`CREATE INDEX CONCURRENTLY` is disallowed inside a transaction, and `init_db()` deliberately runs
+the *entire* migration chain inside one transaction (the advisory lock has to cover it atomically)
+— so `CONCURRENTLY` is not just unused here, it is currently *impossible* through this migration
+path at all. Used plain (blocking) `CREATE INDEX` instead, since there is no production data yet,
+and wrote down exactly what changes the day there is: a real deployment with live traffic needs
+`CONCURRENTLY` run outside this chain, not a migration that runs unattended at boot. Same shape as
+the RLS role split two entries below -- a constraint this project's own architecture creates,
+worth stating rather than working around silently.
+
+**A new existence test, not a performance test.** `test_the_tenant_hot_path_indexes_exist`
+(`tests/unit/test_migrations.py`) asserts the two indexes are present after `init_db()`, and says
+in its own docstring why it doesn't assert a timing number: a benchmark depends on hardware, cache
+state and data shape in ways a merge gate can't control for, and the measured numbers belong in
+`docs/TECHNICAL_DECISIONS.md`, read once, not re-derived by CI on every run. Mutation-confirmed by
+removing one index from the migration and watching the test name it specifically.
+
+**Verified the same way as the RLS work**: a real `postgres:18-alpine`, seeded via raw SQL
+(`generate_series`, not the ORM — 130,000 rows through SQLModel would have taken the actual
+measurement time), migrated through the real Alembic chain rather than by hand-applying the SQL,
+then re-measured to confirm the migration produces the identical plan the ad-hoc index did. Full
+suite: 391 passed, 0 skipped (390 plus the new test). `ruff --no-cache`, `ruff format --check`,
+`ty check` all clean.
+
+**Cross-checked against two external sources the user shared, both worth the check.** A FastAPI+RLS
+blog post's example code (`SET LOCAL app.current_tenant = :tid`, with a bind parameter) fails on
+real Postgres with the identical error class this session already hit once for `ALTER ROLE ...
+PASSWORD` -- `SET` is a utility statement, not DML, and doesn't accept a placeholder in that
+position. Confirmed by running it. `set_config(name, value, is_local)`, used here, is a plain
+function call inside a normal query and *is* parameterizable -- documented as equivalent to `SET
+LOCAL` in effect, but only one of the two forms is actually safe to write with a bound tenant_id.
+The same post's `BYPASSRLS`-only admin role (distinct from a superuser, kept for a cross-tenant
+admin-reporting feature this app doesn't have) is a cleaner pattern than this project's reliance on
+`postgres_user`'s *incidental* superuser status -- noted as the right move if a genuine cross-tenant
+admin feature is ever built, not retrofitted now since migrations here need full DDL rights
+`BYPASSRLS` alone wouldn't grant anyway.
+
 ### 2026-08-07 (evening) — row-level security, a second Postgres role, and a structural regression test
 
 Asked directly, independent of this project's own docs, whether there's a better production/
