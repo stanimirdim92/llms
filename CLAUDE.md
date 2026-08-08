@@ -157,7 +157,7 @@ Three habits that make the set work:
 - **Commit the lockfile, and install from it everywhere** -- CI and images
   included. Without it the build re-resolves and CI can test a dependency set
   nobody deployed.
-- **Run the project's full gate before pushing**, from its own `CLAUDE.md` or
+- **Run the project's full gate before pushing, only if needed**, from its own `CLAUDE.md` or
   its `verify` skill rather than from memory. Report what actually ran,
   including anything that was skipped.
 - **Randomise test order; don't run the suite three times.** This replaced a rule to run it
