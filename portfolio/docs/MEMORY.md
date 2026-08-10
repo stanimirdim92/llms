@@ -278,6 +278,57 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-08-10 — the remaining sections (2-8) of the P0-numbered external review
+
+P0 #1-3 were already closed (2026-08-05/06, see those entries and
+`docs/TECHNICAL_DECISIONS.md`) and P0 #4 is Epic 2, tracked as its own item. This session read
+sections 2 through 8 of that same review (system design, AI/RAG, reliability, security, API
+surface, code style, tests/CI) for the first time and checked every checkable claim against
+current source — via four parallel read-only sweeps, each reporting file:line evidence, then
+spot-checked and the parsed-document-cache claim verified directly. **All ~20 claims held true
+or partially true; none were stale or wrong.** Same "trustworthy" verdict the 2026-08-02 review
+earned, and stronger here: this review was checked against the *same* commit it was written
+against, so there was no window for the code to have moved out from under it.
+
+**Already tracked, no action taken** — cross-referenced rather than duplicated in
+`docs/IDEAS.md`: streaming upload size enforcement (the code comment already points at
+`EPIC_4_PLAN.md` 1.6), no `DELETE /v1/documents`, object storage for uploads, Postgres/Qdrant
+reconciliation, concurrent-enqueue dedup, the stuck-job sweeper, backups, prompt injection,
+hybrid search, whole-document mode, GitHub Actions SHA-pinning, streaming `/ask`, and both
+rate-limit ideas already under `Auth`. Two claims that read as gaps are actually documented,
+deliberate tradeoffs, not new findings: the Docker stack smoke job's
+`if: github.event_name != 'pull_request'` guard carries its own comment explaining the build-
+cost reason, and `slowapi`'s blocking-store failure mode is exactly why `limits` was adopted in
+the first place (`docs/IDEAS.md` § Considered and rejected).
+
+**New findings, added to `docs/IDEAS.md`:** the chunk-sizing tokenizer (MiniLM) doesn't match
+the embedding provider (Voyage); no token cap on a table chunk; `page_no` is a single scalar
+where a chunk can span pages; neither the figure-caption cache nor the parsed-document cache
+carries a version fingerprint, so a prompt/model/Docling change keeps serving old entries;
+upload acceptance is suffix-only with no content/magic-byte check; the `/ask` document-name
+resolver caps its candidate set at 200 records (harmless at the recorded 10-doc/tenant scale
+target, real past it); the raw question is logged on every answer with no documented policy;
+worker exceptions reach the client verbatim in `error_message`; `DocumentRecord.status` is an
+unconstrained `str` at all three layers; `GET /v1/documents` has a `limit` but no real
+pagination; the rate limiter's fail-open `except` clause is bare `Exception` rather than
+Redis-specific (deliberate per rule 9, but broader than it needs to be); worker retries don't
+classify transient vs. deterministic failures; three Epic-3-only packages (`langgraph`,
+`langgraph-checkpoint-postgres`, `langchain-openai`) ship in the main dependency group with
+nothing importing them yet; and CI's `pip-audit` runs via `uvx` rather than `uv run`, auditing a
+scanner version independent of the lockfile.
+
+**One genuine conflict, recorded rather than resolved (rule 6):** `docs/IDEAS.md` already
+called returning every reranked chunk in `/ask` a feature ("diagnosable in seconds"); this
+review calls the same behaviour a cost and exposure problem, since there's no
+`include_retrieved_chunks=false`. Both are right about the same fact from different threat
+models — noted on that entry rather than picked one way, pending a decision once monetization
+means a real customer's documents are behind that payload.
+
+**No code changed this session** — verification and documentation, same posture as the
+2026-08-08 docker-compose review. Several findings above are one-line, low-risk changes (the
+dependency-group move, the pip-audit invocation) that could be picked up quickly, but fixing
+them wasn't the ask.
+
 ### 2026-08-08 — a ChatGPT review of `docker compose up`'s output, checked point by point
 
 Three findings, none taken at face value.

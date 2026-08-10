@@ -36,12 +36,41 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   serving a stale answer after a re-upload. Needs invalidation on `doc_id` before it is safe.
 - **Show retrieved chunks in the API response by default.** *(S)* Already returned; worth
   surfacing prominently in clients — a wrong answer is diagnosable in seconds when you can see
-  what it read.
+  what it read. **Not universal agreement, recorded rather than resolved (rule 6):** the
+  2026-08-10 review treats the same behaviour as a cost/exposure problem — every reranked
+  chunk's full text ships on every answer whether cited or not, with no
+  `include_retrieved_chunks=false` to opt out, so payload size and document-content exposure
+  both scale with `rerank_top_n`. Diagnosability and exposure are the same design decision seen
+  from two threat models; worth an explicit opt-out flag (default on while this stays
+  single-tenant-dev, revisit the default once monetization means a real customer's documents
+  are behind it) rather than picking one side now.
 - **Hybrid search (BM25 + dense).** *(M)* Exact identifiers, model numbers, and chemical
   formulae are where pure dense retrieval is weakest, and this corpus is full of them. Qdrant
   supports sparse vectors natively. Measure first.
 - **Per-document-type chunking.** *(M)* A CV, a one-page flyer, and a 30-page paper currently
   share one strategy. The flyer becoming a single chunk was luck, not design.
+- **Chunk-size tokenizer doesn't match the embedding provider.** *(S)* `app/ingestion/chunker.py`
+  measures `chunk_max_tokens` (default 700) with `sentence-transformers/all-MiniLM-L6-v2`'s
+  tokenizer, while embedding runs through Voyage `voyage-4`. Nothing connects the two token
+  spaces, so 700 is a guess about what fits, not a measured one. Use a Voyage-compatible
+  tokenizer or count against Voyage's own token-counting API.
+- **No token cap on a table chunk.** *(S)* The table-chunking path in `chunker.py` serializes a
+  whole table to Markdown as one chunk with no size limit — a large XLSX/CSV upload can produce
+  an oversized embedding input, reranker input, and generation block in one step. `Settings` has
+  no `table_max_tokens` field at all.
+- **Chunk `page_no` is a single value, not a range.** *(S)* `chunker.py` takes
+  `doc_items[0].prov[0].page_no` — the first item's first provenance page — even though a
+  contextualised chunk can span several `doc_items` and several pages. Citations therefore name
+  one page for content that may start elsewhere. Needs `page_start`/`page_end` (or a `pages`
+  list) instead of one scalar.
+- **Neither content cache carries a version.** *(S)* The figure-caption cache key
+  (`caption-<sha256 of image bytes>.txt`, `figure_extractor.py`) and the parsed-document cache
+  key (`processed_dir/<doc_id>.json`, `pipeline.py`) are both keyed on content/id alone — neither
+  includes the caption prompt, the caption model, or the Docling/parser version. Changing the
+  prompt, the vision model, or upgrading Docling therefore keeps serving cache entries produced
+  under the old settings, indefinitely, with nothing to invalidate them. Fix is a fingerprint
+  (`hash(source_digest, docling_version, parser_options)` / `hash(image_digest, model,
+  prompt_version)`) folded into each cache path.
 
 ## Model providers
 
@@ -127,6 +156,25 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   per-key cost is **1464 bytes**, ~29 MB at 10k tenants × 2 scopes. Two stale numbers from one
   measurement, which is the real lesson here.)
 
+## Security and privacy
+
+- **The raw question is logged on every answer.** *(S)* `answer_service.py` logs
+  `question=question` on both the normal `answer_service.answered` line and the
+  `answer_service.truncated` warning, alongside `tenant_id`. A question can contain pasted
+  contract text, a name, an account number — anything a user typed. Not currently a documented
+  policy either way; log a correlation id and a question hash by default and gate raw-text
+  logging (or LangSmith tracing, which can capture the same content) behind an explicit setting.
+- **Worker exceptions reach the client verbatim.** *(S)* `tasks.py` writes
+  `error=f"{type(exc).__name__}: {exc}"` to `DocumentRecord.error_message`, and both
+  `GET /v1/documents` and `GET /v1/documents/{doc_id}` return that string unmodified. A Docling,
+  Anthropic, Voyage, or Qdrant exception message can include a local path or library internals.
+  Split into a stable `error_code` for the client and the raw exception for logs only.
+- **Upload acceptance checks the filename suffix, not the bytes.** *(S)* `formats.py`'s
+  `is_supported_upload` is a suffix match; nothing inspects the actual content (no
+  magic-byte/MIME sniffing) before a file reaches Docling in the worker. The worker is non-root
+  and isolated, which bounds the blast radius, but a mismatched suffix still buys a full parse
+  attempt on untrusted bytes for free.
+
 ## Developer experience
 
 - **`make` or `just` targets.** *(S)* The verify gate is four commands and the stack invocation
@@ -140,6 +188,17 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   pinned bases, but nothing reports CVEs in those images *between* bumps.
 - **Pin GitHub Actions to commit SHAs.** *(S)* Tags are mutable. Dependabot understands SHA
   pins and keeps them current. Supply-chain hardening, cheap.
+- **LangGraph, its Postgres checkpoint package, and `langchain-openai` ship in the main
+  dependency group.** *(S)* All three are Epic 3 packages and Epic 3 isn't built; the Dockerfile
+  runs `uv sync --locked` with no `--extra`, so all three reach the api/worker/streamlit image
+  today for zero runtime use. Moving them into an `agent` extra (alongside the existing `eval`
+  extra idea) shrinks the image and the CVE surface with nothing importing them yet to break.
+- **`pip-audit` runs via `uvx`, not the locked version.** *(S)* It's declared under
+  `[project.optional-dependencies].dev` in `pyproject.toml`, but CI invokes
+  `uvx pip-audit -r ... --disable-pip`, which resolves its own environment independently of
+  `uv.lock` — so CI can audit a different scanner version than the one pinned locally.
+  `uv run pip-audit` would use the locked one; the dev-docs comment claiming it's "the same
+  command CI runs" is not quite accurate today.
 
 ## Auth
 
@@ -153,6 +212,15 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   `GUNICORN_WORKERS` processes the effective limit becomes `workers x limit`, so it is a
   guardrail not a guarantee — but it is strictly better than nothing during exactly the
   incident where load may be why Redis is struggling.
+- **The rate limiter's fail-open catch is a bare `Exception`, not a Redis-specific one.**
+  *(S)* `app/rate_limit.py`'s `check()` wraps `hit()`/`get_window_stats()` in `except Exception`
+  (with an explicit `noqa: BLE001`) — intentional per rule 9 (a guardrail's outage must not
+  become the API's outage), but broad enough that a `TypeError` or a bad `limits` upgrade would
+  also read as "Redis is down" and fail open for the wrong reason. Narrowing to the specific
+  Redis/storage exceptions and re-raising anything else would keep the fail-open behaviour for
+  real outages while surfacing a real bug as a real bug. Not urgent — the current behaviour is a
+  known, deliberate tradeoff, not a bug — but worth pairing with a
+  `rate_limit_fail_open_total{reason}` counter so a misclassification is visible.
 - **A per-tenant rate-limit ceiling alongside the per-key one.** *(S)* Buckets are keyed on
   `key_id`, so a tenant holding N keys has N times the budget — fairness between clients, not
   a cost ceiling. A second bucket on `tenant_id` checked beside the first makes it a ceiling,
@@ -192,9 +260,37 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   stay connected to the plan.
 - **Per-tenant usage and spend endpoint.** *(M)* Depends on recording usage above. Also the
   foundation for any quota that isn't purely request-count-based.
+- **`GET /v1/documents` has a bounded `limit` but no real pagination.** *(S)* `count` on
+  `DocumentListResponse` is the size of the page just returned, not the tenant's total, and
+  there's no cursor/next-page token. Fine at today's document counts; add
+  `(uploaded_at, doc_id)` cursor pagination and a total count before it isn't.
+- **Document-name resolution for `/ask` caps its candidate set at 200 records.** *(S)*
+  `ask.py` loads the tenant's newest 200 `DocumentRecord`s and matches in memory
+  (`document_scope.py`); a tenant with more than 200 documents naming an older one gets
+  "no document matching" despite owning it. **Currently unreachable at the recorded scale
+  target** (10 documents/tenant), so not urgent, but the right fix is cheap regardless: resolve
+  an explicit `doc_id=` or exact filename with an indexed query instead of loading N candidates,
+  which also removes the 200 cap as a concept.
+- **`DocumentRecord.status` is a plain `str`, not a constrained type.** *(S)* Only four values
+  are ever written (`STATUS_PENDING`/`PROCESSING`/`INGESTED`/`FAILED`), enforced by convention
+  in Python and not at all in Postgres (no `CHECK` constraint) or in the API schema
+  (`status: str`, not `Literal`). Low risk today since nothing else writes this column, but
+  cheap to close with a `Literal` in the schema and a migration-added `CHECK`.
 
 ## Ops
 
+- **No deterministic end-to-end pipeline test with fake providers.** *(M)* CI's Docker smoke
+  test explicitly avoids ingestion and answer-generation provider calls (fake keys only), so
+  nothing in CI exercises upload → enqueue → worker → parse → chunk → embed → Qdrant → rerank →
+  generate → citations as one path. A fixture that fakes Voyage/Anthropic/the vision model would
+  catch a wiring break between any two of those steps without needing Epic 2's golden set or a
+  real provider call.
+- **Worker retries don't distinguish transient from deterministic failures.** *(S)*
+  `INGEST_RETRY` (`app/worker/app.py`) retries every exception up to 3 times with no
+  `retry_exceptions` filter. The module's own comment already says retries can't fix a corrupt
+  PDF — but a corrupt PDF still gets parsed and vision-captioned up to 3 times before it settles
+  on `failed`. Classify: provider throttling/timeout/Qdrant-Postgres-unavailable are retryable;
+  unsupported/corrupt/encrypted-document and validation failures are not.
 - **Reconcile Postgres against Qdrant, in both directions.** *(M)* Versioned ingestion (2026-08-06)
   removed the failure where a re-ingest could lose a working document, and left two kinds of
   divergence behind, both silent. **Orphaned generations:** points inserted for a version whose
