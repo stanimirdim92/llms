@@ -64,7 +64,7 @@ services:
     # compatibility policy wants major.minor to match between client and server;
     # mismatched versions (this was v1.12.5 against a 1.18.0 client) don't necessarily
     # break anything outright but throw a real warning and aren't a supported pairing.
-    image: qdrant/qdrant:v1.18.3
+    image: qdrant/qdrant:v1.19.0
     restart: unless-stopped
     ports:
       # Loopback only. `- "6333:6333"` binds 0.0.0.0 on the host, and Docker inserts its
