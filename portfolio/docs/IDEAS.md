@@ -342,6 +342,14 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **A short architecture video or annotated walkthrough.** The tenant-isolation and
   queue-atomicity reasoning is the strongest part of this project and the least visible from a
   README.
+- **Structurizr DSL for the C4 model (context/container/component).** *(S)* Text-based,
+  version-controlled diagrams — a system-*shape* view to complement `docs/upload-path.html`'s
+  execution-*order* trace, which is a sequence through one path, not the whole architecture.
+  Render with `structurizr-cli` (or the free workspace on structurizr.com) to SVG/PNG, checked
+  in or built in CI, so the diagram lives next to the code it describes instead of drifting the
+  way a hand-drawn one would. Worth heeding `upload-path.html`'s own warning either way: a stale
+  diagram reads as authoritative, so whichever route ships needs the same "update it in the same
+  commit or delete it" discipline.
 - **Publish the eval results once Epic 2 lands.** A before/after on recall@k with the
   methodology is more convincing than any feature list.
 - **Write up the silent-failure catalogue.** Captions that were vision-model refusals, a green
