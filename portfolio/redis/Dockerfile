@@ -6,7 +6,7 @@
 # underneath it. Dependabot watches this directory (`docker` ecosystem, weekly, grouped as
 # `base-images`), so the pin gets maintained rather than left to rot -- under `:latest` there
 # was nothing for it to bump.
-FROM redis:8.10.0
+FROM redis:8.10.1
 
 RUN mkdir -p /usr/local/etc/redis
 COPY redis.conf /usr/local/etc/redis/redis.conf
