@@ -123,6 +123,12 @@ looks wrong, say so once and proceed.
 - **Explicit document scoping on `/ask`** — pulled forward out of Epic 2 because it fixed an
   observed defect rather than moving a metric. Naming a document by **filename or `doc_id`**
   scopes retrieval to it; an unowned identifier is a 404.
+- **Epic 2 Phase 2.0 — intent routing on `/ask`** (2026-09-08) — also pulled forward for the
+  same reason. A Haiku classifier (`app/generation/intent_router.py`) labels every question
+  `metadata`/`factual`/`aggregate`/`out_of_scope` before `/ask` decides whether to retrieve;
+  only `factual` reaches the unchanged retrieve→rerank→generate path. Fixes the production
+  defect that motivated this epic: a metadata question ("list my documents") answered from
+  whatever chunk happened to be nearest in embedding space.
 - **Alembic owns the schema** (2026-08-05), and **ingestion is versioned** (2026-08-06): an ingest
   inserts a generation and publishes it by flipping `DocumentRecord.ingestion_version`, so a failed
   re-ingest leaves the previous generation serving. `QdrantStore.upsert` deletes nothing. Both of
@@ -131,10 +137,10 @@ looks wrong, say so once and proceed.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
-- **Epic 2** — the eval framework. Golden set, recall@k, parquet + DuckDB run storage, the CI
-  regression gate, intent routing. This blocks most retrieval work: query expansion,
-  decomposition, and corpus-level answering all change what retrieval returns, and adopting
-  any of them without recall@k is a guess with a cost attached.
+- **Epic 2** — the eval framework proper. Golden set, recall@k, parquet + DuckDB run storage,
+  the CI regression gate. Intent routing (Phase 2.0) shipped early, above. This blocks most
+  retrieval work: query expansion, decomposition, and corpus-level answering all change what
+  retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
 - **Epic 3** — the curation agent with human-in-the-loop.
 - **Epic 4 Phase 4** — observability. The latency SLO check is buildable now; faithfulness
   alerting needs Epic 2's scores.
@@ -277,6 +283,59 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-08 — Epic 2 Phase 2.0: intent routing on `/ask`, and a ruff trap worth recording
+
+Built the classifier `docs/EPIC_2_PLAN.md` Phase 2.0 called for: `app/generation/intent_router.py`
+labels every question `metadata`/`factual`/`aggregate`/`out_of_scope` via structured output on
+Haiku (`intent_router_model`, new `Settings` field), and `app/api/routers/ask.py` routes on the
+label with plain `match`/`if` before anything reaches `_document_scope`/`AnswerService`. `metadata`
+answers from `list_document_records` directly (mirrors `GET /v1/documents`'s own read and default
+`limit=100`); `out_of_scope` and the not-yet-built `aggregate` (real path is Phase 2.4, gated on
+2.1's golden set) refuse with a canned message rather than answering from the wrong material per
+rule 11; `factual` alone falls through to the pre-existing retrieve→rerank→generate code,
+untouched. All three "Done when" criteria verified in the new `tests/unit/test_intent_routing.py`,
+including the store-spy assertion the plan asked for rather than an answer-text check.
+
+**A real regression caught by the gate, not incidentally.** Adding a mandatory classification
+call at the top of `ask()` broke five pre-existing tests in `test_api_contract.py` that reach the
+handler body without stubbing anything about intent -- each one now called the real Anthropic API
+with no key configured and failed with an unrelated `TypeError` before reaching what it actually
+checks. Fixed by adding a shared `_factual_intent` stub and applying it to all five (404, 409, both
+truncation tests, and the registry-tripwire test that had been passing for the wrong reason —
+it never actually reached `_document_scope` any more, its assertion was vacuously true). Recorded
+as a failure contract in `CLAUDE.md` § Intent routing, because the next test written against
+`/ask` will hit the identical trap otherwise.
+
+**A ruff-version trap, found while chasing what looked like a pre-existing 10-site regression.**
+`uv run ruff check` in this sandbox silently resolved to a stray global `/root/.local/bin/ruff`
+0.15.8 rather than the project's locked 0.16.1, because the ad-hoc venv this session's first `uv
+run python -c ...` created had no `dev` extra installed and `uv run` does not error on a missing
+tool, it falls through to `PATH`. That ruff reported the ten existing `# noqa: BLE001` comments
+(`ruff.toml`'s own documented, mutation-confirmed trade from 2026-08-07) as unused `RUF100`
+findings -- reproduced identically with `git stash -u` removing every change this session made,
+which looked exactly like the same false "B doesn't match BLE" regression from that entry,
+re-appeared. It was not: `uv run --extra dev ruff check --no-cache .` (the correct, locked 0.16.1)
+reports the whole repo clean, sweep included. **`uv run <tool>` needs `--extra dev` in this
+project whenever the active venv might have been created without it** — a bare `uv run ruff`/`ty`
+can silently run a different tool entirely with no error, which is a sharper trap than the
+`--frozen`-vs-`--locked` one already on record, because that one at least fails loudly. Worth a
+`verify`-skill note if it recurs; not chased further here since re-running everything with
+`--extra dev` settled the actual question (nothing is regressed).
+
+**Gate:** `uv run --extra dev {ruff check --no-cache, ruff format --check, ty check}` all clean.
+`pytest tests/unit`, run twice under different random orders: **322 passed, 73 skipped**, the same
+**3 failed** both times and with this session's changes fully stashed out (`test_api_contract.py`'s
+budget/header assertions, which need a live Postgres/Redis this sandbox doesn't have — the exact
+pre-existing, documented condition from 2026-08-06's entry, not a regression). Skip count matches
+the six documented DB-backed suites. `docker compose config` not run — no compose/Dockerfile edit
+this session.
+
+Doc sweep: `README.md` (the stale "grounded in whatever text is nearest" line, which described the
+production defect as still-current behaviour), `docs/ARCHITECTURE.md` §2 ("no branching judgment
+calls" was no longer true), `CLAUDE.md`, `docs/EPIC_2_PLAN.md`'s Phase 2.0 section, and this file's
+own Current State all updated in the same commit as the code, per this project's own rule about a
+sentence that stays true in the code and false in the docs it sits three lines from.
 
 ### 2026-08-10 — the remaining sections (2-8) of the P0-numbered external review
 

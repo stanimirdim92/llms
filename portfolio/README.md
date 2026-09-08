@@ -67,8 +67,10 @@ curl -X POST http://localhost:8000/v1/documents \
 # Poll until status is "ingested" (or "failed", with error_message saying why)
 curl http://localhost:8000/v1/documents/<doc_id> -H "x-api-key: pf_live_..."
 
-# Everything this tenant owns, newest first. Ask /ask "what documents do I have?" and you get
-# an answer grounded in whatever text is nearest in embedding space -- this is the real answer.
+# Everything this tenant owns, newest first. /ask answers this too -- a question about the
+# collection itself is classified as "metadata" and answered from this same registry, not
+# from retrieval, so it can't be grounded in whatever chunk happens to be nearest in embedding
+# space (see Phase 2.0 below).
 curl http://localhost:8000/v1/documents -H "x-api-key: pf_live_..."
 
 curl -X POST http://localhost:8000/v1/ask \
@@ -197,8 +199,12 @@ through `asyncio.to_thread` because both would otherwise stall the event loop, a
 captions go out as one batched vision call set with bounded concurrency. The api, meanwhile,
 deliberately never imports Docling at all — it only enqueues.
 
-The answer path is deliberately **not** agentic — it is a fixed retrieve → rerank →
-generate sequence with no branching. Adaptive judgment is Epic 3's job; adding it here
+The answer path is deliberately **not** agentic. A question is classified into one of four
+intents first (`metadata`, `factual`, `aggregate`, `out_of_scope` — Epic 2 Phase 2.0), and that
+label picks a fixed path: `metadata` reads the document registry directly, `out_of_scope` and
+the not-yet-built `aggregate` refuse, and `factual` alone reaches the retrieve → rerank →
+generate sequence, unchanged. One model call decides *which* fixed path runs; nothing decides
+to loop, retry, or call a tool mid-answer. Adaptive judgment is Epic 3's job; adding it here
 would buy nondeterminism for nothing.
 
 **Tenant isolation** is the one property worth stating precisely: `tenant_id` is the only
@@ -258,6 +264,13 @@ Epic 3's design.
   registry rows; naming one you don't own is a 404. No model call — see
   `app/retrieval/document_scope.py` for why, and `docs/EPIC_2_PLAN.md` for what is deliberately
   left out (semantic reference: "the flyer").
+- **Epic 2 Phase 2.0 — Intent routing on `/ask`.** A question is classified (`metadata`,
+  `factual`, `aggregate`, `out_of_scope`) before anything is retrieved. `metadata` answers from
+  the document registry with no Qdrant call at all; `out_of_scope` and `aggregate` (whose real
+  answer path is Phase 2.4, not yet built) are refused rather than answered from the wrong
+  material; `factual` alone reaches the unchanged retrieve → rerank → generate path. Fixes the
+  production defect where a metadata question ("list my documents") was answered from whatever
+  chunk happened to be nearest in embedding space.
 
 **Not built.** These exist as designs only — there is no code for any of them, so don't
 infer any from a plan's directory layout. The buildable plans are
@@ -267,8 +280,8 @@ is deliberately not kept current:
 
 - **Epic 2 — Eval framework.** RAGAS metrics as LangSmith custom evaluators over a
   versioned dataset, with a CI threshold gate and a deliberate pre-reranker baseline to
-  compare against. Explicit document scoping is the one piece already shipped (above); the
-  intent router, golden set, and gate are not.
+  compare against. Document scoping and intent routing are already shipped (above); the golden
+  set, recall@k, run storage, and the gate are not.
 - **Epic 3 — Knowledge-curation agent with HITL.** Playwright scraping, an
   orchestrator plus Curator/Evaluator subagents over the same Qdrant collection,
   prompt-injection defense on scraped content, and LangGraph `interrupt()` for human

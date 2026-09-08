@@ -5,9 +5,9 @@ evaluators, a CI threshold gate). That still holds. This file is the buildable p
 plus everything learned since Epic 1 shipped — most of it from a real defect and from
 reading `microsoft/graphrag`.
 
-Nothing here is built except explicit document scoping (under Phase 2.0 below, shipped early
-because it fixed a defect rather than a metric). Epic 1's answer path works and has never
-been measured.
+Nothing here is built except Phase 2.0 in full (intent routing and explicit document scoping,
+both shipped early because each fixed a defect rather than moved a metric). Epic 1's answer
+path works and has never been measured.
 
 ## Why this epic now blocks other work
 
@@ -19,9 +19,9 @@ retrieval; without recall@k on a golden set, adopting them is a guess with a cos
 The one exception is the intent router (Phase 2.0 below), which fixes an observed defect
 rather than improving a metric, and therefore does not need to wait.
 
-## Phase 2.0 — Intent routing (unblocked, do first)
+## Phase 2.0 — Intent routing (built)
 
-`/ask` currently answers every question the same way: retrieve top-k, rerank, generate.
+`/ask` used to answer every question the same way: retrieve top-k, rerank, generate.
 That is correct for questions whose answer sits in a few passages and **structurally wrong
 for two other classes**, one of which reached production:
 
@@ -40,14 +40,17 @@ a metadata question, because the embedding of "list my documents" lands nearest 
 chunk happens to be semantically adjacent. Adding documents does not fix it; the question
 is not answerable from chunk content at all.
 
-**Build:** a classifier returning one of four labels via structured output on Haiku 4.5
-(a judgment call, so a model is right per rule 5 — but the routing it feeds stays plain
-`if`/`else`). Sub-second, fractions of a cent, and cheaper than the retrieval it avoids on
-metadata questions.
+**Built:** a classifier returning one of four labels via structured output on Haiku 4.5
+(`app/generation/intent_router.py` -- a judgment call, so a model is right per rule 5, but the
+routing it feeds is plain `if`/`match` in `app/api/routers/ask.py`). Sub-second, fractions of a
+cent, and cheaper than the retrieval it avoids on metadata questions.
 
 **Done when:** a metadata question returns registry data with no Qdrant call at all
 (assert on a store spy, not on the answer text), an out-of-scope question is refused, and
-the factual path is byte-identical to today's behaviour.
+the factual path is byte-identical to today's behaviour. All three verified in
+`tests/unit/test_intent_routing.py`. `aggregate` refuses with an explicit "not supported yet"
+rather than falling through to the factual pipeline -- its real answer path is Phase 2.4 below,
+which needs the golden set this file's own Phase 2.1 hasn't built yet.
 
 ### Scoping a question to one named document — built, not planned
 

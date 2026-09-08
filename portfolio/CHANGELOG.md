@@ -13,6 +13,29 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-08
+
+#### Fixed
+
+- **A question about your document collection itself no longer gets an answer grounded in an
+  unrelated document.** `/ask` now classifies every question before deciding whether to search
+  at all. A metadata question ("list my documents", "how many did I upload?") is answered from
+  the document registry directly, with no retrieval — previously it was answered from whichever
+  chunk happened to be nearest in embedding space, regardless of relevance. The same
+  classification also catches two related cases: a question unrelated to your documents (e.g.
+  "what's the weather?") is now refused rather than answered from a retrieved chunk anyway, and
+  a question spanning your whole collection ("what themes run through my uploads?") is refused
+  as not yet supported rather than silently answered from a handful of chunks as if it were a
+  single-passage question. An ordinary factual question is unaffected — same retrieve → rerank →
+  generate path, same response shape.
+
+  A new optional `INTENT_ROUTER_MODEL` setting (default `claude-haiku-4-5-20251001`) controls the
+  classifier's model.
+
+  *Upgrading:* nothing to do — no new required configuration, and `AskResponse`'s shape is
+  unchanged (a `metadata`/`aggregate`/`out_of_scope` answer has empty `citations` and
+  `retrieved_chunks`, same as any other answer with nothing to cite).
+
 ### 2026-08-07
 
 #### Added

@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     anthropic_api_key: SecretStr = Field(default=SecretStr(""))
     answer_model: str = Field(default="claude-sonnet-5")
     figure_caption_model: str = Field(default="claude-sonnet-5")
+    # Haiku, not the answer model: classifying one of four labels is a cheaper judgment call
+    # than answering the question, and Epic 2 Phase 2.0's whole premise is that this stays
+    # "sub-second, fractions of a cent, and cheaper than the retrieval it avoids" -- routing a
+    # metadata question to the answer model would spend more than the retrieval it replaces.
+    intent_router_model: str = Field(default="claude-haiku-4-5-20251001")
     # Bounded, not unbounded: the ceiling is Anthropic's rate limit, and a 429 storm is slower
     # than running sequentially.
     figure_caption_concurrency: int = Field(default=5)

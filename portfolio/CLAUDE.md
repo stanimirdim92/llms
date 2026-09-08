@@ -6,12 +6,17 @@ human-in-the-loop curation layer.
 Built: Epic 1 (retrieve -> rerank -> generate, multi-format uploads, Docker stack), Epic 4
 Phases 1-3 (API-key auth with scopes, expiry, and CRUD; tenant scoping; per-key rate
 limiting; docs), and Phase 5.1 (ingestion behind a Postgres-backed job queue) -- see
-`docs/EPIC_4_PLAN.md` for the rest. Not built: Epics 2 and 3, designed in
-`docs/IMPLEMENTATION_PLAN.md` only -- no eval framework, no agent. Don't assume code for
-them. The one exception is `app/retrieval/document_scope.py`, pulled out of Epic 2 early:
-naming a filename in an `/ask` question scopes retrieval to that document. It is **not** the
-intent router, and there is still no golden set and no metric, so nothing measures whether
-an answer is good.
+`docs/EPIC_4_PLAN.md` for the rest. Not built: Epic 3, designed in
+`docs/IMPLEMENTATION_PLAN.md` only -- no agent. Don't assume code for it. Epic 2 (the eval
+framework) is mostly the same: no golden set, no recall@k, no CI gate, so nothing measures
+whether an answer is good -- **except two pieces pulled forward because each fixed an observed
+defect rather than moved a metric:**
+
+- `app/retrieval/document_scope.py` -- naming a filename or `doc_id` in an `/ask` question
+  scopes retrieval to that document.
+- `app/generation/intent_router.py` (Phase 2.0) -- classifies every question into
+  `metadata`/`factual`/`aggregate`/`out_of_scope` before `/ask` decides whether to retrieve at
+  all. See "Intent routing" below.
 
 ## Producer/consumer split
 
@@ -31,6 +36,26 @@ hold this together, and both fail quietly if broken:
 Status lives on `DocumentRecord.status` (`pending`/`processing`/`ingested`/`failed`). The task
 owns `processing`/`failed`; `ingest_document` owns the terminal `ingested` write, because
 Streamlit calls it directly and bypasses the queue entirely.
+
+## Intent routing (Epic 2 Phase 2.0)
+
+`/ask` classifies every question into `metadata`/`factual`/`aggregate`/`out_of_scope`
+(`app/generation/intent_router.py`, Haiku via structured output) before deciding whether to
+retrieve at all -- see `docs/EPIC_2_PLAN.md` Phase 2.0 for the production defect this fixes
+(a metadata question answered from whatever chunk happened to be nearest in embedding space).
+Two things not to undo:
+
+- **Only `factual` may reach `AnswerService`.** `metadata` answers from the document registry,
+  and `out_of_scope`/the not-yet-built `aggregate` refuse -- all three exist specifically so a
+  question that isn't answerable from document *content* never gets an answer grounded in
+  retrieval anyway. Routing a new intent, or a misclassified edge case, through the factual
+  pipeline "to be safe" silently reintroduces the defect Phase 2.0 exists to fix.
+- **A test that reaches `ask()`'s handler body must stub `classify_intent`.** Left unstubbed it
+  calls the real Anthropic API, which this sandbox and CI have no key for, so a test written
+  before this landed fails with an authentication error that has nothing to do with what it
+  actually checks -- this broke five existing tests in `test_api_contract.py` the day this
+  shipped. `_factual_intent` there is the stub to reuse; `tests/unit/test_intent_routing.py` is
+  where the classifier's own routing is tested.
 
 ## Docs, and which one to write in
 
