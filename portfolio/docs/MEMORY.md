@@ -141,6 +141,9 @@ looks wrong, say so once and proceed.
   the CI regression gate. Intent routing (Phase 2.0) shipped early, above. This blocks most
   retrieval work: query expansion, decomposition, and corpus-level answering all change what
   retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
+  **Planned, not built** (2026-09-09): five `Status: Draft` plan+todo pairs in `docs/tasks/`,
+  one per phase (2.1–2.5) — see the 2026-09-09 session log entry. None approved yet; Phase 2.2's
+  plan is blocked on Open question 5 (`cost_usd`) before it can be.
 - **Epic 3** — the curation agent with human-in-the-loop.
 - **Epic 4 Phase 4** — observability. The latency SLO check is buildable now; faithfulness
   alerting needs Epic 2's scores.
@@ -265,7 +268,11 @@ more discussion.
    `stop_reason`, `input_tokens` and `output_tokens` structurally, and `Answer.truncated` reaches
    `AskResponse` and the Streamlit page. What is still missing is `cost_usd` — the per-model price
    table Epic 2 Phase 2.2's parquet schema wants. Kept in the list rather than deleted so the
-   half that shipped is not mistaken for the whole.
+   half that shipped is not mistaken for the whole. **Blocks `docs/tasks/EPIC2-P2-run-storage-plan.md`
+   T001** (2026-09-09) — that plan's row schema already names a `cost_usd` column; this question
+   is what's missing before it can be computed. Needs info (current Anthropic/Voyage per-model
+   pricing, and where it should live — `Settings`? a committed table?), not a design decision —
+   resolve here, then update that plan, before approving it.
 6. **Whole-document extraction.** "Fill this schema from document X" is not a similarity query
    — every field must be found, so ranking chunks against the schema text is the wrong
    primitive even when correctly scoped. Works today only because the test document is one
@@ -283,6 +290,48 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-09 — Epic 2 Phases 2.1–2.5 planned (five Draft docs), `ARCHITECTURE.md` stale claim fixed
+
+**Fixed:** `docs/ARCHITECTURE.md:136-139` still said the intent router "does not exist yet" —
+false since Phase 2.0 shipped 2026-09-08. Corrected to point at
+`app/generation/intent_router.py` and `portfolio/CLAUDE.md` § Intent routing. Found by a
+doc-consistency-style recon sweep while planning the item below, not a dedicated sweep.
+
+**Planned:** implementation plans for Epic 2 Phases 2.1–2.5, one plan + one todo file per
+phase (this repo's document-set habit of small focused docs, applied to `docs/tasks/` too),
+all `Status: Draft`, none approved yet:
+
+- `docs/tasks/EPIC2-P1-golden-set-plan.md` (+ `-todo.md`) — Phase 2.1
+- `docs/tasks/EPIC2-P2-run-storage-plan.md` (+ `-todo.md`) — Phase 2.2
+- `docs/tasks/EPIC2-P3-eval-gate-plan.md` (+ `-todo.md`) — Phase 2.3
+- `docs/tasks/EPIC2-P4-corpus-answering-plan.md` (+ `-todo.md`) — Phase 2.4
+- `docs/tasks/EPIC2-P5-retrieval-techniques-plan.md` (+ `-todo.md`) — Phase 2.5
+
+Dependency order: 2.1 → 2.2 → 2.3 (checkpoint CP-001) → {2.4, 2.5} in parallel.
+
+**One real gap found and resolved during planning, not in `EPIC_2_PLAN.md` itself:** `gh
+secret list` on this repo returned empty — no `ANTHROPIC_API_KEY`/`VOYAGE_API_KEY` exist in
+CI — so Phase 2.3's CI gate cannot call live provider APIs as the spec's "must work offline"
+line implies. User's call: a record-once/replay-in-CI harness (`vcrpy` cassettes), not live
+secrets and not an out-of-band gate. Recorded as `EPIC2-P3-eval-gate-plan.md`'s TD-001/TD-002/
+TD-003. The `eval` optional-dependency-group placement this plan lands on (TD-001 in
+`EPIC2-P2-run-storage-plan.md`) turned out to already match this file's own standing
+directive above ("eval tooling therefore belongs in an `eval` extra") — found independently
+during planning, not by reading that directive first; consistent, not a conflict.
+
+**Another gap surfaced, not yet resolved — needs info, not a decision:** Open question 5
+below (`cost_usd`, the per-model price table) is a real blocker for
+`EPIC2-P2-run-storage-plan.md`'s row schema (T001 includes a `cost_usd` column with nothing
+yet computing it). Not resolved this session — flagged in that plan's Open Questions section
+rather than guessed. Resolve before approving EPIC2-P2.
+
+**Sequencing, per the user this session:** Epic 2 first (in progress, per the plans above).
+Epic 3 (curation agent) comes after Epic 2, unchanged from the existing plan's own stated
+order. **Epic 4 (Phases 5.2 onward) is explicitly deprioritized — "keep for later"** — a
+change from the prior session's priority list, which had Phase 5.2's identity question ahead
+of Epic 3. Nothing built this session; approvals for the five Draft plans above are pending,
+session paused mid-review ("we will continue shortly").
 
 ### 2026-09-08 — Epic 2 Phase 2.0: intent routing on `/ask`, and a ruff trap worth recording
 

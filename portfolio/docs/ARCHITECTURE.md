@@ -133,10 +133,11 @@ flowchart TB
     end
 ```
 
-The intent router in the read path does not exist yet; it is Epic 2's first item
-and the general fix for a defect already observed in production (a metadata
-question -- "list my documents" -- answered from whatever chunks were nearest in
-embedding space). See `docs/EPIC_2_PLAN.md`.
+The intent router in the read path is built (`app/generation/intent_router.py`,
+Epic 2 Phase 2.0) -- the fix for a defect already observed in production (a
+metadata question -- "list my documents" -- answered from whatever chunks were
+nearest in embedding space). See `docs/EPIC_2_PLAN.md` and `portfolio/CLAUDE.md`
+§ Intent routing.
 
 ## 3. What This Deliberately Does Not Do
 
