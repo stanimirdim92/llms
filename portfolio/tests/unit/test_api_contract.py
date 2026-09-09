@@ -50,6 +50,17 @@ def _fresh_key_id() -> str:
     return f"key-{uuid.uuid4().hex}"
 
 
+async def _factual_intent(_question: str) -> str:
+    """Epic 2 Phase 2.0 (`docs/EPIC_2_PLAN.md`) put a mandatory classification step ahead of
+    every `/ask` call. Stubbed to `factual` throughout this file because these tests exercise
+    the pre-existing retrieve/rerank/generate path, not the classifier -- that lives in
+    `tests/unit/test_intent_routing.py`. Left unstubbed, `ask()` would call the real Anthropic
+    API this sandbox has no credentials for, and every test below would fail on that instead of
+    on whatever it actually checks.
+    """
+    return "factual"
+
+
 @pytest.fixture
 async def client() -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as http_client:
@@ -167,6 +178,7 @@ async def test_naming_an_unowned_document_is_404_through_http(
     async def _no_documents(_question: str, _tenant_id: str) -> DocumentScope:
         return DocumentScope(unknown=["MISSING.pdf"])
 
+    monkeypatch.setattr(ask_router, "classify_intent", _factual_intent)
     monkeypatch.setattr(ask_router, "_document_scope", _no_documents)
     response = await client.post("/v1/ask", json={"question": "tell me about MISSING.pdf"})
 
@@ -188,6 +200,7 @@ async def test_a_question_naming_nothing_never_reads_the_registry(
         called = True
         return []
 
+    monkeypatch.setattr(ask_router, "classify_intent", _factual_intent)
     monkeypatch.setattr(ask_router, "list_document_records", _tripwire)
     # The answer itself needs Voyage/Anthropic, so this asserts only on the pre-check by
     # letting the call fail afterwards -- the tripwire is what is under test.
@@ -391,6 +404,7 @@ async def test_naming_a_still_ingesting_document_is_409_through_http(
     async def _pending(_question: str, _tenant_id: str) -> DocumentScope:
         return DocumentScope(not_ready=["queued.pdf"])
 
+    monkeypatch.setattr(ask_router, "classify_intent", _factual_intent)
     monkeypatch.setattr(ask_router, "_document_scope", _pending)
     response = await client.post("/v1/ask", json={"question": "summarise queued.pdf"})
 
@@ -452,6 +466,7 @@ async def test_a_truncated_answer_is_reported_as_truncated_over_http(
             return Answer(text="the answer stops mid-sen", citations=[], retrieved_chunks=[], truncated=True)
 
     truncating = _Truncating()
+    monkeypatch.setattr(ask_router, "classify_intent", _factual_intent)
     monkeypatch.setattr(ask_router, "_service", lambda: truncating)
     monkeypatch.setattr(ask_router, "_document_scope", _no_scope)
 
@@ -474,6 +489,7 @@ async def test_a_complete_answer_is_not_reported_as_truncated_over_http(
             return Answer(text="a whole answer.", citations=[], retrieved_chunks=[], truncated=False)
 
     complete = _Complete()
+    monkeypatch.setattr(ask_router, "classify_intent", _factual_intent)
     monkeypatch.setattr(ask_router, "_service", lambda: complete)
     monkeypatch.setattr(ask_router, "_document_scope", _no_scope)
 

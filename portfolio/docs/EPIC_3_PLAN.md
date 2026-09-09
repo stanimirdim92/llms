@@ -18,6 +18,7 @@ Nothing here is built.
 | `PostgresSaver` checkpointer | Unchanged, and `langgraph-checkpoint-postgres` is already a declared dependency | The SQLite checkpointer is **not** an option: one database engine, per `docs/TECHNICAL_DECISIONS.md`. |
 | Scrape → parse → embed as one job | Same shape, but it must go through `ingest_document` | That function owns the terminal `ingested` write and the `EmptyDocumentError` guard. A second ingestion path would diverge on what a finished row looks like. |
 | `injection_guard.py` heuristic + Claude classification | Unchanged, and now has a sibling | Phase 2.0's intent classifier is the same shape of call. Build them against one structured-output helper rather than two. |
+| Scraped documents join **a shared corpus**, with `_build_filter` drawing the boundary between it and per-session tenant uploads (`docs/IMPLEMENTATION_PLAN.md`'s own wording, Critical Files § `qdrant_store.py`) | **There is no shared tenant.** `GLOBAL_TENANT` was removed 2026-08-03 — `_build_filter` now raises on an empty `tenant_id` and matches exactly **one** tenant, with no default (`CLAUDE.md` § The tenant boundary) | The removal closed a real leak (`MatchAny([global, caller])` meant "your documents *plus* everyone's"), but it leaves this epic's scraper with **no tenant to write under** — the original plan's assumption is gone, not merely renamed. See Open design questions below; don't build the scraper against the old assumption. |
 
 ## Scale consequences
 
@@ -38,6 +39,29 @@ unchanged, but one dependency is now explicit: **`eval/agent_trace_assertions.py
 this epic's agent and Epic 2's harness**, so escalation-behaviour regression tests cannot be
 written until Epic 2 exists. Build the agent's acceptance checks (a)–(f) from the original
 plan as ordinary integration tests first; promote them into the eval harness afterwards.
+
+## Open design questions
+
+Neither of these is resolved by anything already written — they need an answer before build,
+not during it.
+
+- **Who owns the curated corpus, now that there's no shared tenant?** The scraper's whole point
+  is a corpus every tenant can draw on, but the tenant boundary (`CLAUDE.md` § The tenant
+  boundary) requires a real, non-default `tenant_id` on every write and every query. Three
+  live options, not yet chosen between: (a) a dedicated operator/house `tenant_id` that curated
+  documents are written under, readable by any tenant that opts in — an explicit grant, not a
+  filter bypass; (b) per-tenant curation, where the scraper's output is filed under the
+  requesting tenant like any upload — defeats the point of a shared KB, but needs no new
+  mechanism; (c) revisit whether a shared corpus belongs in this system at all, given the
+  standing directive not to reintroduce one. Whichever is picked has to be argued in
+  `docs/TECHNICAL_DECISIONS.md`, not assumed from the pre-removal design.
+- **Should episodic memory learn from anything beyond the HITL verdict itself?** Today the
+  design is a log of past *curation* approve/reject decisions, consulted by the Curator. A
+  downstream signal — whether an answer grounded in a curated document later got a thumbs-down,
+  or was cited at all — is a different, currently-uncaptured kind of feedback that could bear on
+  whether a past curation call should be trusted the same way twice. Worth deciding once Epic 2's
+  eval harness exists to generate that signal, not before; recorded here so it isn't rediscovered
+  from scratch when Epic 2 lands.
 
 ## Acceptance checks
 

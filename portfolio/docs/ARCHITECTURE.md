@@ -20,7 +20,7 @@ This document surveys how production agentic systems are actually architected (a
 
 ## 2. Applied Design in This Project
 
-**Epic 1 stays a workflow, deliberately.** The `/ask` answer path (retrieve → rerank → generate with forced citations) is a fixed pipeline with no branching judgment calls — exactly the case where Anthropic's guidance says *don't* reach for an agent. This is a considered choice, not an omission: it keeps the highest-traffic path cheap, fast, and fully testable.
+**Epic 1 stays a workflow, deliberately.** The `/ask` answer path now has one judgment call ahead of it — Epic 2 Phase 2.0's four-way intent classifier (`metadata`/`factual`/`aggregate`/`out_of_scope`) — but what it feeds is a fixed router, not a loop: `metadata` reads the document registry, `out_of_scope` and the not-yet-built `aggregate` refuse, and only `factual` reaches retrieve → rerank → generate with forced citations, unchanged. That is Anthropic's own *routing* workflow pattern, still the case where their guidance says *don't* reach for an agent — nothing here decides to retry, loop, or call a tool mid-answer. This is a considered choice, not an omission: it keeps the highest-traffic path cheap, fast, and fully testable.
 
 **Epic 3 is where real agency is needed — and it's scoped to orchestrator + two subagents, not a swarm:**
 
