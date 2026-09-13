@@ -13,6 +13,19 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-13
+
+#### Added
+
+- **`GET /v1/documents/{doc_id}/content` — view one of your documents.** Reconstructs it from
+  its own indexed chunks, in reading order, so you can see what a document contains without
+  asking a question about it first. Text renders as prose, tables as Markdown tables, and
+  figures as an embedded image with their caption. Needs no `/ask` call, but does need the
+  document to have finished ingesting: a still-`pending`/`processing` document returns 409
+  (same as naming one mid-ingest to `/ask`), and an unowned `doc_id` returns 404.
+
+  *Upgrading:* nothing to do — a new route, no changes to any existing one.
+
 ### 2026-09-08
 
 #### Fixed

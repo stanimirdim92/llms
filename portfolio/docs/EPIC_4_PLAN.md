@@ -323,21 +323,31 @@ scoping assertions.
 ### 5.5 Document CRUD
 
 - ✅ **`GET /v1/documents`** — list for the tenant, paginated, with status. Built.
-- ❌ **`GET /v1/documents/{doc_id}/content`** — view a document's original uploaded file,
-  independent of `/ask`. The gap this closes: today the only way to see what's inside a
-  document is indirectly, through `/ask`'s `retrieved_chunks`, which requires asking a
-  question first — there is no way to just look at a document. Serves the raw stored bytes
-  (`document_upload_path`), not anything derived from ingestion, so it works at **any**
-  status (`pending`/`processing`/`ingested`/`failed`) with no Qdrant call. Same
-  tenant-ownership check as every other document route — 404 on unowned, not 403, per
-  `add-endpoint`.
+- ✅ **`GET /v1/documents/{doc_id}/content`** — view a document reconstructed from its own
+  indexed chunks, independent of `/ask`. The gap this closes: the only way to see what's
+  inside a document used to be indirectly, through `/ask`'s `retrieved_chunks`, which
+  requires asking a question first. Built.
 
-  *Considered and rejected for this round:* a second endpoint returning parsed chunk text
-  rather than the raw file. Raw-file serving alone satisfies "viewable without a search,"
-  needs no Qdrant dependency, and has no ingestion-status edge case to handle; a chunk-level
-  view is a legitimate future addition but doubles the surface area (a second route, a
-  second auth check, a 409-vs-200 split on ingestion status) for a want that hasn't been
-  stated yet.
+  Superseded the original plan of serving the raw uploaded file: reconstructing from chunks
+  (`QdrantStore.get_document_chunks`, `app.generation.document_view.render_document`) shows
+  exactly what `/ask` can see and cite — a dropped figure or an un-embedded table is absent
+  from the view too, rather than the view and the answer path silently disagreeing about
+  what the document contains. Needs one active generation to exist, so unlike the
+  raw-file plan it is **not** available at every ingestion status: a `pending`/`processing`/
+  `failed` document returns 409, same as `/ask`'s document-scoping 409.
+
+  Doing this required a real fix, not just a new route: `chunk_document`'s output is grouped
+  by kind (every text chunk, then every table, then every figure — see `CLAUDE.md`'s failure
+  contract), so reconstructing a document from that list without a true position would put
+  every table and figure at the end. `Chunk.order_index`
+  (`app/ingestion/document_order.py`, computed once per document from
+  `document.iterate_items()`) fixes that without renumbering any existing `chunk_id`.
+
+  Figures render as an embedded base64 data URI plus caption (chosen over a second
+  image-serving endpoint — simpler, and bounded since unusable figures are already filtered
+  before this point); a missing image file degrades to the caption alone rather than hiding
+  the figure. Shared by the API route and the Streamlit "View a document" control in
+  `streamlit_app/Home.py`, from one implementation, not two.
 - ❌ **`DELETE /v1/documents/{doc_id}`** — and this is more than it looks. Four things must go:
   the Qdrant points (`QdrantStore.delete_document` exists), the file under
   `data/uploads/<tenant_id>/`, the registry row, and a decision about messages that cite

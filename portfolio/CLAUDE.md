@@ -367,6 +367,16 @@ Things that look correct and aren't:
   `VectorStore`'s thread-pool shim and `upsert` is sync. That's why
   `ingest_document` offloads through `asyncio.to_thread` instead of just being
   `async def`.
+- **`chunk_document`'s returned list is not document reading order.** It emits every text
+  chunk, then every table chunk, then every figure chunk -- each internally ordered but not
+  interleaved with the others, because text goes through `HybridChunker` (which merges
+  granular items into semantic windows) while tables and figures are kept atomic, and the
+  three cannot share one loop without giving that up. A table on page 3 therefore sits after
+  every text chunk in the whole document in this list. `Chunk.order_index`
+  (`app/ingestion/document_order.py::document_order_map`, computed once from
+  `document.iterate_items()`) is what `QdrantStore.get_document_chunks` sorts on to
+  reconstruct a document for viewing -- sorting or rendering the *list* itself silently
+  reproduces the grouped-by-kind bug this exists to fix.
 - **Docling parsing is CPU-bound.** Wrapping it in `async def` does not free the
   event loop; it has to go through `asyncio.to_thread` or one upload stalls every
   other request on that worker.

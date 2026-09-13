@@ -45,7 +45,9 @@ TENANT_A = "a" * 32
 TENANT_B = "b" * 32
 
 
-def _chunk(*, doc_id: str, tenant_id: str, index: int = 0, chunk_type: ChunkType = "text") -> Chunk:
+def _chunk(
+    *, doc_id: str, tenant_id: str, index: int = 0, chunk_type: ChunkType = "text", order_index: int = 0
+) -> Chunk:
     return Chunk(
         chunk_id=f"{doc_id}-{chunk_type}-{index:04d}",
         doc_id=doc_id,
@@ -54,6 +56,7 @@ def _chunk(*, doc_id: str, tenant_id: str, index: int = 0, chunk_type: ChunkType
         text=f"content of {doc_id} {chunk_type} {index}",
         section_path="Results",
         page_no=1,
+        order_index=order_index,
     )
 
 
@@ -338,3 +341,82 @@ def test_a_failed_index_creation_does_not_stop_the_store_from_constructing() -> 
     assert attempted == ["metadata.tenant_id", "metadata.doc_id"], (
         f"a failure on one field skipped the others: {attempted}"
     )
+
+
+# ---------------------------------------------------------------------------------------------
+# get_document_chunks -- reconstructing a document for viewing, not retrieval
+# ---------------------------------------------------------------------------------------------
+
+
+def _store_over(client: QdrantClient) -> QdrantStore:
+    store = QdrantStore.__new__(QdrantStore)  # no __init__: it bills a probe embedding
+    store._store = cast("QdrantVectorStore", SimpleNamespace(client=client, collection_name="test"))
+    return store
+
+
+def test_get_document_chunks_returns_every_chunk_in_order_index_order(client: QdrantClient) -> None:
+    """Inserted out of order on purpose -- a `scroll` makes no promise about the order it returns
+    points in, so this has to prove the *sort*, not just that every chunk came back.
+    """
+    _insert(
+        client,
+        _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=2, order_index=2),
+        _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0, order_index=0),
+        _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=1, order_index=1),
+    )
+
+    chunks = _store_over(client).get_document_chunks("doc-a", TENANT_A, versions=[VERSION])
+
+    assert [c.metadata["chunk_id"] for c in chunks] == ["doc-a-text-0000", "doc-a-text-0001", "doc-a-text-0002"]
+
+
+def test_get_document_chunks_excludes_another_tenants_document(client: QdrantClient) -> None:
+    # Distinct `index` values, or the two chunk ids collide on the same point id (same doc_id,
+    # same chunk_type, same version) and the second insert silently overwrites the first --
+    # see `test_the_delete_selector_carries_the_tenant`'s docstring for the same trap.
+    _insert(
+        client,
+        _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0, order_index=0),
+        _chunk(doc_id="doc-a", tenant_id=TENANT_B, index=1, order_index=0),
+    )
+
+    chunks = _store_over(client).get_document_chunks("doc-a", TENANT_A, versions=[VERSION])
+
+    assert [c.metadata["tenant_id"] for c in chunks] == [TENANT_A]
+
+
+def test_get_document_chunks_excludes_a_superseded_generation(client: QdrantClient) -> None:
+    """The same versioning discipline retrieval already gets: a view must not show a generation
+    that is no longer the one `/ask` can see and cite.
+    """
+    new_version = "n" * 32
+    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0, order_index=0))
+    _insert(client, _chunk(doc_id="doc-a", tenant_id=TENANT_A, index=0, order_index=0), version=new_version)
+
+    chunks = _store_over(client).get_document_chunks("doc-a", TENANT_A, versions=[new_version])
+
+    assert len(chunks) == 1
+    assert chunks[0].metadata["ingestion_version"] == new_version
+
+
+def test_get_document_chunks_pages_through_more_than_one_scroll_batch() -> None:
+    """Drives the pagination loop directly with a stub `scroll`, rather than inserting 256+ real
+    points to cross the page-size threshold -- this is a test of the loop, not of Qdrant's own
+    pagination, which is not this project's to re-verify.
+    """
+    pages = [
+        ([SimpleNamespace(payload={"page_content": "first", "metadata": {"order_index": 1}})], "cursor-1"),
+        ([SimpleNamespace(payload={"page_content": "second", "metadata": {"order_index": 0}})], None),
+    ]
+
+    class _PagingClient:
+        def scroll(self, **_kwargs: object) -> tuple[list[SimpleNamespace], str | None]:
+            return pages.pop(0)
+
+    store = QdrantStore.__new__(QdrantStore)
+    store._store = cast("QdrantVectorStore", SimpleNamespace(client=_PagingClient(), collection_name="test"))
+
+    chunks = store.get_document_chunks("doc-a", TENANT_A, versions=[VERSION])
+
+    assert not pages, "both pages must have been consumed"
+    assert [c.page_content for c in chunks] == ["second", "first"], "sorted by order_index after paging"

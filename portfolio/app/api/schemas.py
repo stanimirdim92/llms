@@ -125,6 +125,23 @@ class DocumentListResponse(BaseModel):
     count: int = Field(description="How many are returned (bounded by `limit`)")
 
 
+class DocumentContentResponse(BaseModel):
+    """`GET /v1/documents/{doc_id}/content`. Reconstructs the document from its own stored
+    chunks, in true reading order -- not a second parse of the original file, and not gated
+    behind having asked a question about it first. Reflects exactly what `/ask` can see and
+    cite: if a chunk was dropped or never indexed, it is absent here too, rather than this
+    route re-deriving a different view of the document from scratch.
+    """
+
+    doc_id: str = Field(description="Identifier of the document")
+    filename: str = Field(description="Original filename as uploaded")
+    content: str = Field(
+        description="The document reconstructed from its chunks, as Markdown: prose in reading "
+        "order, tables rendered as Markdown tables, and figures as an embedded image (a base64 "
+        "data URI, so no second request is needed to see one) followed by its caption."
+    )
+
+
 class CreateKeyRequest(BaseModel):
     """`POST /v1/keys`. Carries no tenant field for the same reason `AskRequest` doesn't --
     the tenant comes from the calling key, never from the body.

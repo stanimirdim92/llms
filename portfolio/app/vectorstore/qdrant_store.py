@@ -131,6 +131,10 @@ def _chunk_metadata(chunk: Chunk, ingestion_version: str) -> dict:
         "chunk_type": chunk.chunk_type,
         "section_path": chunk.section_path,
         "tenant_id": chunk.tenant_id,
+        # This document's chunks are stored grouped by kind, not in reading order -- see
+        # chunker.py's module docstring. `get_document_chunks` is what sorts on this field to
+        # reconstruct a document for viewing; retrieval never reads it.
+        "order_index": chunk.order_index,
     }
     if chunk.page_no is not None:
         metadata["page_no"] = chunk.page_no
@@ -315,6 +319,48 @@ class QdrantStore:
 
         documents = [_to_document(chunk, ingestion_version) for chunk in chunks]
         self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id, ingestion_version) for chunk in chunks])
+
+    def get_document_chunks(self, doc_id: str, tenant_id: str, versions: list[str]) -> list[Document]:
+        """Every chunk of one document's permitted generation(s), in true document reading order.
+
+        A `scroll`, not `query`: there is no question to rank against, only a filter to exhaust,
+        so this returns everything the filter matches rather than a top-k. Built for
+        `GET /v1/documents/{doc_id}/content` -- reconstructing a document for viewing -- never
+        for retrieval, which is why it takes no `top_k` and is not reachable from `Retriever`.
+
+        Paginated because `scroll`'s default page is far smaller than a real document's chunk
+        count. Sorted here, once, rather than trusting Qdrant to return points in insertion
+        order -- it does not promise to, and `order_index` is exactly the field this project
+        added so that promise is never needed.
+        """
+        where = _build_filter(None, tenant_id, doc_ids=[doc_id], versions=versions)
+        documents: list[Document] = []
+        offset = None
+        while True:
+            points, offset = self._store.client.scroll(
+                collection_name=self._store.collection_name,
+                scroll_filter=where,
+                limit=256,
+                with_payload=True,
+                with_vectors=False,
+                offset=offset,
+            )
+            # Built by hand rather than via `QdrantVectorStore`'s own point-to-Document
+            # conversion: that method is private API on a class this project does not otherwise
+            # reach into for reads, and the payload shape here is the same one `_to_document`
+            # writes -- `page_content`/`metadata` -- so there is nothing it would add.
+            documents.extend(
+                Document(
+                    page_content=point.payload.get("page_content", ""),
+                    metadata=point.payload.get("metadata") or {},
+                )
+                for point in points
+                if point.payload
+            )
+            if offset is None:
+                break
+        documents.sort(key=lambda document: document.metadata.get("order_index", 0))
+        return documents
 
     async def query(  # noqa: PLR0913 -- each parameter is one filter condition; see below
         self,

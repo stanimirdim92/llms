@@ -1,4 +1,5 @@
 import asyncio
+from functools import lru_cache
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
@@ -6,18 +7,30 @@ from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 # Runtime import on purpose -- see the note in ask.py: FastAPI resolves these annotations
 # when registering the route, so a TYPE_CHECKING-only import breaks dependency injection.
 from app.api.deps import CurrentTenant, rate_limited, require_scopes
-from app.api.schemas import DocumentListResponse, DocumentStatusResponse, UploadAcceptedResponse
+from app.api.schemas import (
+    DocumentContentResponse,
+    DocumentListResponse,
+    DocumentStatusResponse,
+    UploadAcceptedResponse,
+)
 from app.auth.scopes import DOCUMENTS_READ, DOCUMENTS_WRITE
 from app.config import get_settings
 from app.db import get_session, init_db
 from app.exceptions import APIError
+from app.generation.document_view import render_document
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.uploads import content_digest, document_upload_path, safe_filename, upload_doc_id, write_upload
 from app.registry.db import get_document_record, list_document_records, stage_document_record
 from app.registry.models import STATUS_PENDING, DocumentRecord
+from app.vectorstore.qdrant_store import QdrantStore
 from app.worker.app import defer_document_ingest
 
 router = APIRouter()
+
+
+@lru_cache
+def _store() -> QdrantStore:
+    return QdrantStore()
 
 
 @router.post(
@@ -164,3 +177,41 @@ async def get_document_status(doc_id: str, tenant_id: CurrentTenant) -> Document
         raise APIError("Document not found", code=404)
 
     return _to_status(record)
+
+
+@router.get(
+    "/documents/{doc_id}/content",
+    tags=["documents"],
+    summary="View one of your documents, reconstructed from its indexed chunks",
+    description="Reconstructs the document from the same chunks `/ask` retrieves from, in true "
+    "reading order -- not a live re-parse of the original file. Available as soon as the "
+    "document finishes ingesting; unlike a citation, viewing it needs no question and no prior "
+    "call to /ask. Naming a document you do not own returns 404; naming one that is still "
+    "ingesting (or that failed) returns 409, because a partially- or un-indexed document has "
+    "nothing here yet to reconstruct.",
+    response_description="The document, reconstructed as Markdown",
+    dependencies=[
+        Depends(require_scopes(DOCUMENTS_READ)),
+        Depends(rate_limited("documents", "rate_limit_documents")),
+    ],
+)
+async def get_document_content(doc_id: str, tenant_id: CurrentTenant) -> DocumentContentResponse:
+    await init_db()
+    async with get_session() as session:
+        record = await get_document_record(session, tenant_id=tenant_id, doc_id=doc_id)
+
+    if record is None:
+        raise APIError("Document not found", code=404)
+    if record.ingestion_version is None:
+        # Same 409 `_document_scope` in ask.py uses for the identical condition: the document
+        # exists but has no active generation, so there is nothing indexed to reconstruct from.
+        raise APIError(
+            f"{record.filename} is not searchable yet -- ingestion has not finished or it failed. "
+            f"Check GET /v1/documents/{doc_id} for its status.",
+            code=409,
+        )
+
+    # `to_thread`: `get_document_chunks` calls the sync qdrant-client `scroll`, same reasoning as
+    # every other Qdrant call on this path (`QdrantVectorStore` has no native async client).
+    chunks = await asyncio.to_thread(_store().get_document_chunks, doc_id, tenant_id, [record.ingestion_version])
+    return DocumentContentResponse(doc_id=doc_id, filename=record.filename, content=render_document(chunks))

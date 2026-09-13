@@ -1,4 +1,14 @@
-"""Structure-aware chunking: prose via Docling's HybridChunker, tables and figures as atomic chunks."""
+"""Structure-aware chunking: prose via Docling's HybridChunker, tables and figures as atomic chunks.
+
+`chunk_document`'s returned list is grouped by kind -- every text chunk, then every table chunk,
+then every figure chunk -- each internally in reading order but not interleaved with the others.
+A table on page 3 therefore comes after every text chunk in the whole document, not next to the
+text around it. That grouping is deliberate and stays: text goes through `HybridChunker`, which
+merges granular items into semantically coherent windows, while tables and figures are kept
+atomic, and the three cannot share one loop without giving that up. `Chunk.order_index` (see
+`app.ingestion.document_order`) is what a document-reconstruction view sorts on instead of list
+order -- computed once per document, not by renumbering anything here.
+"""
 
 from __future__ import annotations
 
@@ -9,6 +19,7 @@ from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTok
 from docling_core.types.doc.document import DoclingDocument, TableItem
 
 from app.config import get_settings
+from app.ingestion.document_order import document_order_map
 from app.ingestion.models import Chunk
 
 if TYPE_CHECKING:
@@ -56,6 +67,12 @@ def chunk_document(
     """
     settings = get_settings()
     chunks: list[Chunk] = []
+    # Built once, from a traversal that walks every item type together -- text, tables, and
+    # pictures interleaved as they actually appear. The three loops below still build `chunks`
+    # grouped by kind (every text chunk, then every table, then every figure -- see the module
+    # docstring), so a chunk's position in the returned *list* is not its position in the
+    # *document*; `order_index` is what a viewer reconstructing the document sorts on instead.
+    order_map = document_order_map(document)
 
     tokenizer = HuggingFaceTokenizer.from_pretrained(
         model_name=_EMBEDDING_TOKENIZER_MODEL, max_tokens=settings.chunk_max_tokens
@@ -71,6 +88,11 @@ def chunk_document(
             continue
         page_no = doc_items[0].prov[0].page_no if doc_items and doc_items[0].prov else None
         headings = getattr(docling_chunk.meta, "headings", None) or []
+        # A semantic text chunk can merge several underlying doc_items into one window, so its
+        # order is the *earliest* of them -- where the chunk starts, not where it ends. `.get`
+        # with the map's own size as a fallback: an item `iterate_items()` doesn't yield sorts
+        # last in a reconstruction rather than raising, the same choice `figure_extractor` makes.
+        order_index = min((order_map.get(item.self_ref, len(order_map)) for item in doc_items), default=len(order_map))
         chunks.append(
             Chunk(
                 chunk_id=f"{doc_id}-text-{text_chunk_index:04d}",
@@ -81,6 +103,7 @@ def chunk_document(
                 section_path=" > ".join(headings),
                 metadata=_base_metadata(filename),
                 tenant_id=tenant_id,
+                order_index=order_index,
             )
         )
         text_chunk_index += 1
@@ -116,6 +139,7 @@ def chunk_document(
                 page_no=page_no,
                 metadata=_base_metadata(filename) | {"markdown": markdown},
                 tenant_id=tenant_id,
+                order_index=order_map.get(item.self_ref, len(order_map)),
             )
         )
 
@@ -129,6 +153,9 @@ def chunk_document(
                 page_no=figure.page_no,
                 metadata=_base_metadata(filename) | {"image_path": str(figure.image_path)},
                 tenant_id=tenant_id,
+                # Computed in `extract_figures`, from the same kind of order map, over the same
+                # document -- not re-derived here, so the two never have a chance to disagree.
+                order_index=figure.order_index,
             )
         )
 

@@ -134,6 +134,14 @@ looks wrong, say so once and proceed.
   re-ingest leaves the previous generation serving. `QdrantStore.upsert` deletes nothing. Both of
   these reversed a recorded decision, so a reader who half-remembers this project will remember the
   opposite — `docs/TECHNICAL_DECISIONS.md` records both reversals with the reasoning.
+- **Epic 4 Phase 5.5 (partial) — `GET /v1/documents/{doc_id}/content`** (2026-09-13). Views a
+  document reconstructed from its own indexed chunks, in true reading order, needing neither a
+  prior `/ask` call nor a live search. Required a real fix underneath: `chunk_document`'s output
+  is grouped by kind, not document order (see `CLAUDE.md`'s failure contract), so a new
+  `Chunk.order_index` — computed once per document from `document.iterate_items()` — is what a
+  reconstruction sorts on. Shared by the API route and a new Streamlit "View a document" control
+  via `app/generation/document_view.py`, one implementation for both. List (`GET /v1/documents`)
+  was already built; delete is not.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
@@ -283,6 +291,48 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-13 (later) — the document-view feature, actually built, and the ordering bug it needed fixed first
+
+Followed up on the same-day entry below: asked to build `GET /v1/documents/{doc_id}/content`,
+and to source it from Qdrant with an `order_index` reference rather than duplicating chunk
+content into a new Postgres table (the user's call, once shown what full duplication would
+cost).
+
+**A real bug found before it could ship silently wrong.** Reading `chunk_document` to plan the
+reconstruction found it returns every text chunk, then every table chunk, then every figure
+chunk — grouped by kind, not by position in the document. A naive reconstruction from that list
+would put every table and figure at the end of the document regardless of where they actually
+appear. Fixed at the source: `app/ingestion/document_order.py::document_order_map` walks
+`document.iterate_items()` once (Docling's own single traversal across every item type) and
+maps each item's `self_ref` to its true position. `chunk_document` and `extract_figures` each
+build this map over the *same* document (a text chunk that merges several underlying items
+takes the earliest one's position) and stamp the result onto a new `Chunk.order_index` /
+`ExtractedFigure.order_index` field, without renumbering any existing `chunk_id` — the
+figure-id "never renumber" contract in `CLAUDE.md` still holds; this is a parallel, separate
+index.
+
+**Design, once the ordering was fixed:** `QdrantStore.get_document_chunks` (`scroll`, not
+`query` — a filter to exhaust, not a rank) returns a document's chunks sorted by `order_index`.
+`app/generation/document_view.py::render_document` turns that into Markdown — text as prose,
+tables from their stored `markdown` (not `page_content`, which may carry a prepended caption),
+figures as an embedded base64 image plus caption, degrading to the caption alone if the image
+file is missing. Deliberately its own module rather than living in the router: Streamlit's "View
+a document" control (`streamlit_app/Home.py`) calls the same function the API route does, so the
+two cannot quietly render a document two different ways the way `list_scope_candidates` once
+disagreed with `list_document_records`.
+
+**Verified:** 23 new tests across `test_chunk_order.py` (the ordering fix, including the money
+test — a table between two paragraphs sorts *between* them, not after both), `test_qdrant_filtering.py`
+(`get_document_chunks`: tenant/version scoping, pagination via a stubbed two-page `scroll`),
+`test_document_content.py` (HTTP routing: 401/404/409/200), and `test_document_view.py`
+(rendering, including the missing-image degrade path). `uv run --extra dev {ruff check
+--no-cache, ruff format --check, ty check}` all clean; `pytest tests/unit` 345 passed, 73
+skipped, the same 3 pre-existing failures as every session this week (need a live
+Postgres/Redis this sandbox doesn't have).
+
+**Not built, still open in `docs/EPIC_4_PLAN.md` 5.5:** `DELETE /v1/documents/{doc_id}` and
+`DELETE /v1/account`.
 
 ### 2026-09-13 — a requested feature placed in the plan, not built
 
