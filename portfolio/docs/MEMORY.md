@@ -284,6 +284,27 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-09-13 — a requested feature placed in the plan, not built
+
+Asked where "list documents, view one even without running a search" belongs. It's a real
+gap: `GET /v1/documents` lists metadata only, and today the *only* way to see what's inside a
+document is indirectly through `/ask`'s `retrieved_chunks` — which requires asking a question
+first. Placed in `docs/EPIC_4_PLAN.md` § 5.5 (Document CRUD) as a new
+`GET /v1/documents/{doc_id}/content` item, since that section already covers list/delete and
+this is CRUD's missing Read-the-content half — not Epic 2 (unrelated to retrieval quality) or
+Epic 3 (unrelated to curation). Not blocked by anything open: unlike 5.3's conversations, it
+only needs `tenant_id`, already resolved from the API key, so it could ship ahead of the rest
+of Phase 5 the same way document scoping and intent routing did.
+
+Scoped deliberately to raw-file serving only (not also a parsed-chunk view) at the user's
+choice, once shown what the wider version would cost: a second route, a second auth check, and
+a 409-vs-ingestion-status split, for a want not yet stated. Recorded as *considered and
+rejected for this round* in the plan entry rather than silently dropped, so it isn't
+re-proposed from scratch later.
+
+Not built — recording only, per what was asked. `app/api/routers/documents.py` and the
+Streamlit page are both untouched.
+
 ### 2026-09-08 — Epic 2 Phase 2.0: intent routing on `/ask`, and a ruff trap worth recording
 
 Built the classifier `docs/EPIC_2_PLAN.md` Phase 2.0 called for: `app/generation/intent_router.py`

@@ -322,13 +322,28 @@ scoping assertions.
 
 ### 5.5 Document CRUD
 
-- `GET /v1/documents` — list for the tenant, paginated, with status.
-- `DELETE /v1/documents/{doc_id}` — and this is more than it looks. Four things must go:
+- ✅ **`GET /v1/documents`** — list for the tenant, paginated, with status. Built.
+- ❌ **`GET /v1/documents/{doc_id}/content`** — view a document's original uploaded file,
+  independent of `/ask`. The gap this closes: today the only way to see what's inside a
+  document is indirectly, through `/ask`'s `retrieved_chunks`, which requires asking a
+  question first — there is no way to just look at a document. Serves the raw stored bytes
+  (`document_upload_path`), not anything derived from ingestion, so it works at **any**
+  status (`pending`/`processing`/`ingested`/`failed`) with no Qdrant call. Same
+  tenant-ownership check as every other document route — 404 on unowned, not 403, per
+  `add-endpoint`.
+
+  *Considered and rejected for this round:* a second endpoint returning parsed chunk text
+  rather than the raw file. Raw-file serving alone satisfies "viewable without a search,"
+  needs no Qdrant dependency, and has no ingestion-status edge case to handle; a chunk-level
+  view is a legitimate future addition but doubles the surface area (a second route, a
+  second auth check, a 409-vs-200 split on ingestion status) for a want that hasn't been
+  stated yet.
+- ❌ **`DELETE /v1/documents/{doc_id}`** — and this is more than it looks. Four things must go:
   the Qdrant points (`QdrantStore.delete_document` exists), the file under
   `data/uploads/<tenant_id>/`, the registry row, and a decision about messages that cite
   it. Recommendation: keep the messages, mark the citation dangling in the response — a
   chat log that silently rewrites itself is worse than one that says a source is gone.
-- `DELETE /v1/account` — cascades all of the above for every document, plus conversations.
+- ❌ **`DELETE /v1/account`** — cascades all of the above for every document, plus conversations.
   Needed for GDPR and trivially forgotten.
 
 ### 5.6 Search
