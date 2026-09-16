@@ -69,19 +69,23 @@ looks wrong, say so once and proceed.
   default branch restriction). The `claude/detailed-plan-o6lubt` working branch was retired
   2026-08-02 -- this is a WIP app and mirroring every commit to a second branch bought
   nothing. The *remote* branch could not be deleted from the container (the session's git
-  proxy refuses ref deletion); it points at the same commit as main and is the user's to
-  remove in the GitHub UI.
+  proxy refuses ref deletion), so it is the user's to remove in the GitHub UI.
 
-  **A second such branch now exists, and the mechanism that creates them is worth knowing
+  **Two stray remote branches exist, and the mechanism that creates them is now measured
   (2026-09-16).** A session can be *launched* with harness instructions naming a feature branch
-  to develop on -- that session got `claude/llms-portfolio-onboarding-a1smp3` -- which
-  contradicts this directive. It was resolved the way the directive says: the work landed on
-  the branch first, then the user said "push to main" and `main` was fast-forwarded to the same
-  commit. So `claude/llms-portfolio-onboarding-a1smp3` is a second stray remote ref at the same
-  commit as main, in the same state and for the same reason as `claude/detailed-plan-o6lubt`
-  above, and equally the user's to delete. If a future session is launched with a branch
-  instruction again, this directive is the user's own and wins -- but say so once rather than
-  silently ignoring the launch instruction.
+  to develop on, which contradicts this directive; that is how
+  `claude/llms-portfolio-onboarding-a1smp3` was created, the work landing on the branch first
+  and `main` being fast-forwarded onto it once the user said "push to main". What creates the
+  stray is the *push*, not the launch: a later session launched the same way found its branch
+  present only as a local ref, absent from `git ls-remote --heads origin`, and pushing to `main`
+  alone left it that way. So the resolution is to say once that the launch instruction
+  contradicts the directive -- the user's own directive wins -- and then push to `main` only,
+  which adds no further ref.
+
+  Neither stray tracks `main`, so don't read them as mirrors of it: measured 2026-09-16,
+  `claude/detailed-plan-o6lubt` is at `4731f2c` and `claude/llms-portfolio-onboarding-a1smp3`
+  at `7fbf4e4`, one commit behind `main`'s `7b07e52`. The earlier note here claimed both sat at
+  the same commit as `main`; each stopped moving the moment its session ended.
 - **There is no dependency-minimisation rule, and don't invent one.** Stated by the user 2026-08-05
   after a dependency comparison leaned on package counts. `docs/EPIC_2_PLAN.md`'s "this adds **no
   dependency**" is a *fact* about parquet arriving free via Streamlit, not a value. The signals that
@@ -307,6 +311,26 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-16 (later still) — the branch conflict recurred, and the note about it was wrong
+
+This session was launched with harness instructions naming
+`claude/portfolio-handoff-branch-conflict-a0jfq2`, exactly the conflict the standing directive
+above predicted. Said so once, worked on `main`, pushed `main` only.
+
+That produced two corrections to the directive's own note, both from
+`git ls-remote --heads origin` rather than from the note:
+
+- The launch branch existed only as a *local* ref -- it is not on the remote, and pushing to
+  `main` alone left it that way. So the push is what creates a stray, not the launch, and a
+  session that honours the directive creates none. The note implied the branch appears either
+  way.
+- Neither existing stray points at `main`. `claude/detailed-plan-o6lubt` is at `4731f2c` and
+  `claude/llms-portfolio-onboarding-a1smp3` at `7fbf4e4`, one behind `main`'s `7b07e52`. The
+  note said both sat at the same commit as `main`, which was true only on the day each was
+  written.
+
+No code changed, so no gate run.
 
 ### 2026-09-16 (later) — the Voyage rerank/embedding fallback, built
 
