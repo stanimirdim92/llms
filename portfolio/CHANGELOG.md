@@ -15,6 +15,18 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ### 2026-09-16
 
+#### Changed
+
+- **Documents longer than about seven pages can now be ingested at all.** Docling's per-document
+  parse ceiling was fixed at 90 seconds; on a four-core machine that is roughly seven pages of a
+  scientific paper, and anything longer was rejected with a parse error. The ceiling is now
+  `DOCLING_DOCUMENT_TIMEOUT`, defaulting to **600 seconds**.
+
+  *Upgrading:* nothing to do — the new default is what most people want, and uploads are queued,
+  so a longer parse never holds an HTTP request open. Set the variable lower if you would rather
+  reject a slow document sooner. Do not set it empty: that removes the ceiling entirely and an
+  unbounded parse occupies a worker until the process is killed.
+
 #### Fixed
 
 - **A reranking outage no longer fails `/ask` outright.** If the reranker (Voyage or the local

@@ -533,6 +533,16 @@ Things that look correct and aren't:
   the per-request ceiling above. It has no recorded reasoning for 630s and was not
   re-derived when `GUNICORN_TIMEOUT` last changed; it only needs to stay `>=
   GUNICORN_TIMEOUT`.
+  **`DOCLING_DOCUMENT_TIMEOUT` is a fifth and belongs to the queue, not the request.** Uploads
+  return 202 and the worker parses, so no HTTP request waits on Docling -- unifying it with the
+  three above would tie a background budget to a request-side one and, at 120s, put back a
+  ceiling that rejects any paper over about ten pages. It was hardcoded at 90 in `parser.py`,
+  which is Docling's own generic recommendation for the field and is ~7 pages on four cores: it
+  rejected **all six** papers in `data/eval/corpus_manifest.json`. Default 600, sized from
+  6.8-12.1 s/page measured 2026-09-16. Never set it to `None`/empty -- Docling reads that as no
+  ceiling, and an unbounded parse holds one of `WORKER_CONCURRENCY` slots with nothing failing.
+  Too *low* is the safe direction: `parse_document` raises on a partial parse, so the document is
+  rejected rather than half-indexed.
 - **`cors_allow_credentials` + `"*"` origins is refused at startup.** Starlette answers
   that pair by reflecting the caller's own `Origin` with `Allow-Credentials: true`, so
   every site on the internet becomes trusted. The wildcard default is only inert while

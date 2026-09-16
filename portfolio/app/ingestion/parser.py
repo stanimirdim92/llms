@@ -33,7 +33,12 @@ _ACCELERATOR_OPTIONS = AcceleratorOptions(num_threads=get_settings().docling_num
 # PPTX, HTML, images, ...) carry their figures as embedded assets already and use Docling's
 # defaults, so they don't need (or support) this option the same way.
 _PDF_PIPELINE_OPTIONS = PdfPipelineOptions(
-    generate_picture_images=True, images_scale=1.5, accelerator_options=_ACCELERATOR_OPTIONS, document_timeout=90
+    generate_picture_images=True,
+    images_scale=1.5,
+    accelerator_options=_ACCELERATOR_OPTIONS,
+    # Configurable rather than hardcoded, and the reasoning for the value is on the setting --
+    # including why 90, which is what stood here, rejected every paper in the eval corpus.
+    document_timeout=get_settings().docling_document_timeout,
 )
 
 _converter = DocumentConverter(
