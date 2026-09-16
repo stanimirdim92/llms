@@ -309,9 +309,10 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
   materials-science arXiv papers are pinned in `data/eval/corpus_manifest.json` by versioned id
   and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not committed.
   `scripts/build_eval_chunks.py` parses and chunks them into the 205 chunk ids the golden set is
-  allowed to name (`data/eval/chunk_manifest.json`, committed). What does not exist yet is
-  `qa_dataset.jsonl` itself, so no recall@k number exists either. Epic 1's final 15-question
-  prose/table/figure spot-check was never run either.
+  allowed to name (`data/eval/chunk_manifest.json`, committed), and `data/eval/qa_dataset.jsonl`
+  holds 65 hand-written Q&A pairs against them. What does not exist is anything that *runs* them:
+  no recall@k, no routing confusion matrix, no CI gate, so no number yet says whether retrieval is
+  good. Epic 1's final 15-question prose/table/figure spot-check was never run either.
 - **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation, the
   version filter and the prune selector run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to
