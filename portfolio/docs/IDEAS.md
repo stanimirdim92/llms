@@ -57,15 +57,16 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   search, which only pays off once a tenant's corpus is large enough that a full dense scan is
   itself the expensive step — not true at the current per-tenant document counts, so measure
   against the 10k×10 target before building, not before.
-- **No fallback if Voyage (embedding or rerank) fails.** *(S, reliability)* Checked, not
-  assumed: `get_embeddings()`/`rerank()` have no try/except anywhere on the Voyage call path,
-  so a Voyage outage or timeout propagates as an unhandled exception straight to `/ask`'s 500
-  handler — the entire feature is down, not degraded. Rule 9 says a guardrail should fail open;
-  retrieval itself isn't a guardrail, but reranking arguably is one layer of it — a rerank
-  failure could fall back to the *unreranked* vector-similarity order (worse ranking, not zero
-  answer) rather than failing the whole request. Embedding-call failure has no honest fallback
-  (there's no answer without a query vector) and should stay a fast, clearly-labelled error
-  rather than retry into a compounding outage.
+- ~~**No fallback if Voyage (embedding or rerank) fails.**~~ **Built 2026-09-16.**
+  `app/retrieval/reranker.py::rerank` now catches a compressor failure and returns the
+  documents already in vector-similarity order, sliced to `top_n` — degrade, don't fail.
+  `QdrantStore.query` (`app/vectorstore/qdrant_store.py`) catches an `asimilarity_search`
+  failure (Voyage embedding call or Qdrant itself) and raises the new
+  `RetrievalUnavailableError` instead of letting an unhandled exception fall through to the
+  generic 500 handler; `app/api/routers/ask.py` catches it and returns a 503 with a clearly-
+  labelled message rather than retrying into a compounding outage. Both sides mutation-tested
+  in `tests/unit/test_reranker.py` and `tests/unit/test_qdrant_filtering.py`, plus an
+  HTTP-level 503 assertion in `tests/unit/test_api_contract.py`.
 - **No re-embed/backfill tool for existing documents after an ingestion-parameter change.**
   *(M)* Changing `chunk_max_tokens`, the embedding model, or a Docling version upgrade only
   affects documents ingested *after* the change — nothing re-processes what's already indexed.

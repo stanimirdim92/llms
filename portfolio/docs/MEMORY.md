@@ -142,6 +142,11 @@ looks wrong, say so once and proceed.
   reconstruction sorts on. Shared by the API route and a new Streamlit "View a document" control
   via `app/generation/document_view.py`, one implementation for both. List (`GET /v1/documents`)
   was already built; delete is not.
+- **Voyage rerank/embedding fallback** (2026-09-16). A reranker failure degrades to the
+  unreranked vector-similarity order rather than failing `/ask`; a retrieval failure (Voyage
+  embedding call or Qdrant itself) has no honest fallback and now surfaces as a 503 via the new
+  `RetrievalUnavailableError`, rather than an opaque 500. See `docs/EPIC_4_PLAN.md`'s
+  operational-hardening section for the file-by-file detail.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
@@ -291,6 +296,42 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-16 (later) — the Voyage rerank/embedding fallback, built
+
+Followed up on the same-day entry below: the "No fallback if Voyage (embedding or rerank)
+fails" idea it recorded, now implemented rather than just noted.
+
+Rule 9 (fail fast on configuration, fail open on guardrails) splits the two calls differently,
+because only one of them has an honest fallback:
+
+- `app/retrieval/reranker.py::rerank` now catches an `acompress_documents` failure and returns
+  the documents already in vector-similarity order, sliced to `top_n` -- reranking is a
+  guardrail layer on answer quality, not retrieval itself, so degrading beats failing the whole
+  request.
+- `app/vectorstore/qdrant_store.py::QdrantStore.query` has no honest fallback (no answer
+  without a query vector), so an `asimilarity_search` failure now raises a new
+  `RetrievalUnavailableError` instead of propagating unlabelled to `unhandled_error_handler`'s
+  generic, detail-free 500. `app/api/routers/ask.py` catches it and raises `APIError(...,
+  code=503)` with a message naming the cause.
+
+Three new tests: `test_a_backend_failure_falls_back_to_the_unreranked_order` (reranker),
+`test_query_raises_retrieval_unavailable_on_a_search_failure` (store), and
+`test_retrieval_unavailable_becomes_a_503_not_a_500` (HTTP layer, following the established
+`_factual_intent`/`_service` monkeypatch pattern in `test_api_contract.py`).
+
+`docs/IDEAS.md`'s entry struck through and marked built; a matching entry added to
+`docs/EPIC_4_PLAN.md`'s operational-hardening section.
+
+Gate: `ruff check`/`ruff format --check`/`ty check` clean. `pytest tests/unit`: 348 passed, 73
+skipped, 3 failed -- all three (`test_exhausting_the_budget_returns_429_with_every_header`,
+`test_document_reads_do_not_spend_the_ask_budget`,
+`test_a_successful_response_advertises_the_remaining_budget`) confirmed pre-existing by
+re-running against a stashed tree with none of this session's changes applied: they fail
+identically on a bare `git stash`, because this sandbox has no reachable Redis
+(`Connect call failed ('127.0.0.1', 6379)`) and those three specifically need it, unlike the
+suites that skip cleanly when it's unreachable. No compose/Dockerfile edit, so `docker compose
+config` not run (it also has no `.env` in this sandbox and would fail on that alone, unrelated).
 
 ### 2026-09-16 — a job description, read for what actually applies here, filed as notes
 

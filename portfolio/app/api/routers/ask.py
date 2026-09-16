@@ -15,6 +15,7 @@ from app.generation.answer_service import AnswerService
 from app.generation.intent_router import classify_intent
 from app.registry.db import list_document_records
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
+from app.vectorstore.qdrant_store import RetrievalUnavailableError
 
 router = APIRouter()
 
@@ -142,7 +143,17 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
             code=409,
         )
 
-    result = await _service().answer(request.question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
+    try:
+        result = await _service().answer(request.question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
+    except RetrievalUnavailableError as exc:
+        # No honest fallback exists for a failed search (rule 9) -- a clear, distinguishable
+        # 503 beats the generic 500 `unhandled_error_handler` would otherwise return, and beats
+        # retrying into what may be a compounding provider outage.
+        raise APIError(
+            "Retrieval is temporarily unavailable (the embedding or vector-search provider "
+            "didn't respond). Try again shortly.",
+            code=503,
+        ) from exc
     return AskResponse(
         answer=result.text,
         scoped_to=scope.filenames,

@@ -134,6 +134,25 @@ async def test_an_explicit_top_n_overrides_the_setting(
     assert len(await rerank("why?", _documents(6), top_n=1)) == 1
 
 
+async def test_a_backend_failure_falls_back_to_the_unreranked_order(monkeypatch: pytest.MonkeyPatch) -> None:
+    """`documents` arrives in vector-similarity order -- a Voyage outage must degrade to that
+    order, not fail the whole `/ask` request. Rule 9: reranking is a guardrail on quality, not
+    retrieval itself, so its own outage must not become `/ask`'s outage.
+    """
+
+    class _FailingCompressor:
+        async def acompress_documents(self, documents: list[Document], query: str) -> list[Document]:
+            raise RuntimeError("voyage rerank timed out")
+
+    monkeypatch.setattr(get_settings(), "reranker_backend", "voyage")
+    monkeypatch.setattr(get_settings(), "rerank_top_n", 2)
+    monkeypatch.setattr(reranker_module, "_voyage_compressor", _FailingCompressor)
+
+    result = await rerank("why?", _documents(6))
+
+    assert [document.metadata["chunk_id"] for document in result] == ["d-0", "d-1"]
+
+
 async def test_every_candidate_is_sent_to_the_backend_not_just_the_first_n(
     backends: list[tuple[str, int]], monkeypatch: pytest.MonkeyPatch
 ) -> None:

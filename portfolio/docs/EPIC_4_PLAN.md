@@ -531,6 +531,27 @@ What it would involve, so the decision can be revisited cheaply:
   installs torch and Docling. Dummy provider keys are enough: the boot check only asserts
   non-empty, so nothing calls out.
 
+### Voyage rerank/embedding fallback (2026-09-16) ✅ BUILT
+
+From `docs/IDEAS.md`'s "No fallback if Voyage (embedding or rerank) fails" -- checked before
+being written, not assumed: neither `get_embeddings()`/`rerank()` nor `QdrantStore.query` had a
+try/except on the Voyage call path, so an outage or timeout propagated as an unhandled exception
+straight to `/ask`'s generic 500. Rule 9 splits the two calls differently:
+
+- **`app/retrieval/reranker.py::rerank`** catches a compressor failure and returns the
+  documents already in vector-similarity order (`documents[:n]`) -- reranking is one layer of a
+  guardrail on answer quality, not retrieval itself, so its own outage must not become `/ask`'s
+  outage. `tests/unit/test_reranker.py::test_a_backend_failure_falls_back_to_the_unreranked_order`
+  pins it.
+- **`app/vectorstore/qdrant_store.py::QdrantStore.query`** has no honest fallback -- there is no
+  answer without a query vector -- so it now catches an `asimilarity_search` failure and raises
+  the new `RetrievalUnavailableError` instead of letting it fall through unlabelled.
+  `app/api/routers/ask.py` catches that and raises `APIError(..., code=503)` with a message
+  naming the cause, rather than the opaque, detail-free 500 `unhandled_error_handler` would
+  otherwise return. Pinned by `tests/unit/test_qdrant_filtering.py::
+  test_query_raises_retrieval_unavailable_on_a_search_failure` and, at the HTTP layer,
+  `tests/unit/test_api_contract.py::test_retrieval_unavailable_becomes_a_503_not_a_500`.
+
 ---
 
 ## Blocked on Epics 2 and 3 (not a phase)

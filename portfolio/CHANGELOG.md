@@ -13,6 +13,17 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-16
+
+#### Fixed
+
+- **A reranking outage no longer fails `/ask` outright.** If the reranker (Voyage or the local
+  cross-encoder) errors, results fall back to the order retrieval already returned instead of
+  the request failing.
+- **A retrieval outage now returns 503, not a generic 500.** If the embedding or vector-search
+  call itself fails (Voyage or Qdrant unreachable), `/ask` responds `503` with a message naming
+  retrieval as the cause, rather than an opaque "Internal server error."
+
 ### 2026-09-13
 
 #### Added

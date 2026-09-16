@@ -28,6 +28,7 @@ from qdrant_client import QdrantClient, models
 from app.ingestion.models import Chunk, ChunkType
 from app.vectorstore.qdrant_store import (
     QdrantStore,
+    RetrievalUnavailableError,
     _build_filter,
     _chunk_metadata,
     _ensure_payload_indexes,
@@ -420,3 +421,20 @@ def test_get_document_chunks_pages_through_more_than_one_scroll_batch() -> None:
 
     assert not pages, "both pages must have been consumed"
     assert [c.page_content for c in chunks] == ["second", "first"], "sorted by order_index after paging"
+
+
+async def test_query_raises_retrieval_unavailable_on_a_search_failure() -> None:
+    """No honest fallback exists for a failed search (rule 9) -- a Voyage embedding outage or a
+    Qdrant connection failure inside `asimilarity_search` must surface as a distinct, catchable
+    error rather than an opaque, unhandled exception the router had no name for.
+    """
+
+    class _FailingVectorStore:
+        async def asimilarity_search(self, *_args: object, **_kwargs: object) -> list[object]:
+            raise RuntimeError("voyage embedding call timed out")
+
+    store = QdrantStore.__new__(QdrantStore)
+    store._store = cast("QdrantVectorStore", _FailingVectorStore())
+
+    with pytest.raises(RetrievalUnavailableError):
+        await store.query("why?", top_k=5, tenant_id=TENANT_A, versions=[VERSION])

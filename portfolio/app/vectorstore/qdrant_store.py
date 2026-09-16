@@ -31,6 +31,16 @@ if TYPE_CHECKING:
 
 log = structlog.get_logger(__name__)
 
+
+class RetrievalUnavailableError(Exception):
+    """The vector search itself could not run -- a Voyage embedding call or the Qdrant
+    query failed, not a bug in the filter or query text. Rule 9: retrieval has no honest
+    fallback (there is no answer without a query vector), so this is let through as a
+    clear, distinguishable error rather than retried or silently swallowed. Contrast
+    `app.retrieval.reranker.rerank`, which degrades to the unreranked order instead.
+    """
+
+
 # Fixed, arbitrary namespace for deriving Qdrant point IDs via uuid5 -- never regenerate this, or
 # every stored point becomes an orphan no filter and no prune can reach. Qdrant point IDs must be an
 # unsigned integer or a UUID (unlike Chroma, which accepted arbitrary strings); our chunk_id values
@@ -391,7 +401,14 @@ class QdrantStore:
         # free (no extra dependency, no behavior change either way) and keeps this
         # call's signature consistent with the rest of the already-async /ask chain.
         where = _build_filter(chunk_types, tenant_id, doc_ids, versions)
-        return await self._store.asimilarity_search(query, k=top_k, filter=where)
+        try:
+            return await self._store.asimilarity_search(query, k=top_k, filter=where)
+        except Exception as exc:
+            # An embedding/Qdrant outage, not a query bug -- there's no honest fallback for a
+            # failed search, so surface it as a distinct, catchable error rather than an opaque
+            # 500 or a retry into a compounding outage.
+            log.warning("retrieval.unavailable", tenant_id=tenant_id, error=str(exc))
+            raise RetrievalUnavailableError(str(exc)) from exc
 
     # There is deliberately no `as_retriever()`. One existed, returning
     # `self._store.as_retriever(search_kwargs={"k": top_k})` -- no tenant filter, no doc

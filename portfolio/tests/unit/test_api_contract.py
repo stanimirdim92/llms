@@ -498,6 +498,32 @@ async def test_a_complete_answer_is_not_reported_as_truncated_over_http(
     assert response.json()["truncated"] is False
 
 
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_retrieval_unavailable_becomes_a_503_not_a_500(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """No honest fallback exists for a failed search (rule 9), so `RetrievalUnavailableError`
+    must reach the caller as a distinct, clearly-labelled 503 -- not `unhandled_error_handler`'s
+    generic, detail-free 500, which reads identically whether the cause was a Voyage outage or a
+    bug in this codebase.
+    """
+    from app.api.routers import ask as ask_router  # noqa: PLC0415
+    from app.vectorstore.qdrant_store import RetrievalUnavailableError  # noqa: PLC0415
+
+    class _Unavailable:
+        async def answer(self, _question: str, **_kwargs: object) -> object:
+            raise RetrievalUnavailableError("voyage embedding call timed out")
+
+    monkeypatch.setattr(ask_router, "classify_intent", _factual_intent)
+    monkeypatch.setattr(ask_router, "_service", _Unavailable)
+    monkeypatch.setattr(ask_router, "_document_scope", _no_scope)
+
+    response = await client.post("/v1/ask", json={"question": "why?"})
+
+    assert response.status_code == 503
+    assert "temporarily unavailable" in response.json()["detail"]
+
+
 async def _no_scope(_question: str, _tenant_id: str) -> object:
     """No document named, so `/ask` needs no registry read -- these tests have no Postgres."""
     from app.retrieval.document_scope import DocumentScope  # noqa: PLC0415
