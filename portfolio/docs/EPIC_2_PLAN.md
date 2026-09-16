@@ -111,12 +111,31 @@ Three consequences to carry forward:
 
 ## Phase 2.1 — Golden set
 
-**Prerequisite added 2026-08-03: there is no document set to build this against any more.** The
-six curated arXiv papers were removed with the shared `global` tenant, so the first task here is
-recreating a fixed corpus as *tenant-owned* fixtures — a seed tenant, its documents, and the
-ingest step, all reproducible from a script. Chunk ids are only stable if the documents and the
-chunker settings are, so this has to be pinned before any pair is written. See the shared-corpus
-entry in `docs/TECHNICAL_DECISIONS.md`.
+**The corpus prerequisite is built (2026-09-16).** It was added 2026-08-03, when the six curated
+arXiv papers went with the shared `global` tenant and left nothing to measure recall against.
+What exists now:
+
+- `data/eval/corpus_manifest.json` — the same six materials-science papers, pinned by **versioned**
+  arXiv id and sha256, plus the **seed tenant id**, which is pinned rather than minted because
+  `upload_doc_id` salts the content digest with it and every chunk id is therefore a function of
+  it. The PDFs are not committed; `scripts/fetch_eval_corpus.py` fetches and verifies them, and
+  refuses to write bytes that do not match.
+- `data/eval/chunk_manifest.json` — **205 chunks over 6 documents** (180 text, 25 table), each
+  with its id, page, section path, order index, a sha256 of its text and an excerpt.
+  `scripts/build_eval_chunks.py --check` rebuilds and fails on drift, which is the guard against
+  a Docling or tokenizer bump renumbering a document: the golden ids would keep resolving, to
+  different passages, and recall@k would drop as if retrieval had regressed.
+
+Two things that came out of building it, both of which shape what can be written next:
+
+- **Figure chunks cannot be part of the fixture.** A figure chunk exists only if the vision model
+  returned a caption `figure_extractor` did not reject as unusable, so it is not reproducible
+  from the bytes. Text and table ids are unaffected (the three kinds are numbered in separate
+  passes), but the figure-grounded questions this phase wants need an anchor that is not a chunk
+  id. **Open.**
+- **Docling's parse ceiling had to be raised first.** At the hardcoded `document_timeout=90` all
+  six papers were rejected part-way; it is now `DOCLING_DOCUMENT_TIMEOUT`, default 600. See
+  `docs/TECHNICAL_DECISIONS.md` § Ingestion latency.
 
 50+ grounded Q&A pairs in `data/eval/qa_dataset.jsonl`, committed. Each pair carries the
 question, an accepted answer, **the chunk ids that should be retrieved**, and the intent

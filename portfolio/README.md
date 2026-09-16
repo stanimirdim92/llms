@@ -305,10 +305,13 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 
-- **There is no evaluation corpus at all.** The 6 curated papers were removed with the shared
-  tenant, and Epic 2's golden set needs *some* fixed document set to measure recall against —
-  so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists.
-  Epic 1's final 15-question prose/table/figure spot-check was never run either.
+- **There is a fixed evaluation corpus again, but nothing scored against it yet.** Six
+  materials-science arXiv papers are pinned in `data/eval/corpus_manifest.json` by versioned id
+  and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not committed.
+  `scripts/build_eval_chunks.py` parses and chunks them into the 205 chunk ids the golden set is
+  allowed to name (`data/eval/chunk_manifest.json`, committed). What does not exist yet is
+  `qa_dataset.jsonl` itself, so no recall@k number exists either. Epic 1's final 15-question
+  prose/table/figure spot-check was never run either.
 - **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation, the
   version filter and the prune selector run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to
