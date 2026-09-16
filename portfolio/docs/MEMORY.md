@@ -292,6 +292,42 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-09-16 — a job description, read for what actually applies here, filed as notes
+
+Asked to place three JD bullets (retrieval eval metrics, telemetry/dashboards, performance/
+reliability), then given the full JD ("AI Retrieval and Relevance Engineer", Nortal) and asked
+to extract what's relevant. Notes only — no code, matching what was asked.
+
+Distributed rather than collected into one file, per this project's own document-set rule that
+two places holding the same fact disagree within a month:
+
+- `docs/EPIC_2_PLAN.md` Phase 2.3 — added nDCG@k/MRR (recall@k proves the right chunk was
+  retrieved; these prove it ranked well, which is specifically what the reranker is paid for)
+  and a citation-success rate, distinct from RAGAS faithfulness. Phase 2.2 gained a note that
+  "eval dataset lineage" is already covered by `git_sha` on a committed `qa_dataset.jsonl`,
+  not a gap. Phase 2.5's query-expansion bullet now also names itself "query rewriting" — same
+  technique, JD's term, no second entry.
+- `docs/EPIC_4_PLAN.md` Phase 4 — added the dashboards/p95-p99/drift gap: per-request
+  latency/cost/token logging already exists (2026-08-03); nothing aggregates it into
+  percentiles or a trend. DuckDB over the Phase 2.2 parquet store answers both without a new
+  dependency.
+- `docs/IDEAS.md` — three additions: naming that Phase 2.0's intent router and
+  `document_scope.py` already **are** a tiered-retrieval pattern (cheap check before the
+  expensive path), with the genuinely new tier (a lexical pre-filter) correctly gated on the
+  100k-document scale target rather than built now; a real, checked-not-assumed reliability gap
+  (no fallback anywhere on the Voyage embedding/rerank call path — an outage 500s the whole
+  request); and a backfill/re-embed tool for documents ingested under an old chunking/model
+  configuration, which nothing currently re-processes.
+
+**Deliberately not touched, because they're already answered and a new entry would just be a
+second copy:** graph-aware/entity-centric retrieval — `docs/IDEAS.md`'s "Considered and
+rejected" table already has "Neo4j / a graph database for document relationships: Rejected,"
+which is this same ask; and addressable retrieval tools for LLM/agent orchestration — Epic 3's
+planned MCP tool layer (`kb_query`/`contradiction_check`/`review_queue`, `docs/ARCHITECTURE.md`)
+already is this, unbuilt like the rest of Epic 3.
+
+No gate run — markdown only.
+
 ### 2026-09-13 (later) — the document-view feature, actually built, and the ordering bug it needed fixed first
 
 Followed up on the same-day entry below: asked to build `GET /v1/documents/{doc_id}/content`,

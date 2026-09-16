@@ -144,6 +144,14 @@ Written to `data/eval/runs/<run_id>.parquet`. Analysis is DuckDB over
 no migration. `pyarrow` and `pandas` are already in `uv.lock` as Streamlit transitives with
 `cp314` wheels, so this adds **no dependency**; DuckDB does need adding.
 
+Eval-dataset lineage and versioning, which sounds like a separate system to build, is not:
+`qa_dataset.jsonl` is a committed file, so `git_sha` on every run row already pins the exact
+dataset state that produced it, not just the code. A dataset edit and a code edit are
+indistinguishable in that column today, which is fine for "what produced this run" and not
+fine for "did this regression come from the dataset changing or the pipeline changing" —
+worth a second `dataset_sha` column (a hash of `qa_dataset.jsonl` alone) if that question
+ever needs answering, but not before it does.
+
 Why not Postgres: see `docs/ARCHITECTURE.md` § 2b. Short version — this is append-only
 analytical data with an evolving schema, and the CI gate needs a *committed* baseline it can
 diff in a pull request, which a database row cannot provide.
@@ -162,6 +170,18 @@ LangSmith custom evaluators, plus two that RAGAS does not cover and that this sy
   half of the pipeline.
 - **routing accuracy** from 2.0's labels — a confusion matrix, because misrouting a
   metadata question to retrieval is precisely the production defect.
+- **nDCG@k / MRR against the same golden chunk ids** — recall@k answers "was the right chunk
+  retrieved at all"; these answer "how high did it rank", which is specifically what
+  `rerank-2.5` is paid for. Without a rank-sensitive metric, a reranker regression that still
+  keeps the right chunk somewhere in the top-k is invisible to recall@k alone.
+- **Citation success rate** — distinct from RAGAS faithfulness (which scores the generated
+  *text* against retrieved context): this checks whether `_extract_citations` actually
+  resolves a citation to a real, in-range chunk for every factual claim in a golden answer.
+  The unit-level guards already exist (`test_an_out_of_range_document_index_is_dropped_not_raised`,
+  `test_a_negative_document_index_does_not_wrap_around_to_the_last_document` in
+  `test_answer_extraction.py`); this is the dataset-level rate those guards don't measure —
+  what fraction of golden questions come back with every claim actually grounded, not just
+  whether the Citations API returned *something*.
 
 A deliberate "before" baseline first: naive fixed-size chunking, no reranker. Without it
 every later number is unanchored.
@@ -205,10 +225,10 @@ All of these are measured through 2.3 or they do not land.
    **Trap worth naming:** prompt caching is a *prefix* match. Variable content assembled at
    the front of the system prompt invalidates the cache on every request and silently pays
    full input price. Stable prefix first, variable content last, after the final breakpoint.
-2. **Query expansion** (HyDE or n paraphrases → embed each → union → rerank the union) —
-   for vocabulary mismatch, which is constant in scientific text: "does NMC degrade?" versus
-   "capacity fade in LiNi₀.₈Mn₀.₁Co₀.₁O₂". Measured by recall@k; it either moves that number
-   or it is dropped.
+2. **Query expansion / query rewriting** (HyDE or n paraphrases → embed each → union → rerank
+   the union) — for vocabulary mismatch, which is constant in scientific text: "does NMC
+   degrade?" versus "capacity fade in LiNi₀.₈Mn₀.₁Co₀.₁O₂". Measured by recall@k; it either
+   moves that number or it is dropped.
 3. **Query decomposition** — "compare X and Y" produces one embedding that averages both
    and matches neither. Splitting fixes it, at n× retrieval plus a synthesis step, so gate
    it behind 2.0's classifier rather than running it on every question.

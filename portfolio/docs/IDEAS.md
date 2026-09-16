@@ -47,6 +47,33 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 - **Hybrid search (BM25 + dense).** *(M)* Exact identifiers, model numbers, and chemical
   formulae are where pure dense retrieval is weakest, and this corpus is full of them. Qdrant
   supports sparse vectors natively. Measure first.
+- **"Tiered retrieval" is partly already here, under other names.** *(idea: a cheap lexical
+  pre-filter tier, M, needs the 100k-document scale to matter)* Two tiers already exist and
+  are worth recognising as the same pattern: Epic 2 Phase 2.0's intent router skips retrieval
+  entirely for a whole question class, and `document_scope.py` narrows the candidate set by
+  filename/`doc_id` before the expensive dense search runs at all — both are "cheap check
+  first, expensive path only if needed." The genuinely new tier the dense+rerank path doesn't
+  have: a cheap keyword/metadata pre-filter that shrinks the candidate set *before* the vector
+  search, which only pays off once a tenant's corpus is large enough that a full dense scan is
+  itself the expensive step — not true at the current per-tenant document counts, so measure
+  against the 10k×10 target before building, not before.
+- **No fallback if Voyage (embedding or rerank) fails.** *(S, reliability)* Checked, not
+  assumed: `get_embeddings()`/`rerank()` have no try/except anywhere on the Voyage call path,
+  so a Voyage outage or timeout propagates as an unhandled exception straight to `/ask`'s 500
+  handler — the entire feature is down, not degraded. Rule 9 says a guardrail should fail open;
+  retrieval itself isn't a guardrail, but reranking arguably is one layer of it — a rerank
+  failure could fall back to the *unreranked* vector-similarity order (worse ranking, not zero
+  answer) rather than failing the whole request. Embedding-call failure has no honest fallback
+  (there's no answer without a query vector) and should stay a fast, clearly-labelled error
+  rather than retry into a compounding outage.
+- **No re-embed/backfill tool for existing documents after an ingestion-parameter change.**
+  *(M)* Changing `chunk_max_tokens`, the embedding model, or a Docling version upgrade only
+  affects documents ingested *after* the change — nothing re-processes what's already indexed.
+  At six documents this is invisible; at scale it means the corpus is a mix of chunking
+  regimes with no record of which document was ingested under which. An operator script that
+  re-runs `ingest_document` for every `DocumentRecord` (reusing the existing versioned-ingestion
+  path, so a failed backfill can't take a working document down) is the natural shape —
+  same category as the Postgres/Qdrant reconciliation tool already in § Ops below.
 - **Per-document-type chunking.** *(M)* A CV, a one-page flyer, and a 30-page paper currently
   share one strategy. The flyer becoming a single chunk was luck, not design.
 - **Chunk-size tokenizer doesn't match the embedding provider.** *(S)* `app/ingestion/chunker.py`
