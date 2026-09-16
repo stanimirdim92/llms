@@ -71,6 +71,17 @@ looks wrong, say so once and proceed.
   nothing. The *remote* branch could not be deleted from the container (the session's git
   proxy refuses ref deletion); it points at the same commit as main and is the user's to
   remove in the GitHub UI.
+
+  **A second such branch now exists, and the mechanism that creates them is worth knowing
+  (2026-09-16).** A session can be *launched* with harness instructions naming a feature branch
+  to develop on -- that session got `claude/llms-portfolio-onboarding-a1smp3` -- which
+  contradicts this directive. It was resolved the way the directive says: the work landed on
+  the branch first, then the user said "push to main" and `main` was fast-forwarded to the same
+  commit. So `claude/llms-portfolio-onboarding-a1smp3` is a second stray remote ref at the same
+  commit as main, in the same state and for the same reason as `claude/detailed-plan-o6lubt`
+  above, and equally the user's to delete. If a future session is launched with a branch
+  instruction again, this directive is the user's own and wins -- but say so once rather than
+  silently ignoring the launch instruction.
 - **There is no dependency-minimisation rule, and don't invent one.** Stated by the user 2026-08-05
   after a dependency comparison leaned on package counts. `docs/EPIC_2_PLAN.md`'s "this adds **no
   dependency**" is a *fact* about parquet arriving free via Streamlit, not a value. The signals that
