@@ -279,3 +279,47 @@ async def test_document_summary_uses_the_singular_for_exactly_one_document(
 
     assert summary.startswith("You have 1 document:")
     assert "1 documents" not in summary
+
+
+async def test_a_truncated_tool_call_is_labelled_not_a_validation_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    """`classify_intent` must convert the parser's `ValidationError` into
+    `IntentUnavailableError`, because the two reach a reader completely differently: one is
+    "the routing model gave us nothing", the other is "this codebase has a schema bug".
+
+    Simulates exactly what an over-tight `max_tokens` produces -- `_IntentLabel(**{})` -- rather
+    than a hand-built error, so the test breaks if the schema gains a second required field and
+    the real failure shape changes.
+    """
+    from pydantic import ValidationError  # noqa: PLC0415
+
+    from app.generation import intent_router  # noqa: PLC0415
+
+    def _truncated() -> object:
+        raise ValidationError.from_exception_data("_IntentLabel", [])
+
+    class _Chain:
+        async def ainvoke(self, _messages: object) -> object:
+            try:
+                intent_router._IntentLabel()  # type: ignore[call-arg]
+            except ValidationError:
+                raise
+            return _truncated()
+
+    monkeypatch.setattr(intent_router, "_classifier", _Chain)
+
+    with pytest.raises(intent_router.IntentUnavailableError, match="no usable label"):
+        await intent_router.classify_intent("what does this paper evaluate?")
+
+
+def test_the_router_token_ceiling_clears_the_measured_floor() -> None:
+    """A tool call carrying `{"intent": "..."}` does not fit in 16 tokens, and the symptom is a
+    500 on every question rather than a bad label.
+
+    Measured 2026-09-17 against `claude-haiku-4-5-20251001`: 16, 24 and 32 all fail identically,
+    64 and 128 both succeed in 0.55-0.68 s. The assertion is the measured floor, not a round
+    number, and it is here because nothing else in the suite can see this -- every other test
+    stubs `classify_intent` precisely so it makes no network call.
+    """
+    from app.generation.intent_router import _MAX_ROUTER_TOKENS  # noqa: PLC0415
+
+    assert _MAX_ROUTER_TOKENS >= 64, "below 64 the tool call is truncated and every /ask 500s"

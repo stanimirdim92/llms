@@ -726,3 +726,32 @@ async def test_document_reads_do_not_spend_the_ask_budget(client: AsyncClient) -
 
     assert listed.headers["x-ratelimit-limit"] == str(settings.rate_limit_documents)
     assert status.headers["x-ratelimit-limit"] == str(settings.rate_limit_documents)
+
+
+@pytest.mark.usefixtures("as_tenant_a")
+async def test_an_unclassifiable_question_becomes_a_503_not_a_500(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The failure that reached the running API: `_MAX_ROUTER_TOKENS` was 16, structured output
+    is a tool call, and generation stopped mid-call -- so the parser built `_IntentLabel(**{})`
+    and pydantic raised `intent: Field required`. Every `/ask` call answered 500, and the
+    traceback read as a schema bug rather than a ceiling that was too low.
+
+    Two things this pins. The 503 itself, and that there is **no fallback to `factual`** --
+    routing an unclassified question into retrieval is the defect Phase 2.0 exists to fix, so
+    the safe-looking degradation is the dangerous one. `_service` is left unstubbed on purpose:
+    if the handler ever did fall through, it would reach the real pipeline rather than quietly
+    pass this test.
+    """
+    from app.api.routers import ask as ask_router  # noqa: PLC0415
+    from app.generation.intent_router import IntentUnavailableError  # noqa: PLC0415
+
+    async def _unclassifiable(_question: str) -> str:
+        raise IntentUnavailableError("the intent classifier returned no usable label")
+
+    monkeypatch.setattr(ask_router, "classify_intent", _unclassifiable)
+
+    response = await client.post("/v1/ask", json={"question": "what does this paper evaluate?"})
+
+    assert response.status_code == 503
+    assert "classify" in response.json()["detail"]
