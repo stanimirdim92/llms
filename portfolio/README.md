@@ -309,13 +309,11 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
   arXiv papers on retrieval-augmented generation are pinned in `data/eval/corpus_manifest.json`
   by versioned id and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not
   committed. `scripts/seed_eval_corpus.py` ingests them through the real pipeline and records the
-  chunk ids that actually landed. **`data/eval/chunk_manifest.json` and
-  `data/eval/qa_dataset.jsonl` are absent as of this commit** — an earlier pair of them described
-  a different corpus (six lithium-ion cathode papers, inherited from the demo set that was
-  removed in August) and were deleted with it rather than left to contradict the manifest. So
-  there is no golden set right now, and nothing that scores one: no recall@k, no routing
-  confusion matrix, no CI gate. Epic 1's final 15-question prose/table/figure spot-check was
-  never run either.
+  chunk ids that actually landed — 248 of them (185 text, 45 table, 18 figure), recorded in
+  `data/eval/chunk_manifest.json`. `data/eval/qa_dataset.jsonl` holds 67 hand-written Q&A pairs
+  against those ids. What does not exist is anything that *runs* them: no recall@k, no routing
+  confusion matrix, no CI gate, so no committed number yet says whether retrieval is good. Epic
+  1's final 15-question prose/table/figure spot-check was never run either.
 - **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation, the
   version filter and the prune selector run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to
