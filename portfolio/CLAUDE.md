@@ -367,6 +367,16 @@ Things that look correct and aren't:
   `VectorStore`'s thread-pool shim and `upsert` is sync. That's why
   `ingest_document` offloads through `asyncio.to_thread` instead of just being
   `async def`.
+- **`chunk_document`'s returned list is not document reading order.** It emits every text
+  chunk, then every table chunk, then every figure chunk -- each internally ordered but not
+  interleaved with the others, because text goes through `HybridChunker` (which merges
+  granular items into semantic windows) while tables and figures are kept atomic, and the
+  three cannot share one loop without giving that up. A table on page 3 therefore sits after
+  every text chunk in the whole document in this list. `Chunk.order_index`
+  (`app/ingestion/document_order.py::document_order_map`, computed once from
+  `document.iterate_items()`) is what `QdrantStore.get_document_chunks` sorts on to
+  reconstruct a document for viewing -- sorting or rendering the *list* itself silently
+  reproduces the grouped-by-kind bug this exists to fix.
 - **Docling parsing is CPU-bound.** Wrapping it in `async def` does not free the
   event loop; it has to go through `asyncio.to_thread` or one upload stalls every
   other request on that worker.
@@ -523,6 +533,16 @@ Things that look correct and aren't:
   the per-request ceiling above. It has no recorded reasoning for 630s and was not
   re-derived when `GUNICORN_TIMEOUT` last changed; it only needs to stay `>=
   GUNICORN_TIMEOUT`.
+  **`DOCLING_DOCUMENT_TIMEOUT` is a fifth and belongs to the queue, not the request.** Uploads
+  return 202 and the worker parses, so no HTTP request waits on Docling -- unifying it with the
+  three above would tie a background budget to a request-side one and, at 120s, put back a
+  ceiling that rejects any paper over about ten pages. It was hardcoded at 90 in `parser.py`,
+  which is Docling's own generic recommendation for the field and is ~7 pages on four cores: it
+  rejected **all six** papers in `data/eval/corpus_manifest.json`. Default 600, sized from
+  6.8-12.1 s/page measured 2026-09-16. Never set it to `None`/empty -- Docling reads that as no
+  ceiling, and an unbounded parse holds one of `WORKER_CONCURRENCY` slots with nothing failing.
+  Too *low* is the safe direction: `parse_document` raises on a partial parse, so the document is
+  rejected rather than half-indexed.
 - **`cors_allow_credentials` + `"*"` origins is refused at startup.** Starlette answers
   that pair by reflecting the caller's own `Origin` with `Allow-Credentials: true`, so
   every site on the internet becomes trusted. The wildcard default is only inert while

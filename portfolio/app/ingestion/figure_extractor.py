@@ -25,6 +25,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import BaseMessage, HumanMessage
 
 from app.config import get_settings
+from app.ingestion.document_order import document_order_map
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -74,6 +75,13 @@ class ExtractedFigure:
     page_no: int
     image_path: Path
     caption: str
+    order_index: int = 0
+    """This figure's position in the document's true reading order -- see
+    `app.ingestion.document_order`. Not the same as the `index` inside `figure_id`, which
+    counts only among picture items and is what must never be renumbered (see the module
+    docstring); this is a separate, cross-type position used only for reconstructing a
+    document for viewing.
+    """
 
 
 def _caption_message(image_bytes: bytes) -> HumanMessage:
@@ -336,6 +344,11 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     picture_items = [item for item, _level in document.iterate_items() if isinstance(item, PictureItem)]
+    # Built once, from a *separate* traversal that walks every item type together -- text,
+    # tables, and pictures interleaved as they actually appear -- unlike `picture_items` above,
+    # which only sees pictures. This is what lets a viewer reconstruct the document in real
+    # reading order later; it plays no part in `figure_id`'s own numbering.
+    order_map = document_order_map(document)
 
     # Render and save first, caption second, so all the network calls can go out together.
     # `index` still comes from enumerate over *every* picture item, so an item that is skipped --
@@ -343,6 +356,7 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
     # which feeds the Qdrant point id, so renumbering figures here would orphan every
     # already-stored figure chunk instead of upserting over it.
     rendered: list[tuple[str, int, Path, bytes]] = []
+    order_by_figure_id: dict[str, int] = {}
     skipped_small = 0
     for index, item in enumerate(picture_items):
         image = item.get_image(document)
@@ -355,6 +369,11 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
         page_no = provenance.page_no if provenance else 0
 
         figure_id = f"fig-{page_no:03d}-{index:02d}"
+        # `.get` with the map's own size as the fallback: an item `iterate_items()` excludes (a
+        # group, a filtered content layer) sorts last in a reconstruction rather than raising --
+        # a figure landing at the end of a preview is a cosmetic miss, not a reason to fail
+        # an otherwise-good ingest over an ordering nicety.
+        order_by_figure_id[figure_id] = order_map.get(item.self_ref, len(order_map))
 
         # Encoded once, then written. It used to be encoded twice -- once via `image.save(path)`
         # and once into a buffer for the vision call -- which is PNG compression run twice per
@@ -384,7 +403,15 @@ def extract_figures(document: DoclingDocument, output_dir: Path) -> list[Extract
         if _is_unusable_caption(caption):
             dropped.append(figure_id)
             continue
-        figures.append(ExtractedFigure(figure_id=figure_id, page_no=page_no, image_path=image_path, caption=caption))
+        figures.append(
+            ExtractedFigure(
+                figure_id=figure_id,
+                page_no=page_no,
+                image_path=image_path,
+                caption=caption,
+                order_index=order_by_figure_id[figure_id],
+            )
+        )
 
     if dropped:
         # Logged, not raised: one undescribable image should not fail a document. But it must be

@@ -34,3 +34,12 @@ class Chunk:
     page_no: int | None = None
     section_path: str = ""
     metadata: dict = field(default_factory=dict)
+    order_index: int = 0
+    """Position in the document's true reading order (`document_order.document_order_map`),
+    not in this chunk's own type-grouped pass. `chunk_document` emits every text chunk, then
+    every table chunk, then every figure chunk -- so *list* order is not *document* order, and
+    a viewer reconstructing the document (`GET /v1/documents/{doc_id}/content`) sorts on this
+    field instead. Defaulted rather than required: unlike `tenant_id`, a wrong or missing value
+    here mis-orders a preview, it does not leak data, so the many tests constructing a bare
+    `Chunk` for unrelated reasons do not all need updating for it.
+    """

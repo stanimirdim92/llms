@@ -11,6 +11,8 @@ deployment.xml
 data/processed/
 data/uploads/
 data/eval/results/
+data/eval/corpus/
+data/eval/chunk_text/
 data/incoming_queue.db
 .idea
 
@@ -401,3 +403,9 @@ ipython_config.py
 # committed, so builds are reproducible and `uv sync --locked` has something to assert against.
 # Negated here rather than removed from the root file, which serves three other projects.
 !uv.lock
+
+# `*.jsonl` above is a generic Python-template ignore, and the eval golden set is a `.jsonl`
+# that MUST be committed -- `docs/EPIC_2_PLAN.md` Phase 2.2 pins each eval run's dataset state
+# by `git_sha`, which says nothing about a file git never saw. Negated rather than dropping the
+# blanket rule, which still keeps generated `.jsonl` out.
+!data/eval/qa_dataset.jsonl

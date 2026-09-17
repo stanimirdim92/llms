@@ -836,6 +836,32 @@ selective (`force_full_page_ocr` defaults to `False`), so on born-digital papers
 now fixes. Meanwhile disabling it would make scanned PDFs ingest as silently empty and break
 direct image uploads, which the format allowlist permits.
 
+**The per-document parse ceiling is 600 seconds, and it is sized from measurement (2026-09-16).**
+It was `document_timeout=90` written into `parser.py`, taken from Docling's own field
+documentation ("Recommended: 90-120 seconds for production systems"). That recommendation is
+generic and this workload is not: measured on a four-core container, a 14-page paper parses in
+95 s (6.8 s/page) and a 21-page one in 253 s (12.1 s/page), so 90 s is roughly seven pages. It
+rejected **every one** of the six arXiv papers in `data/eval/corpus_manifest.json` — 7/14, 9/47,
+5/21 and 13/31 pages — which means the system could not ingest an ordinary scientific paper, the
+exact document class it exists for.
+
+Three alternatives were on the table and only one survives.
+
+- **Override it in the eval build script only** — fastest, and wrong: the fixture would then hold
+  documents production refuses, so every recall number would be measured against a corpus the
+  running system could not actually serve.
+- **Choose shorter papers** — keeps 90 s honest and makes the corpus unrepresentative, with fewer
+  tables and figures than the questions Phase 2.1 needs.
+- **Raise it, as a setting** — taken. `DOCLING_DOCUMENT_TIMEOUT`, default 600, which covers ~50
+  pages at the slower measured rate.
+
+Why raising it is cheap here specifically: ingestion is **queued** (`POST /v1/documents` returns
+202), so unlike `GUNICORN_TIMEOUT` this budget holds no HTTP request open — the two numbers answer
+different questions and must not be unified. The remaining cost is a worker slot, which is why
+`None` (Docling's "no ceiling") is refused rather than offered: an unbounded parse holds one of
+`WORKER_CONCURRENCY` slots with nothing failing. Too *low* stays the safe direction, because
+`parse_document` raises on a partial parse — the document is rejected, never half-indexed.
+
 ## Serving: gunicorn with UvicornWorker
 
 **Decision.** `gunicorn` + `uvicorn.workers.UvicornWorker`, not bare uvicorn.

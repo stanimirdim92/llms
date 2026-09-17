@@ -8,12 +8,14 @@ accepting a partial result makes the truncation permanent.
 
 from __future__ import annotations
 
+import importlib
 from typing import TYPE_CHECKING
 
 import pytest
 from docling.datamodel.base_models import ConversionStatus
 from docling_core.types.doc.document import DoclingDocument
 
+from app.config import get_settings
 from app.ingestion import parser
 
 if TYPE_CHECKING:
@@ -64,3 +66,29 @@ def test_timeout_detail_reaches_the_message(monkeypatch: pytest.MonkeyPatch, tmp
 
     with pytest.raises(parser.DocumentParseError, match="timeout"):
         parser.parse_document(tmp_path / "paper.pdf")
+
+
+def test_the_parse_ceiling_is_configurable_not_a_literal(monkeypatch: pytest.MonkeyPatch) -> None:
+    """`document_timeout` was `90` written into `parser.py`, which is Docling's own generic
+    recommendation and is roughly seven pages on a four-core box -- it rejected every paper in
+    `data/eval/corpus_manifest.json`. The value belongs to the deployment, not to this module,
+    and the failure this pins is someone inlining a literal back.
+
+    Reloading is the only honest check: `_PDF_PIPELINE_OPTIONS` is built once at import, so a
+    test that read `get_settings()` directly would pass with the literal still in place.
+    """
+    monkeypatch.setenv("DOCLING_DOCUMENT_TIMEOUT", "123")
+    get_settings.cache_clear()
+    try:
+        assert importlib.reload(parser)._PDF_PIPELINE_OPTIONS.document_timeout == 123
+    finally:
+        monkeypatch.delenv("DOCLING_DOCUMENT_TIMEOUT")
+        get_settings.cache_clear()
+        importlib.reload(parser)
+
+
+def test_there_is_always_a_ceiling() -> None:
+    """Docling reads `None` as "no timeout", and an unbounded parse holds one of the worker's
+    concurrency slots until the process is killed -- with no error, because nothing failed.
+    """
+    assert parser._PDF_PIPELINE_OPTIONS.document_timeout, "a missing ceiling is an unbounded parse"

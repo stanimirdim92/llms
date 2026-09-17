@@ -17,6 +17,7 @@ from app.auth.service import resolve_tenant
 from app.config import get_settings
 from app.db import get_session, init_db
 from app.generation.answer_service import AnswerService
+from app.generation.document_view import render_document
 from app.ingestion.formats import SUPPORTED_UPLOAD_EXTENSIONS, is_supported_upload
 from app.ingestion.pipeline import EmptyDocumentError, ingest_document
 from app.ingestion.uploads import content_digest, document_upload_path, upload_doc_id, write_upload
@@ -217,6 +218,30 @@ with st.expander("My documents", expanded=not st.session_state.uploaded_docs):
             ],
             hide_index=True,
         )
+
+        # Viewable independent of ever having asked a question about it -- the point of this
+        # control (docs/EPIC_4_PLAN.md 5.5). Only documents with an active generation are
+        # offered: a `pending`/`processing`/`failed` document has nothing indexed to reconstruct.
+        viewable = [record for record in records if record.ingestion_version]
+        if viewable:
+            chosen = st.selectbox(
+                "View a document",
+                options=[record.filename for record in viewable],
+                index=None,
+                placeholder="Choose a document to view its contents",
+            )
+            if chosen:
+                selected = next(record for record in viewable if record.filename == chosen)
+                # `viewable` already guarantees this, but the type is `str | None` on the model
+                # itself -- narrowed again here rather than asserted, since a stale selection
+                # racing a delete (once that exists) should show nothing rather than raise.
+                if selected.ingestion_version:
+                    # Sync, unlike the registry reads around it: `QdrantStore.get_document_chunks`
+                    # calls the sync qdrant-client `scroll` directly, the same reasoning
+                    # `app/api/routers/documents.py` offloads to a thread for -- there is no
+                    # event loop here for it to block.
+                    chunks = _store().get_document_chunks(selected.doc_id, tenant_id, [selected.ingestion_version])
+                    st.markdown(render_document(chunks))
 
 question = st.text_input(
     "Question",

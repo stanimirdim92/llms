@@ -69,8 +69,23 @@ looks wrong, say so once and proceed.
   default branch restriction). The `claude/detailed-plan-o6lubt` working branch was retired
   2026-08-02 -- this is a WIP app and mirroring every commit to a second branch bought
   nothing. The *remote* branch could not be deleted from the container (the session's git
-  proxy refuses ref deletion); it points at the same commit as main and is the user's to
-  remove in the GitHub UI.
+  proxy refuses ref deletion), so it is the user's to remove in the GitHub UI.
+
+  **Two stray remote branches exist, and the mechanism that creates them is now measured
+  (2026-09-16).** A session can be *launched* with harness instructions naming a feature branch
+  to develop on, which contradicts this directive; that is how
+  `claude/llms-portfolio-onboarding-a1smp3` was created, the work landing on the branch first
+  and `main` being fast-forwarded onto it once the user said "push to main". What creates the
+  stray is the *push*, not the launch: a later session launched the same way found its branch
+  present only as a local ref, absent from `git ls-remote --heads origin`, and pushing to `main`
+  alone left it that way. So the resolution is to say once that the launch instruction
+  contradicts the directive -- the user's own directive wins -- and then push to `main` only,
+  which adds no further ref.
+
+  Neither stray tracks `main`, so don't read them as mirrors of it: measured 2026-09-16,
+  `claude/detailed-plan-o6lubt` is at `4731f2c` and `claude/llms-portfolio-onboarding-a1smp3`
+  at `7fbf4e4`, one commit behind `main`'s `7b07e52`. The earlier note here claimed both sat at
+  the same commit as `main`; each stopped moving the moment its session ended.
 - **There is no dependency-minimisation rule, and don't invent one.** Stated by the user 2026-08-05
   after a dependency comparison leaned on package counts. `docs/EPIC_2_PLAN.md`'s "this adds **no
   dependency**" is a *fact* about parquet arriving free via Streamlit, not a value. The signals that
@@ -134,6 +149,19 @@ looks wrong, say so once and proceed.
   re-ingest leaves the previous generation serving. `QdrantStore.upsert` deletes nothing. Both of
   these reversed a recorded decision, so a reader who half-remembers this project will remember the
   opposite — `docs/TECHNICAL_DECISIONS.md` records both reversals with the reasoning.
+- **Epic 4 Phase 5.5 (partial) — `GET /v1/documents/{doc_id}/content`** (2026-09-13). Views a
+  document reconstructed from its own indexed chunks, in true reading order, needing neither a
+  prior `/ask` call nor a live search. Required a real fix underneath: `chunk_document`'s output
+  is grouped by kind, not document order (see `CLAUDE.md`'s failure contract), so a new
+  `Chunk.order_index` — computed once per document from `document.iterate_items()` — is what a
+  reconstruction sorts on. Shared by the API route and a new Streamlit "View a document" control
+  via `app/generation/document_view.py`, one implementation for both. List (`GET /v1/documents`)
+  was already built; delete is not.
+- **Voyage rerank/embedding fallback** (2026-09-16). A reranker failure degrades to the
+  unreranked vector-similarity order rather than failing `/ask`; a retrieval failure (Voyage
+  embedding call or Qdrant itself) has no honest fallback and now surfaces as a 503 via the new
+  `RetrievalUnavailableError`, rather than an opaque 500. See `docs/EPIC_4_PLAN.md`'s
+  operational-hardening section for the file-by-file detail.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
@@ -332,6 +360,161 @@ order. **Epic 4 (Phases 5.2 onward) is explicitly deprioritized — "keep for la
 change from the prior session's priority list, which had Phase 5.2's identity question ahead
 of Epic 3. Nothing built this session; approvals for the five Draft plans above are pending,
 session paused mid-review ("we will continue shortly").
+
+### 2026-09-16 (later still) — the branch conflict recurred, and the note about it was wrong
+
+This session was launched with harness instructions naming
+`claude/portfolio-handoff-branch-conflict-a0jfq2`, exactly the conflict the standing directive
+above predicted. Said so once, worked on `main`, pushed `main` only.
+
+That produced two corrections to the directive's own note, both from
+`git ls-remote --heads origin` rather than from the note:
+
+- The launch branch existed only as a *local* ref -- it is not on the remote, and pushing to
+  `main` alone left it that way. So the push is what creates a stray, not the launch, and a
+  session that honours the directive creates none. The note implied the branch appears either
+  way.
+- Neither existing stray points at `main`. `claude/detailed-plan-o6lubt` is at `4731f2c` and
+  `claude/llms-portfolio-onboarding-a1smp3` at `7fbf4e4`, one behind `main`'s `7b07e52`. The
+  note said both sat at the same commit as `main`, which was true only on the day each was
+  written.
+
+No code changed, so no gate run.
+
+### 2026-09-16 (later) — the Voyage rerank/embedding fallback, built
+
+Followed up on the same-day entry below: the "No fallback if Voyage (embedding or rerank)
+fails" idea it recorded, now implemented rather than just noted.
+
+Rule 9 (fail fast on configuration, fail open on guardrails) splits the two calls differently,
+because only one of them has an honest fallback:
+
+- `app/retrieval/reranker.py::rerank` now catches an `acompress_documents` failure and returns
+  the documents already in vector-similarity order, sliced to `top_n` -- reranking is a
+  guardrail layer on answer quality, not retrieval itself, so degrading beats failing the whole
+  request.
+- `app/vectorstore/qdrant_store.py::QdrantStore.query` has no honest fallback (no answer
+  without a query vector), so an `asimilarity_search` failure now raises a new
+  `RetrievalUnavailableError` instead of propagating unlabelled to `unhandled_error_handler`'s
+  generic, detail-free 500. `app/api/routers/ask.py` catches it and raises `APIError(...,
+  code=503)` with a message naming the cause.
+
+Three new tests: `test_a_backend_failure_falls_back_to_the_unreranked_order` (reranker),
+`test_query_raises_retrieval_unavailable_on_a_search_failure` (store), and
+`test_retrieval_unavailable_becomes_a_503_not_a_500` (HTTP layer, following the established
+`_factual_intent`/`_service` monkeypatch pattern in `test_api_contract.py`).
+
+`docs/IDEAS.md`'s entry struck through and marked built; a matching entry added to
+`docs/EPIC_4_PLAN.md`'s operational-hardening section.
+
+Gate: `ruff check`/`ruff format --check`/`ty check` clean. `pytest tests/unit`: 348 passed, 73
+skipped, 3 failed -- all three (`test_exhausting_the_budget_returns_429_with_every_header`,
+`test_document_reads_do_not_spend_the_ask_budget`,
+`test_a_successful_response_advertises_the_remaining_budget`) confirmed pre-existing by
+re-running against a stashed tree with none of this session's changes applied: they fail
+identically on a bare `git stash`, because this sandbox has no reachable Redis
+(`Connect call failed ('127.0.0.1', 6379)`) and those three specifically need it, unlike the
+suites that skip cleanly when it's unreachable. No compose/Dockerfile edit, so `docker compose
+config` not run (it also has no `.env` in this sandbox and would fail on that alone, unrelated).
+
+### 2026-09-16 — a job description, read for what actually applies here, filed as notes
+
+Asked to place three JD bullets (retrieval eval metrics, telemetry/dashboards, performance/
+reliability), then given the full JD ("AI Retrieval and Relevance Engineer", Nortal) and asked
+to extract what's relevant. Notes only — no code, matching what was asked.
+
+Distributed rather than collected into one file, per this project's own document-set rule that
+two places holding the same fact disagree within a month:
+
+- `docs/EPIC_2_PLAN.md` Phase 2.3 — added nDCG@k/MRR (recall@k proves the right chunk was
+  retrieved; these prove it ranked well, which is specifically what the reranker is paid for)
+  and a citation-success rate, distinct from RAGAS faithfulness. Phase 2.2 gained a note that
+  "eval dataset lineage" is already covered by `git_sha` on a committed `qa_dataset.jsonl`,
+  not a gap. Phase 2.5's query-expansion bullet now also names itself "query rewriting" — same
+  technique, JD's term, no second entry.
+- `docs/EPIC_4_PLAN.md` Phase 4 — added the dashboards/p95-p99/drift gap: per-request
+  latency/cost/token logging already exists (2026-08-03); nothing aggregates it into
+  percentiles or a trend. DuckDB over the Phase 2.2 parquet store answers both without a new
+  dependency.
+- `docs/IDEAS.md` — three additions: naming that Phase 2.0's intent router and
+  `document_scope.py` already **are** a tiered-retrieval pattern (cheap check before the
+  expensive path), with the genuinely new tier (a lexical pre-filter) correctly gated on the
+  100k-document scale target rather than built now; a real, checked-not-assumed reliability gap
+  (no fallback anywhere on the Voyage embedding/rerank call path — an outage 500s the whole
+  request); and a backfill/re-embed tool for documents ingested under an old chunking/model
+  configuration, which nothing currently re-processes.
+
+**Deliberately not touched, because they're already answered and a new entry would just be a
+second copy:** graph-aware/entity-centric retrieval — `docs/IDEAS.md`'s "Considered and
+rejected" table already has "Neo4j / a graph database for document relationships: Rejected,"
+which is this same ask; and addressable retrieval tools for LLM/agent orchestration — Epic 3's
+planned MCP tool layer (`kb_query`/`contradiction_check`/`review_queue`, `docs/ARCHITECTURE.md`)
+already is this, unbuilt like the rest of Epic 3.
+
+No gate run — markdown only.
+
+### 2026-09-13 (later) — the document-view feature, actually built, and the ordering bug it needed fixed first
+
+Followed up on the same-day entry below: asked to build `GET /v1/documents/{doc_id}/content`,
+and to source it from Qdrant with an `order_index` reference rather than duplicating chunk
+content into a new Postgres table (the user's call, once shown what full duplication would
+cost).
+
+**A real bug found before it could ship silently wrong.** Reading `chunk_document` to plan the
+reconstruction found it returns every text chunk, then every table chunk, then every figure
+chunk — grouped by kind, not by position in the document. A naive reconstruction from that list
+would put every table and figure at the end of the document regardless of where they actually
+appear. Fixed at the source: `app/ingestion/document_order.py::document_order_map` walks
+`document.iterate_items()` once (Docling's own single traversal across every item type) and
+maps each item's `self_ref` to its true position. `chunk_document` and `extract_figures` each
+build this map over the *same* document (a text chunk that merges several underlying items
+takes the earliest one's position) and stamp the result onto a new `Chunk.order_index` /
+`ExtractedFigure.order_index` field, without renumbering any existing `chunk_id` — the
+figure-id "never renumber" contract in `CLAUDE.md` still holds; this is a parallel, separate
+index.
+
+**Design, once the ordering was fixed:** `QdrantStore.get_document_chunks` (`scroll`, not
+`query` — a filter to exhaust, not a rank) returns a document's chunks sorted by `order_index`.
+`app/generation/document_view.py::render_document` turns that into Markdown — text as prose,
+tables from their stored `markdown` (not `page_content`, which may carry a prepended caption),
+figures as an embedded base64 image plus caption, degrading to the caption alone if the image
+file is missing. Deliberately its own module rather than living in the router: Streamlit's "View
+a document" control (`streamlit_app/Home.py`) calls the same function the API route does, so the
+two cannot quietly render a document two different ways the way `list_scope_candidates` once
+disagreed with `list_document_records`.
+
+**Verified:** 23 new tests across `test_chunk_order.py` (the ordering fix, including the money
+test — a table between two paragraphs sorts *between* them, not after both), `test_qdrant_filtering.py`
+(`get_document_chunks`: tenant/version scoping, pagination via a stubbed two-page `scroll`),
+`test_document_content.py` (HTTP routing: 401/404/409/200), and `test_document_view.py`
+(rendering, including the missing-image degrade path). `uv run --extra dev {ruff check
+--no-cache, ruff format --check, ty check}` all clean; `pytest tests/unit` 345 passed, 73
+skipped, the same 3 pre-existing failures as every session this week (need a live
+Postgres/Redis this sandbox doesn't have).
+
+**Not built, still open in `docs/EPIC_4_PLAN.md` 5.5:** `DELETE /v1/documents/{doc_id}` and
+`DELETE /v1/account`.
+
+### 2026-09-13 — a requested feature placed in the plan, not built
+
+Asked where "list documents, view one even without running a search" belongs. It's a real
+gap: `GET /v1/documents` lists metadata only, and today the *only* way to see what's inside a
+document is indirectly through `/ask`'s `retrieved_chunks` — which requires asking a question
+first. Placed in `docs/EPIC_4_PLAN.md` § 5.5 (Document CRUD) as a new
+`GET /v1/documents/{doc_id}/content` item, since that section already covers list/delete and
+this is CRUD's missing Read-the-content half — not Epic 2 (unrelated to retrieval quality) or
+Epic 3 (unrelated to curation). Not blocked by anything open: unlike 5.3's conversations, it
+only needs `tenant_id`, already resolved from the API key, so it could ship ahead of the rest
+of Phase 5 the same way document scoping and intent routing did.
+
+Scoped deliberately to raw-file serving only (not also a parsed-chunk view) at the user's
+choice, once shown what the wider version would cost: a second route, a second auth check, and
+a 409-vs-ingestion-status split, for a want not yet stated. Recorded as *considered and
+rejected for this round* in the plan entry rather than silently dropped, so it isn't
+re-proposed from scratch later.
+
+Not built — recording only, per what was asked. `app/api/routers/documents.py` and the
+Streamlit page are both untouched.
 
 ### 2026-09-08 — Epic 2 Phase 2.0: intent routing on `/ask`, and a ruff trap worth recording
 

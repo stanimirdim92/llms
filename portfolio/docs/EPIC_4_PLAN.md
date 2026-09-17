@@ -149,6 +149,15 @@ Built as specified, plus:
 - `app/observability/alerts.py`: threshold check -> webhook. **Latency SLO works now;
   faithfulness needs Epic 2's RAGAS scores**, so build the latency half and leave a named
   gap rather than a placeholder that looks complete.
+- **Dashboards and percentiles, not just per-request logs.** `answer_service.py` already logs
+  `latency_ms`, `input_tokens`, `output_tokens`, and `stop_reason` on every answer (2026-08-03),
+  and Epic 2 Phase 2.2's parquet run rows add `cost_usd` per question — but nothing aggregates
+  either into p95/p99 or a cost trend, and nothing watches retrieval-quality *drift* (recall@k
+  or faithfulness moving over time, as opposed to Phase 2.3's one-shot CI gate against a fixed
+  baseline). DuckDB over `data/eval/runs/*.parquet` (already the Phase 2.2 store) answers the
+  percentile and trend queries directly — `PERCENTILE_CONT` needs no new dependency; a drift
+  view is the same query run on a rolling window. LangSmith's own dashboard covers live traces
+  in the meantime, per-request rather than aggregated.
 
 ---
 
@@ -322,13 +331,38 @@ scoping assertions.
 
 ### 5.5 Document CRUD
 
-- `GET /v1/documents` — list for the tenant, paginated, with status.
-- `DELETE /v1/documents/{doc_id}` — and this is more than it looks. Four things must go:
+- ✅ **`GET /v1/documents`** — list for the tenant, paginated, with status. Built.
+- ✅ **`GET /v1/documents/{doc_id}/content`** — view a document reconstructed from its own
+  indexed chunks, independent of `/ask`. The gap this closes: the only way to see what's
+  inside a document used to be indirectly, through `/ask`'s `retrieved_chunks`, which
+  requires asking a question first. Built.
+
+  Superseded the original plan of serving the raw uploaded file: reconstructing from chunks
+  (`QdrantStore.get_document_chunks`, `app.generation.document_view.render_document`) shows
+  exactly what `/ask` can see and cite — a dropped figure or an un-embedded table is absent
+  from the view too, rather than the view and the answer path silently disagreeing about
+  what the document contains. Needs one active generation to exist, so unlike the
+  raw-file plan it is **not** available at every ingestion status: a `pending`/`processing`/
+  `failed` document returns 409, same as `/ask`'s document-scoping 409.
+
+  Doing this required a real fix, not just a new route: `chunk_document`'s output is grouped
+  by kind (every text chunk, then every table, then every figure — see `CLAUDE.md`'s failure
+  contract), so reconstructing a document from that list without a true position would put
+  every table and figure at the end. `Chunk.order_index`
+  (`app/ingestion/document_order.py`, computed once per document from
+  `document.iterate_items()`) fixes that without renumbering any existing `chunk_id`.
+
+  Figures render as an embedded base64 data URI plus caption (chosen over a second
+  image-serving endpoint — simpler, and bounded since unusable figures are already filtered
+  before this point); a missing image file degrades to the caption alone rather than hiding
+  the figure. Shared by the API route and the Streamlit "View a document" control in
+  `streamlit_app/Home.py`, from one implementation, not two.
+- ❌ **`DELETE /v1/documents/{doc_id}`** — and this is more than it looks. Four things must go:
   the Qdrant points (`QdrantStore.delete_document` exists), the file under
   `data/uploads/<tenant_id>/`, the registry row, and a decision about messages that cite
   it. Recommendation: keep the messages, mark the citation dangling in the response — a
   chat log that silently rewrites itself is worse than one that says a source is gone.
-- `DELETE /v1/account` — cascades all of the above for every document, plus conversations.
+- ❌ **`DELETE /v1/account`** — cascades all of the above for every document, plus conversations.
   Needed for GDPR and trivially forgotten.
 
 ### 5.6 Search
@@ -496,6 +530,27 @@ What it would involve, so the decision can be revisited cheaply:
   -- every Docker bug so far reached a human first. Gated off pull requests because the api image
   installs torch and Docling. Dummy provider keys are enough: the boot check only asserts
   non-empty, so nothing calls out.
+
+### Voyage rerank/embedding fallback (2026-09-16) ✅ BUILT
+
+From `docs/IDEAS.md`'s "No fallback if Voyage (embedding or rerank) fails" -- checked before
+being written, not assumed: neither `get_embeddings()`/`rerank()` nor `QdrantStore.query` had a
+try/except on the Voyage call path, so an outage or timeout propagated as an unhandled exception
+straight to `/ask`'s generic 500. Rule 9 splits the two calls differently:
+
+- **`app/retrieval/reranker.py::rerank`** catches a compressor failure and returns the
+  documents already in vector-similarity order (`documents[:n]`) -- reranking is one layer of a
+  guardrail on answer quality, not retrieval itself, so its own outage must not become `/ask`'s
+  outage. `tests/unit/test_reranker.py::test_a_backend_failure_falls_back_to_the_unreranked_order`
+  pins it.
+- **`app/vectorstore/qdrant_store.py::QdrantStore.query`** has no honest fallback -- there is no
+  answer without a query vector -- so it now catches an `asimilarity_search` failure and raises
+  the new `RetrievalUnavailableError` instead of letting it fall through unlabelled.
+  `app/api/routers/ask.py` catches that and raises `APIError(..., code=503)` with a message
+  naming the cause, rather than the opaque, detail-free 500 `unhandled_error_handler` would
+  otherwise return. Pinned by `tests/unit/test_qdrant_filtering.py::
+  test_query_raises_retrieval_unavailable_on_a_search_failure` and, at the HTTP layer,
+  `tests/unit/test_api_contract.py::test_retrieval_unavailable_becomes_a_503_not_a_500`.
 
 ---
 

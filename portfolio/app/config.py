@@ -128,6 +128,29 @@ class Settings(BaseSettings):
         default=None, description="CPU threads for Docling model inference. None = os.cpu_count()."
     )
 
+    # Docling's per-document parse ceiling, and deliberately **not** tied to `GUNICORN_TIMEOUT`:
+    # ingestion is queued (`POST /v1/documents` returns 202), so no HTTP request is held open
+    # waiting for a parse and the two numbers answer different questions.
+    #
+    # It was hardcoded at 90 in `parser.py`, which is Docling's own recommendation for the field
+    # ("90-120 seconds for production systems") -- and that recommendation does not survive a real
+    # scientific paper on a modest box. Measured 2026-09-16 on 4 cores: 6.8 s/page (a 14-page
+    # paper in 95 s) and 12.1 s/page (a 21-page paper in 253 s). At 90 s **every one** of the six
+    # arXiv papers in `data/eval/corpus_manifest.json` was cut off part-way -- 7/14, 9/47, 5/21 and
+    # 13/31 pages -- so the system could not ingest an ordinary 20-page paper at all. 600 covers a
+    # ~50-page paper at the slower measured rate.
+    #
+    # **Never set it to `None`.** Docling reads that as no ceiling at all, and an unbounded parse
+    # holds one of `WORKER_CONCURRENCY` slots until the process is killed. Too *low* is the safe
+    # direction and is not silent: `parse_document` raises on any status short of SUCCESS, so a
+    # truncated parse is a rejected document rather than half a document in the index.
+    #
+    # One consequence worth knowing: Streamlit calls `ingest_document` in process, so this is also
+    # how long that page can sit on a single upload.
+    docling_document_timeout: float = Field(
+        default=600, description="Seconds Docling may spend parsing one document before aborting it."
+    )
+
     # **`WORKER_CONCURRENCY` is deliberately not a field here** -- procrastinate takes it as a CLI
     # argument, so nothing in Python reads it and a field would be a second value drifting from the
     # CMD's fallback. Its *product* with `docling_num_threads` competes for cores: on the 8-vCPU

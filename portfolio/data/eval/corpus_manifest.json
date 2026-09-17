@@ -1,0 +1,51 @@
+{
+  "note": "The fixed document set Epic 2's golden set is written against. The PDFs themselves are NOT committed -- `scripts/fetch_eval_corpus.py` downloads them from arXiv and verifies every one against the digest recorded here. See `docs/EPIC_2_PLAN.md` Phase 2.1.",
+  "domain": "cond-mat.mtrl-sci",
+  "topic": "lithium-ion battery cathode materials",
+  "seed_tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961",
+  "seed_tenant_id_note": "Pinned, not minted. `upload_doc_id` salts the content digest with the tenant id, so every doc_id -- and therefore every chunk_id -- in `chunk_manifest.json` and `qa_dataset.jsonl` is a function of this value. A freshly minted tenant would rebuild the same corpus under different chunk ids and silently invalidate every golden reference.",
+  "papers": [
+    {
+      "arxiv_id": "2008.10896v2",
+      "title": "Cathode Materials for Lithium Ion Batteries (LIBs): A Review on Materials related aspects towards High Energy Density LIBs",
+      "filename": "2008.10896v2.pdf",
+      "sha256": "f9ca78d26aaf4c6feae2f50606efe0efd6d62db94ede143bb069fd4a1e6facee",
+      "bytes": 2754282
+    },
+    {
+      "arxiv_id": "2104.00586v1",
+      "title": "Machine Learning Enabled Prediction of Cathode Materials for Zn ion Batteries",
+      "filename": "2104.00586v1.pdf",
+      "sha256": "4b8676898e57f90ffd05d3643ca7688ba534e392a67b03a481ad2f9baf57414c",
+      "bytes": 2484992
+    },
+    {
+      "arxiv_id": "2305.11459v1",
+      "title": "DFT + U Study of structural, electronic, optical and magnetic properties of LiFePO4 Cathode materials for Lithium-Ion batteries",
+      "filename": "2305.11459v1.pdf",
+      "sha256": "15eae7892cdae4f0c1357da47ce3b98f040c8818d818e52a8f943747444a0b68",
+      "bytes": 1870373
+    },
+    {
+      "arxiv_id": "2506.12545v2",
+      "title": "Tailored ordering enables high-capacity cathode materials",
+      "filename": "2506.12545v2.pdf",
+      "sha256": "f7538d04be05627178d4355a338724ddc329a8f1eda426f0df7b6b9d36d5466b",
+      "bytes": 5828602
+    },
+    {
+      "arxiv_id": "2509.10532v1",
+      "title": "Crystal Systems Classification of Phosphate-Based Cathode Materials Using Machine Learning for Lithium-Ion Battery",
+      "filename": "2509.10532v1.pdf",
+      "sha256": "f7009cabdf150b1fe780ca0721bbdb004526868b5a470ceb3835c4473b9765ee",
+      "bytes": 1948183
+    },
+    {
+      "arxiv_id": "2607.06645v1",
+      "title": "BatteryMat: a hierarchical machine-learning and DFT framework for average-voltage screening of lithium-ion cathode materials",
+      "filename": "2607.06645v1.pdf",
+      "sha256": "7fd9bad9c4686830279e86baf2694adb4383fa6c0f4b46647afbab91d2b1e337",
+      "bytes": 6225710
+    }
+  ]
+}

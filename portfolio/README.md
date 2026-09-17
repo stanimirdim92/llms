@@ -258,6 +258,11 @@ Epic 3's design.
   `procrastinate` worker does the work, with the document row and its job committed in one
   transaction. Status polling via `GET /v1/documents/{doc_id}`, including a reason on
   failure.
+- **Epic 4 Phase 5.5 (partial) — View a document.** `GET /v1/documents/{doc_id}/content`
+  reconstructs a document from its own indexed chunks, in reading order, with no need to ask
+  a question about it first. Shows exactly what `/ask` can see and cite — the same source
+  the answer path reads from, not a second parse of the file. Same control is in the
+  Streamlit UI. Delete is not built yet.
 - **Explicit document scoping on `/ask`** (pulled forward out of Epic 2, because it fixed an
   observed defect rather than moving a metric). Naming a document you own in the question — by
   filename or by `doc_id` — narrows retrieval to it via a `doc_id` filter resolved from your
@@ -288,9 +293,10 @@ is deliberately not kept current:
   review.
 - **Epic 4 Phase 4** — observability: the latency SLO check is buildable, faithfulness
   alerting needs Epic 2's scores.
-- **Epic 4 Phase 5** — the application backend. **5.1 (ingestion behind a job queue) is
-  built**; still to come: user accounts, conversations with persisted citations, document
-  list/delete, semantic search, streaming `/ask`, and shareable conversation snapshots.
+- **Epic 4 Phase 5** — the application backend. **5.1 (ingestion behind a job queue) and
+  5.5's document list/view are built**; still to come: user accounts, conversations with
+  persisted citations, document delete, semantic search, streaming `/ask`, and shareable
+  conversation snapshots.
 - **Epic 4 Phase 6** — a React + TypeScript UI on top of Phase 5, with a typed client
   generated from the OpenAPI schema. Streamlit retires when this ships.
 
@@ -299,10 +305,14 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 
-- **There is no evaluation corpus at all.** The 6 curated papers were removed with the shared
-  tenant, and Epic 2's golden set needs *some* fixed document set to measure recall against —
-  so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists.
-  Epic 1's final 15-question prose/table/figure spot-check was never run either.
+- **There is a fixed evaluation corpus again, but nothing scored against it yet.** Six
+  materials-science arXiv papers are pinned in `data/eval/corpus_manifest.json` by versioned id
+  and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not committed.
+  `scripts/build_eval_chunks.py` parses and chunks them into the 205 chunk ids the golden set is
+  allowed to name (`data/eval/chunk_manifest.json`, committed), and `data/eval/qa_dataset.jsonl`
+  holds 65 hand-written Q&A pairs against them. What does not exist is anything that *runs* them:
+  no recall@k, no routing confusion matrix, no CI gate, so no number yet says whether retrieval is
+  good. Epic 1's final 15-question prose/table/figure spot-check was never run either.
 - **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation, the
   version filter and the prune selector run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to

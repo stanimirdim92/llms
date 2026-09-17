@@ -13,6 +13,42 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-16
+
+#### Changed
+
+- **Documents longer than about seven pages can now be ingested at all.** Docling's per-document
+  parse ceiling was fixed at 90 seconds; on a four-core machine that is roughly seven pages of a
+  scientific paper, and anything longer was rejected with a parse error. The ceiling is now
+  `DOCLING_DOCUMENT_TIMEOUT`, defaulting to **600 seconds**.
+
+  *Upgrading:* nothing to do — the new default is what most people want, and uploads are queued,
+  so a longer parse never holds an HTTP request open. Set the variable lower if you would rather
+  reject a slow document sooner. Do not set it empty: that removes the ceiling entirely and an
+  unbounded parse occupies a worker until the process is killed.
+
+#### Fixed
+
+- **A reranking outage no longer fails `/ask` outright.** If the reranker (Voyage or the local
+  cross-encoder) errors, results fall back to the order retrieval already returned instead of
+  the request failing.
+- **A retrieval outage now returns 503, not a generic 500.** If the embedding or vector-search
+  call itself fails (Voyage or Qdrant unreachable), `/ask` responds `503` with a message naming
+  retrieval as the cause, rather than an opaque "Internal server error."
+
+### 2026-09-13
+
+#### Added
+
+- **`GET /v1/documents/{doc_id}/content` — view one of your documents.** Reconstructs it from
+  its own indexed chunks, in reading order, so you can see what a document contains without
+  asking a question about it first. Text renders as prose, tables as Markdown tables, and
+  figures as an embedded image with their caption. Needs no `/ask` call, but does need the
+  document to have finished ingesting: a still-`pending`/`processing` document returns 409
+  (same as naming one mid-ingest to `/ask`), and an unowned `doc_id` returns 404.
+
+  *Upgrading:* nothing to do — a new route, no changes to any existing one.
+
 ### 2026-09-08
 
 #### Fixed
