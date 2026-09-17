@@ -1,51 +1,52 @@
 {
-  "note": "The fixed document set Epic 2's golden set is written against. The PDFs themselves are NOT committed -- `scripts/fetch_eval_corpus.py` downloads them from arXiv and verifies every one against the digest recorded here. See `docs/EPIC_2_PLAN.md` Phase 2.1.",
-  "domain": "cond-mat.mtrl-sci",
-  "topic": "lithium-ion battery cathode materials",
+  "note": "The fixed document set Epic 2's golden set is written against. The PDFs are NOT committed -- `scripts/fetch_eval_corpus.py` downloads them from arXiv and verifies every one against the digest recorded here. See `docs/EPIC_2_PLAN.md` Phase 2.1.",
+  "domain": "cs.CL / cs.LG / cs.CR",
+  "topic": "retrieval-augmented generation: evaluation, robustness, citation grounding, context efficiency",
+  "topic_note": "Chosen 2026-09-17, replacing six 2020-2026 lithium-ion cathode papers inherited from the demo corpus that was removed with the `global` tenant. Those were off-topic for an AI-engineering portfolio and parsed badly -- subscripted chemical formulas did not survive Docling, so a whole class of question was unanswerable for reasons that had nothing to do with retrieval.",
   "seed_tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961",
   "seed_tenant_id_note": "Pinned, not minted. `upload_doc_id` salts the content digest with the tenant id, so every doc_id -- and therefore every chunk_id -- in `chunk_manifest.json` and `qa_dataset.jsonl` is a function of this value. A freshly minted tenant would rebuild the same corpus under different chunk ids and silently invalidate every golden reference.",
   "papers": [
     {
-      "arxiv_id": "2008.10896v2",
-      "title": "Cathode Materials for Lithium Ion Batteries (LIBs): A Review on Materials related aspects towards High Energy Density LIBs",
-      "filename": "2008.10896v2.pdf",
-      "sha256": "f9ca78d26aaf4c6feae2f50606efe0efd6d62db94ede143bb069fd4a1e6facee",
-      "bytes": 2754282
+      "arxiv_id": "2609.09243v1",
+      "title": "In RAG We Trust? Measuring Robustness of Retrieval-Augmented Generation Under Document Poisoning",
+      "filename": "2609.09243v1.pdf",
+      "sha256": "41434100783ac559e8a4ea5d4de2c79b3cf895bd6c17d4d36bea11313b4337dc",
+      "bytes": 280939
     },
     {
-      "arxiv_id": "2104.00586v1",
-      "title": "Machine Learning Enabled Prediction of Cathode Materials for Zn ion Batteries",
-      "filename": "2104.00586v1.pdf",
-      "sha256": "4b8676898e57f90ffd05d3643ca7688ba534e392a67b03a481ad2f9baf57414c",
-      "bytes": 2484992
+      "arxiv_id": "2609.11209v1",
+      "title": "REVA: Reusable Evidence View Aggregation for Context-Efficient RAG Serving",
+      "filename": "2609.11209v1.pdf",
+      "sha256": "a1779977061cc77485478e6567ec6d98c44852f5059a4cb0e77b6ba88244d601",
+      "bytes": 555350
     },
     {
-      "arxiv_id": "2305.11459v1",
-      "title": "DFT + U Study of structural, electronic, optical and magnetic properties of LiFePO4 Cathode materials for Lithium-Ion batteries",
-      "filename": "2305.11459v1.pdf",
-      "sha256": "15eae7892cdae4f0c1357da47ce3b98f040c8818d818e52a8f943747444a0b68",
-      "bytes": 1870373
+      "arxiv_id": "2609.11758v1",
+      "title": "RAG-Safety-Bench: Reliable Evaluation of Retrieval-Augmented LLM Safety",
+      "filename": "2609.11758v1.pdf",
+      "sha256": "0eb8c0582d538136e2ac32fd51bffab170bac16f9173309c9f68870808bdb490",
+      "bytes": 2137960
     },
     {
-      "arxiv_id": "2506.12545v2",
-      "title": "Tailored ordering enables high-capacity cathode materials",
-      "filename": "2506.12545v2.pdf",
-      "sha256": "f7538d04be05627178d4355a338724ddc329a8f1eda426f0df7b6b9d36d5466b",
-      "bytes": 5828602
+      "arxiv_id": "2609.14066v1",
+      "title": "GraMRAG: Orchestrating Multi-Agent Multi-Step Reasoning via Graph Memory with Reinforcement Learning",
+      "filename": "2609.14066v1.pdf",
+      "sha256": "064a15d777f6ba755c2c93d54aa5b9faf1fd999a13e4e422379f95f4df9cd475",
+      "bytes": 6983346
     },
     {
-      "arxiv_id": "2509.10532v1",
-      "title": "Crystal Systems Classification of Phosphate-Based Cathode Materials Using Machine Learning for Lithium-Ion Battery",
-      "filename": "2509.10532v1.pdf",
-      "sha256": "f7009cabdf150b1fe780ca0721bbdb004526868b5a470ceb3835c4473b9765ee",
-      "bytes": 1948183
+      "arxiv_id": "2609.14245v1",
+      "title": "The Attribution-Compression Frontier in Retrieval-Augmented Generation",
+      "filename": "2609.14245v1.pdf",
+      "sha256": "9653fd2075ff46fa7f663b8c8323b86fee310bf152ea1ff3f1dee94c7629e44e",
+      "bytes": 227764
     },
     {
-      "arxiv_id": "2607.06645v1",
-      "title": "BatteryMat: a hierarchical machine-learning and DFT framework for average-voltage screening of lithium-ion cathode materials",
-      "filename": "2607.06645v1.pdf",
-      "sha256": "7fd9bad9c4686830279e86baf2694adb4383fa6c0f4b46647afbab91d2b1e337",
-      "bytes": 6225710
+      "arxiv_id": "2609.15830v1",
+      "title": "CiteGuard-RAG: A Validation-Centered AI System for Evidence-Grounded Question Answering",
+      "filename": "2609.15830v1.pdf",
+      "sha256": "02c74999b5efc67c5df588a90eef91434dc7587a0b5e2c10fa47ba610de0a2d1",
+      "bytes": 789856
     }
   ]
 }

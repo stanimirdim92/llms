@@ -841,7 +841,8 @@ It was `document_timeout=90` written into `parser.py`, taken from Docling's own 
 documentation ("Recommended: 90-120 seconds for production systems"). That recommendation is
 generic and this workload is not: measured on a four-core container, a 14-page paper parses in
 95 s (6.8 s/page) and a 21-page one in 253 s (12.1 s/page), so 90 s is roughly seven pages. It
-rejected **every one** of the six arXiv papers in `data/eval/corpus_manifest.json` — 7/14, 9/47,
+rejected **every one** of the six arXiv papers that were the eval corpus that day (six
+cathode-materials reviews, replaced 2026-09-17) — 7/14, 9/47,
 5/21 and 13/31 pages — which means the system could not ingest an ordinary scientific paper, the
 exact document class it exists for.
 
