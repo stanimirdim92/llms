@@ -36,10 +36,44 @@ document registry (filenames, status, chunk counts), never from document content
 did they use?", "summarise report.pdf". The default for an ordinary question about content.
 - aggregate: asks about themes, patterns, or a comparison spanning many or all of the user's \
 documents -- "what themes run through my uploads?", "compare every paper's methodology".
-- out_of_scope: not answerable from anything a person could plausibly have uploaded here -- \
-small talk, general knowledge, or a request unrelated to the user's own documents.
+- out_of_scope: not about documents at all -- small talk, a coding request, the weather, or \
+world knowledge with no document referent.
+
+You cannot see the user's documents, and you must not guess at their contents. An unfamiliar \
+name, benchmark, method or term in the question is evidence FOR factual, not against it: a \
+person naming something specific is naming something they uploaded. Only choose out_of_scope \
+when the question would be off-topic whatever the user had uploaded.
 
 Respond with exactly one label."""
+
+_PROMPT_MEASUREMENT = """Routing accuracy, measured live 2026-09-17 against the seeded eval corpus.
+
+**81% (13/16) before the out_of_scope rewrite above, and every error was one cell of the
+confusion matrix: `factual -> out_of_scope`, 3 of 9 factual questions.** The pattern was sharp.
+All three misses named a specific term from a paper -- "What does RAG-Safety-Bench evaluate?",
+"How does CiteGuard-RAG validate a citation?" -- while the six that passed used generic phrasing
+("the robustness paper", "the authors", "the evaluation"). The classifier was treating an
+unfamiliar proper noun as general knowledge, which is backwards: naming a specific term from
+your own document is the *strongest* signal it is a document question. The old wording invited
+exactly that, by defining out_of_scope as "not answerable from anything a person could plausibly
+have uploaded" -- a judgment the classifier cannot make, because it cannot see the documents, so
+it substituted "do I recognise this term?".
+
+**93% (26/28) after**, on a set widened to 28 including adversarial out_of_scope cases, because
+the obvious risk of the rewrite was pushing everything into factual. It did not: "What is
+retrieval-augmented generation, in general?", "Who is the CEO of Anthropic?" and "Thanks, that
+was helpful!" all still classify out_of_scope.
+
+Two remain, and only one is a model error. "What is the attribution-compression frontier?" still
+goes out_of_scope -- a bare "What is X?" reads as definitional however the prompt is worded.
+"Delete all my documents." goes metadata against an expected out_of_scope, and the **expected
+label is the weaker half of that pair**: this taxonomy has no class for an action or a command,
+so neither answer is right. That gap is recorded as an open question rather than papered over,
+and it gets sharper when Phase 5.5 adds a real DELETE route.
+
+Not a held-out number: the prompt was rewritten after seeing three failures and the 28 includes
+those three. 12 of the 28 are new and the fix generalised to them, but making this a measurement
+rather than an anecdote is Phase 2.3's job."""
 
 _MAX_ROUTER_TOKENS = 128
 """Structured output is a **tool call**, so this has to fit `{"intent": "..."}` as tool

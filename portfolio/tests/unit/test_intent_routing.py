@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import contextlib
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -282,28 +282,26 @@ async def test_document_summary_uses_the_singular_for_exactly_one_document(
 
 
 async def test_a_truncated_tool_call_is_labelled_not_a_validation_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """`classify_intent` must convert the parser's `ValidationError` into
-    `IntentUnavailableError`, because the two reach a reader completely differently: one is
-    "the routing model gave us nothing", the other is "this codebase has a schema bug".
+    """`classify_intent` must turn the parser's `ValidationError` into `IntentUnavailableError`,
+    because the two reach a reader completely differently: one says "the routing model gave us
+    nothing", the other says "this codebase has a schema bug". The second is what every `/ask`
+    call reported while `_MAX_ROUTER_TOKENS` was 16.
 
-    Simulates exactly what an over-tight `max_tokens` produces -- `_IntentLabel(**{})` -- rather
-    than a hand-built error, so the test breaks if the schema gains a second required field and
-    the real failure shape changes.
+    The stub reproduces the real failure rather than a hand-built error: langchain's tool parser
+    calls `_IntentLabel(**res["args"])`, and a truncated tool call makes `args` an empty dict.
+    Written through a variable so the empty mapping is not a static-analysis error -- the point
+    is that it is empty *at runtime*, which is what pydantic reacts to.
     """
-    from pydantic import ValidationError  # noqa: PLC0415
-
     from app.generation import intent_router  # noqa: PLC0415
 
-    def _truncated() -> object:
-        raise ValidationError.from_exception_data("_IntentLabel", [])
+    # `Any`, not `object`: a truncated tool call is untyped JSON, and the whole point is that
+    # the mapping is empty at *runtime* -- a precise annotation here would be asserting the
+    # opposite of what the test reproduces.
+    truncated_args: dict[str, Any] = {}
 
     class _Chain:
         async def ainvoke(self, _messages: object) -> object:
-            try:
-                intent_router._IntentLabel()  # type: ignore[call-arg]
-            except ValidationError:
-                raise
-            return _truncated()
+            return intent_router._IntentLabel(**truncated_args)
 
     monkeypatch.setattr(intent_router, "_classifier", _Chain)
 
