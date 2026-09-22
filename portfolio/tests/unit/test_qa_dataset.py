@@ -4,16 +4,16 @@
 derived string (`{tenant}-{digest}-text-0007`); nothing resolves it at authoring time, and a
 reference to a chunk that does not exist does not error anywhere downstream -- it simply never
 appears in any retrieval, so the pair scores as a permanent miss and the aggregate reads as a
-retrieval regression. The same shape as the drift check in `build_eval_chunks.py --check`, from
-the other side: that one catches the corpus moving under the dataset, this one catches the
-dataset naming something the corpus never had.
+retrieval regression. The same shape as the drift check in `seed_eval_corpus.py --check`, from the
+other side: that one catches the store moving under the dataset, this one catches the dataset
+naming something the store never had.
 
 **What this file cannot check, stated so a green run is not read as more than it is.** It
 proves every golden chunk id *resolves* and still holds the text it was written against. It
 cannot prove the id is the *right* one: a pair citing `-text-0009` where `-text-0003` holds the
 answer passes everything here, and shows up only as one stubbornly low recall score in the first
-eval run. Grounding was checked at authoring time against the full chunk text -- every number in
-every answer was found in the chunks it cites -- and that check is not committable, because
+eval run. Grounding was checked at authoring time against the full chunk text -- all 67 pairs, every
+number in every answer found in the chunks it cites -- and that check is not committable, because
 `data/eval/chunk_text/` is derived from the papers and therefore not in the repository.
 
 The routing checks are the third part. `metadata`, `out_of_scope` and `aggregate` questions are
@@ -68,7 +68,7 @@ def test_every_golden_chunk_id_exists_in_the_corpus() -> None:
 
 
 def test_every_golden_chunk_still_holds_the_text_it_was_written_against() -> None:
-    """The gap `build_eval_chunks.py --check` cannot close, because it compares a rebuild against
+    """The gap `seed_eval_corpus.py --check` cannot close, because it compares the store against
     the manifest and would be satisfied by both moving together.
 
     Regenerate the manifest after a Docling bump and commit it, and every id here still resolves
@@ -147,10 +147,15 @@ def test_every_corpus_document_is_asked_about() -> None:
     assert unasked == [], f"corpus documents with no golden question: {unasked}"
 
 
-@pytest.mark.parametrize("kind", ["table", "cross-document", "unanswerable"])
+@pytest.mark.parametrize("kind", ["table", "figure", "cross-document", "unanswerable"])
 def test_the_hard_classes_the_plan_names_are_present(kind: str) -> None:
-    """Phase 2.1 asks specifically for table lookups, answers spanning two documents, and
-    questions the corpus cannot answer. They are the classes a set generated from the corpus does
-    not produce, which is why they are named rather than left to a count.
+    """Phase 2.1 asks specifically for table lookups, figure-grounded questions, answers spanning
+    two documents, and questions the corpus cannot answer. They are the classes a set generated
+    from the corpus does not produce, which is why they are named rather than left to a count.
+
+    `figure` is the one that could not exist before 2026-09-17. The manifest used to come from an
+    offline parse that passed `figures=[]`, so there were no figure chunks to cite; it now comes
+    from a real ingest, where they are 18 of 248 chunks. A figure's caption is its only searchable
+    text, so these pairs are also the only ones that measure whether captioning is working at all.
     """
     assert [pair["id"] for pair in _pairs() if pair["kind"] == kind] != []

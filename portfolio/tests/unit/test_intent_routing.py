@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import contextlib
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -279,3 +279,45 @@ async def test_document_summary_uses_the_singular_for_exactly_one_document(
 
     assert summary.startswith("You have 1 document:")
     assert "1 documents" not in summary
+
+
+async def test_a_truncated_tool_call_is_labelled_not_a_validation_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    """`classify_intent` must turn the parser's `ValidationError` into `IntentUnavailableError`,
+    because the two reach a reader completely differently: one says "the routing model gave us
+    nothing", the other says "this codebase has a schema bug". The second is what every `/ask`
+    call reported while `_MAX_ROUTER_TOKENS` was 16.
+
+    The stub reproduces the real failure rather than a hand-built error: langchain's tool parser
+    calls `_IntentLabel(**res["args"])`, and a truncated tool call makes `args` an empty dict.
+    Written through a variable so the empty mapping is not a static-analysis error -- the point
+    is that it is empty *at runtime*, which is what pydantic reacts to.
+    """
+    from app.generation import intent_router  # noqa: PLC0415
+
+    # `Any`, not `object`: a truncated tool call is untyped JSON, and the whole point is that
+    # the mapping is empty at *runtime* -- a precise annotation here would be asserting the
+    # opposite of what the test reproduces.
+    truncated_args: dict[str, Any] = {}
+
+    class _Chain:
+        async def ainvoke(self, _messages: object) -> object:
+            return intent_router._IntentLabel(**truncated_args)
+
+    monkeypatch.setattr(intent_router, "_classifier", _Chain)
+
+    with pytest.raises(intent_router.IntentUnavailableError, match="no usable label"):
+        await intent_router.classify_intent("what does this paper evaluate?")
+
+
+def test_the_router_token_ceiling_clears_the_measured_floor() -> None:
+    """A tool call carrying `{"intent": "..."}` does not fit in 16 tokens, and the symptom is a
+    500 on every question rather than a bad label.
+
+    Measured 2026-09-17 against `claude-haiku-4-5-20251001`: 16, 24 and 32 all fail identically,
+    64 and 128 both succeed in 0.55-0.68 s. The assertion is the measured floor, not a round
+    number, and it is here because nothing else in the suite can see this -- every other test
+    stubs `classify_intent` precisely so it makes no network call.
+    """
+    from app.generation.intent_router import _MAX_ROUTER_TOKENS  # noqa: PLC0415
+
+    assert _MAX_ROUTER_TOKENS >= 64, "below 64 the tool call is truncated and every /ask 500s"

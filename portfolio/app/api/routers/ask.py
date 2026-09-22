@@ -12,7 +12,7 @@ from app.auth.scopes import ASK
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
-from app.generation.intent_router import classify_intent
+from app.generation.intent_router import IntentUnavailableError, classify_intent
 from app.registry.db import list_document_records
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import RetrievalUnavailableError
@@ -117,7 +117,18 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
     # *content* gets an answer grounded in whatever text happens to be nearest in embedding
     # space regardless of how wrong that is for the question actually asked. `factual` alone
     # falls through to the pipeline below, unchanged from before this branch existed.
-    match await classify_intent(request.question):
+    try:
+        intent = await classify_intent(request.question)
+    except IntentUnavailableError as exc:
+        # 503, not a fallback to `factual`. Routing an unclassified question into retrieval is
+        # precisely the production defect Phase 2.0 fixed, so there is no safe default to pick
+        # here -- see `IntentUnavailableError`.
+        raise APIError(
+            "Could not classify the question (the routing model didn't return a usable label). Try again shortly.",
+            code=503,
+        ) from exc
+
+    match intent:
         case "metadata":
             return _plain_answer(await _document_summary(tenant_id))
         case "out_of_scope":

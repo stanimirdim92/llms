@@ -305,14 +305,15 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 
-- **There is a fixed evaluation corpus again, but nothing scored against it yet.** Six
-  materials-science arXiv papers are pinned in `data/eval/corpus_manifest.json` by versioned id
-  and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not committed.
-  `scripts/build_eval_chunks.py` parses and chunks them into the 205 chunk ids the golden set is
-  allowed to name (`data/eval/chunk_manifest.json`, committed), and `data/eval/qa_dataset.jsonl`
-  holds 65 hand-written Q&A pairs against them. What does not exist is anything that *runs* them:
-  no recall@k, no routing confusion matrix, no CI gate, so no number yet says whether retrieval is
-  good. Epic 1's final 15-question prose/table/figure spot-check was never run either.
+- **The evaluation corpus is pinned; the golden set is being rewritten against it.** Six 2026
+  arXiv papers on retrieval-augmented generation are pinned in `data/eval/corpus_manifest.json`
+  by versioned id and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not
+  committed. `scripts/seed_eval_corpus.py` ingests them through the real pipeline and records the
+  chunk ids that actually landed — 248 of them (185 text, 45 table, 18 figure), recorded in
+  `data/eval/chunk_manifest.json`. `data/eval/qa_dataset.jsonl` holds 67 hand-written Q&A pairs
+  against those ids. What does not exist is anything that *runs* them: no recall@k, no routing
+  confusion matrix, no CI gate, so no committed number yet says whether retrieval is good. Epic
+  1's final 15-question prose/table/figure spot-check was never run either.
 - **Qdrant's real network path is untested.** Its *filtering* now is — tenant isolation, the
   version filter and the prune selector run through `qdrant_client`'s in-memory engine in CI — but
   the live client over the wire isn't, and that's where the point-ID constraint escaped to

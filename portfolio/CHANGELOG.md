@@ -13,6 +13,21 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-17
+
+#### Fixed
+
+- **`POST /v1/ask` answered `500` to every question.** The model that classifies a question
+  before deciding whether to search had a token ceiling too low for its own reply, so it was cut
+  off mid-answer and the API could not read the result. Questions are classified and answered
+  normally again.
+- **A question that cannot be classified now returns `503`, not `500`.** The message names
+  routing as the cause. It deliberately does not fall back to searching your documents: an
+  unclassified question routed into search is what produces a confident answer drawn from an
+  unrelated document.
+
+  *Upgrading:* nothing to do.
+
 ### 2026-09-16
 
 #### Changed

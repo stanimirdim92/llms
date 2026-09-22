@@ -133,8 +133,10 @@ looks wrong, say so once and proceed.
 - **Epic 4 Phase 5.1** — ingestion behind a procrastinate job queue. `POST /v1/documents`
   returns 202; document row and job commit in one transaction.
 - **No shared corpus** (removed 2026-08-03). Every document belongs to the tenant that uploaded
-  it; a fresh install has nothing to search until someone uploads. Epic 2's golden set therefore
-  has no document set to measure against and needs tenant-owned fixtures built first.
+  it; a fresh install has nothing to search until someone uploads. Epic 2's fixture corpus is now
+  tenant-owned, as that requires: six 2026 arXiv RAG papers under a **pinned** seed tenant id,
+  seeded through the real `ingest_document` by `scripts/seed_eval_corpus.py` (2026-09-17).
+  248 chunks. The golden set written against it is still outstanding.
 - **Explicit document scoping on `/ask`** — pulled forward out of Epic 2 because it fixed an
   observed defect rather than moving a metric. Naming a document by **filename or `doc_id`**
   scopes retrieval to it; an unowned identifier is a 404.
@@ -201,6 +203,12 @@ underneath them.
 | Answer latency | 11.2 s | Same trace. |
 | `max_tokens` headroom | **11 tokens of 1024** | `stop_reason: end_turn`, so it completed — but structured-output requests sit right against the ceiling. |
 | Prompt caching viability | Not viable in current shape | Stable prefix is the 693-char system prompt (~200 tokens), under Sonnet 5's 1,024-token minimum. Chunks vary per question, so there is no larger shared prefix. |
+| **Routing accuracy** | **81% -> 93%** (13/16, then 26/28 after the prompt fix) | 2026-09-17, live against the seeded corpus. Every pre-fix error in one cell: `factual -> out_of_scope`. Not held out -- see `intent_router._PROMPT_MEASUREMENT`. |
+| **Answer truncation rate** | **30% (3 of 10)** at `_MAX_ANSWER_TOKENS = 1024` | 2026-09-17, ten factual questions through the live `/ask`. This is the number `answer_service`'s own docstring says must exist before the ceiling is a decision. |
+| **`/ask` latency, live** | 0.6-12.0 s, ~10 s median | Same ten. The 0.6 s outlier is the one remaining routing miss returning a refusal with no retrieval. |
+| **Intent classifier latency** | 0.55-0.68 s | 2026-09-17, `claude-haiku-4-5-20251001` at `max_tokens` 64 and 128 alike. |
+| **Ingest, live, 4 cores** | 66-342 s per paper, 248 chunks over 6 | 2026-09-17, real `ingest_document`: parse + vision captions + Voyage + Qdrant. 185 text, 45 table, **18 figure**. |
+| **Docling parse, 4 cores** | 6.8-12.1 s/page | 2026-09-16. 90 s (the old hardcoded ceiling) is ~7 pages, which rejected every paper then in the corpus. |
 
 - **slowapi vs the hand-rolled limiter** (2026-08-02, localhost Redis, steady state, best of
   five). Per-check latency is a wash: 0.32 ms sync, 0.36 ms async. Under concurrency the sync
@@ -301,7 +309,24 @@ more discussion.
    is what's missing before it can be computed. Needs info (current Anthropic/Voyage per-model
    pricing, and where it should live — `Settings`? a committed table?), not a design decision —
    resolve here, then update that plan, before approving it.
-6. **Whole-document extraction.** "Fill this schema from document X" is not a similarity query
+6. **The intent taxonomy has no class for an action or a command.** "Delete all my documents."
+   classifies `metadata`, and the expected label in the probe was `out_of_scope` -- but neither is
+   right, because `metadata`/`factual`/`aggregate`/`out_of_scope` are all *questions*. Today this
+   is harmless (nothing acts on it). It stops being harmless when Phase 5.5 adds
+   `DELETE /v1/documents`: a router with no way to say "this is a request to do something" either
+   answers a destructive request as if it were a lookup, or refuses it as off-topic. Decide the
+   taxonomy before the route exists, not after. Found 2026-09-17 while measuring routing accuracy.
+
+7. **Is 30% answer truncation the right trade?** Measured 2026-09-17 at `_MAX_ANSWER_TOKENS =
+   1024`. `answer_service` deliberately keeps it a constant rather than a setting, because
+   "raising it is a cost decision that should be made with the truncation rate in front of you" --
+   that rate now exists. The two ways forward point opposite: raise the ceiling (output is priced
+   5x input and is already 60% of the cost of an answer, so this raises cost on exactly the
+   longest answers), or instruct the model to answer more briefly (cheaper, and the earlier
+   measurement's own conclusion was "cost control means shorter answers, not smaller prompts").
+   Needs the user's call, not a default.
+
+8. **Whole-document extraction.** "Fill this schema from document X" is not a similarity query
    — every field must be found, so ranking chunks against the schema text is the wrong
    primitive even when correctly scoped. Works today only because the test document is one
    chunk; on a longer document `rerank_top_n=5` would drop a field-bearing chunk and the model
@@ -319,48 +344,52 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
-### 2026-09-09 — Epic 2 Phases 2.1–2.5 planned (five Draft docs), `ARCHITECTURE.md` stale claim fixed
+### 2026-09-17 — the eval corpus, rebuilt on the right papers and seeded for real; two live defects fixed
 
-**Fixed:** `docs/ARCHITECTURE.md:136-139` still said the intent router "does not exist yet" —
-false since Phase 2.0 shipped 2026-09-08. Corrected to point at
-`app/generation/intent_router.py` and `portfolio/CLAUDE.md` § Intent routing. Found by a
-doc-consistency-style recon sweep while planning the item below, not a dedicated sweep.
+The user corrected two things, and the second correction is the one worth carrying forward.
 
-**Planned:** implementation plans for Epic 2 Phases 2.1–2.5, one plan + one todo file per
-phase (this repo's document-set habit of small focused docs, applied to `docs/tasks/` too),
-all `Status: Draft`, none approved yet:
+**The corpus was the wrong six papers.** The lithium-ion cathode set was the *demo* corpus
+removed with the `global` tenant on 2026-08-03; rebuilding it rebuilt a decision that had already
+been reversed. Replaced with six 2026 arXiv RAG papers (evaluation, poisoning robustness,
+citation grounding, context efficiency, multi-agent graph RAG), pinned by versioned id + sha256.
 
-- `docs/tasks/EPIC2-P1-golden-set-plan.md` (+ `-todo.md`) — Phase 2.1
-- `docs/tasks/EPIC2-P2-run-storage-plan.md` (+ `-todo.md`) — Phase 2.2
-- `docs/tasks/EPIC2-P3-eval-gate-plan.md` (+ `-todo.md`) — Phase 2.3
-- `docs/tasks/EPIC2-P4-corpus-answering-plan.md` (+ `-todo.md`) — Phase 2.4
-- `docs/tasks/EPIC2-P5-retrieval-techniques-plan.md` (+ `-todo.md`) — Phase 2.5
+**The fixture was built offline and did not describe the system.** `build_eval_chunks.py` parsed
+the corpus itself with `chunk_document(..., figures=[])`, so its manifest had **no figure chunks
+at all** -- and figure chunks turn out to be 18 of 248 in the real corpus, 7%. A fixture that is
+nearly the real chunk set is worse than none, because recall@k against it reads as a property of
+retrieval. Deleted and replaced with `scripts/seed_eval_corpus.py`, which runs the real
+`ingest_document` and reads the manifest back out of Qdrant filtered on `list_active_versions`.
+The user's point, stated plainly: earlier sessions ran the whole thing in-session, and that is
+what finds things.
 
-Dependency order: 2.1 → 2.2 → 2.3 (checkpoint CP-001) → {2.4, 2.5} in parallel.
+**It found things immediately.** Two defects, neither visible to a green suite:
 
-**One real gap found and resolved during planning, not in `EPIC_2_PLAN.md` itself:** `gh
-secret list` on this repo returned empty — no `ANTHROPIC_API_KEY`/`VOYAGE_API_KEY` exist in
-CI — so Phase 2.3's CI gate cannot call live provider APIs as the spec's "must work offline"
-line implies. User's call: a record-once/replay-in-CI harness (`vcrpy` cassettes), not live
-secrets and not an out-of-band gate. Recorded as `EPIC2-P3-eval-gate-plan.md`'s TD-001/TD-002/
-TD-003. The `eval` optional-dependency-group placement this plan lands on (TD-001 in
-`EPIC2-P2-run-storage-plan.md`) turned out to already match this file's own standing
-directive above ("eval tooling therefore belongs in an `eval` extra") — found independently
-during planning, not by reading that directive first; consistent, not a conflict.
+1. **Every `/ask` call returned 500.** `_MAX_ROUTER_TOKENS` was 16; structured output is a tool
+   call, so the classifier must emit `{"intent": "..."}` as tool arguments, which does not fit.
+   Generation stopped mid-call, arguments arrived as `{}`, `_IntentLabel` failed validation. The
+   suite could not see it because every test that reaches `ask()` stubs `classify_intent` -- 437
+   tests passing over a pipeline that answered nothing. Now 128, and a classification failure is
+   `IntentUnavailableError` -> a labelled 503 rather than a generic 500. **No fallback to
+   `factual`**, because that is the defect Phase 2.0 exists to fix.
+2. **The router refused questions naming a term from the user's own paper.** Measured 81%
+   (13/16), with every error in one confusion cell: `factual -> out_of_scope`, 3 of 9. All three
+   named a specific term ("What does RAG-Safety-Bench evaluate?"); the passes used generic
+   phrasing. The prompt defined out_of_scope as "not answerable from anything a person could
+   plausibly have uploaded" -- a judgment the classifier cannot make, so it substituted "do I
+   recognise this term?". Rewritten; 93% (26/28) after.
 
-**Another gap surfaced, not yet resolved — needs info, not a decision:** Open question 5
-below (`cost_usd`, the per-model price table) is a real blocker for
-`EPIC2-P2-run-storage-plan.md`'s row schema (T001 includes a `cost_usd` column with nothing
-yet computing it). Not resolved this session — flagged in that plan's Open Questions section
-rather than guessed. Resolve before approving EPIC2-P2.
+Commits: `9b2e1ae` (corpus + seeding), `f8d971f` (router 500), `8a4c4fb` (routing prompt), plus
+`217fb99`/`c219c20`/`2ffc31e` earlier in the session (the pinned-corpus tooling and the Docling
+parse ceiling).
 
-**Sequencing, per the user this session:** Epic 2 first (in progress, per the plans above).
-Epic 3 (curation agent) comes after Epic 2, unchanged from the existing plan's own stated
-order. **Epic 4 (Phases 5.2 onward) is explicitly deprioritized — "keep for later"** — a
-change from the prior session's priority list, which had Phase 5.2's identity question ahead
-of Epic 3. Nothing built this session; approvals for the five Draft plans above are pending,
-session paused mid-review ("we will continue shortly").
+**Gate, and a correction to the previous handoff.** `pytest tests/unit` is **440 passed, 0
+skipped** here -- not "348 passed, 73 skipped, 3 failed, pre-existing and unavoidable in this
+sandbox". Postgres 16 and `redis-server` are installed in this container and the `verify` skill
+documents starting them; the three failures were an unstarted Redis. Qdrant is not installed but
+the release binary runs natively (`qdrant 1.18.3`, the pinned version), so the full stack runs
+in-session without a docker daemon.
 
+### 2026-09-16 (later still) — the branch conflict recurred, and the note about it was wrong
 ### 2026-09-16 (later still) — the branch conflict recurred, and the note about it was wrong
 
 This session was launched with harness instructions naming
