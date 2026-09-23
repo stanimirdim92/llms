@@ -390,7 +390,7 @@ may have tested less than it looks. CI provides Postgres and Redis and then asse
 none of the five skipped, because broken service wiring would otherwise be
 indistinguishable from a pass.
 
-[`CLAUDE.md`](CLAUDE.md) carries the failure contracts — the things that look correct and
+[`CLAUDE.md`](CLAUDE.md) and [`.claude/rules/`](.claude/rules/) carry the failure contracts — the things that look correct and
 aren't. Read it before changing the store layer, the compose file, or anything touching
 `tenant_id`.
 

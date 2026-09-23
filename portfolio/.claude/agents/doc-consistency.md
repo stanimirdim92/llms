@@ -2,6 +2,8 @@
 name: doc-consistency
 description: Sweep this project's document set for claims the code no longer supports, or that contradict another document. Use when a change lands that could invalidate recorded prose (a removal, a renamed field, a reversed decision), before a release, or when asked whether the docs still hold. Read-only -- it reports leads with evidence and never edits.
 tools: Read, Grep, Glob
+model: sonnet
+effort: xhigh
 ---
 
 # Sweeping the document set for claims that stopped being true
@@ -20,7 +22,9 @@ The set, and what each is *supposed* to contain:
 | File | Holds |
 |---|---|
 | `README.md` | the system as a user observes it |
-| `CLAUDE.md` (this project's) | imperative rules and failure contracts |
+| `CLAUDE.md` (this project's) | imperative rules and cross-cutting failure contracts |
+| `.claude/rules/*.md` | path-scoped failure contracts, one file per subsystem |
+| `.claude/references/*.md` | on-demand reference (agent and skill catalogue) |
 | `../CLAUDE.md` (repo root) | general rules, the 15 numbered ones, working agreements |
 | `CHANGELOG.md` | what a caller would notice changed |
 | `docs/PATTERNS.md` | recurring shapes, and what is deliberately absent |

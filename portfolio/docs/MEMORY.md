@@ -6,7 +6,7 @@ State that does not survive a new session otherwise. Read this first; update it 
 
 | File | Holds | Changes when |
 |---|---|---|
-| `CLAUDE.md` | Rules and invariants. Imperative, timeless. | A new way to break the system is found. |
+| `CLAUDE.md` + `.claude/rules/` | Rules and invariants. Imperative, timeless. Cross-cutting ones in `CLAUDE.md`; path-scoped ones in the rule file covering where the violation would be written. | A new way to break the system is found. |
 | `CHANGELOG.md` | What a *user* notices changed, and what breaks on upgrade. | Observable behaviour changes. |
 | `docs/PATTERNS.md` | Recurring shapes and the failures they prevent. | The architecture changes. |
 | `docs/TECHNICAL_DECISIONS.md` | Why each technology, and what was rejected. | A decision is revisited. |
@@ -34,7 +34,8 @@ believed.
 3. Update **Current state** if a phase's status moved.
 4. Record any real **measurement** taken — a number measured once and written down is worth
    more than the same number re-derived approximately three times.
-5. If a new invariant was discovered, put it in `CLAUDE.md` and note here that you did.
+5. If a new invariant was discovered, put it in `CLAUDE.md` or the matching `.claude/rules/`
+   file and note here that you did.
 
 **Keep the log pruned.** Entries older than a few months whose content has been absorbed into
 `CLAUDE.md` / `docs/TECHNICAL_DECISIONS.md` should be deleted, not archived — the pointer to the
@@ -343,6 +344,52 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-24 — Claude setup: plugin toggles, read-only hook, skills pruned (uncommitted)
+
+- **Committed `.claude/settings.json`** (none existed): denies `Read`/`Edit` of `.env` and
+  `.env.testing` (both hold real keys; pre-commit and gitleaks only stop a *commit*), pre-allows the
+  gate commands, disables `llm-application-dev`, enables `qdrant-skills`. Probed with `claude -p`
+  from `portfolio/`: the `.env` read was denied, and the only matching skills listed were the
+  eleven `qdrant:*` ones, with no `llm-application-dev` entries.
+- **`.claude/hooks/readonly-bash.py`** on the four agents that have `Bash`. Agent `tools:` cannot
+  restrict Bash by pattern (docs), so it is a `PreToolUse` allowlist in frontmatter. Probed live:
+  `design-review` was blocked on `touch` and `uv --version` and the file was not created.
+  `test-gaps` refused `pytest` from its instructions before the hook was reached.
+- **Sweeps on `model: sonnet`, `effort: xhigh`**: `doc-consistency`, `route-audit`,
+  `candidate-triage`. The judgement agents still inherit the parent model.
+- **Removed vendored skills**: all ten `qdrant-*` (duplicated by the plugin), `slo-architect`, the
+  three `langgraph-*`. `VENDORED.md`, `ruff.toml` and the Epic 2 plan pointers were updated.
+- **Decided (user, option b): not the upstream `langchain-skills` plugin.** It is all-or-nothing (22
+  skills, including the excluded hub `langchain-rag`) and no per-skill disable exists. Keep vendored
+  `langchain-dependencies`; re-vendor the three `langgraph-*` when Epic 3 starts.
+- **`contract-review` and `test-gaps` took the mechanics of the user's global `code-reviewer` and
+  `test-engineer`**: the record-everything finding standard with confidence, the three severity
+  labels, stable ids, an output template with Not verified, `maxTurns: 60`, no agent-to-agent calls,
+  and test-level, scenario-by-risk and boundary-matching guidance. Their project scope is unchanged.
+- **Open**: pre-existing and unrelated: the local `.venv` has ruff 0.14.10 while `uv.lock` pins 0.16.1, and
+  the stale one reports 12 `RUF100` unused-`noqa` errors (at HEAD too). `uv sync --locked` should
+  clear it; not run.
+
+### 2026-09-23 — `CLAUDE.md` split into path-scoped `.claude/rules/` (uncommitted, awaiting review)
+
+`CLAUDE.md` was 720 lines (~7.9k words) loaded every session. Moved **verbatim** by line range
+into seven `.claude/rules/*.md` files with `paths:` frontmatter (ingestion-and-retrieval, database,
+docker, config, health, rate-limiting, auth) plus `.claude/references/agents-and-skills.md` (the
+subagent/skill catalogue, not auto-loaded). `CLAUDE.md` keeps the cross-cutting contracts and is
+now ~220 lines. A script checked that every non-blank original line landed in exactly one file.
+Pointers in the agents (`contract-review`, `design-review`, `doc-consistency`,
+`candidate-triage`), `PATTERNS.md`, `README.md`, `VENDORED.md`, `run-stack`, `TECHNICAL_DECISIONS.md`,
+the Epic 3/4 plans and `app/registry/models.py` were retargeted; root `../CLAUDE.md`'s
+never-delegate rule now names `.claude/rules/`.
+
+**Measured on Claude Code 2.1.281** with a canary rule (`paths: ["**/app/rate_limit.py"]`) and
+`claude -p`: loaded after reading a matching file, absent after reading a non-matching one, and
+loaded from both a `portfolio/` session and a repo-root session. So `**/`-prefixed globs work
+from either working directory, unlike agent definitions (open question #2), which walk up only.
+Not measured: whether a subagent loads path-scoped rules, so review briefs name them explicitly.
+Known gap: "CI runs `alembic check`" (in `database.md`) has no glob that reaches the CI workflow
+at repo-root `.github/`.
 
 ### 2026-09-17 — the eval corpus, rebuilt on the right papers and seeded for real; two live defects fixed
 

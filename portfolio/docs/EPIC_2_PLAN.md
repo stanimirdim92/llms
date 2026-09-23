@@ -183,7 +183,7 @@ for the 2026-09-17 prompt fix, which told the classifier to read an unfamiliar s
 evidence *for* `factual`: this pair is what stops that correction sliding into "everything is
 factual". Verified live -- still `out_of_scope` after the change.
 
-Consult `.claude/skills/qdrant-search-quality` for recall@k methodology rather than inventing
+Consult the `qdrant:qdrant-search-quality` plugin skill for recall@k methodology rather than inventing
 one; `ranx` is what it names for scoring, and **nothing scores anything yet** -- that is 2.3.
 
 ## Phase 2.2 — Run storage: parquet + DuckDB

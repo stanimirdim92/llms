@@ -346,7 +346,7 @@ scoping assertions.
   `failed` document returns 409, same as `/ask`'s document-scoping 409.
 
   Doing this required a real fix, not just a new route: `chunk_document`'s output is grouped
-  by kind (every text chunk, then every table, then every figure — see `CLAUDE.md`'s failure
+  by kind (every text chunk, then every table, then every figure — see `.claude/rules/ingestion-and-retrieval.md`'s failure
   contract), so reconstructing a document from that list without a true position would put
   every table and figure at the end. `Chunk.order_index`
   (`app/ingestion/document_order.py`, computed once per document from

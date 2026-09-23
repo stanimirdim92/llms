@@ -363,7 +363,8 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   once hosting went on the table — `.claude/skills/slo-architect`, MIT, provenance in
   `.claude/skills/VENDORED.md`. Note it ships three executable, unreviewed Python scripts, unlike
   every other vendored skill here. Nothing measures the API yet, so an SLO defined from it today
-  would have no SLI behind it. Delete this line at the next prune.
+  would have no SLI behind it. **Removed again 2026-09-24** (user's call) for that same reason;
+  re-vendor from the commit in `VENDORED.md` when there is traffic. Delete this line at the next prune.
 
 ## Portfolio and presentation
 

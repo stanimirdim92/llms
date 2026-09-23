@@ -2,6 +2,14 @@
 name: candidate-triage
 description: Triage a third-party candidate -- a skill, a skill repository, a library, a tool -- against licence and provenance first, then fit against this project's recorded decisions. Use when asked to check, scan, or evaluate something external for adoption, especially a repo with more candidates than anyone wants to read by hand. Returns a per-candidate verdict with evidence; adopts nothing.
 tools: Read, Grep, Glob, Bash, WebFetch
+model: sonnet
+effort: xhigh
+hooks:
+  PreToolUse:
+    - matcher: Bash
+      hooks:
+        - type: command
+          command: 'python3 "$(git rev-parse --show-toplevel)/portfolio/.claude/hooks/readonly-bash.py"'
 ---
 
 # Triaging something external for adoption
@@ -31,7 +39,8 @@ URL and reporting on the wrong project is much worse than reporting that you cou
 decision already recorded here.** Read these before judging fit:
 
 - `docs/TECHNICAL_DECISIONS.md` -- why each technology, and what was rejected.
-- `CLAUDE.md` (this project's) and `../CLAUDE.md` (the repo root's 15 numbered rules).
+- `CLAUDE.md` (this project's), `.claude/rules/*.md` (its path-scoped contracts), and
+  `../CLAUDE.md` (the repo root's 15 numbered rules).
 - `docs/IDEAS.md`'s *considered and rejected* table.
 - `.claude/skills/VENDORED.md` -- what was already taken, and the per-candidate verdicts on what
   was not. Read this one first if the candidate is a skill; it may already be judged.

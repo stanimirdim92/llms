@@ -8,13 +8,18 @@ rather than the code that was imagined.
 
 Nothing here is built.
 
+**First step when this starts:** re-vendor `langgraph-fundamentals`, `langgraph-persistence` and
+`langgraph-human-in-the-loop` from `langchain-ai/langchain-skills` (removed 2026-09-24 because they
+were loaded ahead of use). Vendor the three, not the upstream plugin, which also ships the excluded
+`langchain-rag`. Refresh steps are in `.claude/skills/VENDORED.md`.
+
 ## What changed under the original plan
 
 | Original plan says | Now | Why |
 |---|---|---|
 | `worker/arq_worker.py`, Redis-backed | **procrastinate**, Postgres-backed — reuse `app/worker/` | Already built for Phase 5.1. The row and its job commit in one transaction; a Redis broker leaves a window where the row exists and the job does not. See `docs/TECHNICAL_DECISIONS.md` § "Job queue". |
 | `agent/cache.py` — hash-keyed skip of re-fetch/re-embed | Same idea, but the **model-call cache** is the version worth building | Parse caching already exists (`processed_dir`). What is missing is caching *model* calls — the pattern taken from graphrag's LLM cache. Key on `sha256(payload + prompt_version + model_id)`; without `prompt_version` a prompt edit silently serves stale output forever. |
-| `sqlmodel` episodic decision log | Unchanged, but note the datetime contract | `SQLModel` datetime fields need an explicit `sa_column` **and** a runtime `datetime` import — see `CLAUDE.md`'s failure contracts. This bit `save_document_record` and cost weeks. |
+| `sqlmodel` episodic decision log | Unchanged, but note the datetime contract | `SQLModel` datetime fields need an explicit `sa_column` **and** a runtime `datetime` import — see `.claude/rules/database.md`. This bit `save_document_record` and cost weeks. |
 | `PostgresSaver` checkpointer | Unchanged, and `langgraph-checkpoint-postgres` is already a declared dependency | The SQLite checkpointer is **not** an option: one database engine, per `docs/TECHNICAL_DECISIONS.md`. |
 | Scrape → parse → embed as one job | Same shape, but it must go through `ingest_document` | That function owns the terminal `ingested` write and the `EmptyDocumentError` guard. A second ingestion path would diverge on what a finished row looks like. |
 | `injection_guard.py` heuristic + Claude classification | Unchanged, and now has a sibling | Phase 2.0's intent classifier is the same shape of call. Build them against one structured-output helper rather than two. |

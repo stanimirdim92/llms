@@ -61,7 +61,7 @@ against a role that isn't the schema owner.** The application-level filter above
 first line and still has to be right; RLS is what stops a query that got it wrong from leaking
 rows instead of just returning nothing useful. Full reasoning, including why this needed a new
 non-superuser role and not just a `CREATE POLICY`, is in `docs/TECHNICAL_DECISIONS.md` § Row-level
-security; the rule itself is in `../CLAUDE.md` § Row-level security.
+security; the rule itself is in `.claude/rules/database.md` § Row-level security.
 
 **Prevents:** cross-tenant reads. This class of bug returns data instead of raising, so it is
 invisible until someone reports seeing a stranger's document.
@@ -263,7 +263,7 @@ the content change under a stable id"), to the figure PNG (`<figure_id>-<sha256[
 2026-08-06 — it was `<figure_id>.png`, overwritten in place while the previous generation's chunks
 still cited it), and, in the negative, to Qdrant point ids — which *are* derived from position
 (`{doc_id}-text-0000`) and are made safe by hashing `ingestion_version` into the id rather than by
-any cleanup. See "Never renumber figure ids" in `CLAUDE.md`.
+any cleanup. See "Never renumber figure ids" in `.claude/rules/ingestion-and-retrieval.md`.
 
 **Prevents:** a cache entry describing something other than what asked for it — which reads as
 perfectly good content at every point of use. Also, deduplicate *within* a batch and not only
@@ -316,7 +316,7 @@ persistence would break; `_build_filter` explains that a wrong filter returns da
 raising.
 
 **Prevents:** a future reader — human or model — reverting a subtle constraint because the code
-looked redundant. Every entry in `CLAUDE.md`'s "Failure contracts" section began as one of
+looked redundant. Every failure contract in `CLAUDE.md` and `.claude/rules/` began as one of
 these comments.
 
 ---

@@ -206,7 +206,7 @@ through gunicorn, the compose mapping, and nginx's upstream automatically **prov
 `--env-file` is passed** -- without it only the container's gunicorn moves.
 
 **nginx crash-looping on `chown(...) failed`** -- its `cap_add` is missing `CHOWN`. See
-`CLAUDE.md`'s failure contracts; the same applies to postgres with a different
+`.claude/rules/docker.md`; the same applies to postgres with a different
 capability set.
 
 **`api` crash-looping with `DuplicateObject: type "procrastinate_job_status" already

@@ -2,6 +2,12 @@
 name: design-review
 description: Check a proposed approach against this project's recorded decisions before it is built -- does it contradict something already decided and written down, which existing pattern should it follow, and what does it make harder later. Use when planning a feature, choosing a library, or considering a structural change, and before writing code for anything larger than a single function. Read-only; it reports conflicts and precedent, it does not design.
 tools: Read, Grep, Glob, Bash
+hooks:
+  PreToolUse:
+    - matcher: Bash
+      hooks:
+        - type: command
+          command: 'python3 "$(git rev-parse --show-toplevel)/portfolio/.claude/hooks/readonly-bash.py"'
 ---
 
 # Checking a proposal against what has already been decided
@@ -24,7 +30,8 @@ Read before answering:
 - `docs/IDEAS.md` § *Considered and rejected*, and the parked entries with their preconditions. A
   parked idea whose precondition is now met is a *different* answer from one still blocked — check
   the precondition against today's code rather than trusting the entry.
-- `CLAUDE.md` § Failure contracts and § Config invariants — a proposal can be architecturally fine
+- `CLAUDE.md` § Failure contracts and § Config invariants, and every `.claude/rules/*.md` (the
+  path-scoped contracts) — a proposal can be architecturally fine
   and still break one of these.
 - `docs/EPIC_*_PLAN.md` — whether the thing is already planned, and in which phase. Proposing work
   that is Phase 5.4 of an existing plan is a sequencing question, not a design question.

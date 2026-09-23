@@ -269,7 +269,7 @@ schema apply) keeps connecting as that role; `app/db.py::get_engine` (`get_sessi
 request-time query, api and worker) had to move to a role RLS actually applies to, or the whole
 migration would pass its own smoke test for a reason that has nothing to do with the policy — the
 table owner was simply never subject to it. This is why the change is a role split and a new
-credential, not a one-line `ALTER TABLE`, and why `../CLAUDE.md`'s "no parallel `DB_USER`" rule
+credential, not a one-line `ALTER TABLE`, and why `.claude/rules/config.md`'s "no parallel `DB_USER`" rule
 needed a stated exception rather than a silent one: that rule was about two names for the *same*
 credential drifting apart, and this is a second credential for a genuinely different purpose.
 

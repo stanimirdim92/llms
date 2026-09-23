@@ -20,7 +20,7 @@ from sqlmodel import Field, SQLModel
 # which reads like a database problem rather than a missing import.
 #
 # The `sa_column=Column(DateTime(timezone=True))` on the fields below is still required and
-# solves a *different* problem (see CLAUDE.md): it stops SQLModel inferring the column type from
+# solves a *different* problem (see .claude/rules/database.md): it stops SQLModel inferring the column type from
 # an unresolvable annotation at class-definition time. That one fails loudly at import; this one
 # only failed when a row was actually written, which is why it survived.
 

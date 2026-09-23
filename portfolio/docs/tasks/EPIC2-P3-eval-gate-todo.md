@@ -108,7 +108,7 @@ via `app.eval.run_store`, reported per question class (`intent_label`).
 **Workstream:** ws-2.3
 
 **Context pointers:**
-- Project/module rules: `.claude/skills/qdrant-search-quality` (recall@k methodology)
+- Project/module rules: the `qdrant:qdrant-search-quality` plugin skill (recall@k methodology)
 - Closest precedent: None
 - Shared contract/invariant: `app.eval.schema` row shape
 

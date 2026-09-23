@@ -15,14 +15,9 @@ extend-exclude = [
     # the commit that vendored them, unnoticed. Adding a vendored directory without adding it here
     # therefore breaks the gate, and *fixing* the gate by letting ruff rewrite the files would
     # destroy the verbatim property the refresh procedure depends on.
-    ".claude/skills/qdrant-*",
     ".claude/skills/langchain-*",
-    ".claude/skills/langgraph-*",
     ".claude/skills/langsmith-*",
     ".claude/skills/postgres-database-migration",
-    # This one ships three executable Python scripts, not just markdown, so the exclusion covers
-    # real .py files rather than fenced blocks inside .md.
-    ".claude/skills/slo-architect",
     ".ruff_cache",
     ".env",
     "*.pyi",

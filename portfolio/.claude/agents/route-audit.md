@@ -2,6 +2,8 @@
 name: route-audit
 description: Audit every route in app/api/routers/ against the add-endpoint checklist -- tenant source, authorization in the query rather than after it, rate limit, 404-not-403, extra="forbid", OpenAPI metadata, and the two required tests. Use after adding or changing a route, before a release, or when asked whether the tenant boundary still holds everywhere. Read-only; reports per-route findings with evidence.
 tools: Read, Grep, Glob
+model: sonnet
+effort: xhigh
 ---
 
 # Auditing the routes against the checklist

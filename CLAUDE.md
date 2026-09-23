@@ -199,7 +199,7 @@ slice `isolation: worktree`, and integrate and gate it yourself. That is a preci
 - **The gate.** An agent reporting "353 passed" is a *claim*, and rule 12 is that a skipped test is
   not a passing test -- one level removed, that becomes an unread skip count reported as green. Run
   it yourself, read the skip count yourself.
-- **A change to a failure contract**, in any `CLAUDE.md` or `PATTERNS.md`. Those exist because
+- **A change to a failure contract**, in any `CLAUDE.md`, `.claude/rules/` file or `PATTERNS.md`. Those exist because
   something cost us; rewording one is the highest-consequence edit in the repo.
 - **The final verdict on a finding.** An agent's report is a lead. Confirm it at the source before
   it is written down, because anything recorded here is read as established fact by the next

@@ -1,44 +1,21 @@
 # Vendored skills
 
-Everything under `qdrant-*/` in this directory is **third-party, copied verbatim** from
-Qdrant's own skills repository. **Four skills are ours** — `verify`, `add-endpoint`, `run-stack` and
-`changelog`, inventoried in `../../CLAUDE.md` § Skills. Everything else here is vendored; the
-sections below say from where.
+**Four skills are ours** — `verify`, `add-endpoint`, `run-stack` and `changelog`, inventoried in
+`../references/agents-and-skills.md` § Skills. Everything else here is vendored; the sections below
+say from where.
 
-| | |
-|---|---|
-| Source | https://github.com/qdrant/skills |
-| Commit | `aa2355fcf06b805110fb8cecbd1aa4d64c15eb73` |
-| Vendored | 2026-07-30 |
-| License | Apache 2.0 — see `QDRANT_LICENSE` (same license as this project) |
-| Skills | 10 top-level, 30 markdown files, ~324KB |
+# qdrant/skills — now the `qdrant-skills` plugin, no longer vendored
 
-## Why vendored rather than installed as a plugin
+**Removed from the repo 2026-09-24, on the user's call.** The ten `qdrant-*` skills were vendored
+here at `aa2355fcf06b805110fb8cecbd1aa4d64c15eb73` (2026-07-30, Apache 2.0) *and* installed as the
+user-level `qdrant-skills@knowledge-work-plugins` plugin, so every session carried two copies of
+each and the unpinned one could fire instead of the pinned one. The plugin won: it is enabled in the
+committed `portfolio/.claude/settings.json`, and its skills are named `qdrant:<skill>`
+(`qdrant:qdrant-multitenancy`, …, plus `qdrant:qdrant-sizing`, which the vendored set lacked).
 
-Upstream ships this as a Claude Code plugin marketplace (`.claude-plugin/marketplace.json`),
-so the alternative is `/plugin marketplace add qdrant/skills`. That would auto-update and add
-nothing to the repo — but it is *per-user machine config*, so it only helps whoever ran it. In
-the repo, the guidance is available to every session and every contributor, and is pinned to a
-known commit rather than shifting under us.
-
-The cost is the usual vendoring cost: these go stale silently. Refresh deliberately:
-
-    git clone --depth 1 https://github.com/qdrant/skills.git /tmp/qdrant-skills
-    rm -rf portfolio/.claude/skills/qdrant-*
-    cp -r /tmp/qdrant-skills/skills/qdrant-* portfolio/.claude/skills/
-    cp /tmp/qdrant-skills/LICENSE portfolio/.claude/skills/QDRANT_LICENSE
-    # then update the commit/date above
-
-## Scope
-
-These live under `portfolio/` rather than the repo root deliberately. Skills in a
-subdirectory only apply when working on files beneath it, and `portfolio/` is the only one of
-this monorepo's four projects that uses Qdrant — at the root they would load into every
-`fastai-dl/` and `transformers-course/` session for nothing.
-
-Only the 10 top-level `SKILL.md` descriptions enter session context. The nested ones
-(`qdrant-scaling/scaling-data-volume/tenant-scaling/SKILL.md` and friends) are
-progressive-disclosure references their parent pulls in on demand.
+What that gives up, so it is a known trade rather than a surprise: the plugin floats with upstream
+instead of being pinned to a reviewed commit, and a contributor without that marketplace installed
+gets no qdrant skills at all. The notes below still apply — read `qdrant-x` as `qdrant:qdrant-x`.
 
 ## The ones that actually bear on this project
 
@@ -102,7 +79,7 @@ Four skills copied verbatim, on the same terms as the qdrant set above.
 | Commit | `f3ea282efb82c84f1093ae58006841e66ca28a94` |
 | Dated | 2026-07-30 |
 | License | **MIT**, declared in the upstream `.claude-plugin/plugin.json` — copied here as `LANGCHAIN_SKILLS_LICENSE.json` |
-| Taken | `langchain-dependencies`, `langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop` |
+| Taken | `langchain-dependencies` (still vendored). `langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop` were **removed 2026-09-24** on the user's call. **Re-vendor them when Epic 3 starts** -- not the upstream plugin, which is all-or-nothing (22 skills, including the excluded `langchain-rag`, with no per-skill disable). |
 
 **Weaker provenance than the qdrant set, and worth knowing.** There is no `LICENSE` file in that
 repository; the MIT declaration exists only in the plugin manifest, which is why the manifest
@@ -127,7 +104,8 @@ the three that actually stop bugs here. The set was cut on that basis.
   packages, went through the 1.0 split (`langchain-classic`, `CrossEncoderReranker` changing
   package), and takes a Dependabot PR every few days. A version reference for the ecosystem is
   the one thing here that is useful today rather than at some future epic.
-- **`langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop`** — Epic 3
+- **`langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop`** — *removed
+  2026-09-24; the reasoning below is why they were taken.* Epic 3
   is a LangGraph agent with human-in-the-loop curation, `langgraph-checkpoint-postgres` is
   already a declared dependency, and `CLAUDE.md` carries a standing directive that its
   checkpointer must be Postgres and never SQLite. `langgraph-persistence` covers exactly
@@ -319,6 +297,10 @@ generator mishandles folded YAML frontmatter. The `SKILL.md` files themselves ar
 of the ones read above are better written than their index entries suggest.
 
 ## Taken after all: `slo-architect`
+
+**Removed 2026-09-24**, on the user's call: nothing measures the API yet, so it had no SLI to work
+from, and its 973-character description was the second-largest always-loaded one. Re-vendor from the
+commit below when there is traffic.
 
 **Vendored 2026-08-05**, on the user's call, reversing the "not now" above. The precondition that
 parked it — "revisit when the app actually serves traffic" — moved when hosting the app online went

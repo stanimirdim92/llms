@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run ruff check *)",
+      "Bash(uv run ruff format *)",
+      "Bash(uv run ty check *)",
+      "Bash(uv run pytest *)",
+      "Bash(uv run alembic check *)",
+      "Bash(uv lock --check *)",
+      "Bash(docker compose config *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.testing)",
+      "Edit(./.env)",
+      "Edit(./.env.testing)"
+    ]
+  },
+  "enabledPlugins": {
+    "llm-application-dev@claude-code-workflows": false,
+    "qdrant-skills@knowledge-work-plugins": true
+  }
+}
