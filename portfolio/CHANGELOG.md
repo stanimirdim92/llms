@@ -13,6 +13,25 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-24
+
+#### Changed
+
+- **Every port the Docker stack publishes can now be moved from `.env`.** Postgres follows
+  `DB_PORT` and Redis follows `REDIS_PORT`, the same variables host-side scripts already use to
+  reach them. Qdrant follows the new `QDRANT_HOST_PORT`, and Streamlit follows the new
+  `STREAMLIT_HOST_PORT`. The containers always talk to each other on the standard ports,
+  whatever these are set to.
+
+#### Fixed
+
+- **Setting `REDIS_PORT` or `DB_PORT` in `.env` no longer breaks the containers.** Setting
+  `REDIS_PORT` to anything other than 6379 made Redis unreachable. `DB_PORT` was passed to the
+  api, worker and Streamlit containers too, so moving it made them dial the wrong port.
+
+  *Upgrading:* nothing to do with the defaults. If you had worked around a busy local port by
+  editing `docker-compose.yml`, set the variable in `.env` instead.
+
 ### 2026-09-17
 
 #### Fixed

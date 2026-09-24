@@ -52,6 +52,17 @@ cross-cutting contracts (`CLAUDE.md` § Never, § The tenant boundary) still app
 
 ## Config invariants
 
+- **A published port's container side is fixed; only the host side comes from `.env`.** Each
+  server listens on its image's port inside the network (Postgres 5432, Redis 6379 per
+  `redis.conf`, Qdrant 6333, Streamlit 8501), so the mappings are `${DB_PORT:-5432}:5432`,
+  `${REDIS_PORT:-6379}:6379`, `${QDRANT_HOST_PORT:-6333}:6333`, `${STREAMLIT_HOST_PORT:-8501}:8501`.
+  `DB_PORT`/`REDIS_PORT` are reused for the host side on purpose: host-side scripts read the same
+  variables to dial the published port, so the two cannot disagree. The containers load `.env`
+  through `env_file`, so each service that talks to Postgres/Redis **pins `DB_PORT: "5432"` /
+  `REDIS_PORT: "6379"` in `environment:`**, which wins over `env_file`. Remove a pin and a
+  developer who moved the host port because 5432 was taken breaks every container. The
+  `${REDIS_PORT}:${REDIS_PORT}` mapping this replaced moved the container side away from where
+  Redis listens (2026-09-24).
 - **`PORT` is the single source of truth** for the api port: gunicorn's `--bind`,
   the compose port mapping, and nginx's upstream (baked in at nginx build time by
   `sed` on the `__API_PORT__` placeholder). Deliberately not nginx's `envsubst`

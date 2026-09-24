@@ -30,9 +30,9 @@ COPY redis.conf /usr/local/etc/redis/redis.conf
 USER redis
 
 # Informational only, and deliberately matching `port 6379` in redis.conf. The compose
-# mapping is `${REDIS_PORT:-6379}` on *both* sides, so setting REDIS_PORT to anything else
-# moves the container-side port while redis.conf keeps listening on 6379 and the service
-# becomes unreachable. If REDIS_PORT ever has to move, redis.conf's `port` moves with it.
+# mapping is `${REDIS_PORT:-6379}:6379` -- REDIS_PORT moves only the host side. It used to
+# be on both sides, which moved the container side away from where redis.conf listens and
+# made the service unreachable; keep the container side fixed to this number.
 EXPOSE 6379
 
 CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]

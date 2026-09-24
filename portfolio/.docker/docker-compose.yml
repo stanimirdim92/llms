@@ -74,7 +74,7 @@ services:
       # any of these three; the api/worker/streamlit services reach them by service name.
       # The mapping is kept, rather than deleted, because `psql`, `redis-cli` and Qdrant's
       # dashboard from the host are how this stack gets debugged.
-      - "127.0.0.1:6333:6333"
+      - "127.0.0.1:${QDRANT_HOST_PORT:-6333}:6333"
     volumes:
       - qdrant_data:/qdrant/storage
     security_opt:
@@ -95,7 +95,10 @@ services:
     restart: unless-stopped
     ports:
       # Loopback only -- see the qdrant service for why `0.0.0.0` is what you get otherwise.
-      - "127.0.0.1:5432:5432"
+      # Host side from DB_PORT -- the same variable host-side scripts (`create_tenant.py`, the
+      # eval seeder) read to reach this, so the two cannot disagree. The container side stays
+      # 5432 because that is where the server listens; containers get DB_PORT pinned to match.
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
     # POSTGRES_USER/PASSWORD/DB come from ../.env via env_file, the same way api/
     # streamlit already load it -- not the `${POSTGRES_USER:-portfolio}` compose-time
     # substitution this used to use. That substitution resolves against the shell env or
@@ -181,7 +184,9 @@ services:
       # known remote-code-execution path (write a module or a cron file via `CONFIG SET dir`).
       # Published on 0.0.0.0, as it was, that is an open Redis on any host with a public
       # interface. Internet-wide scans for exactly this take minutes, not days.
-      - "127.0.0.1:${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
+      # Host side from REDIS_PORT, container side fixed: redis.conf listens on 6379, so moving
+      # the container side (as `${REDIS_PORT}:${REDIS_PORT}` did) made Redis unreachable.
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -214,12 +219,16 @@ services:
       # via env_file above -- no DATABASE_URL or DB_USER/PASSWORD/NAME to construct or
       # keep in sync here. Only DB_HOST needs overriding: config.py's default
       # ("localhost") is right for a bare/local run, but inside this compose network
-      # postgres is reachable by its service name instead. DB_PORT stays the default
-      # 5432 either way, so it's not repeated here.
+      # postgres is reachable by its service name instead.
       DB_HOST: postgres
+      # Pinned, not inherited: `.env`'s DB_PORT/REDIS_PORT are the ports the *host* uses (they
+      # also pick the published ports above), and env_file would otherwise hand them to this
+      # container, which must dial the port the server listens on inside the network.
+      DB_PORT: "5432"
       # Rate-limit counters (app/rate_limit.py) -- must be shared across gunicorn workers,
       # which is why they live in Redis rather than in process memory.
       REDIS_HOST: redis
+      REDIS_PORT: "6379"
     volumes:
       - ../data:/app/data
       # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container
@@ -261,6 +270,8 @@ services:
     environment:
       QDRANT_URL: http://qdrant:6333
       DB_HOST: postgres
+      # Pinned for the same reason as in `api`: `.env`'s DB_PORT is the host-side port.
+      DB_PORT: "5432"
       # No REDIS_HOST: the worker doesn't rate-limit anything. Its queue is Postgres.
     volumes:
       - ../data:/app/data
@@ -347,7 +358,7 @@ services:
       # what is exposed is a login form, not a tenant's documents. Front it with nginx before
       # putting this on a public box, because then it also gets the timeouts, the body-size cap
       # and the security headers that the api service only has by sitting behind the proxy.
-      - "8501:8501"
+      - "${STREAMLIT_HOST_PORT:-8501}:8501"
     env_file:
       - ../.env
     environment:
@@ -356,12 +367,16 @@ services:
       # via env_file above -- no DATABASE_URL or DB_USER/PASSWORD/NAME to construct or
       # keep in sync here. Only DB_HOST needs overriding: config.py's default
       # ("localhost") is right for a bare/local run, but inside this compose network
-      # postgres is reachable by its service name instead. DB_PORT stays the default
-      # 5432 either way, so it's not repeated here.
+      # postgres is reachable by its service name instead.
       DB_HOST: postgres
+      # Pinned, not inherited: `.env`'s DB_PORT/REDIS_PORT are the ports the *host* uses (they
+      # also pick the published ports above), and env_file would otherwise hand them to this
+      # container, which must dial the port the server listens on inside the network.
+      DB_PORT: "5432"
       # Rate-limit counters (app/rate_limit.py) -- must be shared across gunicorn workers,
       # which is why they live in Redis rather than in process memory.
       REDIS_HOST: redis
+      REDIS_PORT: "6379"
     volumes:
       - ../data:/app/data
       # Persists Docling's HuggingFace/torch/RapidOCR model downloads across container

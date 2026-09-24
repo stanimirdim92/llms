@@ -349,6 +349,27 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-09-24 (last) — published ports: container side fixed, host side from `.env`
+
+The user asked why some ports were hardcoded in compose when `.env` had the same ones. There
+were two real bugs behind it:
+
+- `${REDIS_PORT}:${REDIS_PORT}` moved the container side away from `redis.conf`'s 6379.
+- `env_file` handed `.env`'s `DB_PORT`/`REDIS_PORT` to the api, worker and Streamlit containers.
+  `093bf92` had just uncommented `DB_PORT=5432`, so a developer moving the host port would
+  have broken every container.
+
+Now the host side comes from `DB_PORT`/`REDIS_PORT` (reused, so host scripts and the published
+port can't disagree) and the new `QDRANT_HOST_PORT`/`STREAMLIT_HOST_PORT`. The container side
+is fixed, and containers pin `DB_PORT`/`REDIS_PORT` in `environment:`. That is now a config
+invariant in `.claude/rules/docker.md`.
+
+**Verified by `docker compose config` only**, with 5433/6380/6334/8502 in a temporary `.env`.
+Host sides moved; api/Streamlit/worker still got `DB_PORT=5432` and api/Streamlit
+`REDIS_PORT=6379`. **No tests run** (user: "don't run tests"), and the stack was not brought up.
+
+The user also said latency p95 comes from LangSmith; the in-app SLO is reverted (`f64e8ca`).
+
 ### 2026-09-24 (later) — doc drift from the golden set, `cost_usd` resolved, and a pricing claim that never came true
 
 - **The handoff the user pasted was 15 commits stale** (it described `main` at `7b07e52`) and
