@@ -1,0 +1,119 @@
+{
+  "counts": {
+    "citation_precision": {
+      "all": 56,
+      "cross-document": 3,
+      "figure": 6,
+      "prose": 40,
+      "table": 7
+    },
+    "correctness": {
+      "all": 59,
+      "cross-document": 3,
+      "figure": 6,
+      "prose": 40,
+      "table": 7,
+      "unanswerable": 3
+    },
+    "groundedness": {
+      "all": 52,
+      "figure": 6,
+      "prose": 36,
+      "table": 7,
+      "unanswerable": 3
+    },
+    "mrr": {
+      "all": 56,
+      "cross-document": 3,
+      "figure": 6,
+      "prose": 40,
+      "table": 7
+    },
+    "ndcg_at_5": {
+      "all": 56,
+      "cross-document": 3,
+      "figure": 6,
+      "prose": 40,
+      "table": 7
+    },
+    "recall_at_5": {
+      "all": 56,
+      "cross-document": 3,
+      "figure": 6,
+      "prose": 40,
+      "table": 7
+    },
+    "routing_accuracy": {
+      "all": 67,
+      "corpus-level": 2,
+      "cross-document": 3,
+      "figure": 6,
+      "prose": 40,
+      "refusal": 3,
+      "registry": 3,
+      "table": 7,
+      "unanswerable": 3
+    }
+  },
+  "meta": {
+    "answer_model": "claude-sonnet-5",
+    "git_sha": "cca3538",
+    "intent_router_model": "claude-haiku-4-5-20251001"
+  },
+  "scores": {
+    "citation_precision": {
+      "all": 0.6174,
+      "cross-document": 0.0,
+      "figure": 0.7037,
+      "prose": 0.6547,
+      "table": 0.5952
+    },
+    "correctness": {
+      "all": 0.8475,
+      "cross-document": 0.0,
+      "figure": 1.0,
+      "prose": 0.85,
+      "table": 1.0,
+      "unanswerable": 1.0
+    },
+    "groundedness": {
+      "all": 0.9615,
+      "figure": 0.8333,
+      "prose": 0.9722,
+      "table": 1.0,
+      "unanswerable": 1.0
+    },
+    "mrr": {
+      "all": 0.8006,
+      "cross-document": 0.0,
+      "figure": 1.0,
+      "prose": 0.8125,
+      "table": 0.9048
+    },
+    "ndcg_at_5": {
+      "all": 0.7845,
+      "cross-document": 0.0,
+      "figure": 1.0,
+      "prose": 0.7944,
+      "table": 0.8796
+    },
+    "recall_at_5": {
+      "all": 0.8036,
+      "cross-document": 0.0,
+      "figure": 1.0,
+      "prose": 0.8125,
+      "table": 0.9286
+    },
+    "routing_accuracy": {
+      "all": 0.9104,
+      "corpus-level": 1.0,
+      "cross-document": 0.0,
+      "figure": 1.0,
+      "prose": 0.925,
+      "refusal": 1.0,
+      "registry": 1.0,
+      "table": 1.0,
+      "unanswerable": 1.0
+    }
+  }
+}

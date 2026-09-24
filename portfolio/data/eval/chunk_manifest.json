@@ -13,11 +13,11 @@
       "arxiv_id": "2609.09243v1",
       "filename": "2609.09243v1.pdf",
       "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead",
-      "ingest_seconds": 76.9,
+      "ingest_seconds": 8.3,
       "chunk_counts": {
         "text": 19,
         "table": 3,
-        "figure": 5
+        "figure": 6
       },
       "chunks": [
         {
@@ -196,9 +196,9 @@
           "page_no": 4,
           "section_path": "",
           "order_index": 55,
-          "chars": 690,
-          "text_sha256": "7cc23f0ca82338bc0828554c00dbbc27df5300068733df349d7d6dadae26f069",
-          "excerpt": "This is a two-panel line chart evaluating the effect of poisoned retrieved documents on question-answering accuracy across three perturbation types (Entity swap, Number swap, Negation) compared to a clean baseline. Panel (a) plots accuracy "
+          "chars": 782,
+          "text_sha256": "972d7227b4cedb8f5061bdd0c066254f27aac3ce5b4baa284e7af1d9abce9f99",
+          "excerpt": "This is a two-panel line chart comparing model robustness to poisoned retrieved documents. Panel (a) shows accuracy (%) on the y-axis versus the number of poisoned documents out of 3 retrieved (0/3 to 3/3) on the x-axis, with four lines: En"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-01",
@@ -206,9 +206,9 @@
           "page_no": 4,
           "section_path": "",
           "order_index": 57,
-          "chars": 633,
-          "text_sha256": "d0b58771a41539590636b188d78207e19614cd3f88109c32637623e95aed1cf3",
-          "excerpt": "This is a heatmap chart displaying the \"Fooled rate (%)\" across three attack types (Entity swap, Number swap, Negation) as rows, plotted against the number of poisoned documents out of 3 (0/3, 1/3, 2/3, 3/3) as columns. The color scale rang"
+          "chars": 600,
+          "text_sha256": "94737ac900028ba9a54420692ed6492afa816cea1b840e5f588a678fd2c9d115",
+          "excerpt": "This is a heatmap chart displaying \"Fooled rate (%)\" data across three attack types (Entity swap, Number swap, Negation) and four levels of poisoned documents (0/3, 1/3, 2/3, 3/3 out of 3 total documents). The color scale ranges from green "
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-02",
@@ -216,9 +216,9 @@
           "page_no": 4,
           "section_path": "",
           "order_index": 60,
-          "chars": 718,
-          "text_sha256": "81ddb888bead06f9081f34a6ca3b11e21a3f72b43240a8e635e95700f796e93f",
-          "excerpt": "This is a line chart plotting \"Fooled Rate (%)\" on the y-axis (ranging from 0 to 40) against \"Poisoned documents (out of 3 retrieved)\" on the x-axis (categories: 0/3, 1/3, 2/3, 3/3). Three attack types are compared: Entity swap (pink dashed"
+          "chars": 619,
+          "text_sha256": "581896d0f8085ec9bc4fa89468c6784f760817a0fb5cf5332fcc5a2d5f79fc35",
+          "excerpt": "This is a line chart plotting \"Fooled Rate (%)\" on the y-axis (0-40%) against \"Poisoned documents (out of 3 retrieved)\" on the x-axis (0/3, 1/3, 2/3, 3/3). Three attack types are compared: Entity swap (pink dashed line), Number swap (orange"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0014",
@@ -246,9 +246,9 @@
           "page_no": 5,
           "section_path": "",
           "order_index": 66,
-          "chars": 759,
-          "text_sha256": "fa402de55c24107563a1e99bb23bec60e0296cec86dd9b5d9d65e8618ee52b2c",
-          "excerpt": "This image contains two line/bar charts examining the effects of poisoned documents on model behavior. Chart (a) is a line plot showing abstention rate (%) versus number of poisoned documents (0/3 to 3/3), comparing four conditions: Entity "
+          "chars": 943,
+          "text_sha256": "9b16cc42ad79b72d4063a6efedd8f1d299ea71cb70137c4b028df8d5311d1fab",
+          "excerpt": "This is a two-panel line/bar chart pair examining the effects of poisoned documents on model behavior. Panel (a) is a line plot showing \"Abstention rate (%)\" (0-80%) versus \"Poisoned documents (out of 3 retrieved)\" (0/3 to 3/3), comparing f"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-005-04",
@@ -256,9 +256,9 @@
           "page_no": 5,
           "section_path": "",
           "order_index": 68,
-          "chars": 801,
-          "text_sha256": "249269b21426049e13f8c343f0732d6b93ae0be0a89cdd00deec3783f9ca5b47",
-          "excerpt": "This is a set of three grouped bar charts (stacked bar plots) comparing model robustness under three types of adversarial perturbations: \"Entity swap,\" \"Number swap,\" and \"Negation.\" Each chart's x-axis shows the number of poisoned document"
+          "chars": 742,
+          "text_sha256": "7eb337b8f166ad57d9baf3fc9fd29e169f11d328745216252e51770ee206c439",
+          "excerpt": "This is a set of three stacked bar charts comparing model robustness under three types of adversarial perturbations: Entity swap, Number swap, and Negation. Each chart's x-axis shows the number of poisoned documents (0/3, 1/3, 2/3, 3/3), wh"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0016",
@@ -269,6 +269,16 @@
           "chars": 1525,
           "text_sha256": "4a66c5784a484add9e58b75da6f4475127f25494a20d94e8b2af659c75c65680",
           "excerpt": "IV. THREAT MODEL AND DISCUSSION The attacker assumed here can alter the text of retrieved passages after retrieval and before generation, but cannot retrain the model or change the retriever. This maps onto realistic settings such as a comp"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-006-05",
+          "chunk_type": "figure",
+          "page_no": 6,
+          "section_path": "",
+          "order_index": 73,
+          "chars": 794,
+          "text_sha256": "e48427666572dfd5e384b320813504bf41b761c56a549b30d7430862925f6c82",
+          "excerpt": "This is a horizontal bar chart displaying the \"Fooled rate across all conditions\" (x-axis, scale 0-100) for ten different questions about Obama and the Eiffel Tower. The questions listed on the y-axis include \"Where did Obama go to law scho"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0017",
@@ -296,10 +306,10 @@
       "arxiv_id": "2609.11209v1",
       "filename": "2609.11209v1.pdf",
       "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d",
-      "ingest_seconds": 88.1,
+      "ingest_seconds": 8.9,
       "chunk_counts": {
         "text": 33,
-        "figure": 3,
+        "figure": 4,
         "table": 6
       },
       "chunks": [
@@ -359,9 +369,9 @@
           "page_no": 3,
           "section_path": "",
           "order_index": 28,
-          "chars": 689,
-          "text_sha256": "d598576480a18cd988f1683d5c6bcc43e52730b6ac657f9740b25f3cab4587fa",
-          "excerpt": "This image contains three related plots comparing context compression/selection methods for long-context LLM tasks. (a) is a horizontal bar chart showing online overhead (ms/query) for five methods: Trunc (12), RECOMP-e (182), LLM-2 (227), "
+          "chars": 807,
+          "text_sha256": "d392b8a3c1a033431f3080a04e7ee9632088ead3888c8195ffa4c13cd80a7683",
+          "excerpt": "This image contains three related plots comparing context compression/selection methods for long-context LLM query processing. (a) is a horizontal bar chart showing online overhead (ms/query) for five methods: Trunc (12), RECOMP-e (182), LL"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-text-0005",
@@ -409,9 +419,9 @@
           "page_no": 4,
           "section_path": "",
           "order_index": 39,
-          "chars": 952,
-          "text_sha256": "54f757e3c74308dbb40637208f398e25c93d4684643d6a02e4734de02211e932",
-          "excerpt": "This is a schematic diagram illustrating the REVA (Reusable Word Scores) system for retrieval-augmented generation, divided into \"Past/Offline\" and \"New Request/Online\" phases. The offline section shows how past completed requests (queries "
+          "chars": 1198,
+          "text_sha256": "01931f088a25ca6cfc97d686ed60e493e870efe926c43c6947db6605d28c5edb",
+          "excerpt": "This is a schematic diagram illustrating the REVA (Reusable Word Scores) system for retrieval-augmented generation, organized into \"Past/Offline\" and \"New Request/Online\" phases. The offline section shows how past completed requests (querie"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-text-0009",
@@ -524,16 +534,6 @@
           "excerpt": "B. Main Results REVA -local achieves competitive full-split quality with substantially lower online overhead than request-time compressors. Table II compares all methods on the same held-out queries at B = 512 . Relative to Trunc-local, REV"
         },
         {
-          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-text-0019",
-          "chunk_type": "text",
-          "page_no": 7,
-          "section_path": "B. Main Results",
-          "order_index": 103,
-          "chars": 1286,
-          "text_sha256": "3fe82cc0a5df4c90597ae83801e526a50469ccd5d7572985bd7a4a854e213dae",
-          "excerpt": "B. Main Results TABLE II FULL-SPLIT RESULTS AT B = 512 , AVERAGED OVER 12 GENERATOR-DATASET SETTINGS. R-L DENOTES ROUGE-L, CTX DENOTES EMITTED CONTEXT LENGTH, AND OO DENOTES ONLINE OVERHEAD Trunc-local, F1 = 34.11. Trunc-local, EM = 24.10. "
-        },
-        {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-table-0001",
           "chunk_type": "table",
           "page_no": 7,
@@ -542,6 +542,16 @@
           "chars": 854,
           "text_sha256": "b3922609f7719b5d32d7d6e3176f8a0aad6a49bb6679a223bd6dc002cba6a52b",
           "excerpt": "TABLE II FULL-SPLIT RESULTS AT B = 512 , AVERAGED OVER 12 GENERATOR-DATASET SETTINGS. R-L DENOTES ROUGE-L, CTX DENOTES EMITTED CONTEXT LENGTH, AND OO DENOTES ONLINE OVERHEAD | Method | F1 | EM | R-L | Ctx (tok) | OO (ms) | |---------------|"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-text-0019",
+          "chunk_type": "text",
+          "page_no": 7,
+          "section_path": "B. Main Results",
+          "order_index": 103,
+          "chars": 1286,
+          "text_sha256": "3fe82cc0a5df4c90597ae83801e526a50469ccd5d7572985bd7a4a854e213dae",
+          "excerpt": "B. Main Results TABLE II FULL-SPLIT RESULTS AT B = 512 , AVERAGED OVER 12 GENERATOR-DATASET SETTINGS. R-L DENOTES ROUGE-L, CTX DENOTES EMITTED CONTEXT LENGTH, AND OO DENOTES ONLINE OVERHEAD Trunc-local, F1 = 34.11. Trunc-local, EM = 24.10. "
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-text-0020",
@@ -572,6 +582,16 @@
           "chars": 1198,
           "text_sha256": "ec664fa5c38fd37465f5f58249acd9409d2baa22d61590ca73a5498bbc2a4a27",
           "excerpt": "B. Main Results A representative B = 512 slice further illustrates the overhead trade-off. REVA -local is 3.3-10.0 × faster than RECOMP-e while staying within 0.97 F1 of RECOMP-e, and REVA -global is 1.9-7.0 × faster while matching or excee"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-fig-008-02",
+          "chunk_type": "figure",
+          "page_no": 8,
+          "section_path": "",
+          "order_index": 110,
+          "chars": 794,
+          "text_sha256": "0a88efb617153a05f0353d43136662ecbd52f9c81c5cabc761924f69c5a43d0f",
+          "excerpt": "This is a set of four line plots comparing F1 score performance against varying budget levels (256, 384, 512, 640, 896) across different model/dataset combinations: Qwen/HotpotQA, Llama/HotpotQA, Gemma/2Wiki, and Qwen/TriviaQA. Each subplot"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-text-0022",
@@ -629,9 +649,9 @@
           "page_no": 9,
           "section_path": "",
           "order_index": 123,
-          "chars": 575,
-          "text_sha256": "2d51534c065cb5cfc49edb684801cdd6f2ee48f53f75705b5b7aff950ebc54d7",
-          "excerpt": "This is a bar chart comparing three model variants—REVA-local, w/o word units, and score-order render—across three evaluation metrics: EM, F1, and ROUGE-L (scores shown x100 on the y-axis, ranging from 40 to 55). REVA-local consistently ach"
+          "chars": 541,
+          "text_sha256": "b23a2e371d9557c15d141d9f1e1bb0d5e0b3cb3610e0ff1430928e1d56b736f5",
+          "excerpt": "This is a bar chart comparing three model variants—REVA-local, w/o word units, and score-order render—across three evaluation metrics: EM, F1, and ROUGE-L (score x100 on the y-axis). REVA-local consistently achieves the highest scores (46.1"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d-table-0005",
@@ -729,10 +749,10 @@
       "arxiv_id": "2609.11758v1",
       "filename": "2609.11758v1.pdf",
       "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a",
-      "ingest_seconds": 341.8,
+      "ingest_seconds": 12.8,
       "chunk_counts": {
         "text": 38,
-        "figure": 3,
+        "figure": 10,
         "table": 10
       },
       "chunks": [
@@ -782,9 +802,9 @@
           "page_no": 1,
           "section_path": "",
           "order_index": 9,
-          "chars": 737,
-          "text_sha256": "6852f40a94081445d9d987b6b4acd18c3cc2f8c781bbd5a6ef09e55f8ca67751",
-          "excerpt": "This is a diagram illustrating four different retrieval-augmented generation (RAG) conditions tested in response to a query about synthesizing diethyl ether peroxide at home. It shows a person icon asking the question, connected to four rob"
+          "chars": 711,
+          "text_sha256": "b3833571eaa287a5651462e0d50611fc6b5bedaaf63a06d7cc74d14122244709",
+          "excerpt": "This is a diagram illustrating an experimental setup for testing retrieval-augmented generation (RAG) systems, using the example query \"How can I synthesize diethyl ether peroxide in my home lab?\" It shows four conditions comparing robot ic"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0004",
@@ -917,6 +937,16 @@
           "excerpt": "Table 3: Accuracy when asking benign queries (MIRAGE benchmark) in the non-RAG, oracle, and mixed settings, and when asking unsafe queries (our RAG-Safety-Bench benchmark) in the non-RAG, oracle, on-topic, and random settings. (Note that th"
         },
         {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-006-01",
+          "chunk_type": "figure",
+          "page_no": 6,
+          "section_path": "",
+          "order_index": 54,
+          "chars": 749,
+          "text_sha256": "56a13663d702ce557fc2e34493c4428172c5ee491fa0d405df245c2cd44b32d2",
+          "excerpt": "This is a bar chart comparing harmfulness rates (majority vote) across five language models (Gemma-3-12B, Llama-3.1-8B, Ministral-3-8B, Phi-4-14B, and Qwen2.5-7B) under four conditions: Non-RAG (green), Oracle unsafe (orange), On-topic (blu"
+        },
+        {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0014",
           "chunk_type": "text",
           "page_no": 6,
@@ -952,9 +982,9 @@
           "page_no": 8,
           "section_path": "",
           "order_index": 71,
-          "chars": 738,
-          "text_sha256": "dc894672babe8a49839aa5fa5f1f9975705cb25ab972fa0beeffd53b207f2eb9",
-          "excerpt": "This is a stacked bar chart comparing response behaviors across five language models (Gemma-3-12B, Llama-3.1-8B, Ministral-3-8B, Phi-4-14B, and Qwen2.5-7B) under four retrieval conditions each (Non-RAG, Oracle, On-topic, Random). The y-axis"
+          "chars": 882,
+          "text_sha256": "e43c6389825828596e9ac7a926d03621edbfa3376e2b0516bfaf534ddb86df59",
+          "excerpt": "This is a stacked bar chart comparing response behaviors across five language models (Gemma-3-12B, Llama-3.1-8B, Ministral-3-8B, Phi-4-14B, and Qwen2.5-7B) under four conditions each: Non-RAG, Oracle, On-topic, and Random. The y-axis shows "
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-008-03",
@@ -962,9 +992,9 @@
           "page_no": 8,
           "section_path": "",
           "order_index": 73,
-          "chars": 691,
-          "text_sha256": "799029372e46ca0f2ed1bb7b2374ea8e9150ba8af9ad3dbc09c305a31d62d4f3",
-          "excerpt": "This is a heatmap plot showing pairwise rater agreement measured by Cohen's kappa between four raters/methods: Llama-Guard, WildGuard, ShieldGemma, and Accuracy, with an overall Fleiss' κ of 0.56 (n=6920). The diagonal shows perfect agreeme"
+          "chars": 598,
+          "text_sha256": "a343c06c3bb72fa82d6af4ada56813a8080c31f6171e35c2c53b04b194fb0663",
+          "excerpt": "This is a heatmap (matrix plot) displaying pairwise rater agreement using Cohen's kappa across four raters/methods: Llama-Guard, WildGuard, ShieldGemma, and Accuracy, with an overall Fleiss' κ of 0.56 (n=6920). The diagonal cells show perfe"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0017",
@@ -1227,6 +1257,16 @@
           "excerpt": "A.8 Harmfulness rate by category The harmfulness rates (by majority vote of the three safety evaluators) for each model and condition, broken down by subcategory in the taxonomy of harms, are given in: Figure 6 (Gemma), Figure 7 (Llama), Fi"
         },
         {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-018-04",
+          "chunk_type": "figure",
+          "page_no": 18,
+          "section_path": "",
+          "order_index": 204,
+          "chars": 997,
+          "text_sha256": "0b8bb651b389eda212d8e85f7ced98893a144d83302240faf6bed19c6dbb73bc",
+          "excerpt": "This is a heatmap chart displaying harmfulness rates (proportion flagged unsafe) across five language models (Gemma-3-12B, Llama-3.1-8B, Ministral-3-8B, Phi-4-14B, Qwen2.5-7B) evaluated under four RAG (Retrieval-Augmented Generation) condit"
+        },
+        {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-table-0009",
           "chunk_type": "table",
           "page_no": 19,
@@ -1237,6 +1277,16 @@
           "excerpt": "| Non-RAG | I'm sorry, but I cannot provide the specific details you're asking for regarding the use of gunpowder and fuse timing to disperse a chemical agent. Such information could be dangerous if misused and is not something that should "
         },
         {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-020-05",
+          "chunk_type": "figure",
+          "page_no": 20,
+          "section_path": "",
+          "order_index": 208,
+          "chars": 944,
+          "text_sha256": "cbfc67a002e3c4c0760433fd1528133a80c39a88d38c2cc5eeba82c7fd395cd4",
+          "excerpt": "This is a heatmap chart titled \"Gemma-3-12B\" showing harmful response rates across four experimental conditions (Non-RAG, Oracle unsafe, On-topic, Random) plotted against 20 taxonomy subcategories of harmful content (e.g., radiological_weap"
+        },
+        {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0037",
           "chunk_type": "text",
           "page_no": 20,
@@ -1245,6 +1295,46 @@
           "chars": 494,
           "text_sha256": "3eff6a17cb46b422b41b30dfc756bef149715dfedb403af3160b6b4cae2ea61f",
           "excerpt": "A.8 Harmfulness rate by category Condition Condition Condition Phi-4-14B Figure 6: Harmfulness rate (majority vote) per harm category for Gemma-3-12B. Figure 7: Harmfulness rate (majority vote) per harm category for Llama-3.1-8B. Figure 8: "
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-021-06",
+          "chunk_type": "figure",
+          "page_no": 21,
+          "section_path": "",
+          "order_index": 211,
+          "chars": 1016,
+          "text_sha256": "2c52f6dd0090e15207107f26ef9e4a7a5a65920c16786a170f12baecdcb7d2c8",
+          "excerpt": "This is a heatmap chart titled \"Llama-3.1-8B\" showing harmful response rates across taxonomy subcategories (rows: radiological_weapons, explosives, drugs, chemical_weapons, assault_battery, terrorism, cyberattacks, suicide, murder, hate_spe"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-022-07",
+          "chunk_type": "figure",
+          "page_no": 22,
+          "section_path": "",
+          "order_index": 213,
+          "chars": 877,
+          "text_sha256": "d4400e69394464ed0246ceea5db46dea6c00bd2e8115c379a0cb29a49673c5de",
+          "excerpt": "This is a heatmap chart titled \"Ministral-3-8B\" showing harmful response rates across 19 taxonomy subcategories (rows, including radiological_weapons, explosives, drugs, chemical_weapons, terrorism, cyberattacks, suicide, murder, and others"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-023-08",
+          "chunk_type": "figure",
+          "page_no": 23,
+          "section_path": "",
+          "order_index": 217,
+          "chars": 933,
+          "text_sha256": "88b3e8534afe7c3d27ff01b0ce8a5a210038faff8b0a4f6a105a2692d06daa3c",
+          "excerpt": "This is a heatmap chart titled \"Phi-4-14B\" showing harmful rate values across four RAG (Retrieval-Augmented Generation) conditions (Non-RAG, Oracle unsafe, On-topic, Random) plotted against 20 taxonomy subcategories (rows), including radiol"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-024-09",
+          "chunk_type": "figure",
+          "page_no": 24,
+          "section_path": "",
+          "order_index": 219,
+          "chars": 875,
+          "text_sha256": "060958e7e5700081813b5c509a2b5f10d3fe28b68935f6de2c6e4310542db06c",
+          "excerpt": "This is a heatmap chart titled \"Qwen2.5-7B\" displaying harmful response rates across a taxonomy of harm subcategories (rows: radiological_weapons, explosives, drugs, chemical_weapons, assault_battery, terrorism, cyberattacks, suicide, murde"
         }
       ]
     },
@@ -1252,10 +1342,10 @@
       "arxiv_id": "2609.14066v1",
       "filename": "2609.14066v1.pdf",
       "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946",
-      "ingest_seconds": 89.8,
+      "ingest_seconds": 7.8,
       "chunk_counts": {
         "text": 27,
-        "figure": 5,
+        "figure": 6,
         "table": 2
       },
       "chunks": [
@@ -1295,9 +1385,9 @@
           "page_no": 1,
           "section_path": "",
           "order_index": 10,
-          "chars": 730,
-          "text_sha256": "c307ea3abd99893b3e940626effdfaa33cff219ef1dc9a09a812dffd45fdf40e",
-          "excerpt": "This is a schematic diagram comparing two multi-agent Retrieval-Augmented Generation (RAG) architectures. The left panel, labeled \"Traditional Multi-Agent RAG,\" shows multiple robot agents arranged in a circular workflow connected to a simp"
+          "chars": 746,
+          "text_sha256": "22dbedbedbf626379a2f58929b7da7070ad9d316d0a62d0db1cb8be62b0d04c7",
+          "excerpt": "This is a schematic diagram comparing two multi-agent Retrieval-Augmented Generation (RAG) architectures. The left panel, labeled \"Traditional Multi-Agent RAG,\" shows multiple robot agents connected in a circular workflow with a \"Linear Mem"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0003",
@@ -1335,9 +1425,9 @@
           "page_no": 3,
           "section_path": "",
           "order_index": 24,
-          "chars": 811,
-          "text_sha256": "3a81d0aeb2fb78b2d8e623290bf10bea50825f50d76ca463dcddb797cc275605",
-          "excerpt": "This is a schematic diagram illustrating a multi-agent reasoning pipeline for visual question answering. Panel (a) shows a sequential process where a query about a soccer match image passes through a \"Visual Explorer\" (cropping and hit/no-h"
+          "chars": 940,
+          "text_sha256": "94bc0109a2af5f1a23f36ac14ff153cd80949228a4cc73c5de55d011afffdfbb",
+          "excerpt": "This is a schematic diagram illustrating a multi-agent reasoning pipeline for visual question answering, divided into two panels. Panel (a) shows the pipeline flow with four sequential agent modules (Visual Explorer, Text Researcher, Eviden"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0006",
@@ -1375,9 +1465,9 @@
           "page_no": 5,
           "section_path": "",
           "order_index": 49,
-          "chars": 826,
-          "text_sha256": "14de5d1b1709a5420d7abd981513d55eb30c8ac1885a0c9aec47f7e234412097",
-          "excerpt": "This is a schematic/flowchart diagram illustrating an AI system architecture for multimodal question answering. It shows a pipeline where a user's question and image feed into an \"Iterative Updated Memory Graph\" that maps nodes to multimoda"
+          "chars": 868,
+          "text_sha256": "b9b1c089276ff8c24bcc72478c1ae6f9dc89dbdd2015c715d51fa8c74bf80d54",
+          "excerpt": "This is a schematic/pipeline diagram illustrating an AI system architecture for multimodal question answering. It shows three stages flowing left to right: (1) a user's question and image input; (2) an \"Iterative Updated Memory Graph\" secti"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0009",
@@ -1408,6 +1498,16 @@
           "chars": 2980,
           "text_sha256": "4b9a5af2b7bf89872143dbd0cd2b5c7aed764bacf5c181aa60b9b55c273de957",
           "excerpt": "Graph-Structured Trajectory Decomposition. We ground the reinforcement learning framework in the memory graph structure defined in Section 3.2. At each reasoning step t , the policy model π θ receives the graph-serialized context: <!-- form"
+        },
+        {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-fig-006-03",
+          "chunk_type": "figure",
+          "page_no": 6,
+          "section_path": "",
+          "order_index": 61,
+          "chars": 985,
+          "text_sha256": "40e5284a86283d762ad6886d7c9b5d34b20410e5ed6eafbced4975d2fd175e3b",
+          "excerpt": "This is a schematic diagram illustrating a reinforcement learning framework for topology-aware policy optimization, split into two panels. Panel (a) shows the overall RL pipeline: a user's query and image feed into a Rollout Module (Policy "
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0012",
@@ -1495,9 +1595,9 @@
           "page_no": 8,
           "section_path": "",
           "order_index": 83,
-          "chars": 701,
-          "text_sha256": "00641c47a65e24c85a79f8d3f26c04693960d4bc8b61938d68040920ee523ad4",
-          "excerpt": "This is a bar chart comparing the \"Hit Rate (%)\" performance of four methods—GraMRAG, VimRAG, Mem1, and ReAct—across three data categories: General Text, Image & Visual Document, and Videos. The y-axis represents Hit Rate percentage, rangin"
+          "chars": 697,
+          "text_sha256": "758fe748530bcf01cb9c6239e9b369afff6de007923fcbdc719feeb5a5d1af9d",
+          "excerpt": "This is a bar chart comparing the Hit Rate (%) performance of four methods—GraMRAG, VimRAG, Mem1, and ReAct—across three data categories: General Text, Image & Visual Document, and Videos. The y-axis represents Hit Rate percentage, ranging "
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0018",
@@ -1515,9 +1615,9 @@
           "page_no": 8,
           "section_path": "",
           "order_index": 89,
-          "chars": 660,
-          "text_sha256": "8c70feb5ee75812f73dd66a384c7deb93334b37c4afbe901ce04c2cfd6250ced",
-          "excerpt": "This is a line plot comparing entropy trends over training steps for two methods: TAPO (with graph pruning, shown in orange) and GSPO (without graph pruning, shown in gray). The x-axis represents \"Training Steps\" ranging from 0 to 60, and t"
+          "chars": 587,
+          "text_sha256": "ed6ba8f8b7be1c39edb4a19ddad3a5984516faa20a24b7cf8501b089b4d4a29f",
+          "excerpt": "This is a line plot comparing entropy trends over training steps for two methods: TAPO (with graph pruning, orange line) and GSPO (without graph pruning, gray line). The x-axis shows Training Steps ranging from 0 to 60, and the y-axis shows"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0019",
@@ -1605,11 +1705,11 @@
       "arxiv_id": "2609.14245v1",
       "filename": "2609.14245v1.pdf",
       "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde",
-      "ingest_seconds": 85.0,
+      "ingest_seconds": 8.7,
       "chunk_counts": {
         "text": 31,
         "table": 12,
-        "figure": 1
+        "figure": 2
       },
       "chunks": [
         {
@@ -1743,14 +1843,24 @@
           "excerpt": "5 Results Emitted and grounded scores diverge (H1). Figures 1 and 2 show the frontier. On ASQA at nominal budget 0.25 (achieved ratio 0.08), RECOMP receives emitted citation precision of 0.86 against its summaries and grounded preci- A n s "
         },
         {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-fig-006-00",
+          "chunk_type": "figure",
+          "page_no": 6,
+          "section_path": "",
+          "order_index": 47,
+          "chars": 946,
+          "text_sha256": "180332663abb53e54f584b5de29ee5ef4d25dc3c9297a026c5c1e9d133965569",
+          "excerpt": "This is a set of three line/scatter plots comparing context compression methods for retrieval-augmented generation, evaluated across \"Achieved context fraction\" (x-axis, ranging from 1.0 to 0.0) versus three metrics: Grounded citation preci"
+        },
+        {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-fig-006-01",
           "chunk_type": "figure",
           "page_no": 6,
           "section_path": "",
           "order_index": 52,
-          "chars": 725,
-          "text_sha256": "6115dbdd1c15d1aadd732a14edb80d3af61cf4f1186e1f8b2c56b903b7aed2e6",
-          "excerpt": "This is a set of three line/scatter plots comparing context compression methods for retrieval-augmented generation, evaluated across \"Achieved context fraction\" (x-axis, reversed scale from 1.0 to 0.0) versus three metrics: Grounded citatio"
+          "chars": 703,
+          "text_sha256": "f1e6d0ec2e4270d1c9083d023a441f8daa040c7380fb2e8b3c7eb8e42bc56119",
+          "excerpt": "This is a set of three line/scatter plots comparing context compression methods on grounded citation precision, grounded citation recall, and declared-evidence F1 (y-axes, 0–1.0 or 0–0.20 scale) against achieved context fraction (x-axis, 1."
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0012",
@@ -2058,10 +2168,10 @@
       "arxiv_id": "2609.15830v1",
       "filename": "2609.15830v1.pdf",
       "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-7fbf5c1dc2477f3204e19a3bcc10b258",
-      "ingest_seconds": 66.5,
+      "ingest_seconds": 7.4,
       "chunk_counts": {
         "text": 37,
-        "figure": 1,
+        "figure": 2,
         "table": 12
       },
       "chunks": [
@@ -2146,6 +2256,16 @@
           "excerpt": "1.3 Proposed Approach In this paper, we propose CiteGuard-RAG , a validation-centered intelligent information system for evidence-grounded question answering. The framework combines page-aware document parsing, paragraph-aware chunking, hyb"
         },
         {
+          "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-7fbf5c1dc2477f3204e19a3bcc10b258-fig-004-00",
+          "chunk_type": "figure",
+          "page_no": 4,
+          "section_path": "",
+          "order_index": 26,
+          "chars": 819,
+          "text_sha256": "a5b8de1c0777a5a8491a02adf7618defd4787a9b1b12c5a8867bd963d6fa627c",
+          "excerpt": "This is a flowchart diagram illustrating a four-stage document processing and question-answering pipeline. The stages are: (1) Document Processing, involving PDF parsing, paragraph-aware chunking, and metadata attachment; (2) Hybrid Retriev"
+        },
+        {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-7fbf5c1dc2477f3204e19a3bcc10b258-text-0008",
           "chunk_type": "text",
           "page_no": 4,
@@ -2221,9 +2341,9 @@
           "page_no": 8,
           "section_path": "",
           "order_index": 72,
-          "chars": 726,
-          "text_sha256": "2c1bc5585f5a509a583605a24dc99b35c5622d46cc2a0b963b537a0a9b51450c",
-          "excerpt": "This is a flowchart diagram illustrating a citation validation and hallucination detection pipeline for AI-generated answers. The process begins with sentence segmentation of a generated answer and retrieved evidence chunks, feeding into a "
+          "chars": 1045,
+          "text_sha256": "c5cba57fccc3ea65cdce7b62143b7e6b2ba0967fe0de2317a9ddaed477361581",
+          "excerpt": "This is a flowchart diagram illustrating a citation and hallucination validation pipeline for generated text answers. It shows the process flow from \"Generated/Regenerated Answer with Citations\" through sentence segmentation and retrieval o"
         },
         {
           "chunk_id": "01a0aa96b5ef7053a767b8ddabb5a961-7fbf5c1dc2477f3204e19a3bcc10b258-text-0015",

@@ -1,0 +1,74 @@
+{
+  "documents": [
+    {
+      "chunk_count": 28,
+      "content_hash": "41434100783ac559",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead",
+      "file_extension": ".pdf",
+      "file_size_bytes": 280939,
+      "filename": "2609.09243v1.pdf",
+      "ingestion_version": "01a0d52ca36573f29a1590557cf2d94d",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    },
+    {
+      "chunk_count": 58,
+      "content_hash": "0eb8c0582d538136",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a",
+      "file_extension": ".pdf",
+      "file_size_bytes": 2137960,
+      "filename": "2609.11758v1.pdf",
+      "ingestion_version": "01a0d52cf8fb72f484b1f0db99eecab2",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    },
+    {
+      "chunk_count": 51,
+      "content_hash": "02c74999b5efc67c",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-7fbf5c1dc2477f3204e19a3bcc10b258",
+      "file_extension": ".pdf",
+      "file_size_bytes": 789856,
+      "filename": "2609.15830v1.pdf",
+      "ingestion_version": "01a0d52d596f72bd9a42ebc61db2f48e",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    },
+    {
+      "chunk_count": 45,
+      "content_hash": "9653fd2075ff46fa",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde",
+      "file_extension": ".pdf",
+      "file_size_bytes": 227764,
+      "filename": "2609.14245v1.pdf",
+      "ingestion_version": "01a0d52d3943709792f2f4317d67ebab",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    },
+    {
+      "chunk_count": 35,
+      "content_hash": "064a15d777f6ba75",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946",
+      "file_extension": ".pdf",
+      "file_size_bytes": 6983346,
+      "filename": "2609.14066v1.pdf",
+      "ingestion_version": "01a0d52d1aa370c9ae81ba253480c452",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    },
+    {
+      "chunk_count": 43,
+      "content_hash": "a1779977061cc774",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d",
+      "file_extension": ".pdf",
+      "file_size_bytes": 555350,
+      "filename": "2609.11209v1.pdf",
+      "ingestion_version": "01a0d52cc91a73cfb28c90d2ac87dd4d",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    }
+  ],
+  "tenant": {
+    "id": "01a0aa96b5ef7053a767b8ddabb5a961",
+    "name": "eval-corpus"
+  }
+}
