@@ -184,6 +184,18 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   per-key cost is **1464 bytes**, ~29 MB at 10k tenants × 2 scopes. Two stale numbers from one
   measurement, which is the real lesson here.)
 
+- **TimescaleDB for usage metering or an audit log.** *(M, parked 2026-09-24)* A Postgres
+  *extension*, so it doesn't break "Postgres is the only engine". It adds hypertables (automatic
+  time partitioning), columnar compression of old chunks, continuous aggregates
+  (self-maintaining rollups such as monthly usage per tenant) and retention policies. The
+  2.30.x line supports Postgres 18 (checked 2026-09-24). Some features are under Timescale's
+  own source-available license; the terms were not re-checked. It fits the monetization
+  roadmap's per-tenant token/cost events and an audit log, not evals or latency (LangSmith has
+  both). Plain Postgres with good indexes or native partitioning is fine at 10k tenants to
+  start. Revisit when those event tables reach tens of millions of rows. Adopting it means
+  switching the `postgres:18-alpine` image, so re-check `.claude/rules/docker.md`'s volume-path
+  and first-boot rules.
+
 ## Security and privacy
 
 - **The raw question is logged on every answer.** *(S)* `answer_service.py` logs
@@ -227,6 +239,14 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   `uv.lock` — so CI can audit a different scanner version than the one pinned locally.
   `uv run pip-audit` would use the locked one; the dev-docs comment claiming it's "the same
   command CI runs" is not quite accurate today.
+
+- **Polars for ad-hoc analysis of eval results.** *(S, parked 2026-09-24)* If LangSmith's
+  per-experiment view stops being enough, e.g. trends across many experiments or custom slicing
+  by question class, export experiment results and analyse them locally with Polars. It reads
+  parquet and CSV directly, has lazy scans over a whole folder and a SQL interface, and
+  `polars 1.44.2` resolves here with one runtime package (checked 2026-09-24). Preferred over
+  pandas for this by the user, and it would also cover what DuckDB was going to do in the
+  retired local run store. Not needed until there is analysis LangSmith can't show.
 
 ## Auth
 

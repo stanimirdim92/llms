@@ -286,7 +286,7 @@ is deliberately not kept current:
 - **Epic 2 — Eval framework.** RAGAS metrics as LangSmith custom evaluators over a
   versioned dataset, with a CI threshold gate and a deliberate pre-reranker baseline to
   compare against. Document scoping, intent routing and the golden set are already shipped;
-  recall@k, run storage, and the gate are not.
+  recall@k, the LangSmith evaluators, and the gate are not.
 - **Epic 3 — Knowledge-curation agent with HITL.** Playwright scraping, an
   orchestrator plus Curator/Evaluator subagents over the same Qdrant collection,
   prompt-injection defense on scraped content, and LangGraph `interrupt()` for human

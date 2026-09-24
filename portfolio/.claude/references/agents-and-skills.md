@@ -86,11 +86,11 @@ Vendored verbatim, at pinned commits, with provenance and refresh steps in
   upstream plugin, when Epic 3 starts.)
 - **Three `langsmith-*`** (`evaluator`, `dataset`, `trace`) from
   github.com/langchain-ai/langsmith-skills. LangSmith is already wired here, so these describe a
-  service in use rather than a candidate. **They do not settle the eval architecture:**
-  `docs/EPIC_2_PLAN.md` decided against LangSmith-only because the regression gate must work offline
-  and in version control, and hosting the app does not change what CI needs. They cover the judged
-  metrics and interactive exploration; `recall@k`, routing accuracy, the parquet run rows and the
-  committed baseline are still local.
+  service in use rather than a candidate. Since 2026-09-24 LangSmith **is** the eval platform
+  (datasets and experiments; `docs/TECHNICAL_DECISIONS.md`), so these skills apply directly. What
+  stays local: the authoritative `qa_dataset.jsonl`, the chunk-id metrics (recall@k, routing
+  accuracy) as our own evaluators, and the committed `baseline_scores.json` the offline CI gate
+  compares against.
 - **`postgres-database-migration`** from github.com/timescale/pg-aiguide — one skill of that
   repo's ten. Read it before authoring a revision that touches a populated table -- columns are
   added by an Alembic revision and never by hand, because a hand-written `ALTER` leaves

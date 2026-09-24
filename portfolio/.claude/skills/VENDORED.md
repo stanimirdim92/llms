@@ -141,10 +141,10 @@ live hazard, so the exclusion is the point rather than an oversight.
   and `langchain-middleware`'s HITL material duplicates `langgraph-human-in-the-loop`. Take one
   of a pair, not both; revisit if Epic 3 ends up using `create_agent` rather than a `StateGraph`.
 - **`eval-engineering`, `langsmith-online-eval-engineering`** — the closest call. Epic 2 *is* an
-  eval framework, but these target Harbor tasks and LangSmith online evaluators, while
-  `docs/EPIC_2_PLAN.md` specifies a golden set with recall@k over parquet + DuckDB. Installing
-  them would quietly argue for a different tool than the plan chose. Read them when Epic 2
-  starts and decide deliberately; do not let a skill make that call by triggering first.
+  eval framework, but these target Harbor tasks and LangSmith *online* evaluators. Evals are
+  offline experiments on LangSmith since 2026-09-24 (`docs/TECHNICAL_DECISIONS.md`), so
+  `langsmith-online-eval-engineering` is the nearer fit of the two if online evaluation is ever
+  wanted. Decide deliberately then; don't let a skill make that call by triggering first.
 - **`langgraph-cli`, `swarm`** — no current use.
 
 ---
@@ -358,12 +358,16 @@ All three trigger on LangSmith-specific names, so none of them dilutes triggerin
 
 ## What they do NOT settle, and must not be read as settling
 
-`EPIC_2_PLAN.md` Phase 2.2 decided **against LangSmith-only**, in as many words: "It is a network
-call to a hosted service, and the regression gate must work offline and in version control. Both,
-for different jobs." Hosting the app changes nothing about that — CI is still CI, and a committed
-`baseline.parquet` diffed in a pull request is what makes a regression reviewable.
+**Updated 2026-09-24: the user decided evals and datasets live in LangSmith**
+(`docs/TECHNICAL_DECISIONS.md` § "Evals: LangSmith datasets and experiments"). The local parquet
+run store is gone, so these skills now describe the eval platform itself. The warning that used to
+stand here, that "leave evals to LangSmith" would overturn a written decision, did its job: the
+decision was made deliberately, with the trade-offs on record.
 
-So these skills cover the **judged** half (faithfulness, relevancy — plausibly instead of RAGAS,
-which is under active comparison) and the interactive half. They do not cover `recall@k` against
-golden chunk ids, routing accuracy, the parquet run rows, or the offline gate. A future session that
-reads "leave evals to LangSmith" as settled has overturned a written decision without noticing.
+What they still do **not** settle:
+- `recall@k`, nDCG/MRR, routing accuracy and citation success against golden chunk ids are our
+  own evaluator code, because LangSmith doesn't know what a chunk id is.
+- The golden set stays authoritative in git (`qa_dataset.jsonl`), not in the hosted dataset.
+- The CI gate compares against the committed `baseline_scores.json` and is meant to run offline
+  (`aevaluate(upload_results=False)` on local examples, provider calls replayed). It does not
+  read a LangSmith experiment.

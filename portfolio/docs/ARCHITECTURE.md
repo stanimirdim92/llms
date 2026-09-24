@@ -66,42 +66,29 @@ No single layer above is assumed sufficient on its own — that assumption is ex
 
 ## 2b. Where each kind of data lives
 
-Three stores exist today and a fourth arrives with Epic 2. They are not
-interchangeable, and the boundary is about *how the data behaves*, not what it
-describes.
+Three stores hold the system's own data. Eval results live outside it, in LangSmith
+(decided 2026-09-24). The boundary is about *how the data behaves*, not what it describes.
 
 | Store | Holds | Shape | Rebuildable from |
 |---|---|---|---|
 | **Postgres** | tenants, API keys, document rows, job queue, (Epic 3) episodic memory + incoming queue | mutable, transactional, row-at-a-time reads | nothing — this is the system of record |
 | **Qdrant** | one point per chunk: vector + payload metadata | write-once per ingest, similarity reads | yes — re-ingest the documents |
 | **Disk** (`processed_dir`) | parsed Docling JSON, extracted figure PNGs | write-once cache | yes — re-parse the source file |
-| **Parquet** *(Epic 2)* | eval run output: one row per question x retrieved chunk | append-only, never updated, read in aggregate | yes — re-run the eval |
+| **LangSmith** *(Epic 2)* | eval datasets (a synced copy of `qa_dataset.jsonl`) and experiments, plus request traces | hosted; experiment runs kept on extended retention | yes — re-sync the dataset, re-run the eval |
+| **Git** *(Epic 2)* | `qa_dataset.jsonl` (authoritative) and `baseline_scores.json`, the CI gate's reference | committed files | — they are the reference |
 
-The distinction that matters: **Postgres holds state that changes; parquet holds
-measurements that accumulate.** A document row goes `pending -> processing ->
-ingested` and is read by key on every status poll — that is Postgres. An eval run
-emits thousands of rows that are never touched again and are only ever read as
-`GROUP BY`/percentile aggregates — that is columnar.
+Eval output is deliberately **not** user data and does not belong in the operational
+database. Each new metric would otherwise be an `ALTER TABLE` plus a migration on the
+database serving live requests.
 
-Eval output is deliberately **not** user data and does not belong in the
-operational database:
+**The CI gate reads committed files, not LangSmith.** A retrieval-quality gate compares against
+"last known-good scores" held somewhere version-controlled, so a regression shows up as a
+reviewable diff in the pull request. `baseline_scores.json` is that file. The gate builds its
+examples from `qa_dataset.jsonl` and replays recorded provider calls, so it needs no network.
+LangSmith is where runs are *explored and compared* interactively; git is what *gates* them.
 
-- Each new metric would be an `ALTER TABLE` plus a migration, on the same database
-  serving live requests. In parquet a new metric is a new column in new files, and
-  DuckDB unions old and new files with `NULL`s.
-- **CI needs a committed baseline to compare against.** A retrieval-quality gate
-  reads "last known-good scores" from somewhere version-controlled, so a regression
-  shows up as a reviewable diff in the pull request. A Postgres row cannot be
-  `git diff`ed; a baseline file can.
-- Analysis wants SQL without a service. DuckDB reads
-  `SELECT ... FROM 'data/eval/runs/*.parquet'` directly — no table, no migration,
-  no connection pool.
-
-LangSmith still holds traces and hosted experiment comparison, and that overlap is
-intentional rather than redundant: LangSmith is for *exploring* a run interactively,
-the parquet baseline is for *gating* one offline and in version control. Neither
-replaces the other, and the CI gate must not depend on a network call to a hosted
-service.
+This replaced a local parquet + DuckDB run store (`docs/TECHNICAL_DECISIONS.md` § "Evals:
+LangSmith datasets and experiments").
 
 ```mermaid
 flowchart TB
@@ -123,13 +110,13 @@ flowchart TB
         MR --> QD
     end
 
-    subgraph eval["Eval -- Epic 2, offline"]
-        GS["golden set (JSONL, committed)"] --> RUN["eval runner"]
+    subgraph eval["Eval -- Epic 2"]
+        GS["golden set (JSONL, committed)"] -->|"sync"| LSD[("LangSmith dataset")]
+        LSD --> RUN["aevaluate: eval target + evaluators"]
         RUN --> RET
-        RUN -->|"per-question rows"| PQ[("parquet")]
-        PQ --> DD["DuckDB: SQL analysis"]
-        PQ --> GATE{"CI gate vs committed baseline"}
-        RUN -.->|"traces"| LS["LangSmith"]
+        RUN -->|"experiment"| LSE[("LangSmith experiments")]
+        GS -->|"local examples, replayed calls"| GATE{"CI gate vs baseline_scores.json"}
+        GATE --> RET
     end
 ```
 

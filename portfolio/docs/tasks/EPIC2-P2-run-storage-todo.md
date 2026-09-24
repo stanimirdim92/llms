@@ -1,3 +1,7 @@
+> **Retired 2026-09-24.** Evals and datasets moved to LangSmith, so there is no local run store to
+> build. Kept as history. See `docs/EPIC_2_PLAN.md` § Phase 2.2 and the rewritten
+> `EPIC2-P3-eval-gate-plan.md`.
+
 ## T001: Define the run-row schema
 
 **Requirements:** REQ-001 (`docs/EPIC_2_PLAN.md` §2.2 ¶1)

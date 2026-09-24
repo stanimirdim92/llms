@@ -153,13 +153,10 @@ Built as specified, plus:
   still needs Epic 2's RAGAS scores.
 - **Dashboards and percentiles, not just per-request logs.** `answer_service.py` already logs
   `latency_ms`, `input_tokens`, `output_tokens`, and `stop_reason` on every answer (2026-08-03),
-  and Epic 2 Phase 2.2's parquet run rows add `cost_usd` per question — but nothing aggregates
-  either into p95/p99 or a cost trend, and nothing watches retrieval-quality *drift* (recall@k
-  or faithfulness moving over time, as opposed to Phase 2.3's one-shot CI gate against a fixed
-  baseline). DuckDB over `data/eval/runs/*.parquet` (already the Phase 2.2 store) answers the
-  percentile and trend queries directly — `PERCENTILE_CONT` needs no new dependency; a drift
-  view is the same query run on a rolling window. LangSmith's own dashboard covers live traces
-  in the meantime, per-request rather than aggregated.
+  but nothing watches retrieval-quality *drift* (recall@k or faithfulness moving over time, as
+  opposed to Phase 2.3's one-shot CI gate against a fixed baseline). Since 2026-09-24, Epic 2's
+  runs are LangSmith experiments (the local parquet/DuckDB store was dropped), so a drift view is
+  the experiment history in LangSmith. Live latency p95 is LangSmith's dashboard too.
 
 ---
 

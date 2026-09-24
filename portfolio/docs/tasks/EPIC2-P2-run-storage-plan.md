@@ -1,6 +1,11 @@
 # Implementation Plan: Epic 2 Phase 2.2 — Run storage (parquet + DuckDB)
 
-Status: Draft
+> **Retired 2026-09-24.** Evals and datasets moved to LangSmith, so there is no local run store to
+> build. Kept as history. See `docs/EPIC_2_PLAN.md` § Phase 2.2 and the rewritten
+> `EPIC2-P3-eval-gate-plan.md`.
+
+
+Status: Retired 2026-09-24 (LangSmith decision), never built
 Spec: docs/EPIC_2_PLAN.md § Phase 2.2 (fused spec+plan doc — see EPIC2-P1's plan for the
 convention note; not repeated per document)
 Spec status: N/A — repo convention, see EPIC2-P1-golden-set-plan.md
@@ -125,4 +130,4 @@ None blocking. **`cost_usd` was the one; resolved 2026-09-24** -- a committed pr
 T001. What still needs a human is approval of this plan.
 
 ---
-Handoff: Awaiting plan approval
+Handoff: Retired, not to be built

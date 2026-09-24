@@ -48,8 +48,9 @@ decision already recorded here.** Read these before judging fit:
 Decisions that a candidate will most often collide with: the vector store is **Qdrant** (not Chroma,
 FAISS, Pinecone or pgvector); chunking is **Docling structure-aware** (not
 `RecursiveCharacterTextSplitter`); embeddings are **Voyage** (not OpenAI); the database is
-**Postgres only, never SQLite anywhere**; eval is a golden set with recall@k plus RAGAS, stored as
-parquet and queried with DuckDB.
+**Postgres only, never SQLite anywhere**; eval is a golden set (authoritative in git) run as
+**LangSmith datasets and experiments**, with recall@k as our own evaluator plus RAGAS, and a CI gate
+against a committed `baseline_scores.json` (2026-09-24; there is no local parquet/DuckDB store).
 
 Then apply these, each of which has already sunk a real candidate:
 

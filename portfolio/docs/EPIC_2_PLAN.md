@@ -7,8 +7,8 @@ reading `microsoft/graphrag`.
 
 Built: Phase 2.0 in full (intent routing and explicit document scoping, both shipped early
 because each fixed a defect rather than moved a metric) and Phase 2.1 (the pinned corpus and a
-67-pair golden set). Nothing scores anything yet -- that is 2.2 and 2.3 -- so Epic 1's answer
-path works and has never been measured.
+67-pair golden set). Nothing scores anything yet -- that is 2.2 and 2.3, now built on
+LangSmith datasets and experiments -- so Epic 1's answer path works and has never been measured.
 
 ## Why this epic now blocks other work
 
@@ -188,33 +188,29 @@ factual". Verified live -- still `out_of_scope` after the change.
 Consult the `qdrant:qdrant-search-quality` plugin skill for recall@k methodology rather than inventing
 one; `ranx` is what it names for scoring, and **nothing scores anything yet** -- that is 2.3.
 
-## Phase 2.2 — Run storage: parquet + DuckDB
+## Phase 2.2 — Datasets and experiments in LangSmith
 
-An eval run emits one row per (question × retrieved chunk):
-`run_id, git_sha, question_id, intent_label, predicted_label, chunk_id, doc_id, rank,
-vector_score, rerank_score, in_golden_set, judge_verdict, latency_ms, input_tokens,
-output_tokens, cost_usd`.
+**Replaced 2026-09-24.** This phase was a local run store: one parquet row per question ×
+retrieved chunk, queried with DuckDB. The user decided evals and datasets live in **LangSmith**
+instead, so there is no local run store to build. The reasoning, and what was given up, is in
+`docs/TECHNICAL_DECISIONS.md` § "Evals: LangSmith datasets and experiments".
 
-Written to `data/eval/runs/<run_id>.parquet`. Analysis is DuckDB over
-`data/eval/runs/*.parquet` — SQL across every run ever made, with no service, no table, and
-no migration. `pyarrow` and `pandas` are already in `uv.lock` as Streamlit transitives with
-`cp314` wheels, so this adds **no dependency**; DuckDB does need adding.
+- **The golden set stays in git.** `qa_dataset.jsonl` is authoritative. A sync script copies it
+  into a LangSmith dataset, tagged with the git sha. Datasets have indefinite retention.
+- **A run is a LangSmith experiment.** `aevaluate()` runs an eval target (the real `/ask`
+  pipeline) over the dataset. Per-example outputs replace the parquet row: predicted intent,
+  ranked chunk ids, answer, citations, latency, tokens. Experiment runs get extended retention
+  by default; the docs say 180 days and the pricing page says 400, so that's unresolved.
+- **The gate's baseline is a committed file**, `data/eval/baseline_scores.json` (summary score
+  per metric × question class), so a regression is still a diff in the pull request.
+- **The gate can still run offline.** The installed SDK's `aevaluate` takes
+  `upload_results=False` and local `Example`s built from `qa_dataset.jsonl`. With recorded
+  provider calls, CI would need neither LangSmith nor provider keys. That's not yet run;
+  it's the first checkpoint in `docs/tasks/EPIC2-P3-eval-gate-plan.md`.
 
-Eval-dataset lineage and versioning, which sounds like a separate system to build, is not:
-`qa_dataset.jsonl` is a committed file, so `git_sha` on every run row already pins the exact
-dataset state that produced it, not just the code. A dataset edit and a code edit are
-indistinguishable in that column today, which is fine for "what produced this run" and not
-fine for "did this regression come from the dataset changing or the pipeline changing" —
-worth a second `dataset_sha` column (a hash of `qa_dataset.jsonl` alone) if that question
-ever needs answering, but not before it does.
-
-Why not Postgres: see `docs/ARCHITECTURE.md` § 2b. Short version — this is append-only
-analytical data with an evolving schema, and the CI gate needs a *committed* baseline it can
-diff in a pull request, which a database row cannot provide.
-
-Why not only LangSmith: LangSmith holds traces and hosted experiment comparison and stays
-in the loop for interactive exploration. It is a network call to a hosted service, and the
-regression gate must work offline and in version control. Both, for different jobs.
+The local-store version's plan and tasks are kept, marked retired, in
+`docs/tasks/EPIC2-P2-run-storage-*.md`. Its `cost_usd` price-table decision (`docs/MEMORY.md`
+open question 5) applies only if LangSmith's own trace cost turns out not to be enough.
 
 ## Phase 2.3 — Metrics and the CI gate
 
@@ -242,10 +238,15 @@ LangSmith custom evaluators, plus two that RAGAS does not cover and that this sy
 A deliberate "before" baseline first: naive fixed-size chunking, no reranker. Without it
 every later number is unanchored.
 
-`data/eval/baseline.parquet` is committed and is what CI compares against. The gate fails
-the build on regression beyond a stated tolerance, and the failure names *which metric on
-which question class* moved — a gate that only says "eval failed" gets disabled within a
-month.
+`data/eval/baseline_scores.json` is committed and is what CI compares against (it was
+`baseline.parquet` before the 2026-09-24 LangSmith decision). The gate fails the build on
+regression beyond a stated tolerance, and the failure names *which metric on which question
+class* moved — a gate that only says "eval failed" gets disabled within a month.
+
+**Open, predates LangSmith:** a "before" baseline with *naive fixed-size chunking* can't be
+scored by recall@k against the golden set. Every golden `chunk_id` is an id of the real
+chunker's output, and a re-chunked corpus has different ids. See the 2.3 task plan's Open
+question 2.
 
 **Done when:** a deliberately broken change (drop the reranker) is caught by CI, and the
 failure output identifies the reranker as the cause rather than reporting a lower aggregate.
@@ -303,5 +304,4 @@ All of these are measured through 2.3 or they do not land.
 | Package | Phase | For |
 |---|---|---|
 | `ragas` | 2.3 | Faithfulness / relevancy / context metrics |
-| `duckdb` | 2.2 | SQL over the parquet run files |
-| `pyarrow` | 2.2 | **Already in `uv.lock`** via Streamlit — no add needed |
+| `vcrpy` | 2.3 | Record provider calls once, replay them in CI |

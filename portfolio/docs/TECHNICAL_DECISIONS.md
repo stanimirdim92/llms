@@ -1078,6 +1078,56 @@ zero-code once `LANGSMITH_*` env vars are set. Running Phoenix alongside it woul
 trace backends covering the same call graph. Phoenix is dropped from the plan rather than
 layered on top.
 
+## Evals: LangSmith datasets and experiments, not a local run store (2026-09-24)
+
+**Decided by the user, reversing Epic 2's Phase 2.2 as planned.** That phase wrote every eval
+run to local parquet (one row per question × retrieved chunk) and queried it with DuckDB. It
+existed for two reasons: an offline CI gate, and a baseline committed to git. Both survive
+the move, so the run store buys nothing LangSmith doesn't already provide. The original
+`IMPLEMENTATION_PLAN.md` had specified LangSmith datasets from the start.
+
+**What moves to LangSmith:** the dataset (a synced copy of `qa_dataset.jsonl`), running an
+eval (`aevaluate` over the real `/ask` pipeline), per-example scores, and comparing
+experiments side by side.
+
+**What stays ours, whichever platform:**
+- The corpus and seed scripts. LangSmith cannot ingest into our Qdrant.
+- `qa_dataset.jsonl` as the *authoritative* golden set, in git. It was hand-written and is the
+  most valuable eval asset, so it must not exist only in a SaaS.
+- The retrieval metrics (recall@k, nDCG/MRR, routing accuracy, citation success). They compare
+  chunk ids, which no hosted evaluator understands. Their logic lives in plain functions with
+  thin LangSmith wrappers, so a platform move ports the wrappers and nothing else.
+- The gate's baseline, as `data/eval/baseline_scores.json`, so a regression is a diff in the PR.
+
+**Why the gate can stay offline**, checked against the installed SDK (`langsmith` 0.10.13):
+`aevaluate` takes `upload_results=False` and accepts local `Example` iterables. Examples built
+from `qa_dataset.jsonl`, plus recorded provider calls (`vcrpy`), should need neither LangSmith
+nor provider keys in CI. The signature is verified; the behaviour hasn't been run yet. If it
+fails, the gate calls the metric functions directly on target outputs instead.
+
+**Retention**, from LangSmith's docs (2026-09-24): experiment runs are "created at extended
+retention by default", and "datasets have an indefinite data retention period". Base trace
+retention is 14 days. **The extended period is unresolved:** the administration docs say 180
+days, and the pricing page says 400. Either way, the long-term reference is
+`baseline_scores.json` in git, not an old experiment.
+
+**What was given up:** SQL across the full history of runs, without a service. LangSmith's
+view is per experiment, and runs age out after the extended period.
+
+**Considered: Langfuse, deferred.** Checked the same day:
+- It is MIT-licensed, including evals, datasets and experiments. Only SCIM, audit logs and
+  retention policies are paid, and only when self-hosting.
+- Self-hosting is free but runs Postgres, ClickHouse, Redis/Valkey, S3-style storage, and a
+  web and a worker container.
+- Its cloud plans are a flat fee, where LangSmith charges per seat.
+- It needs a `CallbackHandler` passed on every LangChain call, where LangSmith traces from
+  env vars alone, as it does here.
+
+LangSmith wins while there are no paying tenants: it is already wired in and costs nothing to
+keep. **Revisit when a paying customer's documents would flow into traces.** LangSmith
+self-hosting is Enterprise-only, while Langfuse self-hosting is free. The monetization
+directive in `docs/MEMORY.md` makes that a when, not an if.
+
 ## Python floor: 3.13, after 3.12 and 3.14
 
 Three positions, in order, and the middle one was wrong in both directions.

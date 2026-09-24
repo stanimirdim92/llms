@@ -88,8 +88,9 @@ looks wrong, say so once and proceed.
   at `7fbf4e4`, one commit behind `main`'s `7b07e52`. The earlier note here claimed both sat at
   the same commit as `main`; each stopped moving the moment its session ended.
 - **There is no dependency-minimisation rule, and don't invent one.** Stated by the user 2026-08-05
-  after a dependency comparison leaned on package counts. `docs/EPIC_2_PLAN.md`'s "this adds **no
-  dependency**" is a *fact* about parquet arriving free via Streamlit, not a value. The signals that
+  after a dependency comparison leaned on package counts. `docs/EPIC_2_PLAN.md`'s old "this adds **no
+  dependency**" (about parquet arriving free via Streamlit, in the since-retired run store) was a
+  *fact*, not a value. The signals that
   actually matter when weighing a package: does it pin an existing package **backwards** (an eval
   tool dragging `huggingface-hub` back constrains the *ingestion* stack), does it reach the runtime
   image, does it monkey-patch anything (`nest-asyncio`), and what it adds to the CVE surface
@@ -172,14 +173,17 @@ looks wrong, say so once and proceed.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
-- **Epic 2** — the eval framework proper. recall@k, parquet + DuckDB run storage, the CI
-  regression gate. Intent routing (Phase 2.0) and the golden set (2.1) are built, above. This blocks most
+- **Epic 2** — the eval framework proper, **on LangSmith datasets and experiments** (user,
+  2026-09-24; the local parquet + DuckDB run store is dropped). Still to build: the dataset sync,
+  the eval target, the recall@k/routing/citation evaluators, the RAGAS judges, and the offline CI
+  gate against a committed `baseline_scores.json`. Intent routing (Phase 2.0) and the golden set (2.1) are built, above. This blocks most
   retrieval work: query expansion, decomposition, and corpus-level answering all change what
   retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
-  **Planned, not built** (2026-09-09): `Status: Draft` plan+todo pairs in `docs/tasks/` for
-  2.2–2.5. None approved yet. (2.1's pair was built without approval and is now marked as-built,
-  with its deviations listed at the top.) Phase 2.2's plan is no longer blocked -- Open question
-  5 (`cost_usd`) was resolved 2026-09-24 -- and needs only approval.
+  **Plans:** 2.2's local-store plan is **retired**. 2.3's plan and tasks were **rewritten for
+  LangSmith** (2026-09-24, `Status: Draft`, awaiting approval), with two open questions: whether
+  offline `aevaluate` really needs no network (checkpoint CP-001), and which configuration the
+  "before" baseline uses (see Open question 9). 2.4 and 2.5 are still drafts. 2.1's pair was
+  built without approval and is marked as-built.
 - **Epic 3** — the curation agent with human-in-the-loop.
 - **Epic 4 Phase 4** — observability. **Latency p95 comes from LangSmith** (user, 2026-09-24),
   so there is no in-app latency check; faithfulness alerting needs Epic 2's scores.
@@ -312,8 +316,9 @@ more discussion.
    let two runs at one `git_sha` price identical tokens differently. Prices re-checked live:
    Sonnet 5 $2/$10, Haiku 4.5 $1/$5, Voyage $0 billed under the free tier. Full reasoning and
    the coverage caveats (only the answer call records usage today) are in
-   `docs/tasks/EPIC2-P2-run-storage-todo.md` T001. The 2.2 plan is unblocked; it still needs
-   approval.
+   `docs/tasks/EPIC2-P2-run-storage-todo.md` T001. **Largely moot since the same day's LangSmith
+   decision:** the parquet row that needed `cost_usd` is gone with the retired 2.2 plan. The
+   pricing reasoning stands if LangSmith's own trace cost turns out not to be enough.
 6. **The intent taxonomy has no class for an action or a command.** "Delete all my documents."
    classifies `metadata`, and the expected label in the probe was `out_of_scope` -- but neither is
    right, because `metadata`/`factual`/`aggregate`/`out_of_scope` are all *questions*. Today this
@@ -337,6 +342,13 @@ more discussion.
    chunk; on a longer document `rerank_top_n=5` would drop a field-bearing chunk and the model
    would answer `"unknown"` with no error. Recorded in `docs/EPIC_2_PLAN.md`; needs the golden set.
 
+9. **The "before" baseline cannot change the chunker.** `EPIC_2_PLAN.md` Phase 2.3 asks for
+   "naive fixed-size chunking, no reranker", but every golden `chunk_id` is an id of the real
+   chunker's output. A re-chunked corpus has different ids, so recall@k against the golden set
+   is undefined for it. Options: drop only the reranker (same chunks), score naive chunking by
+   text overlap instead of id, or drop the naive-chunking comparison. Found 2026-09-24 while
+   rewriting the 2.3 plan; needs the user's call before that plan's T006.
+
 ## Deferred, not dropped
 
 Recorded so they stay visible: backups; a stuck-job sweeper (`updated_at` makes a dead worker's
@@ -348,6 +360,41 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-24 (final) — evals move to LangSmith; Polars and TimescaleDB parked
+
+**Decisions (user):**
+- **Evals and datasets on LangSmith**, reversing the local parquet + DuckDB run store (Phase
+  2.2). Reasoning, retention facts and the Langfuse comparison are in
+  `docs/TECHNICAL_DECISIONS.md` § "Evals: LangSmith datasets and experiments".
+- **Langfuse deferred.** Revisit when a paying customer's documents would flow into traces:
+  LangSmith self-hosting is Enterprise-only, Langfuse's is free.
+- **Polars and TimescaleDB parked** in `docs/IDEAS.md`, each with a revisit condition.
+
+**Verified this session, not from memory:**
+- `langsmith` 0.10.13's `aevaluate` has `upload_results` and accepts local `Example`
+  iterables; signature checked, behaviour not run.
+- LangSmith docs: experiment runs get extended retention by default, and datasets are kept
+  indefinitely. **The extended period disagrees between pages:** 180 days (administration docs)
+  vs 400 (pricing page). Unresolved.
+- Langfuse: MIT core including evals; self-hosting needs Postgres, ClickHouse, Redis, S3, web
+  and worker; LangChain integration needs a `CallbackHandler` per call. Cloud Hobby is free with
+  50k units, Core is $29/month.
+- LangSmith Developer is free with 5k traces and 1 seat; Plus is $39/seat.
+- `polars 1.44.2` resolves with one runtime package. TimescaleDB 2.30.x supports Postgres 18.
+
+**Doc changes:**
+- `EPIC_2_PLAN.md` Phase 2.2 is rewritten; the dependency table drops `duckdb`/`pyarrow` and
+  adds `vcrpy`.
+- `ARCHITECTURE.md` §2b and its diagram now show LangSmith plus git instead of parquet.
+- The 2.2 plan and tasks are marked retired; the 2.3 plan and tasks are rewritten.
+- `VENDORED.md`, `agents-and-skills.md`, the `candidate-triage` brief, `EPIC_4_PLAN.md`, README
+  and `CLAUDE.md` are updated. `VENDORED.md`'s standing warning against "leave evals to
+  LangSmith" was rewritten, not ignored: it existed so that exactly this decision would be taken
+  deliberately.
+- **Found, not decided:** Open question 9, the naive-chunking baseline versus golden chunk ids.
+
+No code, and no tests run, per the user's instruction.
 
 ### 2026-09-24 (last) — published ports: container side fixed, host side from `.env`
 

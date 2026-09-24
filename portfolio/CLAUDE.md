@@ -7,7 +7,7 @@ limiting; docs), and Phase 5.1 (ingestion behind a Postgres-backed job queue) --
 `docs/EPIC_4_PLAN.md` for the rest. Not built: Epic 3, designed in
 `docs/IMPLEMENTATION_PLAN.md` only -- no agent. Don't assume code for it. Epic 2 (the eval
 framework) has its golden set (`data/eval/qa_dataset.jsonl`, 67 pairs over a pinned, seeded
-corpus) but nothing that *runs* it: no recall@k, no run storage, no CI gate, so nothing measures
+corpus) but nothing that *runs* it: no recall@k, no LangSmith evaluators, no CI gate, so nothing measures
 whether an answer is good -- **plus two pieces pulled forward because each fixed an observed
 defect rather than moved a metric:**
 

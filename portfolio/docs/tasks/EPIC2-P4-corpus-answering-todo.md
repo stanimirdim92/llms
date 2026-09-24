@@ -119,7 +119,7 @@ text requires before either T001/T002 merge to `main`.
 **Context pointers:**
 - Project/module rules: None
 - Closest precedent: None
-- Shared contract/invariant: EPIC2-P3's `eval-gate` job and `data/eval/baseline.parquet`
+- Shared contract/invariant: EPIC2-P3's `eval-gate` job and `data/eval/baseline_scores.json` (was `baseline.parquet` before the 2026-09-24 LangSmith decision)
 
 **Files/areas touched:**
 - None (process gate, not a code change)
