@@ -87,18 +87,43 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
   run `uv sync` without extras, so neither reaches the api, worker or Streamlit image.
   `app/eval/` imports them lazily, following `app/retrieval/reranker.py`'s pattern.
 
+## Build status (2026-09-24)
+
+Built, lint- and type-clean. **Neither the new unit tests nor the pipeline run have been
+executed in-session** (user instruction: sessions don't run tests):
+- `answer_question` pulled out of the `/ask` route (`app/api/routers/ask.py`), so the route and
+  the eval target run the same code.
+- `app/eval/golden.py`: loader, pair ids, and the pinned seed tenant.
+- `app/eval/target.py`: the target; errors are kept as data.
+- `app/eval/metrics.py`: routing accuracy, recall@5, nDCG@5, MRR, citation precision.
+- `app/eval/gate.py`: per-kind aggregation, comparison, the baseline file.
+- `app/eval/langsmith_evaluators.py`: example shape and a multi-score evaluator.
+- `scripts/sync_eval_dataset.py`, `scripts/run_eval.py` (`--gate`, `--write-baseline`, `--upload`).
+- `tests/unit/test_eval_metrics.py`.
+
+Not built, and why:
+- **T002 replay:** recording needs real keys. It also can't make CI self-contained on its own
+  (Open question 3).
+- **T005 judges:** `ragas` raises dependency red flags (Open question 4).
+- **T006 baseline:** a human run with keys against the seeded stack.
+- **T007's CI job:** needs T002 and T006. The gate *logic* and `run_eval.py --gate` exist.
+
 ## Task Index
 
-- [ ] T001 (S) [dataset]: Sync script and local example loader
+- [x] T001 (S) [dataset]: Sync script and local example loader (sync not yet run against LangSmith)
 - [ ] T002 (M) [TD-001, TD-002]: Recording/replay harness
 
 ### CP-001 — Checkpoint: offline evaluation proven
 - [ ] A recorded run replays identically twice in a row
 - [ ] Zero live network calls during replay (a network-blocking transport fails the test on any real call)
-- [ ] `aevaluate(..., upload_results=False)` on local examples completes with no LangSmith key set
+- [x] ~~`aevaluate(..., upload_results=False)` on local examples completes with no LangSmith key set~~
+      **Measured 2026-09-24: it scores correctly but is not network-free.** Even under
+      `tracing_context(enabled="local")` it calls LangSmith's `/info` and `/runs/multipart`, and the
+      failures are soft. Fallback taken: the gate scores with the plain metric functions and never
+      calls `aevaluate`; only `--upload` uses it.
 
-- [ ] T003 (M, deps: CP-001): Eval target over the `/ask` pipeline
-- [ ] T004 (M, deps: T003): Retrieval, routing and citation evaluators
+- [x] T003 (M, deps: CP-001): Eval target over the `/ask` pipeline
+- [x] T004 (M, deps: T003): Retrieval, routing and citation evaluators
 - [ ] T005 (L, deps: T003) [TD-003]: RAGAS / LLM-as-judge evaluators
 - [ ] T006 (S, deps: T004, T005): Record the baseline of today's pipeline, commit `baseline_scores.json`
 - [ ] T007 (M, deps: T006): CI gate job
@@ -122,10 +147,21 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 
 ## Open Questions
 
-1. **Does offline `aevaluate` really need no network?** The installed SDK (`langsmith` 0.10.13)
-   has `upload_results` and accepts local `Example` iterables. Neither claim has been run here
-   yet. CP-001 settles it.
+1. ~~**Does offline `aevaluate` really need no network?**~~ **No** (measured, see CP-001). The gate
+   doesn't use it.
 2. ~~**Which configuration the "before" baseline uses.**~~ **Resolved 2026-09-24 (user):** the baseline is today's pipeline as it ships, real chunker and reranker included. No naive-chunking run, no no-reranker experiment, and no reranker score used as a metric (the reranker is part of the system under test, so it can't grade itself).
 
+3. **The gate reads Postgres, and replay can't record that.** `answer_question` reads the
+   registry (`list_active_versions` for every factual question, the document list for metadata
+   ones), and it queries Qdrant. `vcrpy` can record HTTP (Anthropic, Voyage, and Qdrant's REST
+   client), but not Postgres. So a CI gate also needs the eval tenant's registry rows in CI's
+   Postgres. The likely answer is a small committed fixture of those rows (doc_id, filename,
+   status, ingestion_version), loaded before the run. Not decided or built.
+4. **`ragas` raises two red flags from `docs/MEMORY.md`'s dependency directive.** `ragas` 0.4.3
+   resolves, but it downgrades three installed packages (`fsspec` 2026.7.0→2026.6.0, `jiter`
+   0.16.0→0.14.0, `rich` 15.0.0→14.3.4) and adds `nest-asyncio`, which monkey-patches asyncio
+   (checked with `uv pip install --dry-run`, 2026-09-24). The alternatives are LangSmith's
+   LLM-as-judge or a small Claude judge of our own. The user's call.
+
 ---
-Handoff: Approved. Only Open question 1 (CP-001) remains
+Handoff: Approved and partly built; T002, T005, T006 and the CI job are pending (see Build status)

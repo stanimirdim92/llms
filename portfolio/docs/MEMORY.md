@@ -174,9 +174,9 @@ looks wrong, say so once and proceed.
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
 - **Epic 2** — the eval framework proper, **on LangSmith datasets and experiments** (user,
-  2026-09-24; the local parquet + DuckDB run store is dropped). Still to build: the dataset sync,
-  the eval target, the recall@k/routing/citation evaluators, the RAGAS judges, and the offline CI
-  gate against a committed `baseline_scores.json`. Intent routing (Phase 2.0) and the golden set (2.1) are built, above. This blocks most
+  2026-09-24). Scoring, sync and gate code are written but **never run** (see the 2026-09-24
+  build entry). Still to build: replay (T002), judges (T005, blocked on the `ragas` decision), the
+  baseline (T006, needs keys) and the CI job. Intent routing (Phase 2.0) and the golden set (2.1) are built, above. This blocks most
   retrieval work: query expansion, decomposition, and corpus-level answering all change what
   retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
   **Plans:** 2.2's local-store plan is **retired**. 2.3's plan and tasks were **rewritten for
@@ -358,6 +358,29 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-24 (build) — Epic 2 Phase 2.3, partly built; the offline-`aevaluate` assumption was wrong
+
+- **CP-001, measured:** `aevaluate(upload_results=False)` scores correctly offline but is **not
+  network-free**. It still calls LangSmith's `/info` and `/runs/multipart`, even under
+  `tracing_context(enabled="local")`, and those failures are soft. So the gate never calls
+  `aevaluate`; it scores with plain functions (`app/eval/metrics.py`). Only `--upload` uses it.
+- **Built:**
+  - `answer_question` extracted from the `/ask` route, so the eval target runs the shipped code.
+  - `app/eval/`: golden loader, target, metrics, gate, LangSmith wrappers.
+  - `scripts/sync_eval_dataset.py` and `scripts/run_eval.py`.
+  - `tests/unit/test_eval_metrics.py`.
+  - ruff, format and `ty` are clean. **No tests and no eval run were executed**, per the user's
+    "don't run tests". The new tests are unverified, and the first CI run is their first run.
+- **Not built:** T002 replay, T005 judges, T006 baseline (needs keys and the seeded stack), and
+  the CI job.
+- **Two new open questions in the 2.3 plan:**
+  - (3) The gate reads Postgres (`list_active_versions`, the document list), which `vcrpy`
+    can't replay. CI needs a committed fixture of the eval tenant's registry rows.
+  - (4) `ragas` 0.4.3 downgrades `fsspec`, `jiter` and `rich`, and adds `nest-asyncio`, a
+    monkey-patch. Both are red flags under the dependency directive above; the user's call.
+- **To take the first real numbers:** fetch, then seed, then `uv run python scripts/run_eval.py`,
+  then `--write-baseline`, and commit `baseline_scores.json`.
 
 ### 2026-09-24 (final) — evals move to LangSmith; Polars and TimescaleDB parked
 

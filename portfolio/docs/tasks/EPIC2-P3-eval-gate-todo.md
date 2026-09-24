@@ -1,7 +1,7 @@
 > Rewritten 2026-09-24 for LangSmith datasets and experiments. See the plan's header for what
 > changed. Tests named here are run by the user or CI, not by a session (user, 2026-09-24).
 
-## T001: Sync script and local example loader
+## T001: Sync script and local example loader — BUILT (sync not yet run against LangSmith)
 
 **Description:** `qa_dataset.jsonl` stays authoritative in git. `scripts/sync_eval_dataset.py`
 upserts it into a LangSmith dataset. `app/eval/examples.py` loads the same file into
@@ -41,7 +41,7 @@ a cassette miss raises instead of falling through to a real call.
 
 ---
 
-## CP-001: Offline evaluation proven
+## CP-001: Offline evaluation proven — RESOLVED: `aevaluate` isn't network-free; the gate doesn't use it
 
 - [ ] `aevaluate(target, data=<local examples>, evaluators=[trivial], upload_results=False)`
       completes with `LANGSMITH_API_KEY` unset and the network blocked.
@@ -50,7 +50,7 @@ a cassette miss raises instead of falling through to a real call.
 
 ---
 
-## T003: Eval target over the `/ask` pipeline
+## T003: Eval target over the `/ask` pipeline — BUILT
 
 **Description:** A target function takes one example's inputs and returns a structured output:
 `predicted_intent`, `retrieved_chunk_ids` in rank order, `answer`, `citations`, `latency_ms`,
@@ -67,7 +67,7 @@ a cassette miss raises instead of falling through to a real call.
 
 ---
 
-## T004: Retrieval, routing and citation evaluators
+## T004: Retrieval, routing and citation evaluators — BUILT
 
 **Description:** Plain functions in `app/eval/metrics.py`, each wrapped as a LangSmith
 evaluator (per example) or summary evaluator (per experiment):

@@ -12,7 +12,7 @@ from app.auth.scopes import ASK
 from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
-from app.generation.intent_router import IntentUnavailableError, classify_intent
+from app.generation.intent_router import Intent, IntentUnavailableError, classify_intent
 from app.registry.db import list_document_records
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import RetrievalUnavailableError
@@ -112,13 +112,24 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     dependencies=[Depends(require_scopes(ASK)), Depends(rate_limited("ask", "rate_limit_ask"))],
 )
 async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
+    _intent, response = await answer_question(request.question, tenant_id)
+    return response
+
+
+async def answer_question(question: str, tenant_id: str) -> tuple[Intent, AskResponse]:
+    """`/ask` without the HTTP layer, returning the routed intent alongside the response.
+
+    The route and the Epic 2 eval target (`app/eval/target.py`) both call this. The eval has to
+    measure what ships: a second copy of this branching in the eval would pass the golden set
+    while `/ask` drifted, and routing accuracy needs the intent the response itself doesn't carry.
+    """
     # Phase 2.0 (docs/EPIC_2_PLAN.md): three of four intents never reach retrieval at all, by
     # design -- retrieval matches chunks semantically, so a question that isn't about document
     # *content* gets an answer grounded in whatever text happens to be nearest in embedding
     # space regardless of how wrong that is for the question actually asked. `factual` alone
     # falls through to the pipeline below, unchanged from before this branch existed.
     try:
-        intent = await classify_intent(request.question)
+        intent = await classify_intent(question)
     except IntentUnavailableError as exc:
         # 503, not a fallback to `factual`. Routing an unclassified question into retrieval is
         # precisely the production defect Phase 2.0 fixed, so there is no safe default to pick
@@ -130,13 +141,13 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
 
     match intent:
         case "metadata":
-            return _plain_answer(await _document_summary(tenant_id))
+            return intent, _plain_answer(await _document_summary(tenant_id))
         case "out_of_scope":
-            return _plain_answer(_OUT_OF_SCOPE_ANSWER)
+            return intent, _plain_answer(_OUT_OF_SCOPE_ANSWER)
         case "aggregate":
-            return _plain_answer(_AGGREGATE_NOT_SUPPORTED_ANSWER)
+            return intent, _plain_answer(_AGGREGATE_NOT_SUPPORTED_ANSWER)
 
-    scope = await _document_scope(request.question, tenant_id)
+    scope = await _document_scope(question, tenant_id)
     if scope.names_nothing_owned:
         # 404, not 403, and deliberately without saying whether the file exists for anyone
         # else -- that would confirm a leaked id belongs to somebody. Naming the caller's
@@ -155,7 +166,7 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
         )
 
     try:
-        result = await _service().answer(request.question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
+        result = await _service().answer(question, tenant_id=tenant_id, doc_ids=scope.doc_ids or None)
     except RetrievalUnavailableError as exc:
         # No honest fallback exists for a failed search (rule 9) -- a clear, distinguishable
         # 503 beats the generic 500 `unhandled_error_handler` would otherwise return, and beats
@@ -165,7 +176,7 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
             "didn't respond). Try again shortly.",
             code=503,
         ) from exc
-    return AskResponse(
+    return intent, AskResponse(
         answer=result.text,
         scoped_to=scope.filenames,
         citations=[

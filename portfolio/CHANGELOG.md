@@ -15,6 +15,15 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ### 2026-09-24
 
+#### Added
+
+- **`scripts/run_eval.py`** runs the 67-question golden set through the real `/ask` pipeline and
+  scores routing accuracy, recall@5, nDCG@5, MRR and citation precision, per question kind.
+  `--write-baseline` records the scores to `data/eval/baseline_scores.json`, `--gate` fails on a
+  drop beyond `--tolerance` (default 0.05), and `--upload` runs it as a LangSmith experiment.
+  **`scripts/sync_eval_dataset.py`** copies the golden set into the `portfolio-golden` LangSmith
+  dataset. Both need the seeded eval corpus and provider keys; neither has been run yet.
+
 #### Changed
 
 - **Every port the Docker stack publishes can now be moved from `.env`.** Postgres follows
