@@ -139,10 +139,10 @@ proved by execution, in CI, with no server and no API keys. What remains unteste
 over the wire -- which is where the point-ID constraint escaped to production -- so don't say
 "Qdrant is tested" without that qualifier.
 
-Six suites hit a real Postgres or Redis and *skip* when unreachable -- auth-touch, rate-limit,
-worker/registry, key-management, migrations and the `create_tenant` CLI -- so a green local run may
-have tested far less than it looks (70 tests' worth, counted 2026-08-06). CI provides both services
-and asserts none of the six skipped. It asserted three for a while, which let two of them skip in CI
+Seven suites hit a real Postgres or Redis and *skip* when unreachable -- auth-touch, rate-limit,
+worker/registry, key-management, migrations, the `create_tenant` CLI, and (partly) the latency SLO
+-- so a green local run may have tested far less than it looks (70 tests' worth across the first
+six, counted 2026-08-06). CI provides both services and asserts none of the seven skipped. It asserted three for a while, which let two of them skip in CI
 silently.
 
 ## Never

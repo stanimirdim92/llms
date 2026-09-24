@@ -261,7 +261,10 @@ services:
     environment:
       QDRANT_URL: http://qdrant:6333
       DB_HOST: postgres
-      # No REDIS_HOST: the worker doesn't rate-limit anything. Its queue is Postgres.
+      # Redis for the /ask latency SLO check's samples, not for the queue (that is Postgres).
+      # Deliberately no `depends_on: redis`: the check fails open, and making ingestion wait on
+      # an observability dependency would turn a guardrail outage into an ingestion outage.
+      REDIS_HOST: redis
     volumes:
       - ../data:/app/data
       # Same named volume as `api`, so the ~1min of Docling model downloads is paid once

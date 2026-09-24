@@ -146,9 +146,14 @@ Built as specified, plus:
 
 - `streamlit_app/pages/3_Observability.py`: links into the LangSmith project. Buildable now,
   but thin until Epics 2/3 generate traces worth looking at.
-- `app/observability/alerts.py`: threshold check -> webhook. **Latency SLO works now;
-  faithfulness needs Epic 2's RAGAS scores**, so build the latency half and leave a named
-  gap rather than a placeholder that looks complete.
+- ~~`app/observability/alerts.py`~~ **Latency half built 2026-09-24 as
+  `app/observability/slo.py`.** `/ask` records each answered factual question's end-to-end
+  latency (intent routing included) into a Redis sorted set pooled across gunicorn workers. A
+  procrastinate periodic task on its own `observability` queue takes the nearest-rank p95 over
+  the window every five minutes and, on a breach, logs `slo.breach` and posts to
+  `SLO_WEBHOOK_URL`. Defaults: 15 s, 15 min, at least 20 samples. Both halves fail open. **Not
+  built:** faithfulness (needs Epic 2's RAGAS scores), alert de-duplication (a sustained breach
+  posts every five minutes), and any availability SLI (errors are not sampled).
 - **Dashboards and percentiles, not just per-request logs.** `answer_service.py` already logs
   `latency_ms`, `input_tokens`, `output_tokens`, and `stop_reason` on every answer (2026-08-03),
   and Epic 2 Phase 2.2's parquet run rows add `cost_usd` per question — but nothing aggregates

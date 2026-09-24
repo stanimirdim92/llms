@@ -29,8 +29,9 @@ cross-cutting contracts (`CLAUDE.md` § Never, § The tenant boundary) still app
   role for a different purpose -- see § Row-level security below for why one credential set
   stopped being enough.
 - **Every credential in `Settings` is a `SecretStr`**, and `.get_secret_value()` marks each
-  point where one escapes (six: four in `config.py`, one each in `db.py` and `worker/app.py` --
-  this said eight, and `config.py`'s own copy of the count was wrong too). One object
+  point where one escapes (ten, counted 2026-09-24: six in `config.py`, two in `db.py`, one each
+  in `worker/app.py` and `observability/slo.py` -- this said six, which was already two short
+  before the SLO added two, so grep rather than trust the number). One object
   holds the Anthropic, Voyage and LangSmith keys plus the Postgres password, so anything that
   renders it renders all four -- and this repository is public. `database_url` is a `SecretStr`
   too: it embeds the password, so masking the password alone was theatre.

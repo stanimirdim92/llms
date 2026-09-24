@@ -1,4 +1,5 @@
 from functools import lru_cache
+from time import perf_counter
 
 from fastapi import APIRouter, Depends
 
@@ -13,6 +14,7 @@ from app.db import get_session, init_db
 from app.exceptions import APIError
 from app.generation.answer_service import AnswerService
 from app.generation.intent_router import IntentUnavailableError, classify_intent
+from app.observability.slo import record_ask_latency
 from app.registry.db import list_document_records
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
 from app.vectorstore.qdrant_store import RetrievalUnavailableError
@@ -112,6 +114,9 @@ async def _document_scope(question: str, tenant_id: str) -> DocumentScope:
     dependencies=[Depends(require_scopes(ASK)), Depends(rate_limited("ask", "rate_limit_ask"))],
 )
 async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
+    # Started before routing, so the SLO sample is what the caller waited for -- the classifier
+    # call included. `answer_service`'s own `latency_ms` starts after it and would under-report.
+    start = perf_counter()
     # Phase 2.0 (docs/EPIC_2_PLAN.md): three of four intents never reach retrieval at all, by
     # design -- retrieval matches chunks semantically, so a question that isn't about document
     # *content* gets an answer grounded in whatever text happens to be nearest in embedding
@@ -165,6 +170,11 @@ async def ask(request: AskRequest, tenant_id: CurrentTenant) -> AskResponse:
             "didn't respond). Try again shortly.",
             code=503,
         ) from exc
+    # Factual answers only. The three branches above answer in well under a second without
+    # retrieving, so sampling them would dilute the p95 and keep the SLO green while the path it
+    # exists to watch slowed down. Errors aren't latency samples either -- a fast 503 is not good
+    # latency.
+    await record_ask_latency((perf_counter() - start) * 1000)
     return AskResponse(
         answer=result.text,
         scoped_to=scope.filenames,

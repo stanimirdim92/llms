@@ -47,6 +47,10 @@ log = structlog.get_logger(__name__)
 
 INGEST_QUEUE = "ingest"
 INGEST_TASK_NAME = "ingest_document"
+# Its own queue so a breach check never waits behind a ten-minute parse. The worker CLI's
+# `--queues` must name it (`.docker/Dockerfile`), or the periodic jobs are enqueued and never
+# run -- no error, no alert, just rows piling up. `test_slo.py` pins the two together.
+OBSERVABILITY_QUEUE = "observability"
 
 
 def _conninfo() -> str:

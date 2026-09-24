@@ -285,14 +285,15 @@ is deliberately not kept current:
 
 - **Epic 2 — Eval framework.** RAGAS metrics as LangSmith custom evaluators over a
   versioned dataset, with a CI threshold gate and a deliberate pre-reranker baseline to
-  compare against. Document scoping and intent routing are already shipped (above); the golden
-  set, recall@k, run storage, and the gate are not.
+  compare against. Document scoping, intent routing and the golden set are already shipped;
+  recall@k, run storage, and the gate are not.
 - **Epic 3 — Knowledge-curation agent with HITL.** Playwright scraping, an
   orchestrator plus Curator/Evaluator subagents over the same Qdrant collection,
   prompt-injection defense on scraped content, and LangGraph `interrupt()` for human
   review.
-- **Epic 4 Phase 4** — observability: the latency SLO check is buildable, faithfulness
-  alerting needs Epic 2's scores.
+- **Epic 4 Phase 4** — observability. The `/ask` latency SLO check is built (below);
+  faithfulness alerting needs Epic 2's scores, and there are no dashboards or percentile
+  views yet.
 - **Epic 4 Phase 5** — the application backend. **5.1 (ingestion behind a job queue) and
   5.5's document list/view are built**; still to come: user accounts, conversations with
   persisted citations, document delete, semantic search, streaming `/ask`, and shareable

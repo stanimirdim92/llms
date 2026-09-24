@@ -13,6 +13,21 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-09-24
+
+#### Added
+
+- **An `/ask` latency SLO, checked every five minutes.** Each answered factual question records
+  how long the caller waited. The worker takes the p95 over the last 15 minutes and, when it
+  exceeds 15 s, logs `slo.breach` at error level and posts to `SLO_WEBHOOK_URL` if one is set.
+  With fewer than 20 answers in the window there is no verdict. Tunable with `SLO_ASK_P95_MS`,
+  `SLO_WINDOW_SECONDS` and `SLO_MIN_SAMPLES`.
+
+  *Upgrading:* the worker now needs Redis (`REDIS_HOST`, already set in `docker-compose.yml`) and
+  must listen on the new `observability` queue. The shipped image's command does both; a custom
+  worker command that passes `--queues ingest` alone never runs the check. A `SLO_WEBHOOK_URL`
+  that isn't an `http(s)` URL now stops the api and worker at startup.
+
 ### 2026-09-17
 
 #### Fixed

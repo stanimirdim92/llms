@@ -170,6 +170,13 @@ looks wrong, say so once and proceed.
   `RetrievalUnavailableError`, rather than an opaque 500. See `docs/EPIC_4_PLAN.md`'s
   operational-hardening section for the file-by-file detail.
 
+- **Epic 4 Phase 4 (latency half) — the `/ask` latency SLO** (2026-09-24).
+  `app/observability/slo.py`. `/ask` records each answered factual question's end-to-end latency
+  into a Redis sorted set. A procrastinate periodic task on the `observability` queue checks the
+  nearest-rank p95 every five minutes and posts to `SLO_WEBHOOK_URL` on a breach. Defaults: 15 s
+  p95, 15 min window, at least 20 samples. Verified with a real worker: two ticks, two breaches
+  logged, two webhook posts received.
+
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
 - **Epic 2** — the eval framework proper. recall@k, parquet + DuckDB run storage, the CI
@@ -181,8 +188,8 @@ looks wrong, say so once and proceed.
   with its deviations listed at the top.) Phase 2.2's plan is no longer blocked -- Open question
   5 (`cost_usd`) was resolved 2026-09-24 -- and needs only approval.
 - **Epic 3** — the curation agent with human-in-the-loop.
-- **Epic 4 Phase 4** — observability. The latency SLO check is buildable now; faithfulness
-  alerting needs Epic 2's scores.
+- **Epic 4 Phase 4, the rest** — faithfulness alerting (needs Epic 2's scores), dashboards and
+  percentile views, alert de-duplication, an availability SLI.
 - **Epic 4 Phases 5.2–5.9** — user accounts, conversations, document delete, streaming `/ask`.
 - **Epic 4 Phase 6** — React + TypeScript UI generated from the OpenAPI schema.
 
@@ -349,7 +356,7 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
-### 2026-09-24 (later) — doc drift from the golden set, `cost_usd` resolved, and a pricing claim that never came true
+### 2026-09-24 (later) — doc drift, `cost_usd` resolved, a pricing claim that never came true, and the latency SLO
 
 - **The handoff the user pasted was 15 commits stale** (it described `main` at `7b07e52`) and
   named the golden set as the next job. It had shipped 2026-09-17. Five docs still said otherwise:
@@ -375,12 +382,30 @@ Newest first.
 - **Open question 2, the repo-root half again**: this session started at the repo root and listed
   only built-in agent types. That repeats the 2026-08-06 observation. The `portfolio/`-start half
   is still unmeasured.
-- **Not built, pending the user: Epic 4 Phase 4's latency SLO check.** It conflicts with the
-  user's own 2026-09-24 call to remove `slo-architect` because "nothing measures the API yet", so
-  an SLO would have no SLI behind it. Also found while scoping it: `/ask` has no end-to-end
-  latency measurement. `answer_service`'s `latency_ms` covers retrieve, rerank and generate, but
-  not the intent-routing call before them. procrastinate 3.9 does have `App.periodic`, so a
-  worker-side periodic check would not need a scheduler.
+- **Epic 4 Phase 4's latency SLO, built live on the user's call.** I raised the conflict first:
+  that morning the user had removed `slo-architect` because "nothing measures the API yet". They
+  chose the live check over an offline one on eval runs. What shaped it:
+  - `answer_service`'s `latency_ms` starts *after* intent routing, so it under-reports what a
+    caller waits. `/ask` now times from the top of the handler.
+  - Only factual answers are sampled. Refusals take under a second and would hold the p95 down
+    while the path that matters slowed.
+  - The check runs in the worker, because N gunicorn processes would alert N times. It has its
+    own queue, and procrastinate enqueues into a queue nobody listens on without complaint. That
+    is now a failure contract in `.claude/rules/docker.md`, with a test that reads the Dockerfile
+    CMD.
+  - A sorted-set member must be unique per sample, or equal latencies collapse into one.
+  - All 8 guards were mutation-tested red (member uniqueness, trim-on-write, record fails open,
+    sample floor, webhook URL validator, factual-only sampling, queue listened, breach notifies).
+  - Run live against a real procrastinate worker on the test Postgres. It fires a catch-up tick
+    at startup, then one per five minutes. **A sustained breach posts every five minutes**; there
+    is no de-duplication yet.
+  - The 15 s default comes from the measured 0.6–12 s and is the user's accepted proposal. It is
+    not an SLO derived from traffic, because there is none.
+- **Another golden-set drift, missed in the first pass**: README's Not-built list still said the
+  golden set was unbuilt. Fixed with the SLO commit.
+- **Gate after the SLO**: ruff, ruff format and `ty` clean; `pytest tests/unit` **467 passed, 0
+  skipped** (seed 239042600); `docker compose config -q` OK against a temporary `.env` copied
+  from `.env.example` and deleted afterwards. `test_slo.py` joins CI's did-not-skip list.
 
 ### 2026-09-24 — Claude setup: plugin toggles, read-only hook, skills pruned (`e2ec63d`)
 

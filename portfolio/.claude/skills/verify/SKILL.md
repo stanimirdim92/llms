@@ -39,9 +39,9 @@ if a CI run is red, the seed is in its log.
 
 ## Trap 1: skipped tests look identical to passing ones
 
-Six suites **skip** when their service is unreachable: `test_auth_touch.py`,
-`test_rate_limit.py`, `test_worker_enqueue.py`, `test_key_management.py`, `test_create_tenant.py`
-and `test_migrations.py`. A run that skips them has not tested auth, rate limiting, the job queue,
+Seven suites **skip** when their service is unreachable: `test_auth_touch.py`,
+`test_rate_limit.py`, `test_worker_enqueue.py`, `test_key_management.py`, `test_create_tenant.py`,
+`test_migrations.py`, and the Redis half of `test_slo.py` (2026-09-24). A run that skips them has not tested auth, rate limiting, the job queue,
 key management, the bootstrap CLI or the migration path -- most of the security-relevant surface.
 (It was three for a while, and CI asserted only those three, so the newer ones could skip silently
 -- including the only test of `{"scopes": null}`. `test_migrations.py` joined when Alembic replaced
@@ -52,7 +52,7 @@ key management, the bootstrap CLI or the migration path -- most of the security-
 the number as a floor that drifts upward, not a checksum — what matters is the *skip* count being
 zero. An earlier version of this line said "249 tests ... `116 passed`", two numbers that already
 disagreed with each other, which is what a hand-maintained count does.) With no services reachable
-the suite skips all six of those files, so a green run then has tested almost none of the
+the suite skips all seven of those files, so a green run then has tested almost none of the
 security-relevant surface. Start them rather than shipping:
 
     pg_isready -h localhost -p 5433 -U portfolio || \
@@ -69,7 +69,7 @@ They die repeatedly in a long session (idle reclamation), so re-check before *ea
 once at the start. `pg_ctl` refuses to run as root -- hence the `su postgres`.
 
 Outside this container, the compose Postgres/Redis serve the same purpose and need no port
-overrides. CI provides both and asserts none of the six suites skipped.
+overrides. CI provides both and asserts none of the seven suites skipped.
 
 **`docker compose down -v` makes the next run skip 53 tests, silently.** The suites use
 `portfolio_test` and `portfolio_migrations_test`, which live in the same cluster as the application

@@ -49,6 +49,15 @@ cross-cutting contracts (`CLAUDE.md` § Never, § The tenant boundary) still app
   mount/volume)" -- which reads as a corrupt volume rather than a wrong path. Bumping the
   image major version means checking the mount, and a pre-18 volume needs `pg_upgrade` or a
   fresh volume; hence `postgres_data_v18`.
+- **The worker's `--queues` must name every queue a task in `tasks.py` uses.** procrastinate
+  enqueues into a queue whether or not any worker listens on it, so a queue left out of the
+  Dockerfile CMD is jobs piling up in `procrastinate_jobs` with no error anywhere. For the
+  `observability` queue that means the latency SLO check silently stops running, which is the one
+  failure an alert cannot report. `tests/unit/test_slo.py` reads the CMD and fails on a gap
+  (mutation-confirmed 2026-09-24).
+- **The worker has `REDIS_HOST` but no `depends_on: redis`, on purpose.** It needs Redis only for
+  the SLO check, which fails open. Gating ingestion on Redis health would turn an observability
+  outage into an ingestion outage.
 
 ## Config invariants
 
