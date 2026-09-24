@@ -1,11 +1,11 @@
 # Implementation Plan: Epic 2 Phase 2.3 — Metrics and the CI gate (on LangSmith)
 
-Status: Draft (rewritten 2026-09-24 for LangSmith datasets and experiments)
+Status: Approved (rewritten 2026-09-24 for LangSmith datasets and experiments)
 Spec: docs/EPIC_2_PLAN.md § Phase 2.2 and § Phase 2.3 (fused spec+plan doc — convention note in
 EPIC2-P1-golden-set-plan.md, not repeated here)
 Spec status: N/A — repo convention
-Approved by: —
-Approved at: —
+Approved by: the user
+Approved at: 2026-09-24
 
 **What changed on 2026-09-24.** The first draft wrote each eval run to a local parquet store
 (Phase 2.2, now retired) and committed `data/eval/baseline.parquet`. The user decided evals and
@@ -134,4 +134,4 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
    decision and needs the user's call before T006.
 
 ---
-Handoff: Awaiting plan approval
+Handoff: Approved. Open question 2 still blocks T006 only

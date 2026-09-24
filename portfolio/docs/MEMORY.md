@@ -180,7 +180,7 @@ looks wrong, say so once and proceed.
   retrieval work: query expansion, decomposition, and corpus-level answering all change what
   retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
   **Plans:** 2.2's local-store plan is **retired**. 2.3's plan and tasks were **rewritten for
-  LangSmith** (2026-09-24, `Status: Draft`, awaiting approval), with two open questions: whether
+  LangSmith** (2026-09-24, **approved by the user the same day**), with two open questions: whether
   offline `aevaluate` really needs no network (checkpoint CP-001), and which configuration the
   "before" baseline uses (see Open question 9). 2.4 and 2.5 are still drafts. 2.1's pair was
   built without approval and is marked as-built.
