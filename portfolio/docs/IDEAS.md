@@ -414,6 +414,7 @@ Kept so they don't come back without new information.
 | Idea | Verdict |
 |---|---|
 | Neo4j / a graph database for document relationships | Rejected. `microsoft/graphrag` — the reference implementation — uses **no** graph database: networkx in memory, parquet on disk. Adding a fourth datastore buys nothing we can't do with what we have. `docs/TECHNICAL_DECISIONS.md`. |
+| `ragas` for answer-quality metrics | Rejected 2026-09-24. Resolves, but downgrades `fsspec`, `jiter` and `rich` and adds `nest-asyncio` (a monkey-patch). LLM judges on Claude (`app/eval/judges.py`) cover correctness and groundedness with no new dependency. `docs/TECHNICAL_DECISIONS.md` § Evals. |
 | Import `microsoft/graphrag` as a dependency | Not possible. All 8 of its packages pin `requires-python >=3.11,<3.14`. Anything worth taking gets reimplemented. |
 | SQLite for tests | Rejected after trying it. It surfaced a real tz bug, but testing on an engine the app never runs is how backend-specific bugs hide. The assumption is now pinned by an explicit test instead. |
 | `slowapi` for rate limiting | Its storage and strategy imports are `limits`' **synchronous** modules and `extension.py:514` calls `hit()` inline, so every check blocks the event loop -- 65.5 ms vs 18.5 ms at 200 concurrent. `limits` itself **was** adopted (2026-08-03) via `limits.aio` + `implementation="redispy"`; the `redis<8` pin that this row used to cite as the blocker is on the *synchronous* `limits[redis]` extra only. |

@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     # "sub-second, fractions of a cent, and cheaper than the retrieval it avoids" -- routing a
     # metadata question to the answer model would spend more than the retrieval it replaces.
     intent_router_model: str = Field(default="claude-haiku-4-5-20251001")
+    # Grades eval answers (app/eval/judges.py). A different model from `answer_model` on purpose,
+    # so the judge isn't scoring its own writing. Only the eval scripts use it.
+    eval_judge_model: str = Field(default="claude-opus-5")
     # Bounded, not unbounded: the ceiling is Anthropic's rate limit, and a 429 storm is slower
     # than running sequentially.
     figure_caption_concurrency: int = Field(default=5)

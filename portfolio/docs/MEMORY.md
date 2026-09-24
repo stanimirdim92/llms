@@ -374,7 +374,13 @@ Newest first.
     "don't run tests". The new tests are unverified, and the first CI run is their first run.
 - **Not built:** T002 replay, T005 judges, T006 baseline (needs keys and the seeded stack), and
   the CI job.
-- **Two new open questions in the 2.3 plan:**
+- **Later the same day, the user settled both open questions below.** (3) A registry fixture:
+  `scripts/eval_registry.py export|load`, built. It uses the registry helpers because
+  `get_session` is the app role under row-level security; a bare select would have read zero rows
+  and reported "not seeded". (4) LangSmith-style judges on Claude, not `ragas`:
+  `app/eval/judges.py`, with correctness and groundedness, Opus judging Sonnet. `ragas` is in
+  IDEAS' rejected table. Lint and types are clean; **none of it has been run.**
+- **Two new open questions in the 2.3 plan (both resolved later that day, see above):**
   - (3) The gate reads Postgres (`list_active_versions`, the document list), which `vcrpy`
     can't replay. CI needs a committed fixture of the eval tenant's registry rows.
   - (4) `ragas` 0.4.3 downgrades `fsspec`, `jiter` and `rich`, and adds `nest-asyncio`, a

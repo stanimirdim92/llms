@@ -49,7 +49,7 @@ Decisions that a candidate will most often collide with: the vector store is **Q
 FAISS, Pinecone or pgvector); chunking is **Docling structure-aware** (not
 `RecursiveCharacterTextSplitter`); embeddings are **Voyage** (not OpenAI); the database is
 **Postgres only, never SQLite anywhere**; eval is a golden set (authoritative in git) run as
-**LangSmith datasets and experiments**, with recall@k as our own evaluator plus RAGAS, and a CI gate
+**LangSmith datasets and experiments**, with recall@k as our own evaluator plus Claude LLM judges (not RAGAS), and a CI gate
 against a committed `baseline_scores.json` (2026-09-24; there is no local parquet/DuckDB store).
 
 Then apply these, each of which has already sunk a real candidate:

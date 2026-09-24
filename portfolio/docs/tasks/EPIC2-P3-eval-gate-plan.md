@@ -28,7 +28,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
    everything a metric needs: predicted intent, retrieved chunk ids in rank order, answer,
    citations, latency, tokens.
 3. **Evaluators** score each example. Retrieval and routing metrics are our own code, because
-   LangSmith has no idea what a chunk id is. RAGAS or LLM-as-judge covers the answer text.
+   LangSmith has no idea what a chunk id is. LLM judges (correctness, groundedness) cover the answer text.
 4. **Manual runs** call `aevaluate(...)` against the LangSmith dataset and upload an
    experiment, compared side by side in the LangSmith UI. Experiment runs get extended
    retention by default.
@@ -46,7 +46,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 - `app/eval/target.py` (NEW): the `/ask`-pipeline target function and its output shape.
 - `app/eval/metrics.py` (NEW): recall@k, nDCG@k/MRR, routing accuracy, citation success, as
   plain functions plus thin LangSmith evaluator wrappers.
-- `app/eval/judges.py` (NEW): RAGAS / LLM-as-judge answer-quality evaluators.
+- `app/eval/judges.py` (NEW): LLM-as-judge answer-quality evaluators (correctness, groundedness), on Claude.
 - `app/eval/gate.py` (NEW): the summary-vs-baseline comparison and its failure message.
 - `data/eval/baseline_scores.json` (NEW, committed), `data/eval/cassettes/` (NEW, committed).
 - `.github/workflows/portfolio-ci.yml` (MODIFIED): new `eval-gate` job.
@@ -54,7 +54,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 ### Affected Areas
 - `app/eval/`, `scripts/`, `data/eval/`
 - `.github/workflows/portfolio-ci.yml`
-- `pyproject.toml`, `uv.lock` (new `eval` extra: `vcrpy`, `ragas`; `langsmith` is already a
+- `pyproject.toml`, `uv.lock` (new `eval` extra: `vcrpy`, when T002 lands; `langsmith` is already a
   runtime dependency)
 
 ## Decisions and Provenance
@@ -83,7 +83,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
   reinvent request matching).
 
 ### TD-003 — Dependency placement
-- Choice: `vcrpy` and `ragas` go in a new `eval` optional-dependency group. The Docker images
+- Choice: `vcrpy` goes in a new `eval` optional-dependency group (`ragas` was dropped 2026-09-24). The Docker images
   run `uv sync` without extras, so neither reaches the api, worker or Streamlit image.
   `app/eval/` imports them lazily, following `app/retrieval/reranker.py`'s pattern.
 
@@ -102,9 +102,8 @@ executed in-session** (user instruction: sessions don't run tests):
 - `tests/unit/test_eval_metrics.py`.
 
 Not built, and why:
-- **T002 replay:** recording needs real keys. It also can't make CI self-contained on its own
-  (Open question 3).
-- **T005 judges:** `ragas` raises dependency red flags (Open question 4).
+- **T002 replay:** recording needs real keys. The Postgres half of CI is covered by
+  `scripts/eval_registry.py` (Open question 3).
 - **T006 baseline:** a human run with keys against the seeded stack.
 - **T007's CI job:** needs T002 and T006. The gate *logic* and `run_eval.py --gate` exist.
 
@@ -124,7 +123,7 @@ Not built, and why:
 
 - [x] T003 (M, deps: CP-001): Eval target over the `/ask` pipeline
 - [x] T004 (M, deps: T003): Retrieval, routing and citation evaluators
-- [ ] T005 (L, deps: T003) [TD-003]: RAGAS / LLM-as-judge evaluators
+- [x] T005 (L, deps: T003): LLM-as-judge evaluators on Claude (correctness, groundedness); `ragas` dropped
 - [ ] T006 (S, deps: T004, T005): Record the baseline of today's pipeline, commit `baseline_scores.json`
 - [ ] T007 (M, deps: T006): CI gate job
 
@@ -142,7 +141,6 @@ Not built, and why:
 |---|---|---|
 | A cassette recorded against an old model version stays green after a real regression | Cassettes carry a recorded-at date and model id; the gate warns past a staleness threshold | T002, T007 |
 | `upload_results=False` still wants a LangSmith client or key, or `Example` requires a `dataset_id` | Proven at CP-001 before anything builds on it; if it fails, fall back to calling our metric functions directly on target outputs, with no `aevaluate` in CI | CP-001 |
-| `ragas` conflicts with the pinned `langchain*` versions | Resolve with `uv lock` before committing (root rule 13) | T005 |
 | Evaluators written against LangSmith's SDK need porting if the platform moves to Langfuse | Metric logic lives in plain functions; the LangSmith wrappers are thin | T004, T005 |
 
 ## Open Questions
@@ -151,17 +149,16 @@ Not built, and why:
    doesn't use it.
 2. ~~**Which configuration the "before" baseline uses.**~~ **Resolved 2026-09-24 (user):** the baseline is today's pipeline as it ships, real chunker and reranker included. No naive-chunking run, no no-reranker experiment, and no reranker score used as a metric (the reranker is part of the system under test, so it can't grade itself).
 
-3. **The gate reads Postgres, and replay can't record that.** `answer_question` reads the
-   registry (`list_active_versions` for every factual question, the document list for metadata
-   ones), and it queries Qdrant. `vcrpy` can record HTTP (Anthropic, Voyage, and Qdrant's REST
-   client), but not Postgres. So a CI gate also needs the eval tenant's registry rows in CI's
-   Postgres. The likely answer is a small committed fixture of those rows (doc_id, filename,
-   status, ingestion_version), loaded before the run. Not decided or built.
-4. **`ragas` raises two red flags from `docs/MEMORY.md`'s dependency directive.** `ragas` 0.4.3
-   resolves, but it downgrades three installed packages (`fsspec` 2026.7.0→2026.6.0, `jiter`
-   0.16.0→0.14.0, `rich` 15.0.0→14.3.4) and adds `nest-asyncio`, which monkey-patches asyncio
-   (checked with `uv pip install --dry-run`, 2026-09-24). The alternatives are LangSmith's
-   LLM-as-judge or a small Claude judge of our own. The user's call.
+3. ~~**The gate reads Postgres, and replay can't record that.**~~ **Resolved 2026-09-24 (user: build
+   the fixture).** `scripts/eval_registry.py export` writes the eval tenant's rows to
+   `data/eval/registry_fixture.json` after a seed; `load` puts them into CI's empty Postgres before
+   the gate runs. Export it together with the baseline: `ingestion_version` changes on each re-seed,
+   and recorded Qdrant queries filter on it.
+4. ~~**`ragas` raises two dependency red flags.**~~ **Resolved 2026-09-24 (user: LangSmith).** The
+   judges are LangSmith-style local evaluators on Claude (`app/eval/judges.py`), as the
+   `langsmith-evaluator` skill recommends: define LLM-as-judge locally and pass it to `evaluate()`.
+   There's no new dependency. The judge model is `EVAL_JUDGE_MODEL` (default `claude-opus-5`), so
+   it isn't the model that writes the answers.
 
 ---
 Handoff: Approved and partly built; T002, T005, T006 and the CI job are pending (see Build status)

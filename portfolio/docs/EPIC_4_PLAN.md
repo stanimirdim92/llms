@@ -150,7 +150,7 @@ Built as specified, plus:
   2026-09-24 to use LangSmith's p95, not an in-app check.** Every `/ask` is already traced
   there. An in-app version was built and removed the same day (`882d178`, reverted); its
   design is in `docs/MEMORY.md`'s session log if this is ever revisited. Faithfulness alerting
-  still needs Epic 2's RAGAS scores.
+  still needs Epic 2's judge scores (groundedness, `app/eval/judges.py`).
 - **Dashboards and percentiles, not just per-request logs.** `answer_service.py` already logs
   `latency_ms`, `input_tokens`, `output_tokens`, and `stop_reason` on every answer (2026-08-03),
   but nothing watches retrieval-quality *drift* (recall@k or faithfulness moving over time, as
@@ -563,7 +563,7 @@ blocks Phases 5 or 6:
 | `agent/nodes.py` structlog calls | Epic 3's agent |
 | Rate limit on `/review` | Epic 3's review endpoint |
 | `eval/agent_trace_assertions.py` + `tests/eval/` | Epic 3's agent **and** `docs/EPIC_2_PLAN.md` Phase 2.3 |
-| Faithfulness SLO in `alerts.py` | `docs/EPIC_2_PLAN.md` Phase 2.3 (RAGAS scores) |
+| Faithfulness SLO in `alerts.py` | `docs/EPIC_2_PLAN.md` Phase 2.3 (groundedness judge scores) |
 
 ## Prerequisite for load, not a phase
 

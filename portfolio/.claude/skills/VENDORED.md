@@ -347,9 +347,9 @@ Because LangSmith is not a candidate here — it is already wired. `LANGSMITH_AP
 `config.py` has the bridge, and the one cost measurement this project has
 (**$0.017024 per `/ask`**) came off a LangSmith trace. These describe a service in use.
 
-- **`langsmith-evaluator`** — evaluators, LLM-as-judge, `evaluate()`. `docs/EPIC_2_PLAN.md` Phase 2.3
-  already specifies "RAGAS metrics wrapped as LangSmith custom evaluators", so this is the mechanism
-  the plan named, documented.
+- **`langsmith-evaluator`** — evaluators, LLM-as-judge, `evaluate()`. `app/eval/judges.py` follows its
+  recommendation (define LLM judges locally and pass them to `evaluate()`), on Claude rather than the
+  skill's OpenAI example. `ragas` was dropped for it on 2026-09-24.
 - **`langsmith-dataset`** — dataset types including a RAG shape. Phase 2.1 is the golden set.
 - **`langsmith-trace`** — tracing and querying traces. Already how cost and latency get observed.
 

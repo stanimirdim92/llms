@@ -4,6 +4,7 @@
     uv run python scripts/run_eval.py --gate             # ...and fail on a regression vs baseline_scores.json
     uv run python scripts/run_eval.py --write-baseline   # ...and record the scores as the new baseline
     uv run python scripts/run_eval.py --upload           # run as a LangSmith experiment instead
+    uv run python scripts/run_eval.py --judges ...       # add the LLM judges (correctness, groundedness)
 
 Needs the seeded eval corpus (`scripts/fetch_eval_corpus.py`, then `scripts/seed_eval_corpus.py`),
 live Postgres and Qdrant, and `ANTHROPIC_API_KEY` / `VOYAGE_API_KEY`. `--upload` also needs
@@ -25,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.config import get_settings
 from app.eval.gate import ALL, BASELINE_PATH, DEFAULT_TOLERANCE, aggregate, compare, read_baseline, write_baseline
 from app.eval.golden import load_golden, seed_tenant_id
+from app.eval.judges import judge_scores
 from app.eval.metrics import score
 from app.eval.target import run_question
 
@@ -39,7 +41,7 @@ def _git_sha() -> str:
     ).stdout.strip()
 
 
-async def _score_locally() -> list:
+async def _score_locally(*, with_judges: bool) -> list:
     tenant_id = seed_tenant_id()
     pairs = load_golden()
     limit = asyncio.Semaphore(_CONCURRENCY)
@@ -49,7 +51,11 @@ async def _score_locally() -> list:
             output = await run_question(pair.question, tenant_id)
         if output.error_code is not None:
             print(f"  {pair.id}: /ask answered {output.error_code} -- {output.answer}", file=sys.stderr)
-        return pair, score(pair, output)
+        scores = score(pair, output)
+        if with_judges:
+            async with limit:
+                scores |= await judge_scores(pair, output)
+        return pair, scores
 
     return await asyncio.gather(*(one(pair) for pair in pairs))
 
@@ -68,7 +74,7 @@ def _print_table(scores: dict, counts: dict) -> None:
 async def _upload() -> int:
     from langsmith import aevaluate  # noqa: PLC0415 -- only this mode talks to LangSmith
 
-    from app.eval.langsmith_evaluators import DATASET_NAME, pipeline_metrics  # noqa: PLC0415
+    from app.eval.langsmith_evaluators import DATASET_NAME, answer_judges, pipeline_metrics  # noqa: PLC0415
 
     tenant_id = seed_tenant_id()
 
@@ -79,7 +85,7 @@ async def _upload() -> int:
     await aevaluate(
         target,
         data=DATASET_NAME,
-        evaluators=[pipeline_metrics],
+        evaluators=[pipeline_metrics, answer_judges],
         experiment_prefix=f"golden-{sha}",
         metadata={"git_sha": sha, "answer_model": get_settings().answer_model},
         max_concurrency=_CONCURRENCY,
@@ -94,12 +100,17 @@ def main() -> int:
     mode.add_argument("--write-baseline", action="store_true", help="record these scores as the new baseline")
     mode.add_argument("--upload", action="store_true", help="run as a LangSmith experiment")
     parser.add_argument("--tolerance", type=float, default=DEFAULT_TOLERANCE, help="allowed absolute drop per cell")
+    parser.add_argument(
+        "--judges",
+        action="store_true",
+        help="also run the LLM judges (costs a judge call per factual question; --upload always runs them)",
+    )
     args = parser.parse_args()
 
     if args.upload:
         return asyncio.run(_upload())
 
-    rows = asyncio.run(_score_locally())
+    rows = asyncio.run(_score_locally(with_judges=args.judges))
     scores, counts = aggregate(rows)
     _print_table(scores, counts)
 

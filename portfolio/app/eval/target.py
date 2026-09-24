@@ -22,6 +22,8 @@ class TargetOutput:
     cited_chunk_ids: tuple[str, ...]
     answer: str
     latency_ms: float
+    retrieved_texts: tuple[str, ...] = ()
+    """The chunk texts, same order as the ids. What the groundedness judge checks the answer against."""
     error_code: int | None = None
     """Set when `/ask` answered with an error (a 503 from routing or retrieval, a scope 404/409).
     Kept as data rather than raised: one failing question must score as a miss, not abort a run
@@ -34,6 +36,7 @@ class TargetOutput:
             "cited_chunk_ids": list(self.cited_chunk_ids),
             "answer": self.answer,
             "latency_ms": self.latency_ms,
+            "retrieved_texts": list(self.retrieved_texts),
             "error_code": self.error_code,
         }
 
@@ -45,6 +48,7 @@ class TargetOutput:
             cited_chunk_ids=tuple(data.get("cited_chunk_ids") or ()),
             answer=data.get("answer") or "",
             latency_ms=float(data.get("latency_ms") or 0.0),
+            retrieved_texts=tuple(data.get("retrieved_texts") or ()),
             error_code=data.get("error_code"),
         )
 
@@ -71,4 +75,5 @@ async def run_question(question: str, tenant_id: str) -> TargetOutput:
         cited_chunk_ids=tuple(citation.chunk_id for citation in response.citations),
         answer=response.answer,
         latency_ms=(perf_counter() - start) * 1000,
+        retrieved_texts=tuple(chunk.text for chunk in response.retrieved_chunks),
     )

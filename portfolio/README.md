@@ -283,9 +283,8 @@ infer any from a plan's directory layout. The buildable plans are
 [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) holds the original design and
 is deliberately not kept current:
 
-- **Epic 2 — Eval framework.** RAGAS metrics as LangSmith custom evaluators over a
-  versioned dataset, with a CI threshold gate and a deliberate pre-reranker baseline to
-  compare against. Document scoping, intent routing and the golden set are already shipped;
+- **Epic 2 — Eval framework.** Retrieval metrics and LLM judges as LangSmith evaluators over
+  a synced dataset, with an offline CI gate against a committed baseline of today's pipeline. Document scoping, intent routing and the golden set are already shipped;
   the scoring, the LangSmith sync and the gate logic are written (`scripts/run_eval.py`) but
   have not been run. There is no baseline yet and no CI eval job.
 - **Epic 3 — Knowledge-curation agent with HITL.** Playwright scraping, an

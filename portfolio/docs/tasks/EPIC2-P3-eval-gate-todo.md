@@ -86,18 +86,20 @@ evaluator (per example) or summary evaluator (per experiment):
 
 ---
 
-## T005: RAGAS / LLM-as-judge evaluators
+## T005: LLM-as-judge evaluators — BUILT (not yet run)
 
-**Description:** Faithfulness, answer relevancy, context precision and context recall, as
-LangSmith evaluators, following `.claude/skills/langsmith-evaluator`.
+**Decided 2026-09-24 (user): LangSmith-style judges on Claude, not `ragas`.**
 
-**Acceptance criteria:**
-- [ ] `ragas` is in the `eval` extra and `uv lock` resolves against the pinned `langchain*`
-      versions. Verify by resolving, not from memory (root rule 13).
-- [ ] Judge calls go through T002's replay, so CI makes no live judge calls.
+- `correctness`: the answer states what the accepted answer states. For an unanswerable pair,
+  that means declining. An `/ask` error scores 0, not skipped.
+- `groundedness`: every claim is supported by the retrieved chunk texts (`TargetOutput.retrieved_texts`).
+- Factual pairs only; the other intents are covered by routing accuracy.
+- Structured output via `json_schema` rather than a forced tool call, so thinking can stay on
+  for the default Opus judge.
+- Run locally with `run_eval.py --judges`; `--upload` always runs them.
+- Still open: judge calls go through T002's replay once it exists, so CI makes no live calls.
 
-**Files:** `app/eval/judges.py`, `pyproject.toml`, `uv.lock`, `tests/unit/test_eval_judges.py`
-**Scope:** L
+**Files:** `app/eval/judges.py`, `app/eval/langsmith_evaluators.py::answer_judges`, `app/config.py::eval_judge_model`
 
 ---
 

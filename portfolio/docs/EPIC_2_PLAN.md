@@ -214,8 +214,11 @@ open question 5) applies only if LangSmith's own trace cost turns out not to be 
 
 ## Phase 2.3 — Metrics and the CI gate
 
-RAGAS metrics (faithfulness, answer relevancy, context precision/recall) wrapped as
-LangSmith custom evaluators, plus two that RAGAS does not cover and that this system needs:
+LLM-judged answer quality, as LangSmith evaluators: **correctness** against the accepted answer and
+**groundedness** in the retrieved chunks (`app/eval/judges.py`, Claude with structured output). This
+was "RAGAS metrics" until 2026-09-24. `ragas` was dropped because it downgrades `fsspec`, `jiter` and
+`rich` and adds `nest-asyncio` (see `docs/TECHNICAL_DECISIONS.md`). Plus the metrics no judge covers,
+which are our own code:
 
 - **recall@k against the golden chunk ids** — the only metric that isolates *retrieval*
   from generation, and therefore the only one that can attribute a bad answer to the right
@@ -226,7 +229,7 @@ LangSmith custom evaluators, plus two that RAGAS does not cover and that this sy
   retrieved at all"; these answer "how high did it rank", which is specifically what
   `rerank-2.5` is paid for. Without a rank-sensitive metric, a reranker regression that still
   keeps the right chunk somewhere in the top-k is invisible to recall@k alone.
-- **Citation success rate** — distinct from RAGAS faithfulness (which scores the generated
+- **Citation success rate** — distinct from the groundedness judge (which scores the generated
   *text* against retrieved context): this checks whether `_extract_citations` actually
   resolves a citation to a real, in-range chunk for every factual claim in a golden answer.
   The unit-level guards already exist (`test_an_out_of_range_document_index_is_dropped_not_raised`,
@@ -304,5 +307,4 @@ All of these are measured through 2.3 or they do not land.
 
 | Package | Phase | For |
 |---|---|---|
-| `ragas` | 2.3 | Faithfulness / relevancy / context metrics |
 | `vcrpy` | 2.3 | Record provider calls once, replay them in CI |

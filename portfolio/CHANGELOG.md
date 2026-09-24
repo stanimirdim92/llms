@@ -23,6 +23,11 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
   drop beyond `--tolerance` (default 0.05), and `--upload` runs it as a LangSmith experiment.
   **`scripts/sync_eval_dataset.py`** copies the golden set into the `portfolio-golden` LangSmith
   dataset. Both need the seeded eval corpus and provider keys; neither has been run yet.
+- **LLM judges for eval answers.** `run_eval.py --judges` adds `correctness` and `groundedness`,
+  graded by `EVAL_JUDGE_MODEL` (default `claude-opus-5`); `--upload` always includes them.
+- **`scripts/eval_registry.py export|load`** saves the eval tenant's document rows to
+  `data/eval/registry_fixture.json` and loads them into an empty database, so the eval can run
+  without a seeded stack.
 
 #### Changed
 

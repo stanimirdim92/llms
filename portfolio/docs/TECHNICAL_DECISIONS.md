@@ -1114,6 +1114,15 @@ days, and the pricing page says 400. Either way, the long-term reference is
 **What was given up:** SQL across the full history of runs, without a service. LangSmith's
 view is per experiment, and runs age out after the extended period.
 
+**Answer-quality judges: our own, on Claude, not `ragas` (2026-09-24, user's call).**
+`ragas` 0.4.3 resolves against the lockfile, but it downgrades three installed packages
+(`fsspec` 2026.7.0→2026.6.0, `jiter` 0.16.0→0.14.0, `rich` 15.0.0→14.3.4) and adds `nest-asyncio`,
+which monkey-patches asyncio. Both are named red flags in `docs/MEMORY.md`'s dependency directive.
+The `langsmith-evaluator` skill's own recommendation is to define LLM-as-judge evaluators locally and
+pass them to `evaluate()`, so `app/eval/judges.py` does that: two questions (correctness,
+groundedness), structured output, and no new dependency. The judge is `EVAL_JUDGE_MODEL`
+(default `claude-opus-5`), not the answer model, so it doesn't grade its own writing.
+
 **Considered: Langfuse, deferred.** Checked the same day:
 - It is MIT-licensed, including evals, datasets and experiments. Only SCIM, audit logs and
   retention policies are paid, and only when self-hosting.

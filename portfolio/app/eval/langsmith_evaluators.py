@@ -9,7 +9,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from langsmith.evaluation import EvaluationResult, EvaluationResults
+
 from app.eval.golden import GoldenPair
+from app.eval.judges import judge_scores
 from app.eval.metrics import score
 from app.eval.target import TargetOutput
 
@@ -50,16 +53,28 @@ def pair_from_example(example: Example) -> GoldenPair:
     )
 
 
-def pipeline_metrics(run: Run, example: Example) -> dict:
-    """Every applicable metric for one example, as a LangSmith multi-score result.
-
-    Metrics that don't apply (`None`) are omitted rather than sent as 0, matching how the offline
-    gate excludes them from its means.
+def _results(scores: dict[str, float | None]) -> EvaluationResults:
+    """Metrics that don't apply (`None`) are omitted rather than sent as 0, matching how the
+    offline gate excludes them from its means.
     """
-    output = TargetOutput.from_dict(run.outputs or {})
-    results = [
-        {"key": key, "score": value}
-        for key, value in score(pair_from_example(example), output).items()
-        if value is not None
-    ]
-    return {"results": results}
+    return {"results": [EvaluationResult(key=key, score=value) for key, value in scores.items() if value is not None]}
+
+
+def _pair(example: Example | None) -> GoldenPair:
+    if example is None:
+        # Every run here is over a dataset, so a missing example is a wiring error, not a skip.
+        msg = "evaluator called without a dataset example"
+        raise ValueError(msg)
+    return pair_from_example(example)
+
+
+def pipeline_metrics(run: Run, example: Example | None) -> EvaluationResults:
+    """Every applicable retrieval/routing metric for one example, as a LangSmith multi-score result."""
+    return _results(score(_pair(example), TargetOutput.from_dict(run.outputs or {})))
+
+
+async def answer_judges(run: Run, example: Example | None) -> EvaluationResults:
+    """The LLM judges. Separate from `pipeline_metrics` so a run can be scored without paying for
+    judge calls.
+    """
+    return _results(await judge_scores(_pair(example), TargetOutput.from_dict(run.outputs or {})))
