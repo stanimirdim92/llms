@@ -349,6 +349,39 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-09-24 (later) — doc drift from the golden set, `cost_usd` resolved, and a pricing claim that never came true
+
+- **The handoff the user pasted was 15 commits stale** (it described `main` at `7b07e52`) and
+  named the golden set as the next job. It had shipped 2026-09-17. Five docs still said otherwise:
+  `CLAUDE.md`, this file's Current state, `README.md`, `EPIC_2_PLAN.md` (whose header contradicted
+  its own body), `TECHNICAL_DECISIONS.md`. The P1 task plan is marked as-built, with its deviations
+  listed rather than its checkboxes ticked. The two 09-23/09-24 log entries below were labelled
+  "uncommitted", but both landed in `e2ec63d`. A duplicated heading is removed.
+- **Open question 5 resolved**: a committed `app/eval/pricing.py` table (not written yet), not
+  `Settings`. Reasoning is in the P2 todo's T001, which is now unblocked but still needs approval.
+- **Sonnet 5 never went to $3/$15.** The Measurements row said an answer would cost $0.025536 "at
+  standard from 2026-09-01". The pricing page, fetched today, says the rise was cancelled and
+  $2/$10 is now the standard price. Voyage list prices are unchanged; its page is internally
+  inconsistent about rerank-2.5's free tier (the prose says 200M free, the table says 0).
+- **The P2 row schema said "15 columns" and listed 16.** Corrected in the plan and todo.
+- **Gate**: `pytest tests/unit` **452 passed, 0 skipped**, on live Postgres 16 and Redis. This
+  container had no `/tmp/pgtest` cluster, so the verify skill's `pg_ctl ... start` line failed
+  as written. I created the cluster by hand: `initdb` as `postgres` with trust auth, then a
+  `portfolio` superuser role with password `portfolio`, then databases `portfolio`,
+  `portfolio_test` and `portfolio_migrations_test`. The skill still documents starting the
+  cluster, not creating it.
+- **Branch**: launched on `claude/happy-ritchie-del2wn`. Per the standing directive, I said once
+  that this contradicts it, then pushed to `main` only.
+- **Open question 2, the repo-root half again**: this session started at the repo root and listed
+  only built-in agent types. That repeats the 2026-08-06 observation. The `portfolio/`-start half
+  is still unmeasured.
+- **Not built, pending the user: Epic 4 Phase 4's latency SLO check.** It conflicts with the
+  user's own 2026-09-24 call to remove `slo-architect` because "nothing measures the API yet", so
+  an SLO would have no SLI behind it. Also found while scoping it: `/ask` has no end-to-end
+  latency measurement. `answer_service`'s `latency_ms` covers retrieve, rerank and generate, but
+  not the intent-routing call before them. procrastinate 3.9 does have `App.periodic`, so a
+  worker-side periodic check would not need a scheduler.
+
 ### 2026-09-24 — Claude setup: plugin toggles, read-only hook, skills pruned (`e2ec63d`)
 
 - **Committed `.claude/settings.json`** (none existed): denies `Read`/`Edit` of `.env` and
