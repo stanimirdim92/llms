@@ -374,6 +374,32 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-09-24 (baseline committed, `9e8d978`)
+
+- **The user committed `chunk_manifest.json` (260 chunks), `registry_fixture.json` and
+  `baseline_scores.json`** (taken at `cca3538`). Checked after pulling: every golden chunk id
+  resolves and every digest matches; the fixture tenant equals the pinned seed tenant.
+- **Baseline, overall:**
+
+  | metric | score |
+  |---|---|
+  | routing | 0.910 |
+  | recall@5 | 0.804 |
+  | nDCG@5 | 0.785 |
+  | MRR | 0.801 |
+  | citation precision | 0.617 |
+  | correctness | 0.848 |
+  | groundedness | 0.962 |
+
+  **Cross-document is 0 on everything** (n=3). That's the obvious first target, Phase 2.4.
+- **Run-to-run noise, measured:** the same code on the same corpus, two runs 10 minutes apart.
+  - routing overall 0.940 → 0.910;
+  - cross-document routing and correctness 0.333 → 0.000 (one question flipping in an n=3 class).
+  - **Consequence for the CI gate (T007):** a flat 0.05 tolerance per cell will false-alarm on
+    small classes (n=2–3). The gate needs a per-cell minimum n, a tolerance scaled to n, or
+    replay (T002) to make runs deterministic. Replay removes the noise in CI entirely; the other
+    two only matter for live runs. Not decided.
+
 ### 2026-09-24 (golden set re-checked after the GPU re-seed)
 
 - **Re-seed with the 1024-token caption ceiling:** 260 chunks, all 30 figures kept (was 15).
