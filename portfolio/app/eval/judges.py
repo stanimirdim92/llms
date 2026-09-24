@@ -20,6 +20,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import TYPE_CHECKING, cast
 
+import structlog
 from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel, Field
 
@@ -30,6 +31,9 @@ if TYPE_CHECKING:
 
     from app.eval.golden import GoldenPair
     from app.eval.target import TargetOutput
+
+
+log = structlog.get_logger(__name__)
 
 
 class Verdict(BaseModel):
@@ -71,13 +75,32 @@ def _judge() -> Runnable:
     llm = ChatAnthropic(
         model=get_settings().eval_judge_model,
         api_key=get_settings().anthropic_api_key,
-        max_tokens=4096,
+        # Room for thinking *and* the verdict. At 4096 the first real run (2026-09-24) got a
+        # response with no JSON at all, and the parse error killed all 67 questions.
+        max_tokens=16_000,
     )
-    return llm.with_structured_output(Verdict, method="json_schema")
+    # `include_raw`, so a refusal or an unparseable reply comes back as data to log rather than
+    # an exception that aborts the run.
+    return llm.with_structured_output(Verdict, method="json_schema", include_raw=True)
 
 
-async def _ask(prompt: str) -> Verdict:
-    return cast("Verdict", await _judge().ainvoke(prompt))
+async def _ask(prompt: str, pair_id: str, judge: str) -> Verdict | None:
+    """None when the judge produced no usable verdict. The caller treats that as "not judged",
+    never as a pass or a fail, and it is logged at warning level so the gap can't hide.
+    """
+    result = cast("dict", await _judge().ainvoke(prompt))
+    parsed = result.get("parsed")
+    if isinstance(parsed, Verdict):
+        return parsed
+    raw = result.get("raw")
+    log.warning(
+        "judge.no_verdict",
+        judge=judge,
+        pair_id=pair_id,
+        stop_reason=getattr(raw, "response_metadata", {}).get("stop_reason"),
+        error=str(result.get("parsing_error")),
+    )
+    return None
 
 
 async def judge_correctness(pair: GoldenPair, output: TargetOutput) -> Verdict | None:
@@ -90,14 +113,22 @@ async def judge_correctness(pair: GoldenPair, output: TargetOutput) -> Verdict |
         # An error is a wrong answer, not a missing one -- skipping it would let an outage
         # raise the correctness score.
         return Verdict(reasoning=f"/ask answered {output.error_code}", passed=False)
-    return await _ask(_CORRECTNESS_PROMPT.format(question=pair.question, reference=pair.answer, answer=output.answer))
+    return await _ask(
+        _CORRECTNESS_PROMPT.format(question=pair.question, reference=pair.answer, answer=output.answer),
+        pair.id,
+        "correctness",
+    )
 
 
 async def judge_groundedness(pair: GoldenPair, output: TargetOutput) -> Verdict | None:
     if pair.intent != "factual" or output.error_code is not None or not output.retrieved_texts:
         return None
     sources = "\n\n".join(f"[{i}] {text}" for i, text in enumerate(output.retrieved_texts, start=1))
-    return await _ask(_GROUNDEDNESS_PROMPT.format(question=pair.question, sources=sources, answer=output.answer))
+    return await _ask(
+        _GROUNDEDNESS_PROMPT.format(question=pair.question, sources=sources, answer=output.answer),
+        pair.id,
+        "groundedness",
+    )
 
 
 async def judge_scores(pair: GoldenPair, output: TargetOutput) -> dict[str, float | None]:

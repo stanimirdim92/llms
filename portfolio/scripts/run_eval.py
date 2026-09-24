@@ -111,6 +111,12 @@ def main() -> int:
         return asyncio.run(_upload())
 
     rows = asyncio.run(_score_locally(with_judges=args.judges))
+    if args.judges:
+        # A judge that returned no verdict is excluded from the mean, which quietly shrinks the
+        # sample. Said out loud so a baseline isn't written over a half-judged run unnoticed.
+        missing = sum(1 for pair, scores in rows if pair.intent == "factual" and scores.get("correctness") is None)
+        if missing:
+            print(f"WARNING: {missing} factual question(s) got no correctness verdict (see judge.no_verdict)")
     scores, counts = aggregate(rows)
     _print_table(scores, counts)
 

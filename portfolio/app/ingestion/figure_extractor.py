@@ -105,8 +105,14 @@ def _response_text(response: BaseMessage) -> str:
     return "".join(block.get("text", "") for block in text_blocks).strip()
 
 
-_CAPTION_MAX_TOKENS = 300
-"""Ceiling for one caption. A caption is short by construction -- 2-4 sentences."""
+_CAPTION_MAX_TOKENS = 1024
+"""Ceiling for one caption. A caption hitting it is discarded (see `_TRUNCATED_STOP_REASON`), so
+this is how many figures survive, not only how long a caption can be.
+
+It was 300, on the grounds that a caption is 2-4 sentences. Measured 2026-09-24 on the eval corpus:
+**15 of 30 figures hit 300 and were dropped**, 8 of 10 in one paper, which took two golden-set
+answers with them. Captions run longer than the prompt asks. Raising it costs little: one call
+per figure, once per image (captions are cached)."""
 
 _TRUNCATED_STOP_REASON = "max_tokens"
 """Anthropic's `stop_reason` when the ceiling above cut generation off.

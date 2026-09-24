@@ -218,6 +218,9 @@ underneath them.
 | **`/ask` latency, live** | 0.6-12.0 s, ~10 s median | Same ten. The 0.6 s outlier is the one remaining routing miss returning a refusal with no retrieval. |
 | **Intent classifier latency** | 0.55-0.68 s | 2026-09-17, `claude-haiku-4-5-20251001` at `max_tokens` 64 and 128 alike. |
 | **Ingest, live, 4 cores** | 66-342 s per paper, 248 chunks over 6 | 2026-09-17, real `ingest_document`: parse + vision captions + Voyage + Qdrant. 185 text, 45 table, **18 figure**. |
+| **Figure caption truncation** | **15 of 30 (50%)** at `_CAPTION_MAX_TOKENS = 300`, every drop a truncation | 2026-09-24, user's re-seed of the eval corpus (GPU box). Truncated captions are discarded by design, so this was half the figures. Raised to 1024. |
+| **Answer truncation, eval run** | **3 of 59** factual answers at 1024 | 2026-09-24, first `run_eval.py` run, user's machine. The 2026-09-17 figure was 30% of 10; different samples, both small. |
+| **Answer refusals** | **1 of 59**: `stop_reason=refusal`, `output_tokens=0` | Same run. A harmless question about a RAG-safety paper. See Open question 10. |
 | **Docling parse, 4 cores** | 6.8-12.1 s/page | 2026-09-16. 90 s (the old hardcoded ceiling) is ~7 pages, which rejected every paper then in the corpus. |
 
 - **slowapi vs the hand-rolled limiter** (2026-08-02, localhost Redis, steady state, best of
@@ -347,6 +350,18 @@ more discussion.
    no-reranker comparison, and no reranker score as a metric (it can't grade its own picks).
    The reranker stays in production unchanged.
 
+10. **`/ask` returns an empty answer when the model refuses.** Found 2026-09-24 in the first eval
+   run. *"Which three automated safety judges are compared?"* (about RAG-Safety-Bench) came back
+   `stop_reason=refusal` with `output_tokens=0`, and nothing in `answer_service` or `ask.py`
+   handles `refusal`. So the caller gets a 200 with an empty answer, indistinguishable from "no
+   answer found" (root rule 11). A safety classifier false positive on safety-*research* content
+   will recur with this corpus. Options:
+   - surface it as a labelled answer or a distinct status;
+   - turn on the API's server-side refusal fallback (see the claude-api skill) to a second model;
+   - both.
+
+   Needs the user's call; not fixed.
+
 ## Deferred, not dropped
 
 Recorded so they stay visible: backups; a stuck-job sweeper (`updated_at` makes a dead worker's
@@ -358,6 +373,21 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-24 (first real eval run, on the user's machine)
+
+- **Seed:** 245 chunks. Text 185 and tables 45 are identical to the committed manifest; figures
+  are 15, down from 18. Every dropped figure was a caption truncated at 300 tokens (15 of 30).
+  `_CAPTION_MAX_TOKENS` raised to 1024. q013 and q053 cite figures lost in this seed. All figure
+  captions were regenerated, so the golden set's text hashes for figure pairs no longer match.
+  **Re-check the golden set before committing the new `chunk_manifest.json`.**
+- **`run_eval.py --judges`** answered all 67, then crashed in a groundedness judge on an empty
+  reply. Most likely Opus's thinking used the 4096-token budget, or it refused. Fixed:
+  `max_tokens` is 16000 and `include_raw` is on, so a missing verdict is logged as
+  `judge.no_verdict` and scored as not-judged instead of aborting. `run_eval` prints a warning
+  count. No baseline was written.
+- **`sync_eval_dataset.py`** worked: 67 examples created in `portfolio-golden`, tagged `e1d99bf`.
+- **New Open question 10:** `/ask` silently returns an empty answer on a model refusal.
 
 ### 2026-09-24 (build) — Epic 2 Phase 2.3, partly built; the offline-`aevaluate` assumption was wrong
 
