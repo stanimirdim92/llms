@@ -181,8 +181,8 @@ looks wrong, say so once and proceed.
   retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
   **Plans:** 2.2's local-store plan is **retired**. 2.3's plan and tasks were **rewritten for
   LangSmith** (2026-09-24, **approved by the user the same day**), with two open questions: whether
-  offline `aevaluate` really needs no network (checkpoint CP-001), and which configuration the
-  "before" baseline uses (see Open question 9). 2.4 and 2.5 are still drafts. 2.1's pair was
+  offline `aevaluate` really needs no network (checkpoint CP-001). The baseline question
+  (Open question 9) is resolved. 2.4 and 2.5 are still drafts. 2.1's pair was
   built without approval and is marked as-built.
 - **Epic 3** — the curation agent with human-in-the-loop.
 - **Epic 4 Phase 4** — observability. **Latency p95 comes from LangSmith** (user, 2026-09-24),
@@ -342,12 +342,10 @@ more discussion.
    chunk; on a longer document `rerank_top_n=5` would drop a field-bearing chunk and the model
    would answer `"unknown"` with no error. Recorded in `docs/EPIC_2_PLAN.md`; needs the golden set.
 
-9. **The "before" baseline cannot change the chunker.** `EPIC_2_PLAN.md` Phase 2.3 asks for
-   "naive fixed-size chunking, no reranker", but every golden `chunk_id` is an id of the real
-   chunker's output. A re-chunked corpus has different ids, so recall@k against the golden set
-   is undefined for it. Options: drop only the reranker (same chunks), score naive chunking by
-   text overlap instead of id, or drop the naive-chunking comparison. Found 2026-09-24 while
-   rewriting the 2.3 plan; needs the user's call before that plan's T006.
+9. ~~**The "before" baseline cannot change the chunker.**~~ **Resolved 2026-09-24 (user):** the
+   baseline is today's pipeline as it ships, reranker included. No naive-chunking or
+   no-reranker comparison, and no reranker score as a metric (it can't grade its own picks).
+   The reranker stays in production unchanged.
 
 ## Deferred, not dropped
 

@@ -32,7 +32,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 4. **Manual runs** call `aevaluate(...)` against the LangSmith dataset and upload an
    experiment, compared side by side in the LangSmith UI. Experiment runs get extended
    retention by default.
-5. A **"before" baseline** experiment is recorded once. Its summary scores, per metric ×
+5. A **baseline** experiment of today's pipeline, as it ships, is recorded once. Its summary scores, per metric ×
    question class, are committed as `data/eval/baseline_scores.json`.
 6. The **CI gate** builds the examples from the local `qa_dataset.jsonl`, replays the recorded
    provider calls, and runs `aevaluate(..., upload_results=False)`. It compares against
@@ -100,7 +100,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 - [ ] T003 (M, deps: CP-001): Eval target over the `/ask` pipeline
 - [ ] T004 (M, deps: T003): Retrieval, routing and citation evaluators
 - [ ] T005 (L, deps: T003) [TD-003]: RAGAS / LLM-as-judge evaluators
-- [ ] T006 (S, deps: T004, T005): Record the "before" baseline, commit `baseline_scores.json`
+- [ ] T006 (S, deps: T004, T005): Record the baseline of today's pipeline, commit `baseline_scores.json`
 - [ ] T007 (M, deps: T006): CI gate job
 
 ## Verification Strategy
@@ -125,13 +125,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 1. **Does offline `aevaluate` really need no network?** The installed SDK (`langsmith` 0.10.13)
    has `upload_results` and accepts local `Example` iterables. Neither claim has been run here
    yet. CP-001 settles it.
-2. **The "before" baseline cannot change the chunker.** `EPIC_2_PLAN.md` asks for "naive
-   fixed-size chunking, no reranker", but every golden `chunk_id` is an id of the *real*
-   chunker's output. A fixed-size-chunked corpus has different ids, so recall@k against the
-   golden set is undefined for it. Options: (a) the baseline drops only the reranker, keeping
-   the same chunks; (b) naive chunking is scored by text overlap with the golden passages
-   instead of by id; (c) drop the naive-chunking comparison. This predates the LangSmith
-   decision and needs the user's call before T006.
+2. ~~**Which configuration the "before" baseline uses.**~~ **Resolved 2026-09-24 (user):** the baseline is today's pipeline as it ships, real chunker and reranker included. No naive-chunking run, no no-reranker experiment, and no reranker score used as a metric (the reranker is part of the system under test, so it can't grade itself).
 
 ---
-Handoff: Approved. Open question 2 still blocks T006 only
+Handoff: Approved. Only Open question 1 (CP-001) remains

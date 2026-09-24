@@ -235,21 +235,22 @@ LangSmith custom evaluators, plus two that RAGAS does not cover and that this sy
   what fraction of golden questions come back with every claim actually grounded, not just
   whether the Citations API returned *something*.
 
-A deliberate "before" baseline first: naive fixed-size chunking, no reranker. Without it
-every later number is unanchored.
+The baseline is **today's pipeline as it ships**, recorded once. Without it every later number
+is unanchored. (This originally asked for a "naive fixed-size chunking, no reranker" baseline;
+see below for why that was dropped.)
 
 `data/eval/baseline_scores.json` is committed and is what CI compares against (it was
 `baseline.parquet` before the 2026-09-24 LangSmith decision). The gate fails the build on
 regression beyond a stated tolerance, and the failure names *which metric on which question
 class* moved — a gate that only says "eval failed" gets disabled within a month.
 
-**Open, predates LangSmith:** a "before" baseline with *naive fixed-size chunking* can't be
-scored by recall@k against the golden set. Every golden `chunk_id` is an id of the real
-chunker's output, and a re-chunked corpus has different ids. See the 2.3 task plan's Open
-question 2.
+A naive-chunking baseline can't be scored by recall@k against the golden set: every golden
+`chunk_id` is an id of the real chunker's output, and a re-chunked corpus has different ids.
+**Resolved 2026-09-24 (user):** the baseline is today's pipeline as it ships, real chunker and reranker included. No naive-chunking run, no no-reranker experiment, and no reranker score used as a metric (the reranker is part of the system under test, so it can't grade itself).
 
-**Done when:** a deliberately broken change (drop the reranker) is caught by CI, and the
-failure output identifies the reranker as the cause rather than reporting a lower aggregate.
+**Done when:** a deliberately broken change (the reranker removed, on a throwaway branch
+only) is caught by CI, and the failure output points at the rank-sensitive metrics rather
+than reporting a lower aggregate. This tests the gate; it is not a baseline and ships nowhere.
 
 ## Phase 2.4 — Corpus-level answering (measured, not assumed)
 

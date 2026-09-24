@@ -101,15 +101,16 @@ LangSmith evaluators, following `.claude/skills/langsmith-evaluator`.
 
 ---
 
-## T006: Record the "before" baseline
+## T006: Record the baseline
 
-**Blocked on the plan's Open question 2** (which configuration the baseline uses).
+**Configuration decided (user, 2026-09-24):** today's pipeline as it ships, real chunker and
+reranker, with nothing switched off.
 
 **Description:** A human-run `--record` pass that uploads an experiment to LangSmith, then
 writes its summary scores (metric × question class) to `data/eval/baseline_scores.json`.
 
 **Acceptance criteria:**
-- [ ] The baseline configuration is chosen and recorded in the file's header.
+- [ ] The file's header records the git sha and model ids the baseline was taken with.
 - [ ] `baseline_scores.json` is small, sorted and stable, so a PR diff of it is readable.
 - [ ] The LangSmith experiment id is recorded in the file for cross-reference.
 
