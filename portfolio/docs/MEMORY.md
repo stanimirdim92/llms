@@ -374,6 +374,29 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-09-24 (golden set re-checked after the GPU re-seed)
+
+- **Re-seed with the 1024-token caption ceiling:** 260 chunks, all 30 figures kept (was 15).
+  Text and table chunks hash identically to the original CPU run, so parsing is reproducible
+  across GPU/CPU; only figure captions moved.
+- **The six figure pairs were re-checked against the user's new captions *and* the PDF text layer.**
+  - Five hold. Their digests are updated.
+  - **q013 was wrong since authoring.** It gave SelCtx 59 ms, grounded in a 09-17 caption that
+    misread the chart. The PDF's figure text reads 12 / 182 / 227 / 593 / 696 across five
+    methods, including LongLLM, which the old answer lacked. Answer corrected.
+  - q053 was reworded to what the caption shows.
+  - Lesson recorded in `EPIC_2_PLAN.md` § golden set.
+- **First baseline numbers**, from the user's run before the q013 fix:
+  - Overall: routing 0.94, recall@5 0.82, nDCG@5 0.80, MRR 0.82, citation precision 0.58,
+    correctness 0.86, groundedness 0.94.
+  - **Cross-document questions fail entirely:** recall 0, routing 1 of 3, correctness 1 of 3.
+  - Citation precision on tables is 0.40.
+  - The Opus judge refused one groundedness verdict (q022, safety content).
+- **Sequencing:** this commit changes `qa_dataset.jsonl` digests to match the *new* manifest,
+  which is still only on the user's machine. `test_qa_dataset.py` fails on `main` until the user
+  commits `chunk_manifest.json`, along with `registry_fixture.json` and the re-run
+  `baseline_scores.json` (q013's answer changed, so correctness can move).
+
 ### 2026-09-24 (first real eval run, on the user's machine)
 
 - **Seed:** 245 chunks. Text 185 and tables 45 are identical to the committed manifest; figures

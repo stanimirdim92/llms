@@ -179,6 +179,13 @@ one stubbornly low score in the first eval run. Grounding was checked at authori
 the full chunk text -- all 67 pairs, every number in every answer found in the chunks it cites --
 and that check cannot be committed, because `data/eval/chunk_text/` is derived from the papers.
 
+**Figure pairs can inherit a vision misread, and the chunk check can't see it.** Found
+2026-09-24: q013 said SelCtx's overhead was 59 ms, grounded in the 09-17 caption, but the PDF's own
+figure text reads 593 ms, and the chart has five methods, not four. The check above confirms an
+answer against its *cited chunk*; for a figure that chunk is a model's caption, so a misread
+passes. When a figure pair is written or re-checked, confirm it against the PDF's text layer
+where the figure carries text (`pypdfium2` reads it), not the caption alone.
+
 One pair earns a note of its own. *"What is retrieval-augmented generation, in general?"* is
 labelled `out_of_scope` even though the corpus is entirely about RAG. It is the adversarial case
 for the 2026-09-17 prompt fix, which told the classifier to read an unfamiliar specific term as
