@@ -209,17 +209,6 @@ class Settings(BaseSettings):
     # question (retrieve + rerank + generate) to do one indexed Postgres read.
     rate_limit_documents: int = Field(default=120)
 
-    # The `/ask` latency SLO (app/observability/slo.py). 15 s sits above the measured 0.6-12 s
-    # (2026-09-17, ten live factual questions), so today's normal does not page and a real
-    # regression does. Only factual answers are sampled -- see `record_ask_latency`'s caller.
-    slo_ask_p95_ms: float = Field(default=15_000)
-    slo_window_seconds: int = Field(default=900)
-    slo_min_samples: int = Field(default=20)
-    # A `SecretStr` although the name doesn't end in `_key`: a Slack or Discord incoming-webhook
-    # URL *is* the credential -- anyone holding it can post to the channel. Unset means the
-    # breach is logged at error level and nothing is posted, which is the pre-existing behaviour.
-    slo_webhook_url: SecretStr = Field(default=SecretStr(""))
-
     @property
     def redis_url(self) -> str:
         credentials = ""
@@ -255,19 +244,6 @@ class Settings(BaseSettings):
                 "authenticated responses. List the frontend's exact origins instead, e.g. "
                 'CORS_ALLOW_ORIGINS=["https://app.example.com"].'
             )
-            raise ValueError(msg)
-        return self
-
-    @model_validator(mode="after")
-    def _reject_non_http_webhook(self) -> Settings:
-        """A malformed webhook URL fails at boot, not at the first breach.
-
-        The first breach is the only moment the URL is used, so a typo found then is a breach
-        nobody hears about -- and the SLO looks configured the whole time before it.
-        """
-        url = self.slo_webhook_url.get_secret_value().strip()
-        if url and not url.startswith(("https://", "http://")):
-            msg = "SLO_WEBHOOK_URL must be an http(s) URL."
             raise ValueError(msg)
         return self
 

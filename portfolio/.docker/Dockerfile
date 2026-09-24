@@ -249,8 +249,6 @@ USER appuser
 # competes for cores (see config.py's comment). --one-shot is not used -- the worker is a
 # long-running consumer, and restart-per-job would re-pay the torch/Docling import cost that
 # dominates a short ingest.
-# --queues must name every queue a task in tasks.py uses; a missing one is enqueued and never
-# consumed, silently (OBSERVABILITY_QUEUE in app/worker/app.py; tests/unit/test_slo.py pins it).
 # --app points at app.worker.tasks.app, NOT app.worker.app.app. Importing tasks.py is what
 # registers the task on the app object; pointing at app.py would start a worker that connects
 # fine and then rejects every job as an unknown task -- a failure that reads like a queueing
@@ -258,4 +256,4 @@ USER appuser
 # api can enqueue without importing Docling; see its module docstring.)
 CMD ["bash", "-c", "procrastinate --app=app.worker.tasks.app worker \
     --concurrency ${WORKER_CONCURRENCY:-2} \
-    --queues ingest,observability"]
+    --queues ingest"]

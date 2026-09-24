@@ -291,9 +291,8 @@ is deliberately not kept current:
   orchestrator plus Curator/Evaluator subagents over the same Qdrant collection,
   prompt-injection defense on scraped content, and LangGraph `interrupt()` for human
   review.
-- **Epic 4 Phase 4** — observability. The `/ask` latency SLO check is built (below);
-  faithfulness alerting needs Epic 2's scores, and there are no dashboards or percentile
-  views yet.
+- **Epic 4 Phase 4** — observability. Latency p95 is read from LangSmith's dashboard, not
+  built in-app; faithfulness alerting needs Epic 2's scores.
 - **Epic 4 Phase 5** — the application backend. **5.1 (ingestion behind a job queue) and
   5.5's document list/view are built**; still to come: user accounts, conversations with
   persisted citations, document delete, semantic search, streaming `/ask`, and shareable

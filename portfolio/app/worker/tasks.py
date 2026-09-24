@@ -16,10 +16,9 @@ import structlog
 from app.config import require_provider_credentials
 from app.db import get_session, init_db
 from app.ingestion.pipeline import ingest_document
-from app.observability import slo
 from app.registry.db import mark_document_failed, mark_document_processing
 from app.vectorstore.qdrant_store import QdrantStore
-from app.worker.app import INGEST_QUEUE, INGEST_RETRY, INGEST_TASK_NAME, OBSERVABILITY_QUEUE, app
+from app.worker.app import INGEST_QUEUE, INGEST_RETRY, INGEST_TASK_NAME, app
 
 log = structlog.get_logger(__name__)
 
@@ -120,13 +119,3 @@ async def ingest_document_task(doc_id: str, tenant_id: str, file_path: str, expe
 
     log.info("worker.ingest_done", doc_id=doc_id, tenant_id=tenant_id, chunk_count=chunk_count)
     return chunk_count
-
-
-@app.periodic(cron=slo.CHECK_CRON)
-@app.task(name="check_ask_latency_slo", queue=OBSERVABILITY_QUEUE)
-async def check_ask_latency_slo_task(timestamp: int) -> None:
-    """Procrastinate passes the tick's `timestamp`; the check reads its own clock instead, because
-    a tick that ran late should judge the window as it is now, not as it was when it was due.
-    """
-    del timestamp
-    await slo.check_ask_latency()
