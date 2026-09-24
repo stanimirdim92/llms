@@ -245,8 +245,9 @@ tenant rather than building a filter with no tenant condition, which is what the
 
 **What it costs us going forward, stated rather than discovered.** A fresh install answers nothing
 until someone uploads. And Epic 2's golden set now has no fixed document set to measure recall
-against, so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists —
-recorded in the README's known-gaps list.
+against, so that has to be rebuilt as tenant-owned fixtures before any retrieval metric exists.
+(Done 2026-09-17: a pinned seed tenant, six arXiv papers, 67 golden pairs -- `docs/EPIC_2_PLAN.md`
+§ Phase 2.1.)
 
 ## Row-level security on `documentrecord`, and the role split it required
 

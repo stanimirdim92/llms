@@ -6,8 +6,9 @@ Phases 1-3 (API-key auth with scopes, expiry, and CRUD; tenant scoping; per-key 
 limiting; docs), and Phase 5.1 (ingestion behind a Postgres-backed job queue) -- see
 `docs/EPIC_4_PLAN.md` for the rest. Not built: Epic 3, designed in
 `docs/IMPLEMENTATION_PLAN.md` only -- no agent. Don't assume code for it. Epic 2 (the eval
-framework) is mostly the same: no golden set, no recall@k, no CI gate, so nothing measures
-whether an answer is good -- **except two pieces pulled forward because each fixed an observed
+framework) has its golden set (`data/eval/qa_dataset.jsonl`, 67 pairs over a pinned, seeded
+corpus) but nothing that *runs* it: no recall@k, no run storage, no CI gate, so nothing measures
+whether an answer is good -- **plus two pieces pulled forward because each fixed an observed
 defect rather than moved a metric:**
 
 - `app/retrieval/document_scope.py` -- naming a filename or `doc_id` in an `/ask` question

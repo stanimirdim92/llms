@@ -137,7 +137,11 @@ looks wrong, say so once and proceed.
   it; a fresh install has nothing to search until someone uploads. Epic 2's fixture corpus is now
   tenant-owned, as that requires: six 2026 arXiv RAG papers under a **pinned** seed tenant id,
   seeded through the real `ingest_document` by `scripts/seed_eval_corpus.py` (2026-09-17).
-  248 chunks. The golden set written against it is still outstanding.
+  248 chunks.
+- **Epic 2 Phase 2.1 — the golden set** (2026-09-17). `data/eval/qa_dataset.jsonl`, 67
+  hand-written pairs (59 factual, 6 figure-grounded), each citing chunk ids *and* the sha256 of
+  each cited chunk. `tests/unit/test_qa_dataset.py` checks every id resolves against
+  `chunk_manifest.json` and still hashes to what the pair recorded. Nothing *runs* it yet.
 - **Explicit document scoping on `/ask`** — pulled forward out of Epic 2 because it fixed an
   observed defect rather than moving a metric. Naming a document by **filename or `doc_id`**
   scopes retrieval to it; an unowned identifier is a 404.
@@ -168,13 +172,14 @@ looks wrong, say so once and proceed.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
-- **Epic 2** — the eval framework proper. Golden set, recall@k, parquet + DuckDB run storage,
-  the CI regression gate. Intent routing (Phase 2.0) shipped early, above. This blocks most
+- **Epic 2** — the eval framework proper. recall@k, parquet + DuckDB run storage, the CI
+  regression gate. Intent routing (Phase 2.0) and the golden set (2.1) are built, above. This blocks most
   retrieval work: query expansion, decomposition, and corpus-level answering all change what
   retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
-  **Planned, not built** (2026-09-09): five `Status: Draft` plan+todo pairs in `docs/tasks/`,
-  one per phase (2.1–2.5) — see the 2026-09-09 session log entry. None approved yet; Phase 2.2's
-  plan is blocked on Open question 5 (`cost_usd`) before it can be.
+  **Planned, not built** (2026-09-09): `Status: Draft` plan+todo pairs in `docs/tasks/` for
+  2.2–2.5. None approved yet. (2.1's pair was built without approval and is now marked as-built,
+  with its deviations listed at the top.) Phase 2.2's plan is no longer blocked -- Open question
+  5 (`cost_usd`) was resolved 2026-09-24 -- and needs only approval.
 - **Epic 3** — the curation agent with human-in-the-loop.
 - **Epic 4 Phase 4** — observability. The latency SLO check is buildable now; faithfulness
   alerting needs Epic 2's scores.
@@ -198,7 +203,7 @@ underneath them.
 
 | What | Value | When / how |
 |---|---|---|
-| Cost of one `/ask` answer | **$0.017024** — 3,447 in + 1,013 out on `claude-sonnet-5` | 2026-08-01, from the LangSmith trace. Matches list price to the last digit at intro rates ($2/$10 per MTok, through 2026-08-31); **$0.025536 at standard $3/$15 from 2026-09-01**. |
+| Cost of one `/ask` answer | **$0.017024** — 3,447 in + 1,013 out on `claude-sonnet-5` | 2026-08-01, from the LangSmith trace. Matches list price to the last digit at $2/$10 per MTok. **That is still the price**: the pricing page, re-checked 2026-09-24, says the scheduled 2026-09-01 rise to $3/$15 was cancelled and $2/$10 is now standard. (This row used to quote $0.025536 "at standard from 2026-09-01"; that price never took effect.) |
 | Output share of that cost | **60%**, from 23% of the tokens | Output is priced 5× input. Cost control means shorter answers, not smaller prompts. |
 | Voyage cost per answer | **$0.00 billed** (~$0.0004 at list) | voyage-4 $0.06/1M and rerank-2.5 $0.05/1M, **first 200M tokens free on both** — pricing page fetched 2026-08-01. Query embed was 212 tokens. |
 | Answer latency | 11.2 s | Same trace. |
@@ -301,15 +306,14 @@ more discussion.
    so an in-memory assertion would have been vacuous. What remains open is the *effect at
    scale*: nothing has measured a tenant-filtered query at 1M points, with or without the
    index, so "required at 100k" is still an argument rather than a measurement.
-5. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03.** Every answer now logs
-   `stop_reason`, `input_tokens` and `output_tokens` structurally, and `Answer.truncated` reaches
-   `AskResponse` and the Streamlit page. What is still missing is `cost_usd` — the per-model price
-   table Epic 2 Phase 2.2's parquet schema wants. Kept in the list rather than deleted so the
-   half that shipped is not mistaken for the whole. **Blocks `docs/tasks/EPIC2-P2-run-storage-plan.md`
-   T001** (2026-09-09) — that plan's row schema already names a `cost_usd` column; this question
-   is what's missing before it can be computed. Needs info (current Anthropic/Voyage per-model
-   pricing, and where it should live — `Settings`? a committed table?), not a design decision —
-   resolve here, then update that plan, before approving it.
+5. ~~**Usage is not recorded anywhere.**~~ **Resolved 2026-08-03**, and its `cost_usd` half
+   **resolved 2026-09-24**: a committed table in `app/eval/pricing.py` (not yet written), keyed by
+   exact model id, raising on an unpriced model -- not `Settings`, because an env override would
+   let two runs at one `git_sha` price identical tokens differently. Prices re-checked live:
+   Sonnet 5 $2/$10, Haiku 4.5 $1/$5, Voyage $0 billed under the free tier. Full reasoning and
+   the coverage caveats (only the answer call records usage today) are in
+   `docs/tasks/EPIC2-P2-run-storage-todo.md` T001. The 2.2 plan is unblocked; it still needs
+   approval.
 6. **The intent taxonomy has no class for an action or a command.** "Delete all my documents."
    classifies `metadata`, and the expected label in the probe was `out_of_scope` -- but neither is
    right, because `metadata`/`factual`/`aggregate`/`out_of_scope` are all *questions*. Today this
@@ -345,7 +349,7 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
-### 2026-09-24 — Claude setup: plugin toggles, read-only hook, skills pruned (uncommitted)
+### 2026-09-24 — Claude setup: plugin toggles, read-only hook, skills pruned (`e2ec63d`)
 
 - **Committed `.claude/settings.json`** (none existed): denies `Read`/`Edit` of `.env` and
   `.env.testing` (both hold real keys; pre-commit and gitleaks only stop a *commit*), pre-allows the
@@ -371,7 +375,7 @@ Newest first.
   the stale one reports 12 `RUF100` unused-`noqa` errors (at HEAD too). `uv sync --locked` should
   clear it; not run.
 
-### 2026-09-23 — `CLAUDE.md` split into path-scoped `.claude/rules/` (uncommitted, awaiting review)
+### 2026-09-23 — `CLAUDE.md` split into path-scoped `.claude/rules/` (`e2ec63d`)
 
 `CLAUDE.md` was 720 lines (~7.9k words) loaded every session. Moved **verbatim** by line range
 into seven `.claude/rules/*.md` files with `paths:` frontmatter (ingestion-and-retrieval, database,
@@ -436,7 +440,6 @@ documents starting them; the three failures were an unstarted Redis. Qdrant is n
 the release binary runs natively (`qdrant 1.18.3`, the pinned version), so the full stack runs
 in-session without a docker daemon.
 
-### 2026-09-16 (later still) — the branch conflict recurred, and the note about it was wrong
 ### 2026-09-16 (later still) — the branch conflict recurred, and the note about it was wrong
 
 This session was launched with harness instructions naming

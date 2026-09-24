@@ -21,7 +21,8 @@ to `data/eval/runs/<run_id>.parquet`. Analysis queries `data/eval/runs/*.parquet
 via DuckDB — no service, no table, no migration.
 
 ### Components and Responsibilities
-- `app/eval/schema.py` (NEW): the row shape, one place naming all 15 columns.
+- `app/eval/schema.py` (NEW): the row shape, one place naming all 16 columns.
+- `app/eval/pricing.py` (NEW): the committed per-model price table `cost_usd` is computed from.
 - `app/eval/run_store.py` (NEW): `write_run()` and a DuckDB query helper. `duckdb`/
   `pyarrow` imported lazily inside functions, never at module top level — mirrors
   `app/retrieval/reranker.py:20-22`'s `_local_compressor()` pattern for the same reason:
@@ -92,7 +93,7 @@ via DuckDB — no service, no table, no migration.
 
 ## Requirement Coverage
 
-- REQ-001 (one row per question × retrieved chunk, 15 named columns) → T001 → schema unit test
+- REQ-001 (one row per question × retrieved chunk, 16 named columns) → T001 → schema unit test
 - REQ-002 (written to `data/eval/runs/<run_id>.parquet`) → T002, T003 → round-trip test + gitignore check
 - REQ-003 (DuckDB over `data/eval/runs/*.parquet`, no service/table/migration; `duckdb` added, `pyarrow`/`pandas` already present) → T002 → dependency-add verified against `pyproject.toml`
 - REQ-004 (not Postgres — verification-only, decision already made in spec) → docs/ARCHITECTURE.md §2b, no task needed; behavior preserved by construction (no new Postgres table is added anywhere in this phase)
@@ -119,12 +120,9 @@ Orphan tasks: None
 
 ## Open Questions
 
-- **`cost_usd` has no source.** T001's row schema (REQ-001) names a `cost_usd` column, but
-  no per-model price table exists anywhere in this repo yet — `docs/MEMORY.md` § Open
-  questions #5 tracks this and now points back here. Needs info before T001 can be
-  implemented as written: current Anthropic/Voyage per-model pricing, and where the table
-  should live (`Settings`? a small committed lookup?). Not a design decision to make here —
-  resolve in `docs/MEMORY.md`, then update T001, before approving this plan.
+None blocking. **`cost_usd` was the one; resolved 2026-09-24** -- a committed price table in
+`app/eval/pricing.py`, not `Settings`, raising on an unpriced model; detail and the prices in
+T001. What still needs a human is approval of this plan.
 
 ---
 Handoff: Awaiting plan approval

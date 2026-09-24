@@ -305,7 +305,7 @@ identity decision, is in [`docs/EPIC_4_PLAN.md`](docs/EPIC_4_PLAN.md).
 
 **Known gaps in what *is* built**, stated rather than left to be discovered:
 
-- **The evaluation corpus is pinned; the golden set is being rewritten against it.** Six 2026
+- **The evaluation corpus is pinned and the golden set is written against it; nothing runs it yet.** Six 2026
   arXiv papers on retrieval-augmented generation are pinned in `data/eval/corpus_manifest.json`
   by versioned id and sha256 and fetched by `scripts/fetch_eval_corpus.py`; the PDFs are not
   committed. `scripts/seed_eval_corpus.py` ingests them through the real pipeline and records the

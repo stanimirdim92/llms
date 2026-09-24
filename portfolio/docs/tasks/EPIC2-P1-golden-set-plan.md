@@ -1,11 +1,27 @@
 # Implementation Plan: Epic 2 Phase 2.1 — Golden set
 
-Status: Draft
+Status: Built 2026-09-17 (`9b2e1ae`, `e794e5f`, `be6c04d`) without this plan being approved; kept as history
 Spec: docs/EPIC_2_PLAN.md § Phase 2.1 (repo convention: fused spec+plan doc, no formal REQ-### header — ids below are derived from its phase text, not invented)
 Spec status: N/A — see note above; treated as approved by standing project convention (partially built from this doc already: Phase 2.0 shipped straight from it)
 Spec revision: git-commit:7d260b927770ac672dc003aee2dad47cf6bf84c6:docs/EPIC_2_PLAN.md
 Approved by: —
 Approved at: —
+
+> **As built, and where it departs from this plan** (checked against the tree 2026-09-24). The
+> authoritative account is `docs/EPIC_2_PLAN.md` § Phase 2.1; the checkboxes below were never ticked.
+>
+> - **T001:** six arXiv PDFs, pinned by versioned id + sha256 in `data/eval/corpus_manifest.json`.
+>   *No non-PDF format*, against the acceptance criterion. No license note either -- the PDFs are
+>   not committed (`scripts/fetch_eval_corpus.py` downloads and verifies them), so the repo
+>   redistributes nothing.
+> - **T002:** `scripts/seed_eval_corpus.py` runs the real `ingest_document` under a *pinned*
+>   seed tenant id and reads `data/eval/chunk_manifest.json` back out of Qdrant; `--check` reports
+>   drift. *No `tests/unit/test_seed_eval_corpus.py`* and no byte-identical idempotency test --
+>   figure chunks are legitimately non-reproducible (they depend on the vision model's caption),
+>   so that criterion could not hold as written.
+> - **T003:** 67 pairs, each also carrying `answerable` and the sha256 of every cited chunk.
+>   Checked by `tests/unit/test_qa_dataset.py` (not `test_eval_golden_set.py`) against the
+>   committed `chunk_manifest.json`, not live Qdrant, so it never skips.
 
 ## Technical Approach
 
@@ -45,7 +61,7 @@ fixture data Phase 2.2's run storage and Phase 2.3's replay harness consume.
 - Seed script mirrors `scripts/create_tenant.py`'s CLI pattern (argparse, lazy
   `init_db()`, `asyncio.run(main())`) — source: precedent `scripts/create_tenant.py:19,164-168,184-185`.
 - Golden-set methodology (question design, hard-case coverage, recall@k framing) follows
-  `.claude/skills/qdrant-search-quality` rather than an invented process — source: spec
+  the `qdrant:qdrant-search-quality` plugin skill rather than an invented process — source: spec
   §Phase 2.1 ¶4, explicit instruction.
 
 ## Task Index
@@ -60,7 +76,7 @@ fixture data Phase 2.2's run storage and Phase 2.3's replay harness consume.
 - REQ-002 (chunk ids stable — pin documents and chunker settings before writing pairs) → T002 → re-running the seed script twice yields identical chunk ids (idempotency test)
 - REQ-003 (50+ pairs in `data/eval/qa_dataset.jsonl`, each with question/answer/chunk_ids/intent_label) → T003 → schema sanity test
 - REQ-004 (hand-written hard cases; not machine-generated wholesale) → T003 → manual review, category checklist in T003's acceptance criteria
-- REQ-005 (follow `.claude/skills/qdrant-search-quality` methodology) → T003 → cited in the task's context pointers
+- REQ-005 (follow the `qdrant:qdrant-search-quality` plugin skill methodology) → T003 → cited in the task's context pointers
 
 Unmapped requirements: None
 Orphan tasks: None
@@ -92,4 +108,4 @@ format-diverse, license-compatible documents and record their source), not left
 undecided at the plan level.
 
 ---
-Handoff: Awaiting plan approval
+Handoff: Built; superseded by `docs/EPIC_2_PLAN.md` § Phase 2.1

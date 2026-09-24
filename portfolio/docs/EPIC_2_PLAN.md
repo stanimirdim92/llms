@@ -5,8 +5,9 @@ evaluators, a CI threshold gate). That still holds. This file is the buildable p
 plus everything learned since Epic 1 shipped — most of it from a real defect and from
 reading `microsoft/graphrag`.
 
-Nothing here is built except Phase 2.0 in full (intent routing and explicit document scoping,
-both shipped early because each fixed a defect rather than moved a metric). Epic 1's answer
+Built: Phase 2.0 in full (intent routing and explicit document scoping, both shipped early
+because each fixed a defect rather than moved a metric) and Phase 2.1 (the pinned corpus and a
+67-pair golden set). Nothing scores anything yet -- that is 2.2 and 2.3 -- so Epic 1's answer
 path works and has never been measured.
 
 ## Why this epic now blocks other work
@@ -50,7 +51,7 @@ cent, and cheaper than the retrieval it avoids on metadata questions.
 the factual path is byte-identical to today's behaviour. All three verified in
 `tests/unit/test_intent_routing.py`. `aggregate` refuses with an explicit "not supported yet"
 rather than falling through to the factual pipeline -- its real answer path is Phase 2.4 below,
-which needs the golden set this file's own Phase 2.1 hasn't built yet.
+which needs recall@k over Phase 2.1's golden set (Phase 2.3) before it can be measured.
 
 ### Scoping a question to one named document — built, not planned
 
@@ -100,7 +101,8 @@ Three consequences to carry forward:
   field genuinely being absent. A scoped question whose `doc_ids` resolve to one document
   should bypass ranking and pass **that document's chunks in document order**, up to the
   context budget. That belongs with 2.4's corpus-level work (same map-reduce machinery, one
-  document instead of N) and needs 2.1's golden set to prove it, so it is not built here.
+  document instead of N) and needs recall@k over 2.1's golden set to prove it, so it is not
+  built here.
 - Scoped retrieval currently reuses the same `top_k`. Within one document that is a much
   larger fraction of the available chunks, so the scoped path wants its own recall@k line in
   2.1's golden set rather than being assumed equivalent.
@@ -111,7 +113,7 @@ Three consequences to carry forward:
 
 ## Phase 2.1 — Golden set
 
-**Corpus: built and seeded through the real pipeline. Golden set: being rewritten (2026-09-17).**
+**Built (2026-09-17): the corpus, seeded through the real pipeline, and the golden set.**
 
 ### The corpus
 

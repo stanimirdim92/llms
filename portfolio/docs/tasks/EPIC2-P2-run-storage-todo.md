@@ -2,17 +2,37 @@
 
 **Requirements:** REQ-001 (`docs/EPIC_2_PLAN.md` §2.2 ¶1)
 
-**Description:** One typed row shape naming all 15 columns an eval run emits:
+**Description:** One typed row shape naming all 16 columns an eval run emits (this line said
+15 until 2026-09-24; the list has always had 16 names):
 `run_id, git_sha, question_id, intent_label, predicted_label, chunk_id, doc_id, rank,
 vector_score, rerank_score, in_golden_set, judge_verdict, latency_ms, input_tokens,
 output_tokens, cost_usd`.
 
-**BLOCKED on info, see plan's Open Questions:** `cost_usd` has no per-model price table to
-compute it from anywhere in this repo (`docs/MEMORY.md` § Open questions #5). Do not guess
-a table here — resolve there first.
+**`cost_usd` — resolved 2026-09-24** (`docs/MEMORY.md` § Open questions #5):
+
+- **Where the prices live:** a committed table in `app/eval/pricing.py`, keyed by the *exact*
+  model id `Settings` resolves (`claude-sonnet-5`, `claude-haiku-4-5-20251001`), carrying the date
+  it was checked and the source URL. **Not `Settings`:** a price is a fact about the vendor, not
+  about a deployment, and an env override would let two runs at the same `git_sha` compute
+  different costs for identical token counts -- the row stops being comparable across runs, which
+  is the one thing a run store is for.
+- **An unpriced model raises**, never prices at 0. A run on a model the table doesn't know would
+  otherwise read as free, and a cost regression would hide behind it (root `CLAUDE.md` rule 11).
+- **Prices, checked 2026-09-24 against the Anthropic and Voyage pricing pages** (USD per MTok):
+  Sonnet 5 $2 in / $10 out (the $2/$10 "intro" rate is now standard -- the scheduled rise to
+  $3/$15 on 2026-09-01 was cancelled); Haiku 4.5 $1 / $5. Cache and batch rates are not needed:
+  nothing here caches (see the prompt-caching measurement in `docs/MEMORY.md`) or batches.
+- **What it covers, stated so a sum isn't over-read:** only calls whose usage is actually
+  recorded. Today that is the answer call alone (`answer_service` logs `input_tokens` /
+  `output_tokens`); the Haiku router call records no usage, and Voyage embed/rerank is billed $0
+  under the 200M-token free tier and records no token counts either. Capturing the router's usage
+  is a small addition, and until it lands the column under-counts by roughly the router's share.
+- **Per question, repeated per row.** A row is (question x retrieved chunk), so `cost_usd` and the
+  token columns repeat across a question's rows. Aggregate over distinct `question_id`, or a run's
+  cost reads k times too high. The schema test should pin this with a two-chunk example.
 
 **Acceptance criteria:**
-- [ ] `app/eval/schema.py` defines the row type with exactly these 15 fields, typed
+- [ ] `app/eval/schema.py` defines the row type with exactly these 16 fields, typed
       (verify against whichever typing convention `app/registry`'s models already use —
       SQLModel is the project's ORM pattern elsewhere, but this is not a DB table, so a
       plain dataclass/TypedDict is more likely appropriate; confirm during implementation
@@ -36,8 +56,13 @@ a table here — resolve there first.
   accuracy, RAGAS wrapping, the CI gate) and Phase 2.4/2.5's gated-shipping checks all
   read from — do not rename a column without checking those plans.
 
+- [ ] `app/eval/pricing.py` holds the price table above and a `cost_usd(model, input_tokens,
+      output_tokens)` that raises on an unknown model; a test asserts the raise, and one asserts
+      the 2026-08-01 measured answer (3,447 in + 1,013 out on Sonnet 5) prices at **$0.017024**
+
 **Files/areas touched:**
 - `app/eval/schema.py`
+- `app/eval/pricing.py`
 - `tests/unit/test_eval_schema.py`
 
 **Estimated scope:** S
