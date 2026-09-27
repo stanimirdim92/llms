@@ -18,6 +18,20 @@ import structlog
 
 from app.config import get_settings
 
+_ALIAS_WARNING_PREFIX = "Accessing `%s` from `%s`. Returning `%s` instead."
+
+
+def _drop_transformers_dunder_alias_warning(record: logging.LogRecord) -> bool:
+    """Streamlit's file watcher probes `__path__` on every module in `sys.modules` on each
+    pass, and transformers 5 warns on every probe of its `*_fast` compat aliases -- a wall of
+    noise per rerun. Only dunder probes are dropped: a real `XImageProcessorFast` access still
+    warns, because that one means a caller is on a deprecated name.
+    """
+    if not (isinstance(record.msg, str) and record.msg.startswith(_ALIAS_WARNING_PREFIX)):
+        return True
+    name = record.args[0] if isinstance(record.args, tuple) and record.args else ""
+    return not (isinstance(name, str) and name.startswith("__") and name.endswith("__"))
+
 
 def configure_logging(*, json_logs: bool | None = None, level: str | None = None) -> None:
     """Call once per process at startup: `api/main.py`, `streamlit_app/Home.py`, and
@@ -58,3 +72,7 @@ def configure_logging(*, json_logs: bool | None = None, level: str | None = None
     root_logger = logging.getLogger()
     root_logger.handlers = [handler]
     root_logger.setLevel(log_level)
+
+    # On the `transformers` logger itself, not the root: it has its own handler and does not
+    # propagate, so a root filter never sees the record. addFilter dedupes, so reruns are safe.
+    logging.getLogger("transformers").addFilter(_drop_transformers_dunder_alias_warning)

@@ -160,11 +160,32 @@ Python 3.13 is the floor, though Docker and CI run 3.14. Nothing requires 3.14 s
 `app/ids.py` took over `uuid7` with an RFC 9562 fallback. `.python-version` pins the local
 venv at 3.13, because pydantic fails to build models on a 3.14 *pre-release*.
 
+For development, run the infrastructure in Docker and the three app processes with uv, so
+code changes take effect without an image rebuild. From `portfolio/`:
+
 ```bash
-uv sync --extra dev
-uv run uvicorn app.api.main:app --reload
-uv run streamlit run streamlit_app/Home.py
+# Infra only -- not api/worker/streamlit/nginx, which would take the same ports and queue
+cd .docker && docker compose up -d postgres redis qdrant && cd ..
+
+uv sync --extra dev --locked
+
+# One terminal each
+uv run uvicorn app.api.main:app --reload --port 8000
+uv run procrastinate --app=app.worker.tasks.app worker --concurrency 2 --queues ingest
+uv run streamlit run streamlit_app/Home.py --server.port 8501 --server.address 127.0.0.1 --server.runOnSave true
 ```
+
+- **Check it:** `curl localhost:8000/health/ready` reports each dependency. Mint a key with
+  `uv run python scripts/create_tenant.py "Dev"`.
+- **The worker does not reload.** Restart it after editing ingestion code, or uploads keep
+  running the old code. Without it, `POST /v1/documents` still returns 202 and the document
+  stays `pending`.
+- **The worker must point at `app.worker.tasks.app`**, not `app.worker.app.app` -- the latter
+  connects fine and then rejects every job as unknown.
+- **Debugging:** run the same commands as module run configurations in your IDE (module
+  `uvicorn` / `procrastinate` / `streamlit`, the rest as arguments) and breakpoints work.
+  Streamlit calls the pipeline in process, so it can be stepped through end to end.
+- **Stop:** Ctrl+C each process, then `cd .docker && docker compose stop`.
 
 ## Architecture
 
