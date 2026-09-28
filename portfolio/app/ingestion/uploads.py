@@ -112,14 +112,12 @@ def tenant_upload_dir(upload_root: Path, tenant_id: str) -> Path:
     how this path is composed rather than trusting it.
     """
     if not _TENANT_ID_RE.fullmatch(tenant_id):
-        msg = "tenant id has an unexpected format"
-        raise ValueError(msg)
+        raise ValueError("tenant id has an unexpected format")
 
     root = upload_root.resolve()
     directory = (root / tenant_id).resolve()
     if not directory.is_relative_to(root):
-        msg = "refusing to write outside the upload directory"
-        raise ValueError(msg)
+        raise ValueError("refusing to write outside the upload directory")
     return directory
 
 
@@ -156,8 +154,7 @@ def document_upload_path(upload_root: Path, tenant_id: str, doc_id: str, filenam
     leaf = safe_filename(filename)
     path = (directory / leaf).resolve()
     if not path.is_relative_to(directory.resolve()):
-        msg = "refusing to write outside the document directory"
-        raise ValueError(msg)
+        raise ValueError("refusing to write outside the document directory")
     return path
 
 
