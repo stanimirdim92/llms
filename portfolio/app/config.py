@@ -5,10 +5,12 @@ from functools import lru_cache
 from importlib import util
 from pathlib import Path
 from typing import Literal
+from urllib.parse import quote
 
 from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
+from sqlalchemy.engine import make_url
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PACKAGE_ROOT / "data"
@@ -102,8 +104,11 @@ class Settings(BaseSettings):
     app_db_password: SecretStr = Field(default=SecretStr("portfolio_app"))
     app_database_url: SecretStr = Field(
         default=SecretStr(""),
-        description="Full DSN override for the low-privilege runtime role. If unset, built from "
-        "db_host/db_port/db_driver/app_db_user/app_db_password/postgres_db.",
+        description=(
+            "Full DSN override for the low-privilege runtime role. If unset, it inherits the "
+            "target and query options from DATABASE_URL when supplied, replacing only the "
+            "credentials; otherwise it is built from the DB_* and POSTGRES_DB settings."
+        ),
     )
 
     # Per gunicorn worker, not shared across forks. **`GUNICORN_WORKERS * (pool_size +
@@ -216,7 +221,9 @@ class Settings(BaseSettings):
     def redis_url(self) -> str:
         credentials = ""
         if self.redis_password:
-            credentials = f"{self.redis_username}:{self.redis_password.get_secret_value()}@"
+            username = quote(self.redis_username, safe="")
+            password = quote(self.redis_password.get_secret_value(), safe="")
+            credentials = f"{username}:{password}@"
         return f"redis://{credentials}{self.redis_host}:{self.redis_port}/{self.redis_db}"
 
     @model_validator(mode="after")
@@ -252,6 +259,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _assemble_database_url(self) -> Settings:
+        database_url_was_overridden = bool(self.database_url)
         if not self.database_url:
             # `SecretStr`, and this is the field that made masking `postgres_password` alone
             # theatre: the assembled DSN embeds the password in plain text and sat two lines
@@ -267,19 +275,24 @@ class Settings(BaseSettings):
                 ).render_as_string(hide_password=False)
             )
         if not self.app_database_url:
-            # Same host/port/driver/database as above -- only the role differs. Kept in a
-            # second field rather than derived by string-editing `database_url`, so a caller that
-            # already parsed a `DATABASE_URL` override doesn't have to be reverse-engineered.
-            self.app_database_url = SecretStr(
-                URL.create(
+            if database_url_was_overridden:
+                # Both engine roles must reach the same database. Inherit the full DSN's
+                # target and options, changing only the driver and low-privilege credentials.
+                app_url = make_url(self.database_url.get_secret_value()).set(
+                    drivername=self.db_driver,
+                    username=self.app_db_user,
+                    password=self.app_db_password.get_secret_value(),
+                )
+            else:
+                app_url = URL.create(
                     drivername=self.db_driver,
                     username=self.app_db_user,
                     password=self.app_db_password.get_secret_value(),
                     host=self.db_host,
                     port=self.db_port,
                     database=self.postgres_db,
-                ).render_as_string(hide_password=False)
-            )
+                )
+            self.app_database_url = SecretStr(app_url.render_as_string(hide_password=False))
         return self
 
 

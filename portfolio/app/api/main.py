@@ -72,8 +72,8 @@ app.add_middleware(
 # No /v1 prefix: probes are infrastructure, not API surface. Versioning them would mean an
 # orchestrator's health check breaking when the API version moves, which is backwards.
 app.include_router(health_router)
-app.include_router(ask_router, prefix="/v1")
 app.include_router(documents_router, prefix="/v1")
+app.include_router(ask_router, prefix="/v1")
 app.include_router(keys_router, prefix="/v1")
 
 

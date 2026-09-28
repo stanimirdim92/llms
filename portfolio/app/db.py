@@ -149,7 +149,29 @@ async def init_db() -> None:
             # Inside the lock on purpose: a process that waited here must re-check rather than
             # act on what it saw before the winner ran.
             await _apply_procrastinate_schema(conn)
+        await _verify_runtime_role()
         _initialized = True
+
+
+async def _verify_runtime_role() -> None:
+    """Refuse startup if the runtime connection can bypass document row-level security.
+
+    `APP_DATABASE_URL` is an operator-provided full DSN override, so its name alone cannot
+    prove that it connects as a restricted role. PostgreSQL silently skips RLS for superusers
+    and roles with `BYPASSRLS`, including when `FORCE ROW LEVEL SECURITY` is enabled.
+    """
+    async with get_engine().connect() as conn:
+        result = await conn.execute(
+            text("SELECT rolname, rolsuper, rolbypassrls FROM pg_catalog.pg_roles WHERE rolname = current_user")
+        )
+        role = result.one_or_none()
+
+    if role is None:
+        msg = "Unable to verify the runtime PostgreSQL role; refusing to continue."
+        raise RuntimeError(msg)
+    if role.rolsuper or role.rolbypassrls:
+        msg = f"Runtime PostgreSQL role {role.rolname!r} must not be SUPERUSER or BYPASSRLS."
+        raise RuntimeError(msg)
 
 
 async def _migrate_to_head(conn: AsyncConnection) -> None:
