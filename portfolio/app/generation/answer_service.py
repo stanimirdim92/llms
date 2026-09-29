@@ -13,10 +13,10 @@ from typing import TYPE_CHECKING
 
 import structlog
 from langchain_anthropic import ChatAnthropic
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from app.config import get_settings
-from app.generation.prompts import SYSTEM_PROMPT
+from app.generation.prompts import BASE_SYSTEM_PROMPT, SYSTEM_PROMPT, source_guidance
 from app.retrieval.reranker import rerank
 from app.retrieval.retriever import Retriever
 
@@ -140,6 +140,26 @@ def _extract_text(content_blocks: AnthropicContent) -> str:
     )
 
 
+def _messages(question: str, documents: list[Document], *, dynamic: bool) -> list[BaseMessage]:
+    """The request, in the one order that keeps a cacheable prefix stable: system prompt, then
+    documents, then anything that varies with them (guidance), then the question.
+
+    `dynamic=False` is the prompt as it shipped before Phase 2.5, byte for byte, which is what
+    the committed eval baseline measured.
+    """
+    if not dynamic:
+        return [
+            SystemMessage(content=SYSTEM_PROMPT),
+            HumanMessage(content=[*_build_document_blocks(documents), {"type": "text", "text": question}]),
+        ]
+    guidance = source_guidance({document.metadata.get("chunk_type", "text") for document in documents})
+    tail = [{"type": "text", "text": guidance}] if guidance else []
+    return [
+        SystemMessage(content=BASE_SYSTEM_PROMPT),
+        HumanMessage(content=[*_build_document_blocks(documents), *tail, {"type": "text", "text": question}]),
+    ]
+
+
 class AnswerService:
     def __init__(self, retriever: Retriever | None = None) -> None:
         self._retriever = retriever or Retriever()
@@ -162,8 +182,7 @@ class AnswerService:
 
         response = await self._llm.ainvoke(
             [
-                SystemMessage(content=SYSTEM_PROMPT),
-                HumanMessage(content=[*_build_document_blocks(top_documents), {"type": "text", "text": question}]),
+                *_messages(question, top_documents, dynamic=get_settings().dynamic_prompt),
             ]
         )
 

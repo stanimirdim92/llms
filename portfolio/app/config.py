@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     # Grades eval answers (app/eval/judges.py). A different model from `answer_model` on purpose,
     # so the judge isn't scoring its own writing. Only the eval scripts use it.
     eval_judge_model: str = Field(default="claude-opus-5")
+    # Epic 2 Phase 2.5 techniques. Each is off by default, and each ships (default flipped) only
+    # if an eval run with it on beats the committed baseline (docs/EPIC_2_PLAN.md Phase 2.5).
+    dynamic_prompt: bool = Field(default=False)
     # Bounded, not unbounded: the ceiling is Anthropic's rate limit, and a 429 storm is slower
     # than running sequentially.
     figure_caption_concurrency: int = Field(default=5)
