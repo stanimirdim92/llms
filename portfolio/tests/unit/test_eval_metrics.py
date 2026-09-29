@@ -124,6 +124,16 @@ def test_a_cell_that_vanishes_fails_the_gate() -> None:
     assert regressions[0].current is None
 
 
+def test_one_question_flipping_in_a_small_class_is_noise_but_two_is_not() -> None:
+    """Measured: identical code moved an n=3 cell by 0.33 between two live runs."""
+    baseline = {"correctness": {"cross-document": 1.0}}
+    counts = {"correctness": {"cross-document": 3}}
+    one_flip = {"correctness": {"cross-document": 2 / 3}}
+    two_flips = {"correctness": {"cross-document": 1 / 3}}
+    assert compare(one_flip, baseline, baseline_counts=counts) == []
+    assert len(compare(two_flips, baseline, baseline_counts=counts)) == 1
+
+
 def test_an_improvement_is_not_a_regression() -> None:
     assert compare({"mrr": {ALL: 0.9}}, {"mrr": {ALL: 0.7}}) == []
 
@@ -131,7 +141,9 @@ def test_an_improvement_is_not_a_regression() -> None:
 def test_the_baseline_round_trips_and_is_sorted_for_readable_diffs(tmp_path: Path) -> None:
     path = tmp_path / "baseline.json"
     write_baseline({"mrr": {"table": 0.123456, ALL: 0.5}}, {"mrr": {ALL: 2, "table": 1}}, {"git_sha": "abc"}, path)
-    assert read_baseline(path) == {"mrr": {ALL: 0.5, "table": 0.1235}}
+    scores, counts = read_baseline(path)
+    assert scores == {"mrr": {ALL: 0.5, "table": 0.1235}}
+    assert counts == {"mrr": {ALL: 2, "table": 1}}
     text = path.read_text()
     assert text.index('"all"') < text.index('"table"')
     assert json.loads(text)["meta"]["git_sha"] == "abc"

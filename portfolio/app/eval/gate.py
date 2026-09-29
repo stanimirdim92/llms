@@ -61,17 +61,30 @@ def aggregate(rows: list[tuple[GoldenPair, dict[str, float | None]]]) -> tuple[S
     return means, counts
 
 
-def compare(current: Scores, baseline: Scores, tolerance: float = DEFAULT_TOLERANCE) -> list[Regression]:
-    """Every baseline cell that dropped by more than `tolerance`, or vanished.
+def compare(
+    current: Scores,
+    baseline: Scores,
+    tolerance: float = DEFAULT_TOLERANCE,
+    baseline_counts: dict[str, dict[str, int]] | None = None,
+) -> list[Regression]:
+    """Every baseline cell that dropped by more than its tolerance, or vanished.
 
     A cell that disappears is a regression, not a pass: a metric that silently stops being
     computed would otherwise turn the gate green.
+
+    With `baseline_counts`, a cell may also drop by **one question's worth** (`1/n`) before
+    failing, whichever is larger. Measured 2026-09-24: two live runs of identical code differed by
+    0.33 on the three cross-document questions, one answer flipping. A flat 0.05 fails every
+    small class on noise, and a gate that fails on noise gets switched off. Two questions
+    flipping still fails, and the `all` cell (n=67) keeps the flat tolerance in practice.
     """
     regressions = []
     for metric, cells in sorted(baseline.items()):
         for kind, reference in sorted(cells.items()):
             now = current.get(metric, {}).get(kind)
-            if now is None or now < reference - tolerance:
+            n = (baseline_counts or {}).get(metric, {}).get(kind)
+            allowed = max(tolerance, 1 / n + 1e-9) if n else tolerance
+            if now is None or now < reference - allowed:
                 regressions.append(Regression(metric=metric, kind=kind, baseline=reference, current=now))
     return regressions
 
@@ -83,5 +96,7 @@ def write_baseline(scores: Scores, counts: dict[str, dict[str, int]], meta: dict
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def read_baseline(path: Path = BASELINE_PATH) -> Scores:
-    return json.loads(path.read_text(encoding="utf-8"))["scores"]
+def read_baseline(path: Path = BASELINE_PATH) -> tuple[Scores, dict[str, dict[str, int]]]:
+    """The scores and, per cell, how many questions each covers (`compare` scales tolerance on it)."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload["scores"], payload.get("counts", {})

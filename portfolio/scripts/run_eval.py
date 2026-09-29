@@ -132,7 +132,8 @@ def main() -> int:
         return 0
 
     if args.gate:
-        regressions = compare(scores, read_baseline(), tolerance=args.tolerance)
+        baseline, baseline_counts = read_baseline()
+        regressions = compare(scores, baseline, tolerance=args.tolerance, baseline_counts=baseline_counts)
         if regressions:
             print(f"\n{len(regressions)} regression(s) beyond {args.tolerance}:", file=sys.stderr)
             for regression in regressions:
