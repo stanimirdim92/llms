@@ -19,7 +19,7 @@ log = structlog.get_logger(__name__)
 
 
 @lru_cache
-def _local_compressor() -> BaseDocumentCompressor:
+def _local_compressor(top_n: int) -> BaseDocumentCompressor:
     # Imported lazily: sentence-transformers/torch are only needed for this fallback
     # path (the `local-reranker` optional dependency group), not the default Voyage one.
     from langchain_classic.retrievers.document_compressors import CrossEncoderReranker  # noqa: PLC0415
@@ -27,16 +27,14 @@ def _local_compressor() -> BaseDocumentCompressor:
 
     settings = get_settings()
     model = HuggingFaceCrossEncoder(model_name=settings.local_reranker_model)
-    return CrossEncoderReranker(model=model, top_n=settings.rerank_top_n)
+    return CrossEncoderReranker(model=model, top_n=top_n)
 
 
-def _voyage_compressor() -> BaseDocumentCompressor:
+def _voyage_compressor(top_n: int) -> BaseDocumentCompressor:
     from langchain_voyageai import VoyageAIRerank  # noqa: PLC0415
 
     settings = get_settings()
-    return VoyageAIRerank(
-        voyage_api_key=settings.voyage_api_key, model=settings.voyage_rerank_model, top_k=settings.rerank_top_n
-    )
+    return VoyageAIRerank(voyage_api_key=settings.voyage_api_key, model=settings.voyage_rerank_model, top_k=top_n)
 
 
 async def rerank(query: str, documents: list[Document], top_n: int | None = None) -> list[Document]:
@@ -55,7 +53,10 @@ async def rerank(query: str, documents: list[Document], top_n: int | None = None
     if not documents:
         return []
     n = top_n or settings.rerank_top_n
-    compressor = _local_compressor() if settings.reranker_backend == "local" else _voyage_compressor()
+    # `n` goes into the compressor, not only into the slice below. Built with the global
+    # `rerank_top_n`, the backend returned at most 5 whatever `top_n` asked for, so a caller wanting
+    # 30 candidates (the Phase 2.4 aggregate path) silently got 5.
+    compressor = _local_compressor(n) if settings.reranker_backend == "local" else _voyage_compressor(n)
     try:
         # VoyageAIRerank has a real async client; the local cross-encoder falls back to
         # BaseDocumentCompressor's default (sync call run in a thread pool) since torch

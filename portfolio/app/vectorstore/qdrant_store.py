@@ -335,8 +335,10 @@ class QdrantStore:
 
         A `scroll`, not `query`: there is no question to rank against, only a filter to exhaust,
         so this returns everything the filter matches rather than a top-k. Built for
-        `GET /v1/documents/{doc_id}/content` -- reconstructing a document for viewing -- never
-        for retrieval, which is why it takes no `top_k` and is not reachable from `Retriever`.
+        `GET /v1/documents/{doc_id}/content` -- reconstructing a document for viewing. Since Epic 2
+        Phase 2.4 it is also reached from `Retriever.whole_document`, for a question scoped to one
+        document with `WHOLE_DOCUMENT_SCOPE` on; that caller resolves `versions` from Postgres
+        first, like every other read, and caps the result by size itself.
 
         Paginated because `scroll`'s default page is far smaller than a real document's chunk
         count. Sorted here, once, rather than trusting Qdrant to return points in insertion

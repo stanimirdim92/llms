@@ -43,6 +43,13 @@ class Settings(BaseSettings):
     # Epic 2 Phase 2.5 techniques. Each is off by default, and each ships (default flipped) only
     # if an eval run with it on beats the committed baseline (docs/EPIC_2_PLAN.md Phase 2.5).
     dynamic_prompt: bool = Field(default=False)
+    # Epic 2 Phase 2.4. Off, `aggregate` questions keep today's "not supported yet" refusal;
+    # on, they get the corpus-level answer (app/generation/corpus_answer_service.py).
+    aggregate_answering: bool = Field(default=False)
+    # Epic 2 Phase 2.4 T002. On, a question scoped to exactly one document is answered from that
+    # document's chunks in reading order instead of the top 5 reranked, so a "summarise X" or
+    # "fill this schema from X" can't silently lose the chunk holding the answer.
+    whole_document_scope: bool = Field(default=False)
     # Bounded, not unbounded: the ceiling is Anthropic's rate limit, and a 429 storm is slower
     # than running sequentially.
     figure_caption_concurrency: int = Field(default=5)

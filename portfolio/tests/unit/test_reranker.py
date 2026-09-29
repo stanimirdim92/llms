@@ -57,8 +57,8 @@ def backends(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int]]:
     return calls
 
 
-def _factory(name: str, calls: list[tuple[str, int]]) -> Callable[[], _StubCompressor]:
-    return lambda: _StubCompressor(name, calls)
+def _factory(name: str, calls: list[tuple[str, int]]) -> Callable[[int], _StubCompressor]:
+    return lambda _top_n: _StubCompressor(name, calls)
 
 
 async def test_the_voyage_backend_is_used_when_selected(
@@ -141,6 +141,9 @@ async def test_a_backend_failure_falls_back_to_the_unreranked_order(monkeypatch:
     """
 
     class _FailingCompressor:
+        def __init__(self, _top_n: int) -> None:
+            pass
+
         async def acompress_documents(self, documents: list[Document], query: str) -> list[Document]:
             raise RuntimeError("voyage rerank timed out")
 
@@ -167,3 +170,23 @@ async def test_every_candidate_is_sent_to_the_backend_not_just_the_first_n(
     await rerank("why?", _documents(9))
 
     assert backends == [("voyage", 9)]
+
+
+async def test_top_n_reaches_the_backend_not_only_the_final_slice(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Built with the global `rerank_top_n`, the backend returned at most that many however many a
+    caller asked for, and the slice afterwards could only shrink it further.
+    """
+    requested: list[int] = []
+
+    def _factory(top_n: int) -> _StubCompressor:
+        requested.append(top_n)
+        return _StubCompressor("voyage", [])
+
+    monkeypatch.setattr(get_settings(), "reranker_backend", "voyage")
+    monkeypatch.setattr(get_settings(), "rerank_top_n", 5)
+    monkeypatch.setattr(reranker_module, "_voyage_compressor", _factory)
+
+    result = await rerank("why?", _documents(40), top_n=30)
+
+    assert requested == [30]
+    assert len(result) == 30

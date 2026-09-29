@@ -73,6 +73,35 @@ against both installed packages, not remembered. Any value other than `max_token
 """
 
 
+WHOLE_DOCUMENT_CHAR_BUDGET = 60_000
+"""Characters of one document sent whole when a question is scoped to it (Epic 2 Phase 2.4).
+
+About 15k tokens: roughly a 20-page paper's text, and three times what a top-5 answer sends. A
+longer document is cut at this budget in reading order, and the cut is logged, because a prefix
+answered as if it were the whole document is the silent-truncation failure `Answer.truncated`
+exists for on the output side.
+"""
+
+
+def _within_budget(chunks: list[Document], doc_id: str) -> list[Document]:
+    kept: list[Document] = []
+    used = 0
+    for chunk in chunks:
+        used += len(chunk.page_content)
+        if used > WHOLE_DOCUMENT_CHAR_BUDGET:
+            break
+        kept.append(chunk)
+    if len(kept) < len(chunks):
+        log.warning(
+            "answer_service.document_cut",
+            doc_id=doc_id,
+            kept_chunks=len(kept),
+            total_chunks=len(chunks),
+            budget_chars=WHOLE_DOCUMENT_CHAR_BUDGET,
+        )
+    return kept
+
+
 def _chunk_title(document: Document) -> str:
     """The label the model sees for each document block -- and the only identifier it can
     match a question against.
@@ -177,8 +206,15 @@ class AnswerService:
         question, so a scope is always an explicit decision made somewhere legible.
         """
         start = perf_counter()
-        candidates = await self._retriever.retrieve(question, tenant_id=tenant_id, doc_ids=doc_ids)
-        top_documents = await rerank(question, candidates)
+        if doc_ids is not None and len(doc_ids) == 1 and get_settings().whole_document_scope:
+            # One named document: send it whole, in reading order, instead of the five chunks
+            # nearest the question -- "summarise X" has no nearest chunk. Still tenant- and
+            # version-filtered, via the same Postgres read `retrieve` does.
+            candidates = await self._retriever.whole_document(doc_ids[0], tenant_id)
+            top_documents = _within_budget(candidates, doc_ids[0])
+        else:
+            candidates = await self._retriever.retrieve(question, tenant_id=tenant_id, doc_ids=doc_ids)
+            top_documents = await rerank(question, candidates)
 
         response = await self._llm.ainvoke(
             [

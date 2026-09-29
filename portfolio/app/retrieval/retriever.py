@@ -6,6 +6,7 @@ the one place every retrieval path passes through.
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 import structlog
@@ -73,3 +74,19 @@ class Retriever:
             doc_ids=permitted,
             versions=sorted({active[doc_id] for doc_id in permitted}),
         )
+
+    async def whole_document(self, doc_id: str, tenant_id: str) -> list[Document]:
+        """Every chunk of one searchable document, in reading order (Phase 2.4's scoped bypass).
+
+        The same Postgres check as `retrieve`: the document must be ingested and owned by this
+        tenant, and only its live generation is read. An unsearchable or unowned `doc_id` returns
+        nothing rather than widening to anything else.
+        """
+        await init_db()
+        async with get_session() as session:
+            active = await list_active_versions(session, tenant_id=tenant_id)
+        if doc_id not in active:
+            log.info("retrieval.nothing_searchable", tenant_id=tenant_id, requested=[doc_id], searchable=len(active))
+            return []
+        # `to_thread`: `get_document_chunks` is the sync qdrant-client `scroll`.
+        return await asyncio.to_thread(self._store.get_document_chunks, doc_id, tenant_id, [active[doc_id]])

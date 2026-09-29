@@ -52,3 +52,25 @@ def source_guidance(chunk_types: set[str]) -> str:
     if "figure" in chunk_types:
         parts.append(FIGURE_GUIDANCE)
     return "\n\n".join(parts)
+
+
+# --- Epic 2 Phase 2.4: corpus-level answers, behind `Settings.aggregate_answering` ------------
+
+AGGREGATE_SYSTEM_PROMPT = """You are a research assistant answering a question about a whole \
+collection of documents (papers, patents), not a single one. You are given passages from \
+several documents as `document` content blocks; each block's title names its document.
+
+Rules:
+- Answer ONLY from the provided passages, and cite each claim.
+- Organise the answer by document: say which documents address the question and what each says.
+- If only some documents are relevant, say so; don't stretch an unrelated one to fit.
+- Don't claim to cover the whole collection: these are the most relevant passages, not everything.
+- Be concise.
+"""
+
+AGGREGATE_NO_DATA_ANSWER = (
+    "None of your documents looked relevant enough to this question to answer it from them. "
+    "Try naming a topic or a document, or check GET /v1/documents for what's searchable."
+)
+"""Returned instead of a synthesis when no document clears the relevance floor. An answer built
+from weak matches reads as confident as one built from strong ones (root CLAUDE.md rule 11)."""

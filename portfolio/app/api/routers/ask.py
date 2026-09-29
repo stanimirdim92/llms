@@ -9,9 +9,11 @@ from fastapi import APIRouter, Depends
 from app.api.deps import CurrentTenant, rate_limited, require_scopes
 from app.api.schemas import AskRequest, AskResponse, CitationResponse, RetrievedChunkResponse
 from app.auth.scopes import ASK
+from app.config import get_settings
 from app.db import get_session, init_db
 from app.exceptions import APIError
-from app.generation.answer_service import AnswerService
+from app.generation.answer_service import Answer, AnswerService
+from app.generation.corpus_answer_service import AggregateAnswerService
 from app.generation.intent_router import Intent, IntentUnavailableError, classify_intent
 from app.registry.db import list_document_records
 from app.retrieval.document_scope import DocumentScope, mentions_a_document, resolve_scope
@@ -27,15 +29,44 @@ _AGGREGATE_NOT_SUPPORTED_ANSWER = (
     "Questions spanning your whole document collection aren't supported yet. Ask about one "
     "document or a specific fact instead."
 )
-"""The `aggregate` branch from docs/EPIC_2_PLAN.md Phase 2.0's table. Its real answer path
-(map-reduce over top-N documents) is Phase 2.4 and needs 2.1's golden set first -- refusing
-honestly here beats routing it through the factual pipeline, which would silently do the
-single-passage-per-question thing Phase 2.0 exists to stop doing for exactly this class."""
+"""The `aggregate` answer while `AGGREGATE_ANSWERING` is off. Its real answer path (Phase 2.4,
+`corpus_answer_service.py`) is built but ships only once the eval says it beats this refusal.
+Refusing honestly still beats routing the question through the factual pipeline, which would
+answer a collection-wide question from the five chunks nearest one embedding."""
 
 
 @lru_cache
 def _service() -> AnswerService:
     return AnswerService()
+
+
+@lru_cache
+def _aggregate_service() -> AggregateAnswerService:
+    return AggregateAnswerService()
+
+
+def _answer_response(result: Answer, *, scoped_to: list[str]) -> AskResponse:
+    """An answer built from retrieved chunks, factual or corpus-level, in the one response shape."""
+    return AskResponse(
+        answer=result.text,
+        scoped_to=scoped_to,
+        citations=[
+            CitationResponse(quoted_text=c.quoted_text, chunk_id=c.chunk_id, doc_id=c.doc_id, page_no=c.page_no)
+            for c in result.citations
+        ],
+        retrieved_chunks=[
+            RetrievedChunkResponse(
+                chunk_id=doc.metadata.get("chunk_id", ""),
+                doc_id=doc.metadata.get("doc_id", ""),
+                chunk_type=doc.metadata.get("chunk_type", "text"),
+                page_no=doc.metadata.get("page_no"),
+                section_path=doc.metadata.get("section_path", ""),
+                text=doc.page_content,
+            )
+            for doc in result.retrieved_chunks
+        ],
+        truncated=result.truncated,
+    )
 
 
 def _plain_answer(text: str) -> AskResponse:
@@ -145,7 +176,17 @@ async def answer_question(question: str, tenant_id: str) -> tuple[Intent, AskRes
         case "out_of_scope":
             return intent, _plain_answer(_OUT_OF_SCOPE_ANSWER)
         case "aggregate":
-            return intent, _plain_answer(_AGGREGATE_NOT_SUPPORTED_ANSWER)
+            if not get_settings().aggregate_answering:
+                return intent, _plain_answer(_AGGREGATE_NOT_SUPPORTED_ANSWER)
+            try:
+                result = await _aggregate_service().answer(question, tenant_id=tenant_id)
+            except RetrievalUnavailableError as exc:
+                raise APIError(
+                    "Retrieval is temporarily unavailable (the embedding or vector-search provider "
+                    "didn't respond). Try again shortly.",
+                    code=503,
+                ) from exc
+            return intent, _answer_response(result, scoped_to=[])
 
     scope = await _document_scope(question, tenant_id)
     if scope.names_nothing_owned:
@@ -176,23 +217,4 @@ async def answer_question(question: str, tenant_id: str) -> tuple[Intent, AskRes
             "didn't respond). Try again shortly.",
             code=503,
         ) from exc
-    return intent, AskResponse(
-        answer=result.text,
-        scoped_to=scope.filenames,
-        citations=[
-            CitationResponse(quoted_text=c.quoted_text, chunk_id=c.chunk_id, doc_id=c.doc_id, page_no=c.page_no)
-            for c in result.citations
-        ],
-        retrieved_chunks=[
-            RetrievedChunkResponse(
-                chunk_id=doc.metadata.get("chunk_id", ""),
-                doc_id=doc.metadata.get("doc_id", ""),
-                chunk_type=doc.metadata.get("chunk_type", "text"),
-                page_no=doc.metadata.get("page_no"),
-                section_path=doc.metadata.get("section_path", ""),
-                text=doc.page_content,
-            )
-            for doc in result.retrieved_chunks
-        ],
-        truncated=result.truncated,
-    )
+    return intent, _answer_response(result, scoped_to=scope.filenames)
