@@ -74,3 +74,13 @@ AGGREGATE_NO_DATA_ANSWER = (
 )
 """Returned instead of a synthesis when no document clears the relevance floor. An answer built
 from weak matches reads as confident as one built from strong ones (root CLAUDE.md rule 11)."""
+
+
+REFUSAL_ANSWER = (
+    "The model declined to answer this question. Rephrasing it, or asking about a specific "
+    "passage or document, may help."
+)
+"""Returned when Anthropic stops with `stop_reason="refusal"`. Says only that the model declined,
+never why: the API does not say, and a guessed reason would be a claim nobody checked. Without
+it a refusal (`output_tokens=0`) returns a 200 with an empty answer, which reads as "no answer
+found" (root CLAUDE.md rule 11)."""

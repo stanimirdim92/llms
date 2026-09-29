@@ -18,7 +18,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from app.config import get_settings
-from app.generation.prompts import BASE_SYSTEM_PROMPT, SYSTEM_PROMPT, source_guidance
+from app.generation.prompts import BASE_SYSTEM_PROMPT, REFUSAL_ANSWER, SYSTEM_PROMPT, source_guidance
 from app.generation.query_rewrite import decompose_query, expand_query
 from app.retrieval.reranker import rerank
 from app.retrieval.retriever import Retriever
@@ -74,6 +74,10 @@ So the read location is right, via langchain-core rather than langchain-anthropi
 against both installed packages, not remembered. Any value other than `max_tokens` (`end_turn`,
 `stop_sequence`) means the model chose to stop.
 """
+
+_REFUSAL_STOP_REASON = "refusal"
+"""Anthropic's `stop_reason` when the model declined to answer (`output_tokens` is typically 0).
+Shared with `corpus_answer_service`, so the two paths cannot disagree on what counts as one."""
 
 
 WHOLE_DOCUMENT_CHAR_BUDGET = 60_000
@@ -271,15 +275,29 @@ class AnswerService:
             ]
         )
 
+        stop_reason = response.response_metadata.get("stop_reason")
+        # `.get`, not indexing: `usage_metadata` is None on some providers and on a cached
+        # response, and an answer must not fail because its cost could not be reported.
+        usage = response.usage_metadata or {}
+
+        if stop_reason == _REFUSAL_STOP_REASON:
+            # Checked before citations are built, and the text is discarded even when some
+            # arrived: a half-answer the model stopped is not an answer, and shown with its
+            # citations it reads as a complete, sourced one. The chunks stay so the caller can
+            # see what was searched.
+            log.warning(
+                "answer_service.refused",
+                tenant_id=tenant_id,
+                input_tokens=usage.get("input_tokens"),
+                output_tokens=usage.get("output_tokens"),
+            )
+            return Answer(text=REFUSAL_ANSWER, citations=[], retrieved_chunks=top_documents)
+
         text = _extract_text(response.content)
         citations = _extract_citations(response.content, top_documents)
         latency_ms = (perf_counter() - start) * 1000
 
-        stop_reason = response.response_metadata.get("stop_reason")
         truncated = stop_reason == _TRUNCATED_STOP_REASON
-        # `.get`, not indexing: `usage_metadata` is None on some providers and on a cached
-        # response, and an answer must not fail because its cost could not be reported.
-        usage = response.usage_metadata or {}
 
         log.info(
             "answer_service.answered",

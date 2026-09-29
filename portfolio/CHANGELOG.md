@@ -30,6 +30,10 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 #### Fixed
 
 - The reranker returned at most 5 chunks even when asked for more.
+- When the model declines to answer, `/ask` now says so instead of returning a 200 with an empty
+  answer that looked like "no answer found". The answer text is a short message suggesting a
+  rephrase, `citations` is empty, and `retrieved_chunks` still lists what was searched. Applies
+  to factual and, with `AGGREGATE_ANSWERING` on, corpus-level answers.
 
 ### 2026-09-24
 

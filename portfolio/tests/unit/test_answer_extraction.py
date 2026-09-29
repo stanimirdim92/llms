@@ -18,8 +18,15 @@ import pytest
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage
 
-from app.generation import answer_service
-from app.generation.answer_service import _TRUNCATED_STOP_REASON, AnthropicContent, _extract_citations, _extract_text
+from app.generation import answer_service, corpus_answer_service
+from app.generation.answer_service import (
+    _REFUSAL_STOP_REASON,
+    _TRUNCATED_STOP_REASON,
+    AnthropicContent,
+    _extract_citations,
+    _extract_text,
+)
+from app.generation.prompts import REFUSAL_ANSWER
 
 if TYPE_CHECKING:
     from langchain_anthropic import ChatAnthropic
@@ -280,3 +287,100 @@ async def test_an_answer_without_usage_metadata_still_returns(service: answer_se
     answer = await service.answer("why?", tenant_id=TENANT)
 
     assert answer.text == "text only"
+
+
+# ---------------------------------------------------------------------------------------------
+# Refusal
+# ---------------------------------------------------------------------------------------------
+
+
+def _refusal(*, partial: str = "") -> AIMessage:
+    """What Anthropic returns for a declined question: `output_tokens=0` and, usually, no text."""
+    content: list = [_cited_block(partial, document_index=0, cited_text="quoted")] if partial else []
+    return AIMessage(
+        content=content,
+        response_metadata={"stop_reason": _REFUSAL_STOP_REASON},
+        usage_metadata={"input_tokens": 900, "output_tokens": 0, "total_tokens": 900},
+    )
+
+
+async def test_a_refusal_is_answered_with_the_message_and_no_citations(service: answer_service.AnswerService) -> None:
+    """Without this a refusal was a 200 with an empty answer, indistinguishable from "no answer
+    found". The chunks stay so the caller can still see what was searched.
+    """
+    _wire(service, _refusal())
+
+    answer = await service.answer("why?", tenant_id=TENANT)
+
+    assert answer.text == REFUSAL_ANSWER
+    assert answer.citations == []
+    assert len(answer.retrieved_chunks) == 1
+    assert answer.truncated is False
+
+
+async def test_partial_text_before_a_refusal_is_dropped(service: answer_service.AnswerService) -> None:
+    """A half-answer the model stopped, shown with its citation, reads as a finished sourced one."""
+    _wire(service, _refusal(partial="The paper shows that"))
+
+    answer = await service.answer("why?", tenant_id=TENANT)
+
+    assert answer.text == REFUSAL_ANSWER
+    assert answer.citations == []
+
+
+async def test_an_end_turn_answer_is_unchanged_by_refusal_handling(service: answer_service.AnswerService) -> None:
+    _wire(service, _response("end_turn"))
+
+    answer = await service.answer("why?", tenant_id=TENANT)
+
+    assert answer.text == "an answer"
+    assert answer.text != REFUSAL_ANSWER
+
+
+@pytest.fixture
+def aggregate_service(monkeypatch: pytest.MonkeyPatch) -> corpus_answer_service.AggregateAnswerService:
+    instance = corpus_answer_service.AggregateAnswerService.__new__(corpus_answer_service.AggregateAnswerService)
+    monkeypatch.setattr(corpus_answer_service, "rerank", _aggregate_rerank)
+    return instance
+
+
+async def _aggregate_rerank(_query: str, documents: list[Document], **_kwargs: object) -> list[Document]:
+    return documents
+
+
+def _wire_aggregate(service: corpus_answer_service.AggregateAnswerService, response: AIMessage) -> None:
+    service._retriever = cast("Retriever", _StubRetriever())
+    service._llm = cast("ChatAnthropic", _StubLLM(response))
+
+
+async def test_an_aggregate_refusal_is_answered_with_the_message(
+    aggregate_service: corpus_answer_service.AggregateAnswerService,
+) -> None:
+    _wire_aggregate(aggregate_service, _refusal())
+
+    answer = await aggregate_service.answer("themes?", tenant_id=TENANT)
+
+    assert answer.text == REFUSAL_ANSWER
+    assert answer.citations == []
+    assert len(answer.retrieved_chunks) == 1
+
+
+async def test_an_aggregate_refusal_with_partial_text_gives_only_the_message(
+    aggregate_service: corpus_answer_service.AggregateAnswerService,
+) -> None:
+    _wire_aggregate(aggregate_service, _refusal(partial="Across the papers"))
+
+    answer = await aggregate_service.answer("themes?", tenant_id=TENANT)
+
+    assert answer.text == REFUSAL_ANSWER
+    assert answer.citations == []
+
+
+async def test_an_aggregate_end_turn_answer_is_unchanged(
+    aggregate_service: corpus_answer_service.AggregateAnswerService,
+) -> None:
+    _wire_aggregate(aggregate_service, _response("end_turn"))
+
+    answer = await aggregate_service.answer("themes?", tenant_id=TENANT)
+
+    assert answer.text == "an answer"

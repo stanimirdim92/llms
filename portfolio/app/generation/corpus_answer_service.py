@@ -30,12 +30,14 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from app.config import get_settings
 from app.generation.answer_service import (
     _MAX_ANSWER_TOKENS,
+    _REFUSAL_STOP_REASON,
+    _TRUNCATED_STOP_REASON,
     Answer,
     _build_document_blocks,
     _extract_citations,
     _extract_text,
 )
-from app.generation.prompts import AGGREGATE_NO_DATA_ANSWER, AGGREGATE_SYSTEM_PROMPT
+from app.generation.prompts import AGGREGATE_NO_DATA_ANSWER, AGGREGATE_SYSTEM_PROMPT, REFUSAL_ANSWER
 from app.retrieval.reranker import rerank
 from app.retrieval.retriever import Retriever
 
@@ -112,6 +114,17 @@ class AggregateAnswerService:
             ]
         )
         stop_reason = response.response_metadata.get("stop_reason")
+        if stop_reason == _REFUSAL_STOP_REASON:
+            # Text dropped even if partial, for the reason in `AnswerService.answer`: a stopped
+            # half-answer with citations reads as a finished, sourced one.
+            usage = response.usage_metadata or {}
+            log.warning(
+                "aggregate.refused",
+                tenant_id=tenant_id,
+                input_tokens=usage.get("input_tokens"),
+                output_tokens=usage.get("output_tokens"),
+            )
+            return Answer(text=REFUSAL_ANSWER, citations=[], retrieved_chunks=sources)
         log.info(
             "aggregate.answered",
             documents=len({s.metadata.get("doc_id") for s in sources}),
@@ -124,5 +137,5 @@ class AggregateAnswerService:
             text=_extract_text(response.content),
             citations=_extract_citations(response.content, sources),
             retrieved_chunks=sources,
-            truncated=stop_reason == "max_tokens",
+            truncated=stop_reason == _TRUNCATED_STOP_REASON,
         )
