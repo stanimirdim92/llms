@@ -108,8 +108,21 @@ def test_only_factual_pairs_carry_golden_chunks() -> None:
     `out_of_scope`/`aggregate` refuse. Golden chunk ids on any of those would encode the
     production defect -- a collection-level question answered from whatever chunk happened to be
     nearest in embedding space -- as the expected behaviour.
+
+    **One named exception: `kind == "cross-document"`.** The router sends those three to
+    `aggregate` (the user relabelled them 2026-09-29), yet each still names the chunks from each
+    paper its answer needs -- the evidence a future aggregate scorer (Phase 2.4) would grade
+    against. `GoldenPair.scores_retrieval` requires `intent == "factual"`, so the ids are inert
+    for today's scoring and cannot recreate the defect. The exemption is exactly that kind, not
+    the `aggregate` intent: a corpus-level pair carrying chunks still fails.
     """
-    misrouted = [pair["id"] for pair in _pairs() if pair["intent"] != "factual" and pair["chunk_ids"]]
+    misrouted = [
+        pair["id"]
+        for pair in _pairs()
+        if pair["intent"] != "factual"
+        and pair["chunk_ids"]
+        and not (pair["intent"] == "aggregate" and pair["kind"] == "cross-document")
+    ]
 
     assert misrouted == [], f"non-factual pairs with golden chunks: {misrouted}"
 
