@@ -22,21 +22,29 @@ upserts it into a LangSmith dataset. `app/eval/examples.py` loads the same file 
 
 ---
 
-## T002: Recording/replay harness
+## T002: Recording/replay harness — BUILT 2026-09-29 (tests written, not run; never run against the real pipeline)
 
-**Description:** A `--record` pass hits the live Anthropic/Voyage APIs once and writes `vcrpy`
+**Description:** A `--record` pass hits the live Anthropic/Voyage/Qdrant APIs once and writes `vcrpy`
 cassettes to `data/eval/cassettes/`. Every other run replays with `record_mode="none"`, where
 a cassette miss raises instead of falling through to a real call.
 
 **Acceptance criteria:**
-- [ ] `vcrpy` is in the `eval` extra; `uv lock` is run and committed.
-- [ ] Wraps every provider call an eval run makes: generation (`answer_service`), the intent
-      classifier, Voyage rerank, and the query embedding.
-- [ ] Cassettes are stored one per question id, tagged with the record date and model id.
-- [ ] A network-blocking transport proves a replayed run makes zero live calls.
-- [ ] Recorded runs replay identically on two passes.
+- [x] `vcrpy` is in the `eval` extra; `uv lock` is run and committed.
+- [x] Wraps every provider call an eval run makes: generation (`answer_service`), the intent
+      classifier, the judges, Voyage rerank and the query embedding, and Qdrant's REST calls.
+      (Reasoned from the source and checked per HTTP library against a local server; not yet against
+      the real pipeline.)
+- [x] Cassettes are stored one per question id (plus `_setup.yaml`), and `meta.json` carries the record
+      date, git sha, answer/router/judge/Voyage model ids and the pipeline settings.
+- [x] A network guard proves a replayed run makes zero live calls: a non-loopback socket connect aborts
+      the run even when the app swallows the error. (Written, not run.)
+- [ ] Recorded runs replay identically on two passes. **Needs the first real recording.**
+- [x] A cassette miss aborts naming the pair even when the app swallows it, and so does a recorded
+      request that goes unplayed (the reranker's fallback would otherwise degrade silently).
+- [x] Auth headers never reach a cassette: allow-listed request and response headers, plus a scan of
+      every cassette at record time (which deletes them on a hit) and at replay time.
 
-**Files:** `app/eval/replay.py`, `pyproject.toml`, `uv.lock`, `data/eval/cassettes/`, `tests/unit/test_eval_replay.py`
+**Files:** `app/eval/replay.py`, `scripts/run_eval.py`, `pyproject.toml`, `uv.lock`, `data/eval/cassettes/`, `tests/unit/test_eval_replay.py`
 **Scope:** M
 
 ---
@@ -77,8 +85,10 @@ evaluator (per example) or summary evaluator (per experiment):
 
 **Acceptance criteria:**
 - [ ] Every metric is also reported per question class, not only in aggregate.
-- [ ] Unanswerable and non-factual pairs are excluded from retrieval metrics rather than
-      scored as misses.
+- [x] Pairs with nothing to retrieve are excluded from retrieval metrics rather than scored as misses:
+      a pair is scored when it is answerable and has golden chunk ids, **whatever its intent** (changed
+      2026-09-29; it required `factual`, which dropped the cross-document pairs once they were
+      relabelled `aggregate`).
 - [ ] The wrappers are thin; the logic is testable without LangSmith installed or configured.
 
 **Files:** `app/eval/metrics.py`, `tests/unit/test_eval_metrics.py`
@@ -93,11 +103,14 @@ evaluator (per example) or summary evaluator (per experiment):
 - `correctness`: the answer states what the accepted answer states. For an unanswerable pair,
   that means declining. An `/ask` error scores 0, not skipped.
 - `groundedness`: every claim is supported by the retrieved chunk texts (`TargetOutput.retrieved_texts`).
-- Factual pairs only; the other intents are covered by routing accuracy.
+- `factual` and `aggregate` pairs (`JUDGED_INTENTS`, since 2026-09-29); `metadata` and `out_of_scope`
+  are registry reads and fixed refusals, covered by routing accuracy.
 - Structured output via `json_schema` rather than a forced tool call, so thinking can stay on
   for the default Opus judge.
 - Run locally with `run_eval.py --judges`; `--upload` always runs them.
-- Still open: judge calls go through T002's replay once it exists, so CI makes no live calls.
+- Judge calls are recorded in the same per-pair cassette as the question, so `--record --judges` /
+  `--replay --judges` cover them and CI makes no live calls. Replay must pass `--judges` if and only if
+  the recording did (`meta.json` records which).
 
 **Files:** `app/eval/judges.py`, `app/eval/langsmith_evaluators.py::answer_judges`, `app/config.py::eval_judge_model`
 
@@ -108,8 +121,19 @@ evaluator (per example) or summary evaluator (per experiment):
 **Configuration decided (user, 2026-09-24):** today's pipeline as it ships, real chunker and
 reranker, with nothing switched off.
 
+**How (2026-09-29):** `run_eval.py --record --judges --write-baseline` writes the cassettes and the
+baseline in one pass, after fetch → seed → `eval_registry.py export` (the full sequence is in the
+script's docstring). Commit `data/eval/cassettes/`, `baseline_scores.json` and `registry_fixture.json`
+together. **Then run `--replay --judges --gate` once** before pushing: the gate must reproduce the
+baseline exactly, which is the first real check that replay works. Note the cross-document pairs are
+now `aggregate`: with `AGGREGATE_ANSWERING` off (the default) they are answered by the "not supported"
+refusal, so their retrieval and citation cells record 0 -- record with the flag on if that is
+not the baseline wanted, and set the same in the `eval-gate` job's environment (`meta.json` records it,
+and a mismatch warns and then misses).
+
 **Description:** A human-run `--record` pass that uploads an experiment to LangSmith, then
 writes its summary scores (metric × question class) to `data/eval/baseline_scores.json`.
+(`--record` and `--upload` are mutually exclusive, so the experiment id is a separate `--upload` run.)
 
 **Acceptance criteria:**
 - [ ] The file's header records the git sha and model ids the baseline was taken with.
@@ -121,18 +145,29 @@ writes its summary scores (metric × question class) to `data/eval/baseline_scor
 
 ---
 
-## T007: CI gate job
+## T007: CI gate job — JOB BUILT 2026-09-29, skips visibly until cassettes exist
 
 **Description:** A new `eval-gate` job builds examples from the local `qa_dataset.jsonl`,
 replays cassettes, and evaluates offline (CP-001). It compares against
 `baseline_scores.json` with a stated per-metric tolerance.
 
 **Acceptance criteria:**
-- [ ] Zero live network calls; no CI secrets needed.
-- [ ] Fails naming the metric and question class that moved, not an aggregate score.
-- [ ] Warns, but doesn't fail, when cassettes exceed a staleness threshold.
-- [ ] **Acceptance test:** with the reranker removed, the gate fails and the message points at
-      a rank-sensitive metric (nDCG/MRR) rather than only a lower average.
+- [x] Zero live network calls; no CI secrets needed (dummy keys, a never-resolving `QDRANT_URL`,
+      tracing off; see T002).
+- [x] Fails naming the metric and question class that moved, not an aggregate score
+      (`Regression.describe`, unchanged).
+- [x] Warns, but doesn't fail, when `meta.json` is older than 90 days (`STALE_AFTER`) or its model ids
+      or pipeline settings differ from the current ones.
+- [x] Skips with a warning annotation and a job-summary message while `data/eval/cassettes/*.yaml`
+      does not exist. A partial recording (cassettes but no `meta.json`) fails instead of skipping.
+- [ ] ~~**Acceptance test:** with the reranker removed, the gate fails and the message points at a
+      rank-sensitive metric.~~ **Cannot work under strict replay, by design:** removing the reranker
+      changes the requests (no Voyage rerank call, a different Anthropic body), and a changed request
+      is a cassette *miss* that aborts the run before any metric exists. Replaced by
+      `tests/unit/test_eval_gate.py`, which scores the ranking a reranker-less pipeline would produce
+      and asserts `compare` fails on `ndcg_at_5` and `mrr` while `recall_at_5` stays green. The
+      joined claim (real reranker removed -> that ranking) is unproven until a re-record without it.
+- [ ] The job has actually gated once, on a committed recording.
 
 **Files:** `.github/workflows/portfolio-ci.yml`, `app/eval/gate.py`, `tests/unit/test_eval_gate.py`
 **Scope:** M

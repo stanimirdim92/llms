@@ -38,12 +38,16 @@ class GoldenPair:
 
     @property
     def scores_retrieval(self) -> bool:
-        """Retrieval metrics apply only where there is a right chunk to find.
+        """Retrieval metrics apply only where there is a right chunk to find -- whatever the intent.
 
-        An unanswerable or non-factual pair has no golden chunks, and scoring it as a miss would
-        punish the system for correctly finding nothing.
+        An unanswerable pair, or one with no golden chunks (the metadata and out-of-scope pairs),
+        has nothing to find, and scoring it as a miss would punish the system for correctly finding
+        nothing. Intent is deliberately *not* part of the test: it used to require `factual`, and
+        relabelling the three cross-document pairs `aggregate` then silently dropped them from every
+        retrieval and citation cell. Golden chunk ids are the only thing that says a pair has
+        something retrievable.
         """
-        return self.intent == "factual" and self.answerable and bool(self.chunk_ids)
+        return self.answerable and bool(self.chunk_ids)
 
     @property
     def example_id(self) -> uuid.UUID:

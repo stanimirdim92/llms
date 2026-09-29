@@ -26,6 +26,19 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
   it; `QUERY_DECOMPOSITION` splits a compound question ("compare X and Y") and retrieves each
   part. Each adds one Haiku call per factual question and falls back to the plain question if
   that call fails.
+- **`run_eval.py --record` and `--replay`.** `--record` runs the golden set one question at a time
+  and saves every Anthropic, Voyage and Qdrant response to `data/eval/cassettes/`; `--replay`
+  scores from those files with no network and no API keys, and aborts naming the question if the
+  pipeline makes a request the recording doesn't hold. Needs the new `eval` extra
+  (`uv sync --locked --extra eval`). The procedure is in the script's docstring.
+- **CI job `eval-gate`** replays the cassettes against `baseline_scores.json` on every pull
+  request. It reports itself skipped in the job summary until cassettes are committed.
+
+#### Changed
+
+- **Eval retrieval metrics and citation precision now score every answerable question that has
+  golden chunks, not only `factual` ones**, and the judges also grade `aggregate` questions.
+  Re-record the baseline after the cross-document questions were relabelled `aggregate`.
 
 #### Fixed
 

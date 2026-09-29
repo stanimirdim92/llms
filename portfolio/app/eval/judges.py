@@ -103,11 +103,16 @@ async def _ask(prompt: str, pair_id: str, judge: str) -> Verdict | None:
     return None
 
 
+JUDGED_INTENTS = frozenset({"factual", "aggregate"})
+"""Intents whose answer text is worth grading. `metadata` is a registry read and `out_of_scope` a
+fixed refusal, both of which routing accuracy already covers. `aggregate` is judged because its
+answer is either a real corpus-level synthesis (`AGGREGATE_ANSWERING` on) or the "not supported"
+refusal, and correctness against the accepted answer tells those apart."""
+
+
 async def judge_correctness(pair: GoldenPair, output: TargetOutput) -> Verdict | None:
-    """Factual pairs only. The other intents are refusals or registry reads that routing
-    accuracy already covers.
-    """
-    if pair.intent != "factual":
+    """Judged intents only (`JUDGED_INTENTS`)."""
+    if pair.intent not in JUDGED_INTENTS:
         return None
     if output.error_code is not None:
         # An error is a wrong answer, not a missing one -- skipping it would let an outage
@@ -121,7 +126,9 @@ async def judge_correctness(pair: GoldenPair, output: TargetOutput) -> Verdict |
 
 
 async def judge_groundedness(pair: GoldenPair, output: TargetOutput) -> Verdict | None:
-    if pair.intent != "factual" or output.error_code is not None or not output.retrieved_texts:
+    # No retrieved texts (a refusal, or a registry read) means nothing to be grounded in, so the
+    # judge has nothing to check -- not a pass and not a fail.
+    if pair.intent not in JUDGED_INTENTS or output.error_code is not None or not output.retrieved_texts:
         return None
     sources = "\n\n".join(f"[{i}] {text}" for i, text in enumerate(output.retrieved_texts, start=1))
     return await _ask(

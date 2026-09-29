@@ -13,6 +13,7 @@ import pytest
 
 from app.eval.gate import ALL, aggregate, compare, read_baseline, write_baseline
 from app.eval.golden import GoldenPair, load_golden
+from app.eval.judges import JUDGED_INTENTS, judge_correctness, judge_groundedness
 from app.eval.langsmith_evaluators import example_payload
 from app.eval.metrics import citation_precision, ndcg_at_k, recall_at_k, reciprocal_rank, score
 from app.eval.target import TargetOutput
@@ -84,6 +85,62 @@ def test_non_retrieval_pairs_score_routing_only() -> None:
     assert scores["routing_accuracy"] == 1.0
     assert scores["recall_at_5"] is None
     assert scores["citation_precision"] is None
+
+
+def test_retrieval_is_scored_for_any_answerable_pair_with_golden_chunks_whatever_its_intent() -> None:
+    """The three cross-document pairs were relabelled factual -> aggregate. Gating retrieval on
+    `intent == "factual"` dropped them from every retrieval and citation cell without a word.
+    """
+    aggregate_pair = _pair(intent="aggregate", kind="cross-document", chunk_ids=("c1", "c2"))
+    scores = score(aggregate_pair, _output(predicted_intent="aggregate", retrieved_chunk_ids=("c1", "x")))
+    assert scores["recall_at_5"] == 0.5
+    assert scores["ndcg_at_5"] is not None
+    assert scores["mrr"] == 1.0
+    assert scores["citation_precision"] == 1.0
+
+
+def test_the_committed_cross_document_pairs_are_scored_for_retrieval() -> None:
+    """The three cross-document pairs carry golden chunks and, once relabelled, intent `aggregate`.
+    Whatever their label, they must be inside every retrieval and citation cell.
+    """
+    cross_document = [pair for pair in load_golden() if pair.kind == "cross-document"]
+    assert cross_document, "the dataset lost its cross-document class"
+    assert all(pair.scores_retrieval for pair in cross_document)
+
+
+def test_pairs_with_nothing_to_retrieve_are_excluded_whatever_their_intent() -> None:
+    """Each exclusion has its own reason: no golden chunk (metadata, out of scope, the corpus-level
+    aggregate refusals) or nothing answerable. Scoring any of them as a miss punishes correctly
+    finding nothing.
+    """
+    for pair in (
+        _pair(intent="metadata", answerable=False, chunk_ids=()),
+        _pair(intent="out_of_scope", answerable=False, chunk_ids=()),
+        _pair(intent="aggregate", answerable=False, chunk_ids=()),
+        _pair(intent="aggregate", answerable=True, chunk_ids=()),
+        _pair(intent="factual", answerable=False, chunk_ids=("c1",)),
+    ):
+        assert not pair.scores_retrieval, pair
+        assert score(pair, _output())["recall_at_5"] is None, pair
+
+
+def test_judges_cover_factual_and_aggregate_but_not_registry_reads_or_refusals() -> None:
+    assert {"factual", "aggregate"} == JUDGED_INTENTS
+
+
+async def test_an_intent_that_is_not_judged_costs_no_judge_call() -> None:
+    """Returns before any model call, so it also proves no network is needed for the exclusion."""
+    for intent in ("metadata", "out_of_scope"):
+        pair = _pair(intent=intent, answerable=False, chunk_ids=())
+        assert await judge_correctness(pair, _output()) is None
+        assert await judge_groundedness(pair, _output(retrieved_texts=("text",))) is None
+
+
+async def test_an_aggregate_answer_that_errored_is_judged_wrong_not_skipped() -> None:
+    """An outage must not raise the correctness score, for aggregate any more than for factual."""
+    verdict = await judge_correctness(_pair(intent="aggregate"), _output(error_code=503))
+    assert verdict is not None
+    assert verdict.passed is False
 
 
 def test_a_failed_classification_is_a_routing_miss() -> None:

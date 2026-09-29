@@ -54,8 +54,7 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 ### Affected Areas
 - `app/eval/`, `scripts/`, `data/eval/`
 - `.github/workflows/portfolio-ci.yml`
-- `pyproject.toml`, `uv.lock` (new `eval` extra: `vcrpy`, when T002 lands; `langsmith` is already a
-  runtime dependency)
+- `pyproject.toml`, `uv.lock` (new `eval` extra: `vcrpy`; `langsmith` is already a runtime dependency)
 
 ## Decisions and Provenance
 
@@ -77,10 +76,20 @@ pairs, checked by `tests/unit/test_qa_dataset.py`). LangSmith is wired for traci
 - Source: user decision, 2026-09-09.
 
 ### TD-002 — Cassette library (kept)
-- Choice: `vcrpy`. It records once with `record_mode="once"` and replays with `"none"`. The
-  provider SDKs used here sit on `httpx`, which `vcrpy` supports.
+- Choice: `vcrpy` 8.3.0. Recording uses `record_mode="all"` on a deleted file, replay uses `"none"`
+  with `allow_playback_repeats=False`. **The provider SDKs are not all on `httpx`** (this said they
+  were; corrected 2026-09-29 by reading the installed packages, then by recording and replaying each
+  one against a local server): `anthropic` and `qdrant_client` REST use httpx, and `voyageai` 0.5's
+  *async* rerank uses aiohttp while its *sync* embed uses requests. The sync one is the one that
+  matters: `QdrantVectorStore.asimilarity_search` embeds the query through it, in a worker thread.
+  vcrpy 8.3.0 patches all three, so the choice stands.
 - Rejected: `respx` (mocks only, no recording step) and hand-rolled fixture JSON (would
   reinvent request matching).
+- Design (2026-09-29, `app/eval/replay.py`): one cassette per pair id plus `_setup.yaml`, strictly
+  sequential; requests match on method, scheme, host, port, path, query and body, with only the
+  Qdrant host rewritten to a placeholder; request and response headers are allow-listed (content-type
+  only) rather than filtered; a miss is captured where vcrpy raises it, and an unplayed recording
+  aborts too, because the app swallows some misses (the reranker's fallback).
 
 ### TD-003 — Dependency placement
 - Choice: `vcrpy` goes in a new `eval` optional-dependency group (`ragas` was dropped 2026-09-24). The Docker images
@@ -101,20 +110,51 @@ executed in-session** (user instruction: sessions don't run tests):
 - `scripts/sync_eval_dataset.py`, `scripts/run_eval.py` (`--gate`, `--write-baseline`, `--upload`).
 - `tests/unit/test_eval_metrics.py`.
 
+**Added 2026-09-29** (lint-, format- and type-clean; the new tests were written, **not run**, per the
+same instruction, and the harness was exercised only by scratch scripts against a local fake server
+and an `httpx.MockTransport`, never against the real pipeline):
+- `app/eval/replay.py` (T002) and the `eval` extra (`vcrpy`, locked): record and replay, one cassette
+  per pair id plus a setup cassette, sequential; misses and unplayed recordings abort naming the pair;
+  Qdrant host normalised; allow-listed headers and a secret scan; LangSmith tracing forced off;
+  dummy keys and a non-loopback socket guard in replay; `meta.json` with recorded-at, sha, model ids
+  and pipeline settings, and the staleness warning (90 days, named constant).
+- `scripts/run_eval.py --record` / `--replay`: `--record --write-baseline --judges` in one pass;
+  refuses to record if `registry_fixture.json` disagrees with the database.
+- Scoring: retrieval metrics and citation precision apply to any answerable pair with golden chunk
+  ids whatever its intent; judges run for `factual` and `aggregate`.
+- CI job `eval-gate` (T007), which **skips visibly** until `data/eval/cassettes/*.yaml` exists.
+  `static` and `test` now sync `--extra eval` so the replay tests run rather than fail to import.
+- `tests/unit/test_eval_replay.py`, `tests/unit/test_eval_gate.py`, and additions to
+  `tests/unit/test_eval_metrics.py`.
+
 Not built, and why:
-- **T002 replay:** recording needs real keys. The Postgres half of CI is covered by
-  `scripts/eval_registry.py` (Open question 3).
-- **T006 baseline:** a human run with keys against the seeded stack.
-- **T007's CI job:** needs T002 and T006. The gate *logic* and `run_eval.py --gate` exist.
+- **A recorded run.** `--record` needs real keys and the re-seeded, all-CC-BY corpus, so no cassette
+  exists yet, and "recorded runs replay identically on two passes" is unverified. Every claim about
+  the real pipeline (that `warm_services` builds everything lazily-constructed, that no request
+  is non-deterministic, that a metadata question's cassette holds only the classifier call) is
+  reasoning from the source, to be confirmed by the first `--record` then `--replay`.
+- **T006 baseline:** a human run with keys against the seeded stack: `--record --judges --write-baseline`.
+- **T007's acceptance test as written** ("remove the reranker and the gate fails on nDCG"). It cannot
+  work under strict replay: a pipeline without the reranker makes different requests (no Voyage
+  rerank call, an Anthropic body with documents in vector order), and under `record_mode="none"`
+  those are cassette *misses* that abort the run before any metric exists. That is the correct
+  behaviour and is what the miss tests pin. The gate's half of the claim is proved instead by
+  `tests/unit/test_eval_gate.py`: scoring the ranking a reranker-less pipeline would produce makes
+  `compare` fail on `ndcg_at_5` and `mrr` (per class and overall) while `recall_at_5` stays green.
+  What no test covers is the two halves joined: that removing the real reranker yields exactly that
+  ranking. Only a re-record without the reranker would show it.
 
 ## Task Index
 
 - [x] T001 (S) [dataset]: Sync script and local example loader (sync not yet run against LangSmith)
-- [ ] T002 (M) [TD-001, TD-002]: Recording/replay harness
+- [x] T002 (M) [TD-001, TD-002]: Recording/replay harness (built 2026-09-29; never run against the real
+      pipeline, no cassette recorded yet)
 
 ### CP-001 — Checkpoint: offline evaluation proven
-- [ ] A recorded run replays identically twice in a row
-- [ ] Zero live network calls during replay (a network-blocking transport fails the test on any real call)
+- [ ] A recorded run replays identically twice in a row (needs the first real `--record`)
+- [x] Zero live network calls during replay: vcrpy serves every request, a non-loopback socket connect
+      raises and aborts the run even if the app swallows it, and replay uses dummy keys. Tested with a
+      fake network in `tests/unit/test_eval_replay.py` (written, not run).
 - [x] ~~`aevaluate(..., upload_results=False)` on local examples completes with no LangSmith key set~~
       **Measured 2026-09-24: it scores correctly but is not network-free.** Even under
       `tracing_context(enabled="local")` it calls LangSmith's `/info` and `/runs/multipart`, and the
@@ -125,7 +165,8 @@ Not built, and why:
 - [x] T004 (M, deps: T003): Retrieval, routing and citation evaluators
 - [x] T005 (L, deps: T003): LLM-as-judge evaluators on Claude (correctness, groundedness); `ragas` dropped
 - [ ] T006 (S, deps: T004, T005): Record the baseline of today's pipeline, commit `baseline_scores.json`
-- [ ] T007 (M, deps: T006): CI gate job
+- [ ] T007 (M, deps: T006): CI gate job (job built 2026-09-29 and skipping visibly; open until cassettes and
+      the baseline are recorded and it has actually gated once)
 
 ## Verification Strategy
 
@@ -161,4 +202,6 @@ Not built, and why:
    it isn't the model that writes the answers.
 
 ---
-Handoff: Approved and partly built; T002, T005, T006 and the CI job are pending (see Build status)
+Handoff: Approved and mostly built. Pending: the first real recording (T006: `--record --judges
+--write-baseline` on the re-seeded corpus), then committing the cassettes, baseline and registry fixture
+together so `eval-gate` stops skipping and gates (see Build status)
