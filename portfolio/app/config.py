@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # Epic 2 Phase 2.5 techniques. Each is off by default, and each ships (default flipped) only
     # if an eval run with it on beats the committed baseline (docs/EPIC_2_PLAN.md Phase 2.5).
     dynamic_prompt: bool = Field(default=False)
+    # #2 and #3 (app/generation/query_rewrite.py): each adds a Haiku call per factual question.
+    query_expansion: bool = Field(default=False)
+    query_decomposition: bool = Field(default=False)
     # Epic 2 Phase 2.4. Off, `aggregate` questions keep today's "not supported yet" refusal;
     # on, they get the corpus-level answer (app/generation/corpus_answer_service.py).
     aggregate_answering: bool = Field(default=False)

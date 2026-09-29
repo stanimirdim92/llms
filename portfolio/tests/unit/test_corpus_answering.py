@@ -182,7 +182,12 @@ def _answer_service(retriever: _FakeRetriever) -> AnswerService:
 
 
 def _settings(*, whole_document_scope: bool) -> SimpleNamespace:
-    return SimpleNamespace(dynamic_prompt=False, whole_document_scope=whole_document_scope)
+    return SimpleNamespace(
+        dynamic_prompt=False,
+        whole_document_scope=whole_document_scope,
+        query_expansion=False,
+        query_decomposition=False,
+    )
 
 
 async def test_one_named_document_is_sent_whole_when_the_flag_is_on(monkeypatch: pytest.MonkeyPatch) -> None:

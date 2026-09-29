@@ -6,9 +6,11 @@ plus everything learned since Epic 1 shipped — most of it from a real defect a
 reading `microsoft/graphrag`.
 
 Built: Phase 2.0 in full (intent routing and explicit document scoping, both shipped early
-because each fixed a defect rather than moved a metric) and Phase 2.1 (the pinned corpus and a
-67-pair golden set). Nothing scores anything yet -- that is 2.2 and 2.3, now built on
-LangSmith datasets and experiments -- so Epic 1's answer path works and has never been measured.
+because each fixed a defect rather than moved a metric), Phase 2.1 (the pinned corpus and a
+67-pair golden set), and 2.2/2.3 on LangSmith except replay (T002) and the CI job (T007), which
+wait on where cassettes may be stored. The baseline is committed. Phases 2.4 and 2.5 are built
+**behind flags that default off** and are unmeasured: each is adopted only when an eval run with
+its flag on beats the baseline.
 
 ## Why this epic now blocks other work
 

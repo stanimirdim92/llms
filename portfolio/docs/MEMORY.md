@@ -173,17 +173,13 @@ looks wrong, say so once and proceed.
 
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
-- **Epic 2** — the eval framework proper, **on LangSmith datasets and experiments** (user,
-  2026-09-24). Scoring, sync and gate code are written but **never run** (see the 2026-09-24
-  build entry). Still to build: replay (T002), judges (T005, blocked on the `ragas` decision), the
-  baseline (T006, needs keys) and the CI job. Intent routing (Phase 2.0) and the golden set (2.1) are built, above. This blocks most
-  retrieval work: query expansion, decomposition, and corpus-level answering all change what
-  retrieval returns, and adopting any of them without recall@k is a guess with a cost attached.
-  **Plans:** 2.2's local-store plan is **retired**. 2.3's plan and tasks were **rewritten for
-  LangSmith** (2026-09-24, **approved by the user the same day**), with two open questions: whether
-  offline `aevaluate` really needs no network (checkpoint CP-001). The baseline question
-  (Open question 9) is resolved. 2.4 and 2.5 are still drafts. 2.1's pair was
-  built without approval and is marked as-built.
+- **Epic 2, what's left.** The eval harness runs: judges are built and the baseline is committed
+  (`data/eval/baseline_scores.json`, at `cca3538`). Still to build: **replay (T002) and the CI
+  gate job (T007), both blocked** on how the cassettes may be stored (2 of the 6 corpus papers
+  aren't CC BY; see Open question 11). Phases 2.4 and 2.5 are **built behind flags that default
+  off** (2026-09-29): `AGGREGATE_ANSWERING`, `WHOLE_DOCUMENT_SCOPE`, `DYNAMIC_PROMPT`,
+  `QUERY_EXPANSION`, `QUERY_DECOMPOSITION`. **None of them has been measured**, and each ships
+  (default flipped) only when `scripts/run_eval.py --judges` with it on beats the baseline.
 - **Epic 3** — the curation agent with human-in-the-loop.
 - **Epic 4 Phase 4** — observability. **Latency p95 comes from LangSmith** (user, 2026-09-24),
   so there is no in-app latency check; faithfulness alerting needs Epic 2's scores.
@@ -362,6 +358,17 @@ more discussion.
 
    Needs the user's call; not fixed.
 
+11. **Where can replay cassettes live?** They record provider responses, which quote corpus text,
+    and 2 of the 6 papers (2601.11209 REVA, 2601.15830 CiteGuard) are under the arXiv
+    non-exclusive licence, so their text can't be committed to this public repo. Options: keep
+    cassettes out of git (a CI artifact or private storage), encrypt them with a CI secret, swap
+    those two papers for CC BY ones (re-seed and re-baseline), or gate CI on the CC BY subset only.
+    **Blocks T002 and T007.** The user's call.
+12. **Are the three cross-document golden pairs `factual` or `aggregate`?** The router sends them
+    to `aggregate`, which makes routing score them wrong and keeps them out of whichever path
+    answers them. Relabelling changes the baseline's routing cell; leaving them as they are means
+    2.4 can't move their scores.
+
 ## Deferred, not dropped
 
 Recorded so they stay visible: backups; a stuck-job sweeper (`updated_at` makes a dead worker's
@@ -373,6 +380,29 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-29 — Epic 2 Phases 2.4 and 2.5 built, all behind flags (off)
+
+- **2.4 corpus-level answering** (`app/generation/corpus_answer_service.py`, `bb98fa3`):
+  retrieve 60, rerank 30, then the best 5 documents x 3 chunks, one Citations-API generation.
+  A rerank-score floor (`SCORE_FLOOR = 0.25`, **uncalibrated**) returns a canned "nothing
+  relevant" answer instead of synthesising weak material; documents that didn't fit are logged.
+  `/ask` uses it for `aggregate` only with `AGGREGATE_ANSWERING=true`.
+- **2.4 whole-document scope** (`WHOLE_DOCUMENT_SCOPE`): a question scoped to exactly one
+  document is answered from that document in reading order (`Retriever.whole_document`, same
+  Postgres version check as `retrieve`), cut at 60k characters with `answer_service.document_cut`.
+- **2.5 #2/#3** (`app/generation/query_rewrite.py`): expansion searches up to 3 Haiku paraphrases
+  alongside the question and reranks the union against the question; decomposition splits a
+  compound question into up to 3 parts, reranks each against itself, and **interleaves** the
+  results so recall@5 sees every part. Both fail open to the plain question. Both off is one
+  search and one rerank, as before.
+- **Bug fixed on the way:** `rerank(top_n=...)` above 5 silently returned 5 (the backend was
+  built with the default `top_n`). Only mattered once 2.4 asked for 30.
+- **Not run:** pytest (the user said not to run tests); ruff, format and ty pass. No eval run with
+  any flag on. Unit tests added: `test_corpus_answering.py`, `test_query_rewrite.py`.
+- **Cross-document golden pairs** are labelled `factual`, but the router sends them to
+  `aggregate`, so routing scores them wrong and `AGGREGATE_ANSWERING` can't help their
+  correctness until the label question is settled (Open question 12).
 
 ### 2026-09-24 (baseline committed, `9e8d978`)
 

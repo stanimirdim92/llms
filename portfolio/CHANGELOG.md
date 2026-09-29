@@ -17,11 +17,15 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 #### Added
 
-- **Three answer-path flags, all off by default** (so `/ask` behaves as before):
+- **Answer-path flags, all off by default** (so `/ask` behaves as before):
   `DYNAMIC_PROMPT` adds table/figure reading guidance only when such chunks were retrieved;
   `AGGREGATE_ANSWERING` answers collection-wide questions from the best few documents instead of
   refusing them; `WHOLE_DOCUMENT_SCOPE` answers a question naming exactly one document from that
   whole document (up to ~60k characters, in reading order) instead of its top 5 chunks.
+- **Two more, also off:** `QUERY_EXPANSION` searches paraphrases of the question alongside
+  it; `QUERY_DECOMPOSITION` splits a compound question ("compare X and Y") and retrieves each
+  part. Each adds one Haiku call per factual question and falls back to the plain question if
+  that call fails.
 
 #### Fixed
 

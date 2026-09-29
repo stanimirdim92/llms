@@ -7,7 +7,9 @@ framework Epic 3's LangGraph agent runs on.
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass, field
+from itertools import chain, zip_longest
 from time import perf_counter
 from typing import TYPE_CHECKING
 
@@ -17,6 +19,7 @@ from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from app.config import get_settings
 from app.generation.prompts import BASE_SYSTEM_PROMPT, SYSTEM_PROMPT, source_guidance
+from app.generation.query_rewrite import decompose_query, expand_query
 from app.retrieval.reranker import rerank
 from app.retrieval.retriever import Retriever
 
@@ -99,6 +102,20 @@ def _within_budget(chunks: list[Document], doc_id: str) -> list[Document]:
             total_chunks=len(chunks),
             budget_chars=WHOLE_DOCUMENT_CHAR_BUDGET,
         )
+    return kept
+
+
+def _unique(chunks: list[Document]) -> list[Document]:
+    """First occurrence of each chunk, in order. Several searches return the same chunk, and a
+    duplicate sent to the model is a second document block the Citations API cites separately.
+    """
+    seen: set[str] = set()
+    kept: list[Document] = []
+    for chunk in chunks:
+        key = chunk.metadata.get("chunk_id") or chunk.page_content
+        if key not in seen:
+            seen.add(key)
+            kept.append(chunk)
     return kept
 
 
@@ -200,6 +217,39 @@ class AnswerService:
             thinking={"type": "disabled"},
         )
 
+    async def _search(
+        self, question: str, tenant_id: str, doc_ids: list[str] | None
+    ) -> tuple[list[Document], list[Document]]:
+        """Retrieved candidates and the reranked chunks to answer from.
+
+        Both rewrite flags off, this is one search and one rerank of the question, exactly as
+        before Phase 2.5. Decomposition splits the question and reranks each part's candidates
+        against that part, so a comparison gets the top chunks for *each* side rather than
+        whichever side the averaged embedding leaned toward; expansion widens each part's search
+        with paraphrases, reranked against the part itself, never against a paraphrase.
+        """
+        settings = get_settings()
+        parts = await decompose_query(question) if settings.query_decomposition else [question]
+
+        async def one(part: str) -> tuple[list[Document], list[Document]]:
+            queries = [part, *await expand_query(part)] if settings.query_expansion else [part]
+            found = await asyncio.gather(
+                *(self._retriever.retrieve(query, tenant_id=tenant_id, doc_ids=doc_ids) for query in queries)
+            )
+            candidates = _unique(list(chain.from_iterable(found)))
+            return candidates, await rerank(part, candidates)
+
+        results = await asyncio.gather(*(one(part) for part in parts))
+        if len(parts) > 1 or settings.query_expansion:
+            log.info("answer_service.rewritten", parts=len(parts), expanded=settings.query_expansion)
+        return (
+            _unique([c for candidates, _ in results for c in candidates]),
+            # Interleaved, not concatenated: part one's five before part two's would put only one
+            # side of a comparison in the first five, which is all recall@5 scores and the order
+            # the model reads in.
+            _unique([c for rank in zip_longest(*(ranked for _, ranked in results)) for c in rank if c is not None]),
+        )
+
     async def answer(self, question: str, tenant_id: str, doc_ids: list[str] | None = None) -> Answer:
         """`doc_ids` narrows retrieval to those documents. Resolved by the caller from its own
         registry rows (see `retrieval/document_scope.py`); this method does not parse the
@@ -213,8 +263,7 @@ class AnswerService:
             candidates = await self._retriever.whole_document(doc_ids[0], tenant_id)
             top_documents = _within_budget(candidates, doc_ids[0])
         else:
-            candidates = await self._retriever.retrieve(question, tenant_id=tenant_id, doc_ids=doc_ids)
-            top_documents = await rerank(question, candidates)
+            candidates, top_documents = await self._search(question, tenant_id, doc_ids)
 
         response = await self._llm.ainvoke(
             [
