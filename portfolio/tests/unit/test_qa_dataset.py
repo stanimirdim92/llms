@@ -111,9 +111,9 @@ def test_only_factual_pairs_carry_golden_chunks() -> None:
 
     **One named exception: `kind == "cross-document"`.** The router sends those three to
     `aggregate` (the user relabelled them 2026-09-29), yet each still names the chunks from each
-    paper its answer needs -- the evidence a future aggregate scorer (Phase 2.4) would grade
-    against. `GoldenPair.scores_retrieval` requires `intent == "factual"`, so the ids are inert
-    for today's scoring and cannot recreate the defect. The exemption is exactly that kind, not
+    paper its answer needs, and `GoldenPair.scores_retrieval` scores any answerable pair that has
+    golden chunks, so these are graded on retrieval like a factual pair. That is scoring, not
+    routing: the ids never send the question through the factual pipeline. The exemption is exactly that kind, not
     the `aggregate` intent: a corpus-level pair carrying chunks still fails.
     """
     misrouted = [

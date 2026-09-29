@@ -174,9 +174,8 @@ looks wrong, say so once and proceed.
 **Not built** — designs only, no code. Don't infer any of it from a plan's directory layout:
 
 - **Epic 2, what's left.** The eval harness runs: judges are built and the baseline is committed
-  (`data/eval/baseline_scores.json`, at `cca3538`). Still to build: **replay (T002) and the CI
-  gate job (T007), both blocked** on how the cassettes may be stored (2 of the 6 corpus papers
-  aren't CC BY; see Open question 11). Phases 2.4 and 2.5 are **built behind flags that default
+  (`data/eval/baseline_scores.json`, at `cca3538`). Replay (T002) and the CI gate job (T007) are **built (2026-09-29) but have no cassettes yet**: the
+  user re-seeds the swapped corpus and records them. Phases 2.4 and 2.5 are **built behind flags that default
   off** (2026-09-29): `AGGREGATE_ANSWERING`, `WHOLE_DOCUMENT_SCOPE`, `DYNAMIC_PROMPT`,
   `QUERY_EXPANSION`, `QUERY_DECOMPOSITION`. **None of them has been measured**, and each ships
   (default flipped) only when `scripts/run_eval.py --judges` with it on beats the baseline.
@@ -346,7 +345,7 @@ more discussion.
    no-reranker comparison, and no reranker score as a metric (it can't grade its own picks).
    The reranker stays in production unchanged.
 
-10. **`/ask` returns an empty answer when the model refuses.** Found 2026-09-24 in the first eval
+10. ~~**`/ask` returns an empty answer when the model refuses.**~~ **Resolved 2026-09-29 (user: clear message only), `2700be8`.** Found 2026-09-24 in the first eval
    run. *"Which three automated safety judges are compared?"* (about RAG-Safety-Bench) came back
    `stop_reason=refusal` with `output_tokens=0`, and nothing in `answer_service` or `ask.py`
    handles `refusal`. So the caller gets a 200 with an empty answer, indistinguishable from "no
@@ -358,13 +357,13 @@ more discussion.
 
    Needs the user's call; not fixed.
 
-11. **Where can replay cassettes live?** They record provider responses, which quote corpus text,
-    and 2 of the 6 papers (2601.11209 REVA, 2601.15830 CiteGuard) are under the arXiv
+11. ~~**Where can replay cassettes live?**~~ **Resolved 2026-09-29 (user: swap the papers), `124f69d`; cassettes are committed.** They record provider responses, which quote corpus text,
+    and 2 of the 6 papers (2609.11209 REVA, 2609.15830 CiteGuard, since replaced) are under the arXiv
     non-exclusive licence, so their text can't be committed to this public repo. Options: keep
     cassettes out of git (a CI artifact or private storage), encrypt them with a CI secret, swap
     those two papers for CC BY ones (re-seed and re-baseline), or gate CI on the CC BY subset only.
     **Blocks T002 and T007.** The user's call.
-12. **Are the three cross-document golden pairs `factual` or `aggregate`?** The router sends them
+12. ~~**Are the three cross-document golden pairs `factual` or `aggregate`?**~~ **Resolved 2026-09-29 (user: `aggregate`).** The router sends them
     to `aggregate`, which makes routing score them wrong and keeps them out of whichever path
     answers them. Relabelling changes the baseline's routing cell; leaving them as they are means
     2.4 can't move their scores.
@@ -380,6 +379,38 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-09-29 (night) — corpus swapped to all-CC-BY, replay + CI gate built, refusals answered
+
+Built by three Sonnet subagents in isolated worktrees (user: "Sonnet agents build, Opus
+orchestrates"); each branch reviewed and cherry-picked here. User decisions this session: swap the
+two non-CC-BY papers, relabel the cross-document pairs `aggregate`, refusals get a clear message only.
+
+- **Refusal** (`2700be8`): `stop_reason="refusal"` now returns `REFUSAL_ANSWER`, no citations,
+  chunks kept, in both answer services. Closes Open question 10.
+- **Corpus swap** (`124f69d`): REVA -> AdaMem (2609.22100v1), CiteGuard -> post-rationalization
+  (2609.23053v1). Licences re-read on the abs pages (orchestrator re-checked the two new ones);
+  all six CC BY 4.0, credited in `data/eval/ATTRIBUTION.md`. 16 golden pairs rewritten; q054-q056
+  relabelled `aggregate`. New chunks come from an offline parse that reproduced 22/22 and 43/43
+  existing chunk ids + digests first; the two new manifest entries are
+  `provisional_offline_parse: true` until a real seed. Figure pairs 6 -> 4. Orchestrator re-ran the
+  id/digest resolution check: 0 bad refs.
+- **Replay T002 + CI T007** (this commit): `app/eval/replay.py` (vcrpy 8.3, `eval` extra), one
+  cassette per pair plus `_setup.yaml`, header allow-list, miss and unplayed-interaction aborts,
+  socket guard, 90-day staleness warning. `run_eval.py --record/--replay`. CI job `eval-gate`
+  skips visibly until cassettes exist. Scoring: retrieval metrics for any answerable pair with
+  golden chunks; judges for factual + aggregate. Measured by reading installed code:
+  **voyageai's sync embed uses `requests`, its async rerank `aiohttp`**; anthropic and qdrant use httpx
+  (TD-002 said all httpx -- wrong, corrected).
+- **Not verified:** no pytest this session (user directive); nothing recorded or replayed against
+  the real providers; `eval-gate` never ran on GitHub. `baseline_scores.json` and
+  `registry_fixture.json` are **stale** until the user re-seeds.
+- **Next, on the user's machine:** `uv sync --locked --extra dev --extra eval`, then
+  `fetch_eval_corpus.py`, `seed_eval_corpus.py`, `eval_registry.py export`,
+  `run_eval.py --record --judges --write-baseline`, then `run_eval.py --replay --judges --gate`
+  (must reproduce the baseline); commit cassettes + baseline + fixture together.
+- **Caveat:** with `AGGREGATE_ANSWERING` off, q054-q056 get the refusal and score 0 on retrieval.
+  Record with it on to measure 2.4, and set the same flag in `eval-gate`'s env.
 
 ### 2026-09-29 — Epic 2 Phases 2.4 and 2.5 built, all behind flags (off)
 
