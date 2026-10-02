@@ -7,7 +7,7 @@
       "file_extension": ".pdf",
       "file_size_bytes": 280939,
       "filename": "2609.09243v1.pdf",
-      "ingestion_version": "01a0d52ca36573f29a1590557cf2d94d",
+      "ingestion_version": "01a0fc53392f724b972307d03a9f94d9",
       "status": "ingested",
       "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
     },
@@ -18,18 +18,29 @@
       "file_extension": ".pdf",
       "file_size_bytes": 2137960,
       "filename": "2609.11758v1.pdf",
-      "ingestion_version": "01a0d52cf8fb72f484b1f0db99eecab2",
+      "ingestion_version": "01a0fc5427ea71babb96a22c2c5762f3",
       "status": "ingested",
       "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
     },
     {
-      "chunk_count": 51,
-      "content_hash": "02c74999b5efc67c",
-      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-7fbf5c1dc2477f3204e19a3bcc10b258",
+      "chunk_count": 46,
+      "content_hash": "61dbbd4c11c32ae4",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6",
       "file_extension": ".pdf",
-      "file_size_bytes": 789856,
-      "filename": "2609.15830v1.pdf",
-      "ingestion_version": "01a0d52d596f72bd9a42ebc61db2f48e",
+      "file_size_bytes": 188278,
+      "filename": "2609.23053v1.pdf",
+      "ingestion_version": "01a0fc55257f7276be70b7b3d1501b36",
+      "status": "ingested",
+      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
+    },
+    {
+      "chunk_count": 41,
+      "content_hash": "a69bbea2f1e82a1e",
+      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d",
+      "file_extension": ".pdf",
+      "file_size_bytes": 2680942,
+      "filename": "2609.22100v1.pdf",
+      "ingestion_version": "01a0fc53885372038a1c6d0df171e569",
       "status": "ingested",
       "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
     },
@@ -40,7 +51,7 @@
       "file_extension": ".pdf",
       "file_size_bytes": 227764,
       "filename": "2609.14245v1.pdf",
-      "ingestion_version": "01a0d52d3943709792f2f4317d67ebab",
+      "ingestion_version": "01a0fc54ff9a70d3af0e9b49e864b8b9",
       "status": "ingested",
       "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
     },
@@ -51,18 +62,7 @@
       "file_extension": ".pdf",
       "file_size_bytes": 6983346,
       "filename": "2609.14066v1.pdf",
-      "ingestion_version": "01a0d52d1aa370c9ae81ba253480c452",
-      "status": "ingested",
-      "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
-    },
-    {
-      "chunk_count": 43,
-      "content_hash": "a1779977061cc774",
-      "doc_id": "01a0aa96b5ef7053a767b8ddabb5a961-bd39ea5b1a5d4fd2a1c7b75491720b8d",
-      "file_extension": ".pdf",
-      "file_size_bytes": 555350,
-      "filename": "2609.11209v1.pdf",
-      "ingestion_version": "01a0d52cc91a73cfb28c90d2ac87dd4d",
+      "ingestion_version": "01a0fc547d2f738da4fc73667c19a759",
       "status": "ingested",
       "tenant_id": "01a0aa96b5ef7053a767b8ddabb5a961"
     }

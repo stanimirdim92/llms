@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"max_tokens":128,"messages":[{"role":"user","content":"What is the difference
+      between emitted and grounded citation scores?"}],"model":"claude-haiku-4-5-20251001","system":"Classify
+      a question about a user''s uploaded documents into exactly one intent:\n\n-
+      metadata: about the document collection itself, not what any document says --
+      \"list my documents\", \"how many did I upload?\", \"what''s the status of report.pdf?\".
+      Answerable from a document registry (filenames, status, chunk counts), never
+      from document content.\n- factual: a specific question whose answer sits in
+      a handful of passages -- \"what electrolyte did they use?\", \"summarise report.pdf\".
+      The default for an ordinary question about content.\n- aggregate: asks about
+      themes, patterns, or a comparison spanning many or all of the user''s documents
+      -- \"what themes run through my uploads?\", \"compare every paper''s methodology\".\n-
+      out_of_scope: not about documents at all -- small talk, a coding request, the
+      weather, or world knowledge with no document referent.\n\nYou cannot see the
+      user''s documents, and you must not guess at their contents. An unfamiliar name,
+      benchmark, method or term in the question is evidence FOR factual, not against
+      it: a person naming something specific is naming something they uploaded. Only
+      choose out_of_scope when the question would be off-topic whatever the user had
+      uploaded.\n\nRespond with exactly one label.","thinking":{"type":"disabled"},"tool_choice":{"type":"tool","name":"_IntentLabel"},"tools":[{"name":"_IntentLabel","input_schema":{"properties":{"intent":{"description":"Exactly
+      one of metadata, factual, aggregate, out_of_scope.","enum":["metadata","factual","aggregate","out_of_scope"],"type":"string"}},"required":["intent"],"type":"object"},"description":""}]}'
+    headers:
+      content-type:
+      - application/json
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_011CfdLS7mTtLbcusVrL3huL","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_018FXLbhKyMGwMYLYimTv2y8","name":"_IntentLabel","input":{"intent":"out_of_scope"},"caller":{"type":"direct"}}],"container":null,"stop_reason":"tool_use","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":971,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":37,"service_tier":"standard","inference_geo":"not_available"},"diagnostics":null}'
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"You grade a question-answering
+      system against an accepted answer.\n\nQuestion: What is the difference between
+      emitted and grounded citation scores?\n\nAccepted answer: Emitted scores citations
+      against the unit texts the generator actually saw, so it measures consistency
+      with the compressed context; grounded scores them against the original sources.\n\nSystem
+      answer: I can only answer questions grounded in the documents you''ve uploaded.
+      This one isn''t -- ask about something in your documents, or check GET /v1/documents
+      for what''s searchable.\n\nPass only if the system answer states the same facts
+      as the accepted answer. Wording may\ndiffer; numbers, names and conclusions
+      may not. If the accepted answer is a refusal, pass only\nif the system also
+      declines to answer rather than guessing. Extra correct detail is fine;\nanything
+      contradicting the accepted answer fails."}],"model":"claude-opus-5","output_config":{"format":{"type":"json_schema","schema":{"type":"object","title":"Verdict","properties":{"reasoning":{"type":"string","description":"One
+      or two sentences: what matched or what was wrong.","title":"Reasoning"},"passed":{"type":"boolean","description":"True
+      only if the answer meets the criterion in full.","title":"Passed"}},"additionalProperties":false,"required":["reasoning","passed"]}}}}'
+    headers:
+      content-type:
+      - application/json
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: '{"model":"claude-opus-5","id":"msg_011CfdLSAo2qiMBhGXntYwzF","type":"message","role":"assistant","content":[{"type":"text","text":"{\"reasoning\":
+        \"The system declined to answer, while the accepted answer provides a substantive
+        distinction between emitted and grounded citation scores. This is not a match.\",
+        \"passed\": false}"}],"container":null,"stop_reason":"end_turn","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":560,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":60,"output_tokens_details":{"thinking_tokens":0},"service_tier":"standard","inference_geo":"global"},"diagnostics":null}'
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1

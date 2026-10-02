@@ -1,0 +1,36 @@
+interactions:
+- request:
+    body: '{"max_tokens":128,"messages":[{"role":"user","content":"What is the status
+      of 2609.14066v1.pdf?"}],"model":"claude-haiku-4-5-20251001","system":"Classify
+      a question about a user''s uploaded documents into exactly one intent:\n\n-
+      metadata: about the document collection itself, not what any document says --
+      \"list my documents\", \"how many did I upload?\", \"what''s the status of report.pdf?\".
+      Answerable from a document registry (filenames, status, chunk counts), never
+      from document content.\n- factual: a specific question whose answer sits in
+      a handful of passages -- \"what electrolyte did they use?\", \"summarise report.pdf\".
+      The default for an ordinary question about content.\n- aggregate: asks about
+      themes, patterns, or a comparison spanning many or all of the user''s documents
+      -- \"what themes run through my uploads?\", \"compare every paper''s methodology\".\n-
+      out_of_scope: not about documents at all -- small talk, a coding request, the
+      weather, or world knowledge with no document referent.\n\nYou cannot see the
+      user''s documents, and you must not guess at their contents. An unfamiliar name,
+      benchmark, method or term in the question is evidence FOR factual, not against
+      it: a person naming something specific is naming something they uploaded. Only
+      choose out_of_scope when the question would be off-topic whatever the user had
+      uploaded.\n\nRespond with exactly one label.","thinking":{"type":"disabled"},"tool_choice":{"type":"tool","name":"_IntentLabel"},"tools":[{"name":"_IntentLabel","input_schema":{"properties":{"intent":{"description":"Exactly
+      one of metadata, factual, aggregate, out_of_scope.","enum":["metadata","factual","aggregate","out_of_scope"],"type":"string"}},"required":["intent"],"type":"object"},"description":""}]}'
+    headers:
+      content-type:
+      - application/json
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_011CfdLqMUcfMSeScE96mkmK","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01U4djadiv2MmuWjR7N57f7D","name":"_IntentLabel","input":{"intent":"metadata"},"caller":{"type":"direct"}}],"container":null,"stop_reason":"tool_use","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":974,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":33,"service_tier":"standard","inference_geo":"not_available"},"diagnostics":null}'
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1

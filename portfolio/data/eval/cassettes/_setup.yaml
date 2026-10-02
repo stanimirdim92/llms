@@ -1,0 +1,218 @@
+interactions:
+- request:
+    body: ''
+    headers: {}
+    method: GET
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag/exists
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYwQEAeyJyZXN1bHQiOnsiZXhpc3RzIjp0cnVlfSwic3RhdHVzIjoib2siLCJ0aW1lIjo0
+        LjY5OGUtNn0=
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers: {}
+    method: GET
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYDRAApqFbIFBp4gZ4hkbQCtl3bbkfQ0jkZWYgUdCNGZGfLoyqqqoGUQBRAFMAq7gZ/FzR
+        ZrNKNwGHw3CuC+rKObN0mVw5V6jENnRToEyhfIMQOPSqltwc572vIWTXGukCkypoWnVzhIZOFxRT
+        nbSbr6pT/JxfZ/OV816P1V0JCKtDGjcR41ovcXMchvNGz3VCbwYM5wwZvMjNsijnyi4TvtHn+jxl
+        W41MEIFVwm0NtNqseBtCbeUYrVEmcJvqRGol6m4M504P2FtMLhG+WZZruCpbHa5kpFQkD4jzA4aN
+        ViiTXMm4WdI+7NWFukTgHCnjyoXTXoUIv5VIkjFlN2u9xV4vE5pWMWTvoVzcHACOpK1L06K8MnHO
+        KRWrUCHZzXGk1QJLAEEAAnE4jgPgOFem+jhHWrG6rpzr05eA2pmSd7M812ZBCBzOe3O1kZV5co3R
+        UISfa9JozM505TwpRC0BZGfKVnblPJkiiLE3X8LNYjhPym2hOSAggocO7+RzgKi7nCoysBICFQbo
+        tqXcAN5s5zfBLEsEBHMB66DjARh+bgpCz2wJTKPhBXY35Y5rB8HKAfoLgDYAqgzaH/i7DEAOLAfQ
+        yhMvAzQCFGYIKOCR5DwtNoDADW7d5Hu/BUA5N5yhB20IyBDi+P3mPsXxvVNjEi4A30Ede8AzbPic
+        G94gUuXdi/kE
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers: {}
+    method: HEAD
+    uri: https://huggingface.co/voyageai/voyage-4/resolve/main/tokenizer.json
+  response:
+    body:
+      string: ''
+    headers:
+      content-type:
+      - text/plain; charset=utf-8
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: ''
+    headers: {}
+    method: HEAD
+    uri: https://huggingface.co/api/resolve-cache/models/voyageai/voyage-4/44f3b2ae4ddf33403ed4dd66bec3fa48ff7dbbf9/tokenizer.json
+  response:
+    body:
+      string: ''
+    headers:
+      content-type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input": ["dummy_text"], "model": "voyage-4", "input_type": "document",
+      "truncation": true, "output_dtype": null, "output_dimension": null, "encoding_format":
+      "base64"}'
+    headers:
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://api.voyageai.com/v1/embeddings
+  response:
+    body:
+      string: '{"object":"list","data":[{"object":"embedding","embedding":"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","index":0,"text":null}],"model":"voyage-4","usage":{"total_tokens":1}}'
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"field_name":"metadata.tenant_id","field_schema":{"type":"keyword","is_tenant":true}}'
+    headers:
+      content-type:
+      - application/json
+    method: PUT
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYZQIAksQQGJC1OqJU0jQBiU3kEXLXyaZjRsQ7n/9cArGUoTCEkBmkflfqkwM4Hm2vYouP
+        693r0+7EGD1KRoBTn7aMD/Wtntt2GAEAksaEAg==
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"field_name":"metadata.doc_id","field_schema":{"type":"keyword","is_tenant":false}}'
+    headers:
+      content-type:
+      - application/json
+    method: PUT
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYZQIAksQQGJC1OqJU0jQBiU3kEXLXCbUis+WZr/9YAtGUwhiByAxSvyv1yQEcj7ZXscXH
+        9e71aXdSBj1KRoBTn7aMD/Wtntt2GAEAksaEAg==
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers: {}
+    method: GET
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag/exists
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYwQEAeyJyZXN1bHQiOnsiZXhpc3RzIjp0cnVlfSwic3RhdHVzIjoib2siLCJ0aW1lIjoz
+        LjA3NmUtNn0=
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers: {}
+    method: GET
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYJRAAhmFbIGBpqgOw+H2klKilVC9ZZEJSchQNhltrGNE4BEQAAOoCUQBRAFIAC7qCo29i
+        bbjUTYBxDOi7sK6gw6ZPkyvoiXWwSzcD2xILbw4Io3m55OagN0eXEj7XaRNSrcIqXjc/cPl2YbXV
+        ibs5777E0WFsbXgFvVmE+64E+5BO1gSTsXjcnGNA7xRfH3sjYEBvqYCM3CyLgr7waQJvNr5GV+rY
+        QpM8gEslu0Xibbggu5Tb6ylcJz2S3WpNiyX7bgzobw1a5FRPEXizLF8O2vuSqULpImoc0A1aLnol
+        TZSp4mZRHLN5E/YlCPS0MJkmvG1eicDIjkRb23bDWORsFvVYxatlizFpwo0BcNT2slXLQqYHOlSa
+        4JUK2m7OUcwhMAuBgRA4GOccgIO+bfVBRzrBy66gb9yIkNuqknizJKfMckAY6EvCZa6eUyz24Oib
+        LDq1VV1BVyublbcBtFVpb7uCrm2RBLNZI8LNYkBXCx1LySs6ICCCZhLaAeR5gKhcjppDEQgAp2io
+        hraS78aAA+EwzgnM2SIg2AWcgy4PwPi5KQs9IyUwGo0usLspf1y7BKsM0F8A1AFQZ9D+wN9lAPLA
+        NoBWnngfoBOgaIagAh5JztdiAwjccOsG3xtbAIxzQxl6og0hGUI4ftfcpzg+dmpchAvEd9DGHuwM
+        Gz7mhjeI5PLuRXkC
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input": ["dummy_text"], "model": "voyage-4", "input_type": "document",
+      "truncation": true, "output_dtype": null, "output_dimension": null, "encoding_format":
+      "base64"}'
+    headers:
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://api.voyageai.com/v1/embeddings
+  response:
+    body:
+      string: '{"object":"list","data":[{"object":"embedding","embedding":"fEC+PCbEPbzb5Hu8+SEiPXeHJb3MGiy903JKvfIZhDvM02y8YOJOvSNeMj2u/JW85pbeuM6otzyr4S89ghM7vUp8p7zOgLc89ufNvOKfkjw3oge9ujqvPFduyLyb2eE8l4uAPQq9hbyYnNi8f3oSPaQMgDyTYiY9eFyfPDY72DwClKS73CUvvL4Dkbye8ZI7TS3YvKWMxrvSt4W9zyf8vFEc5bu0ONK7+LtFPK2Pq7xdEd07CpoPvSw5F72N5o+739ZfvcscML0Ie6G8ggIIPBDxK723cHq8OfaWPLf9pTzXowy8kUhxOtbQdDtTXfa79pyovOi+hzwWjQO9kL3rOul2DT2oEL68Ee9WPP96wrxqb2a7etYqPB7VRDxfmzG9aVP+uo5SJz1MCmK8iGuqOqb2qjxpCNm8vZwyPbLrIr1uubI7gEX+Oy6i17ddDqi9HQWSOyTsjjviwwq9ScifPTkqhzySr887hyAFPJaggjxzpYq8aJsQvJbrpzvlSTU9LhJ3vRyh6LuIRCy9bfY0PUvAj73Skw09QVfOvGK1RLzm23c8FFRgOj2IAr1G0rg8j7jbPCacDjwmVU895XAzuxAW1bw6m1e9pmGRPd2OEb1bfpI8jcMZPRSYSL2XCsU8frM7PL+5nLsQXUM8MMByPO2cyTuhBhy9H/0BvFutVT1gpZ28n1hPvE2Zbz1p4Su7hksLvX63Q7zrxBq69KQJPdUaCz2QKNI8tcL+OLvO9TxQ+T+9s+UWvcdRyrxEdek8KtM6vLm+Hz0Wa768aiaWu6/67zunzlm8TiQXPReNYb2Zlsy8boKNujGZdL3+fEY8jTO5OuW9XDwJnJO8C5c4PQSOdr1EApW8ok+9vFmPOjyKQ9k8ye2avCn9Pj0tYIs7ionFvV4KoLwEtfS8DLJhvNsBiD3Cr2a8g8YRPZluHb3vbIq8Y2dIPbjV1DxQ0hK9Y4g6PdTY1TwZuRe8bs0yvZuQwLxkhYU84g9hPX5K2bz4ArQ8wLrNPKtS67wbp/S8+kSYu8eec72NC4q81vGIO9cSWbw6Tq48DqwSPSZSmr2SJfu8sYJAPUdiFLwdvtI8TZz1PGG4m7xzlnI7j5dAul53ijyzfri8k4egvErpEbzJpaq8Vr5IuryivjsAGpm8bJFaPBW2Bb3u+2Q93/jTPBS877uqC2O8S7PMvCtD2rwXkWk67eGEvQjVDb121M68HDNNPffgEDzXgcc8wq0EvXwCizuVWBI8BzhqvbW9xTzK/pS82Mzsuw2j1zyPcsa8yHd1PSXrO7w6mCK8MbaAveUnErzqEhc7/KifPEOg77udOwc9p0o6O94bGz1BeUI810MbvSN/JLzTazy8aOq9PCFmwrwM2s274BUPPAfsE7xWUd68AUuDPJSokjyb3Wk9hDTcPFUywbwIMoA9WMTlvLHibDyeOrS8LqZfPIVTebu0A6K8l1qCvIeQJL0P13Y84aEWvdbxCDu4ZAS9QBXqvD+pUj0q+TY9NGpmPTjoIj27oxE8g8dCPXS6u7yu1Zc77U8gu+moAz2b+aI88dQZPV/AK73JAJm8XulcvOxW3Tum9io7C0wTPfi3Dj1LMWC9WocqvD5nbrzm7JM83bdxvNO/sLy0m6I9nqceveVKCDyAZA49mBE/PVBqYTqah5M9oNWCPN2Q8zsM2k07/seNvKsIrrw1hh+8DoxRPKDCBL0gZxU9pvVXvXMnpjyBTQi9oJsGvZmVmzvaeui8HgdFvfvOpTxywXg8p6oyvYmtjjt8PTi9xvmDvQ71hDywHWY80XSfvE6SMjzc4HO9UWLRvNg2Ir2RSUQ8Gw8mPNIkHzymsD48qe54PL4w+byhBx49EBQivBsfzbwQOyA8+WkSPZTJBL14phM8ROJTPYnSiLzOWw69DNsgvEDHD7wnb4Q88/CwuzehhT3yzo29wfqtvZ6D1bwKloc9/qAPPYRVHz2JN4Q9LHGPvPhMKDy7oxG7Pj4OvVwWuDuGA5s8pqy2vdONATwD/og8jgw7Pd9n8TxzlnI6DSC6vMzTbL3oQFI8JnrJOv6fDT0F1OI7r2erPEUBQj3tCuW8jz3UO0eIP71gKLu8yZbjPDG2AD3S3jK8d9LKvGomFrs6l088Y6wDPek5FT0eltK8kfyaOm+E7zsyuTU8gIg1vHRrDr2Bqys8ByUOvUnKUr0TVWI9rtSVvDoUg7xRGN285tcRPZtGzLx7djI7L76QvNbwhj2SJfu7KChFPG1AKTzcJzM9SwwIvUzEdTzv2iW7CaD5u5cIEr1Y2zI9cMcmvT+G3DyhU/Q6rEqSPPDY/zowKqg8CKgXPSbSAj1mfKI8GYIcupAD2Dw1hJs7qMecuiw+0DyKF1E8M44vvNeqyTys3ae8KW3evEmBArwDzHo9TmQLvQwhjT2eiWG7IGhGPJKworxrBhI8+mpDveLmAL1YkI08ejROPFSAbLtdxYY8+pCGPd6Kibz4caI9wCW0PKKZYDwKdkY7jlInPXbUTjuoEZE8CN6LvOVJtbsJ5oe8sPJfvORAej1QHTg75ZRavRreMbwClCQ8n1zXvOtYg7yuRug8rHd6PFUPerzJcDi8i1uKO0aujD04fOm8nT68ujUWgLwPUtW8Wj4JvYhErLvFKMG8yUm6PPASfDz0Eyc9Qp5rPCPMZ7zqC8w8F2SBPKsy4bt2teC87/8fPAbPKbyJZZ49r63GvNcWYb0uo6o76zfvu2SFBb3XGGW9Vt2HvOxTKDy/CQm9zRnZvCdMjrwIxEI8bs+2vAdbgjz5JNe85L6vuqKfbL3PxB+7xe7EPID4VLzgq9k8s8NRO0O8qL19laC7tOrPOjaFTLyrdUe87HomvY7hhT10iro7zw/FvJnhcTtWcqE8BLNwPMKwubqXUYQ9YukFvQZjwTw7/4C8j+RpuS8IhTqUYCK8qcZJvMPOpbyr5be72wZBOTMXDL1TE6Q7m42Lut5p9Txs+Ys9Pa8AulfvA70wBzK8hpnlvIBF/rz+gE47m2uXPOD5krwp3My81Wc0Pba4jD3HOVa7DSK+vPj3Arydi+W8rdujvNIn1DsKm8C9rHd6PQ5mpjwM/8c8Jes7vVUshjwG89C7/K9cPRPF0ryKpoA8vKgHvYZNj7ycZAm9BS1NPBg9AzyAhoK8MHdRPbk+5rwl5wS9wN3DvL+DqDxeMZ694lYgPQwoSju4a/C75b1cvUTi0zth3ka9CgncPCZ3lDwEsj892elWPcytwby9+qY8f0ZRvV2ucrwNs887zx0Uvbrxjbrx+RM8eeusvJoBMzzqgrY7noNVvXS9cD3OpTG9MJFJPERQbzwiq6w7ED5Vu5EPGb0yvGq9WP9ZPfNRqbz2VDi9ZB3UvGkoGj39FLe8ZdsYvTenb7ya2jS4I8rJvCHUXTtKn508afGjvPH5kzvlBn49rkc7vOCFrjx92jk7bPcHu0nwTjsxAyo8LrwgPfI8qTxTFFU99gePPbHLYbysAqI8ztojPMkC+7xFk9U8o7jOvAVhDr2FLR+8iWOaPH3bjLwvL7I8aDHbu1CNV7whimk8ZYOBPYmz+DwJMa28bEQxvCPzyzyJ0AS8wNgKvbYorL1oUs07d4clu2i+hjwbV5Y9hFWfvIBlvzwf2gu8FAUzvBVvF73iDzI9bxTQvHetULp5sQG9mmoVPF9zgjz4WNu73bfxOO/d2rsbVRK95QIYvTh+Pjy2tzm9COiLPT2vADlXcEy8NPz5PGgLMDs5daw87nR4vBrsAL0WtzY9HDL6vEiJ8Dwxuoi7Amyku8TLn7xiZhc7oOtkvdInVLqGLU479iH5POtYMrzRwvm77DGFujxsST063o68ndFRPK1NRz0JncS7K5cLvWvYmTzI5F88hcBjvADl1Tylt3s8pcyLvJbrJz0Klge85IYIPTNos7tR9jk9mJxYPdOs4bvLsJi94pUSvbfZXLxwg568eO4DvYn3gj3xrx+9zIn4PErrlTt7CRm9+Li/ucNhOzyHt1E9Mx6QPcM7PzzSdH08eFwfPYqjPb16oGW7fduMuqJ0Zrx1jzW9TrjduqDChL1uXRM8P/LzPIGELbwq+GO6kUYPPenQMr1pk4A7zGAYOz3Tp7xGZhw8fdq5OyvPA710Sks8Tw4TvXTDNDwOscs8TC6rPHEJizzsMLI8HQv8u+34Ob2xBmC95vyLO0x2Gz3hhFu7ceXBumHckz1MB628BMOKvSXnMz0wvAy9/IUpPGJFJb0OZia5rHRFvHTe4rxCL3287Qk0PCJ+YD0Xpii8PP/eu8BrILxahyo7YpTSu8n0Hj24Hpi9e2IDvYll57wpBHw8MrjiPLidLbylHSk9NNdQvc2Cu7sUc848o0s1Pb0ulz3HYRM95d2dO4eSqDy/JAO9kAfgO+8AUbz17Vk9SF4MPfuMZjzzO1a99FpEvQSthjyG4CQ9ZazhvCodAD3SOJ87X3lsPOry1Tx1/B+7H93APJx7bT1NlYm9rUaKvQcVdLuCFI48QnMHvZIhc7zrOXM9jVeCOw/25LzOWz08CgbWvMNmdD0VKVq8szPxPLpdpTx7nmE7RbQYPNmwJb16xC68YrPAvEueyjxh2r46l+OXvL5T7zyKPBy9gfdSvO0LuDuVWJK8T0frvLeQuzyXEdO6j+TpO4zJJb2WxVo8BmNwvY+niTwBKY89TbqDu1ofeT3+wwU9vhrGvaCgOrwlCiq8YiArPSlp1ry4rym9T0Q2PciP+DxgvKM8noNVvYI2gr1Cnms8bRzguajLpD2msD68ZGALvKs/pLyx8+E8yiK8PCqJxjwugWW9UoISuwzazbrKIjy7oilwvBahtzw+rq08ZvYSPaF0iLxlqNm88/HhPCr2AT2bRh29rdxUvWh7z7sYHUI7SBQYvCvR5TzgG3m82eglvMYMAj0qsBW8tbuSu0iGu7wY4JA8Q8UrvaFTdL3RP628Ok4uPACfaTzxHo48loFyvEqfnbtt9rQ7ScgfvQWIDL0bnYK8FWyRO2lyjjxfKxI9rdkfvUF5wjxQD8Q8QBK1uzxowTz0Xfk8Bauxu5USproE8IC8VfOLvO2YkrwEj0k8CTDaPKdjc70irK68tLwUOmFxXDtG+IC7SDkSvUNQkT2fWiS9ZRd3vE2aQjtcgfy8V1DcPJFI8TtgTbW8k2XbO30oNrvHKx87nxM2vaxMFj12Qow8ZfIePd4dn7p390S8k4cgvQ/R6rvN9F47JKNLvWQXyDxDQcq8D4cYPXt2MrsySkc9/ab5u2SrML08/Cm7dXB2vXiFfz2hU/S8owbLPOOfQTy+B5m347+CPBeKLLxtY5+7JegGPDXvgTy5iCu8at8nvW47zrz34BC9ixhTPeoRRDpzUNc8ZPEcO3EP9TwxbMW7k/SKPNrkHT0LlbQ89Q+fO95Dyjul9yw9rbdavXfyizyJIGO9xYDYu2q5q7sCvNO8esQuPXX7nb1AEjU88EGEvQ==","index":0,"text":null}],"model":"voyage-4","usage":{"total_tokens":1}}'
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"field_name":"metadata.tenant_id","field_schema":{"type":"keyword","is_tenant":true}}'
+    headers:
+      content-type:
+      - application/json
+    method: PUT
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYbQIAkgQRGIC1OktRnlaxQpn8LgNTJ/jH7u81VTQJI/M4yEDFEUxg9NtWvxzA82p7mWuc
+        XA9jp4YvxKBXCwnw6vTW8aW+WYT7LgMBAJLGhAI=
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"field_name":"metadata.doc_id","field_schema":{"type":"keyword","is_tenant":false}}'
+    headers:
+      content-type:
+      - application/json
+    method: PUT
+    uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
+  response:
+    body:
+      string: !!binary |
+        KLUv/QBYTQIAkgQQFpBXB6JQhqbbbyK3+/8ia23kzoxdVwLRkGIKKZlA6nel/jjB8Wh7FVs8XO9e
+        n3YfAdGjJBSc+rRlfKhv9dy2wwEAksaEAg==
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1
