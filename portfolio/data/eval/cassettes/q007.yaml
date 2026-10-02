@@ -60,198 +60,342 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        KLUv/QBYPVMBWuOFUkMwR2aiDsDAwMDAwMDAQBd1VaU9f/SfbLmM7KZFvvmb3E08smCvnnnQeNbR
-        0fJQ1dCqqWJflFZaaQ0jGNDg8pc0FFQgLgUGBQAFkS5Htxr3mx90c5S1P8m0dp1Re3OmmwM2kBWP
-        M0HNE7hMYFqa6IGeaHmgZ6EW6qmWyGmWJ3KWZ6mYJWqq5ZGWaUkgWqonkECyJJDIimVSjuBVcoT9
-        bQnX0dXxdXHEFwYnahwrg9FdTlgl17Y2mbVuQ8pMsfoY95IxyBlm/ZPLcr7uGSbdrneMez2j2+BL
-        RK7FEsonDJG3TONGdhAsZ1xZ51vOXqan83rzY2ZLQya9IH0Nf0XuCl+5H6G8QXDGamcUXnK6Yw5i
-        kCd1m5hjmxSrZ6Cmd2Rr/3HVNkrrBVf4a57pzN77yG9mFm5ppSiqYXaqpOlB0fQ4lxJBlaVAVBQp
-        j/RUSsNcj7QOJDFLEz3QQy3U0yxP5DxL5fyRLi3T1CyNAy2V5CzU9F/CrW1FNPji3IIKEhQRDiQa
-        DhxE/MGCCIkvEhKNBxSHACHiDQkGJpyBhIOIhgQDEU/uQMKEhAkVJiZQuAEUeMPChAkGIh5IKHCJ
-        hgUIExENzkBCxA2wIKJhYcGCiEuSI1UNQzHbMBblrKpplH0oSmGmiZSKeZ5i8cNUUOVIyHwWdDNG
-        Qj0crW0YhlE4WvuA8+UQ9OTRl0MO9DzPQzXVEjkO9eWN8+TUl1PMEjXNhf+B58uh5smhL48c+IVH
-        S/ULF2TFhQvKBVlx4fL/hU8suHAHhoYG/y/8bwq/ICtkxeLQwITGGxIUXkGChcYnqHlSQWLCgQRF
-        RIOiwiFAiGh4BQgRDDQkKCRMnCGqTiGiQVGBYsIEBQ5BggEJCIoBGhIWFvgDiokGLkER0TgDCQgT
-        JjT4xMQlICgQQRFNTVU5UNOs1KwzTdIq0+OqSHnTMymXYznmWU4WsIAFMK6nLc3jgZyKWSpGchgQ
-        DM5WcoQXI3kgGFMmDQTBuOAnIQIoPzoZCaPKlVwZCQOrqyFATlgdNyNh1AuuDAgGa5Hq5mMkjIph
-        GKVecFXecuOc5kX7QNE+0cQUS5ADUbvsXNMojVRtZFn7HmVN0rRPxEwXR5ZU7TLbMAiwkBvmGAmj
-        elB1Vfswb2IeZ6osyJkup3qeyF3MNgwDAXJKyFAABGPrvq2cMRLGwhJG7rWUKc8brd8nMbJLZLbF
-        6Z7RVbiBLxxrhdR6N8fI1kaHhix9f1yXNaZP+jH3H1/Aq+GPY5wNI6xya3Y4tn7vi9vE+g4JK+aA
-        8XXftZdWOd0jDq5La3/2E4doid6wkcyQyhYDs0TNZz1DtFTckJ6x2vCukjOmTsJbuK11z9nsz3p+
-        wLqR6dlBN7bcrnmGapGmR6Kc62CV/OCZ7mM5G07tTyYcra2XG1UoKjpj1SFh3bRsOm58ae6lmLZ0
-        NUXOM1PHNnyX614Xq6f8RyckwhavDtLa3/cWtSdNWbLjVfKTrPGT8BNS3z2p2zcLc6ZbXcpaxvWU
-        n9zODae8Q8I3Hb9nk15vzqZ7nfiCubpZw+xx93XKM50XU8bqGz7u9mAzfV2M4kttGP/4wZBWpuds
-        m7nflCEt91idluRaIYUwfcOzY7tX+5THHNvE6iU/+ElG93I5ujNWD5mRrb963aa1e7l/cs/ANKfL
-        8lyX/nGc8/q+IRPrxwhrHzLpnz+cOWMUXyIxbhfTdX/L9Gx91vdjlp84R2spLuEj3MrvLCfICjlh
-        3bfUwQwecUs35yK+KMCAYFTJVU6HAHbs2xkjqzESB5KqKVoYCAbT6ZqRRBAMOWFTfjASxhRJr5ma
-        pqGkVdY9lnIxUaRQ18MoUPNYT5oeBgTjQYYCHIBgdJVwagwFQDBq3JopQwEBGHfc6xq7jRbsnnSL
-        cK8KD5nYpJA3ZGKUpQM2v2dcO9Lfx+3i3jrCbRDhwZcGTyVNzQQ5xokeZ93zRKxIEK8SSVOkSFW0
-        SuQ4zrMcinrOwxxZTPPcRFWN4jAKBDEOo0DTozAP5YecLmGYnEci00SiRhdryhjkyfPgNGeswjMq
-        NO3PIjUIMCq+7ykf8aWh3DskXI4a3bSGOzRlC7rZ6cbNUehgnH12yKWz4Q6Psd53Cwm1hj+udUaN
-        4svF03BGxXtryo87MDCMQy5tYFQ0Xh3U+J0ljFNTPdMTQe9hHsuyHOdIyjQ1qzwWFCnS5CRlmqbK
-        edz0UFDTtJZtCXiFXZvC64zVjdchkyqQKWG9OC51m39ya78nhOLLg9RhKTFul+POJby2WcUoZMVC
-        62bJ+Schxta5Z5Rz9nYxfcR6xNV9V7dML7leM4Etp5PwkRhXPpZjAglXq/DkQfo2QoIE7OTSBk8a
-        0qWQ4A4JNYisoVzMcVbhxZDMx6TaZ8et7Dg3hCzWr63BeL3Cx82QGc9YrYs5IIa9GVrIpZ+oPSO8
-        K90eVGjgCwOoiaBoo8ZZETuPcijFqXYVB22kVNeDlMY9iXFuipjHkZiKaiR+03u8GzHVVlAUQRLE
-        MFJzuVddlTVJj9UwUfMea7KYiS1pcqZripzoIS83CvmT26SOGpH75sYc29Zr4kvl3rov6QTca/Um
-        YbZZkNa67wRVsmOPueVDtIQKO8mUrws+OrXoS7buFcqlE/Ipz1Ykwscydo4AxqVK7am5PTsJ+8kG
-        wSE05Lo3ZBuyIm4XVuFeFbqzxWY83xsMQGj8WaKGmR4qgppXMdNYEmRZFKVEz65SMVWkUNFKyiQ5
-        PDnM5JDa0jBfjWQ9aznT8yBGeeiHh8fd7CbVHrbue5gwzqvSqT10FuNDXDmbsvYQs4o9QCCQB7qP
-        B3ZsBiPpghglYhjFAa+6WXdIGDeDEmZ3eHieB8dRooYBd0iIuWXacAn/2Mltykm1156ZQ0I6H57c
-        Zgmj4/dIjM0tp9ZMr0mnNqmWcG/v69Z18En4rfscHtOGMyoYFQ68RavhjIrHjIonDpKZOhrOqKjA
-        qDhEM6TTwXXdrBJessWk1pPmXnfFsZEzVq/5us07PA/Pk+fBefI8NE+eB2Zz813zlK2GF6tcvBNg
-        biW+PLkQzVqk3qJbpaz1Zk3qkHQxd7rWH1u4rX1museYqKmoCJquyoEui6Ig5YkmS3leFSnUdUnK
-        FTVTQznWAzFNszhV4yyMRDlYwpdmYR5mWibKVrZJ+AItD+RICxQ1CyVVDQsTGhhgYqJesIyz4Rte
-        aneQcrbJM+VaN3vdhnS1bDptI+XHfG/TwhyQ5Tk6JKTzktt0bk+5Xvu2MjixROhmkGqXcDOmb44A
-        9hVYOMbcI3SfnI73jyudGlMKV3s3y+qY0ukeqtxHp5vv2lxPN2MJLsKr2wuJLx33QblKyBFWyY6y
-        Zs3P+uYM1jMM8+RMc/qkztiXy/ARyg++xmzxxKHrBddX9z49DXcbNaaPLyooatk200NoS2vXOS1l
-        j1UIeUfiymUqJ2z4wCqE5avkh4TznRuQFS23RsMLCTkfqRJupeykhS8LnkdqGgmaoFdVjmMuSWIU
-        anoo5XKqSGmuBykQVbkJ2saJHoqdnBld7A3l61boYNQu+A4JLTZ7oq3jjNXIcumEwH6Fj/zgqMS4
-        XRGrNmvMlR+QvmsL6UcqrFLiSyRvrUtpKJ4afhwnciI6mekG4Uu/N9CArBCAovyxUqdUNm4ZndcV
-        BQABkBWJhKfLj07Iq2RgHghfjx2OjRCPWBm8mFTTHPa99J0yjHT5EjbcwhMsLGFGufJLkCCj85JQ
-        8uuUCd7VceX3pMIsm+6zvpfq9opsBt93IiJXQmVWpU5ZN4sypJdef3RfnI5vJGZ0XlBufwyjprnt
-        TVphhe+GWbJVwgvG/eM9BDfd6b5v2Ew1AnyJRH5wS6gkTM+yYmFY6TYbfHHoGNedk4aGkCtguq8U
-        6mrTLQQ7CKndQFa0g7RyBIkvDCjpiRroYd6meszET2QpDmJKcdUTKXwxj/JcEeQgaCPIaRbnaRiJ
-        eRhnWqbozqlJuaBcUC4oFy5ITvNI0sMXO/w8UlTxpVQPZCkSRUWKc1GT4qD3OBYERRdDUuQ4E8RA
-        FTunNFPUQBLGuJe0MFTDm0YiP2BdB4ZpkZ7P2vAYt5+H53lgepkmDpgDYgxMo1AMeAKZ8VUyfEsd
-        pzP20m1ee4ek4c1aZNOg3OzMlEY2ag3fI0p6ImqCKotZanIq5TlqFbY2UpwrkhSocp7TNM/TRE5v
-        Bql7c4UWDTcIniCJLOSM1b0SqVBuX4EvM0p+wJZLMe0aXYyjQ8L+zkfd5nJUnsMd58uZJ3DtDY9y
-        pnkArr2hynXwgtIB+0xXUfjBzWp+W3QX/AekL2eeN3xPSJXzDzBfXjmOA29YoOcPPE/uwBs+IVVy
-        PqtDx8hOwj/w5MyXOw40OAvTvG4k1uZmh4StcW0J3w2+PAskXFJ4hEd8kYAeSnIg6z2+oMpVlhI1
-        ziqUFEWKs1CjNNNFMdUsFEkR00TCzf7YonOZbu0Z3zB53DB5QwdfrFcYteqYIa97zbpN+BLR6WAl
-        EA5LtwkfS7cFyrjC1+aK9a8JK91XOis/IOWnNCQYkGhwxipDrqDPdeMlLba4D5Z0IX8AmtgBvnRl
-        B91s697TjbbNwa8Jl1aFqUYdXCVUqtwHR6YUcrb0HeFemNt61ieRXwSwyt0geIybJRRqGV8u3Xo5
-        O0McpNZecdb3QpY1beky5BWee1vH1hOe3JslGfKE1obPQW1W5brm4wceiFVo4EuznDBCa2H8vpdO
-        jXa9YHxcSLcpP95e8gPO6R5oHPgS95XfEMIQHrEc1O4gonGuF/yG1+k2QVZY0NnA6YSUgpyNLw+i
-        yJmmB7Is1+zuQs+zykLPUviaIoWapkaBrqmaKOd5oqdecNWyLQGUrYkvkQrpTMBm2XRsObw4rYbe
-        SIRv2WE92kJa7kZnPWXYy2/4BJQfLBPIdaxd8Ok23w/4oFtDB6RzD1ElwxiJkBn7TCGTOhL88Rat
-        +NpCQmo9QSdoyKSOOySM+AJhaVHdXt/ap2tF2BOrzT21LFoiUWOuUs5JOYJmh1zMPRKZrqVpMF4N
-        f0w/6x342m443WacC744tTY/CGFtapO+M1YtBe+R5VL4EpGbHTIxJ7er+bLUxTK40T1my0Gbb5/A
-        l0W4VXLDI9mU82Ir5YgvcRtegZxQ21pudOvv2QLGW8wZk4aYhS8MTMJQOXJm2XRMFzKjFVmIEtfB
-        C45njKIyVBKdl0NCh22AFq5Lm6VxprWPkSFPmiHlDQIGZ4keCTfykxt97FjKj4gvjx+tciXM5pvV
-        SX7wwU4uZ2/4yMWkmoRui3GxM1YpYxWyPIVY/ToYLzmdg3XKSzqfVHiuW/vNGQuopKdpmIZhMjgZ
-        EIze6tZmJAt4IIIcqGmexuF3Mc17DcXW8zj3Juipon0V9Z6pYaitLMqCJIoryKqYufZ5zLTVdUGy
-        YmlYn1zK2pPWNos5YyI3aoz1YhNfImdhIFqZlCPYIOAkEqvkDQJuORd80Zop0+mawcQ7xinfz637
-        47jcPQFBAr/fckPXkBVLyyt4FueDbD75YCsTUh9cuwKGqJpY8KW3n2QFnClKvThqDXDAA76wo9ts
-        5XGEbpZt/USu1spjutHxo7fw8OwWHt638EVO6LjRNIBJBAmF1ggSV/DwuFaYseOBHdOHxgOFLy9O
-        rJliHIlxn1R2vM16lA90djPVsulwlN0cEkKIQCHChAUSjQu2kEuZPoEAYUHjSQGeNBpP3sQVNCQo
-        VIhY4CFigQoR5zolvy/wEPHFcW9NA4kr6J5vi07CJ5KCmse4TKNIb47WvukUOaGET/rJzWBtftKV
-        Tmw6C1LX/O4skKx4TOFSOFeOWjYXXIEJehpoap6pWfdQFfX2ecqrHkqZpnXKFEEukqDokSDmwfe6
-        W52uwpdsUoiWwX7CAE0KI11arwtRp8Qgi1VrUo0CwpKpnFwjvD7l0lwlfI19zG1Zs0QVTqUBzuaM
-        17Y3Qw5RMQdkCF13h4QUrrbNL3Utep+Fee3li26EGew/us7tABoesY65ZmvdjJDHbDF1b2d5pIhq
-        KOdQk9uKmhSmkVapuIoUq6oeJbIuSWocFVGTnBm/x3J73bS6zU2T8PAxQ7BVe7W4dJGQ+V7hJdQ+
-        e7FE06alahD4rJcWpkHgyXwOGFehzBv9GZhKqaZfM+KLpjVL4yif9ZoGLUyjNLS2Cl+4I0fuV7mQ
-        7kPiy+NID48jPWmkh0Z68jjNw+M0TyrpoZIOkUXtgqtcLVv6a/Y+Y6yesrbaI2esJgzSUlHVQk1y
-        q3IjhS8NmW42a53WGaPg2JB4QDFBkRUMiURu6Jhq0uJYpRM6YGQJN8kOlnSrrxFu1hnyJ7d57eU8
-        w1Q9WcwtM81DKfDFgcEvYETDGaqFYWgWpjbvFan5NT9FjpRM2iFi3CzB6kYpHEQ0LuchiXpoGEw0
-        HEQ8uJx/HugBkpAp517S5Udir3NTbpe7l7DCl4iEcZlOChFhAgMJEQ1ZsVg0pFx7L3cBCZfzmsYs
-        UIOAY18lZ5LCl7qvur3gz9pMHz/JmrYzY/q4OviYan+Wp0LDPzBv+L1crS22niF0VjcfdO9mergn
-        s1GL83ovIOHN9Pyad6JDWLgZrWuzNr5QBhIUEwskWFAgSDRkRZwNvFkiyIEgiZGgq7oupdpnKYzl
-        RMrzpktxDnKXJb2HcR6kr26jteWEosCkRIsjGbJAhZQxCeHs6w3hglclN9ZbHSfAmufOKNdPCV8i
-        dFbHCVha3w45YyuNK4hEh4SPTue2Iyvh0o8upO63GYFUo1u/m2PcsIabgyGvcptZxKKQHzOzFl6Q
-        8uPstlcpvlT4WZNumNHF+LEYRwAfk2pZomlTXe0MDAXx5DYrV/jCTq6DV6Z8MknOwijX/rj2loC3
-        Shbng9dmyo/pHqFyF3KsTgW+aBq1MI60NMqTZmEQeMQ6N66gKzfdNO1ZGgSqhVGePAuEwBNnaZRH
-        rKahYI4uV/hSJ6CocqbHuShmgpZxnPQoT8NQyuMXKRb0IuWKHrfvvQaK9DnObJ/Nt5fcE2OrmTvi
-        y3tAx5PHmNtmldvrFQEhk+Yt7kNjhnTkB0O4Q8IF0PQ8DUMSR5b1TM/EKI1rVnGviZSIdagEzwZF
-        pLFIkpKYQwwhh2YGBwAjEQAAGBwUC0ekU4q9HhSAAomkZHJUmgjTJMcxFKUQAAQZgAwAAgAEZgBK
-        QAZGiX7UeN/S4YhDB5A5fIJD3NlnYh6lNT3AsBk5yi1mv8Kj0Cs1EQRt+iPdXbaKPYkBOEbrO95g
-        tEDpEe0QGkBIEmIcO8xKe1UAMXSWSmAJnhrYmFfYyBKZ6Z4E+0JaZZVBKfQq3JSgdSCNf4oqEE++
-        Epw77++mXKTTp05lX7Qr78e8pZTWuL1Y9BZKmzY3J97JaQzwBfBMSfXRLi6najIcrlqc79LUwkVa
-        NGaMBL21iMZtkcACKXsClTWW+80Q6kU5ZI/TyAdAm1i0sH9DP+ZT22SFYHDqwJB/v3qcZ3q1IwMx
-        zjqcI0EQLNU3MlAVn/y4wuiVUmM71XKlDOZcsiPNr9mfuG8J+wziem+Theil7qYqsbzTE8jUUBXF
-        QcBk7Sn56DNRSbndD2oNIBRnLHsmVufCtvD0QKPu0pw+sFvl0pHsWlza+jrscNEZRZEsKikeBUwB
-        JmNjIzihJ8mWfolgDEAuhiVttFobzejPKrvklcnii6QJnzhXxM0AMVgOEEGO8IGBH8CnjdIOvtI6
-        dEFrfLCBsp4fBCutLHQH3j5DMkScc9oG4CyOAN2jxC1J9yxawjurPZQ9vpURyj4/9HLvYToDaJan
-        +sf8MBACGYWNonNMSmedypAQE8QDDdBGeX7FvEE8rPgBQtkJ+cym0T4m8uxTOEclas8IKhjcPejW
-        xUiJFcwsXKdgaVL6YDp4te7FBrsy9mxuO6ZhiQmh6gA//JFuyv15dD3eo7iPC044m/OIsIDecyWt
-        hsou7HcYGOeR6NbQM1PYVc+n5qYftXf8LXyiOZPmSAAaxE67PkqNrcO7v4Y9ifnrI+kAKovsSChl
-        0Fzk86fEfP969siXHaczBad7t5gwbCS8iPzZgLqQ2maQSkN7noi9omJEupr4KqopU+tziid9YReu
-        c0DipIJrjLWy5hTh1K+lt1OIyag90M3PZyWtG0Y7yKZjrqyXYCkk8u6nGy0br/TxqmZOuDlJePid
-        p9q7O3b5ETSAnHVEsL9309q2RSbtOvomzAcUf7pvG8zNikbjca5Y4x/m5JOhVEkmQpXbJ1vDtfH5
-        ot1VAdDK3lWgE5ny83/UwYFoptygTEWpPDvYXXp1cBK9ivqdcnWw6khmCHvXEfL64hMOJgb9gZpe
-        OyAY+A997W+zN6dqPjuZhXf/lP73EIdOYX+5ROOv6xOQXMb3kmdN1FYrj9quHJLAy/vhIhX8h2iv
-        S/4hcdb4i1nAYnf/6iS6DS697ovcoBuwWwf+/JK6Nw4pKmM2fFMKKYqreB7O1WP8syEzagZHQUWo
-        3KJYqpXGkEjF3LuN5OLYC8PmlpzEsS0FiLZ0HW6yaorH330XUwX27TLezdCFa+M0fTk1y7HUO3UU
-        Sx4V/b/+UKAh4OnGcPHtzzmivou1Kgn+gxOG01RQVxEhm61Rm9heKQIDl+1ydGyUqABWPLWiB/rR
-        0RU5GjPFeF18m1tqIq/JDkhqaUEemiYmsShyGvPPDvMMB76B5dGFwh88r1A0bGjenL+gkNaHKYNw
-        AIvAs8mqHlQSWTW2EdwHg0aHmgJP94xMx0ceg1tY0LwMCXLp75B/VIYBnvVd8iaPzECZsqQybwRq
-        CXq9a6DOBTeWgqeHmsVI95hFrSwQ4LE6XEw7pRFDfv3xRURDrXQeCMf0qYEOOkeg4b+NlUpIZPCf
-        RlSmiZZgrXiDw1P87Yh0PxAJ+g7LRt45w2HG1TNnD+gZqhYSnouV/Ev5dos6mprcGqi5YHu/bDwT
-        AZcAU9UK6w+p3WudV0JhOgAYjef8cUtG587jjjahtCGfQmRQJAEH3PN9QdLFE5BfFg4vcLEvv8UC
-        GK4PBqk4evtSW4uwDA+8v6XTj8lHoFJWP+/pW3gAdPwYQ2Mh7ES98Bo4hVQ2adgBjclnIoTTG2hD
-        HOcpLUKDLDo1uPPFEilvPvfCQwzpotP6GQCd8Onlkczyd06pxTGgdlDBnzdwxtKoaXAQybvFUS2q
-        kJf7mdnA1mqYGdz6Yix0gf4TZ5yxZhiuJoJTnVu+ekOUTc1wyVJSayox1EDARsmbs/iYRu07sgSq
-        rgKBHHUAf1oZKv+0+y/9JJYOpaK3z9QvT0fH7C7cF2FM2VmD9TDDjEkd7fqtVWJnPWevC/FdbNyt
-        auvkm7mbWfy8SZHUgZ4bSySvwlG0Quujh3IelcylE1fa2xTY7BlMWHQycDXEG7FVq+FIPh7v0xAG
-        T++m0pBYqYa6GWfX9euzbJSVa/5r2My19XVdThnj6lchujPOG4yYVA2Mq70kCUO1OEYvDkwTY2wy
-        oyDBg/7CpTqFLX2MbEUHJHCrGDJ13y7iW6xlpmBGL6MnzpMIxJcW8y9mupy7CHSS5aqxcx7CD4qz
-        Q9oww3PGfalA7q0d1UGTNkxiSmq60ajJAYGKRYt0YqRylJitikTu4uqZ85qDsTAXQaQBUYE2lswd
-        1HkIQslU+XQHZwRAQkSWL2tMOrzezrwTUcFUaMwSzRxw8wb6lQt4A9wDxft4hgsMoPQdM4BVFOCR
-        uUjkqAxtVvxEiJD94Pm+72f/EZuRhWDRaIW3kOYrSik/eBn0Fy4ByYolq3Cb4BbvM61zZ4k7lbEK
-        kU54DtNhexylDiXma+wjM0TtEGBhw2Zn16cg/yksgEwWkhNI4+veA0Kv7mZefzp5Dh5e0AO83yxD
-        TZB90aquvltc0Bk+SLiIsOxBRrSCPioFmg6QCMqL2QTn53Ocs2YLUUAFjxmTgDokSZgG6Ni48RNw
-        I0+aJeLAcieEdx7Ou/n2BvaNxuNzLBzCejgqaSPjOfWimKASJg/W0RWvHa4o/qKjzljAe4uUHfj9
-        9jA/V2QWQagtp82k/+pvTc1EIGtNHBurbTsUue4woZznHiLfrs9vMcTSOSyMmU5ozwcYvRuceqtS
-        KiC2eE0Cd6X6lB/ozG8qVMcEhFB/xYoknQYATkgR4ynKj3duO4yh5DSaHzakYg1pOlcz7xyut2zt
-        TReapUGgC6P5SQ75xuDogGrHrZAvNGraW8CfqzXnWjDNKfPgWsRhT2adVi68ZQX+1rIw6h1KoyIB
-        WMHwQ3AhIMv2hPHN45nQ0kbmwycKUWyHlz/CevrnGwZtbth+g7X+bbqU9iK7oEa8lZIzOTZ4FG1Q
-        RncWlv+0oINXHVop0BMmOmF6joQRXk1ajrTItrEpe7ICraSJRfzPJDAJ4MrOgxT8hzSv9bzRlcoC
-        lTEVtJQ/4lMxsSDwTjW0e5H91uOkfRC7GCTJA4m4wTGwNIdZp77LNIAzHSNyoOK8tU2Bzc3wZXke
-        wNi3DNFNKEtAEspXhYveJCmger3LEkXOY4RDVjcoyXfPIdKNRZtvOI1cWloGidKnD7avoTG1ecgl
-        iX9p2Mp3RqNDEt/bzd3zWohwAR8yguBfFS4JhPlz+awG0+UKy3vG7QvvmB4sxfDCb/FYw7clgu2d
-        G9o5KyGr1Sh61Mo1MWMKA8A5lGDv4tPnkdYCD1796w3rmoLxq2/yBykjfUBHdYiIjMVxoa9ajWok
-        oM6Gp7CFUn0o8Sbm5AkQ+ZdWFx8cjh5eUY5kpFhkU58G90xRzsTgqZCTab2aDlAp0ci0o4TBOl6Z
-        QDrWwZXgak91VweRWrdbP1EfxfHM1AuDQmj0CnFmiY46VOe6iAQiWjlnj83sxDw0QQzKWymeCN04
-        YdExgHJ2d1wRC6J5TMB8DDSUuXQHqm4ioNX39pIXkNWh3cQ0OpN0UgiT0TxM/h39+AhgPpeLmtkW
-        e6zrubbVRU9neycwC+8bM+Sq/CnCfvhruG7MLUU2kYhx+1JVuO9XBnteiu9M8y7r4NEy35tOFT+o
-        sOXuQD2bTVX3x2+YhSJiO2PayXULOrca23j7XD6qZuJjBulSkX6V89jccGA2rZ04kNLMxoMwTwWK
-        Mwe7iV9xCLKDHWnPCzE/+95fqgD5Cj31O3T2AeJ9VUU2ydu/Qmt12iFKnQDji9ozrYq0LWP3oJEO
-        oOmSDtP8xwQXN89xKuCcayqJe5QVfXedFkKW8l/wk8qQCR9kH3SMzueNaSKH8bNFgQgBoc079aQp
-        +e7c9+NYlgJDhn/UAisO4P4WEugqG3GdiS81xGlSAYITcnk+jYcDySOE9j/hSOvab0WcCEXxoOoc
-        SxRMh828EximkmS8V5dMehs88g1ml6LZbqDTc8t1sIswDVkTC7j6QDxWmGp8mm1F2S35KCOrYv4a
-        cdJ1cckp+DH58KYG6bB686+D914FCFQDvzMsGlKZ88OBUt/o8cyFNnssAQYsoLgV4PITVKjBriYs
-        iXe70Hcn0l6pIzQ886OK/6a0nP8Dq8+XRhdRIX43DWVOvFABcC2IcocwcQzSkbDZF/qL2E0ZLYgX
-        piynluGgv1QfcfAhfbtJavFjIDeY+BMshOBgPrM9AWKOKbOpINiqbEgSZvxU1gAsenegtndyYrYV
-        HdhtTB2FOBg9g2fQaOhVkPV+b6ASvM/AX7Tb1mdlvUVLM+yJqnImJoGB8AJUUE33VPgHBVxbIoHu
-        mZUstkyGJVf0m1K0zxGkfgs3WMBL/IHdnC80xl+r+i0fxR1A5lyd5Zs3yvf1QUkGzGxnKHb23006
-        AwIzFDQhki5FVcj0U/ZsFrrwGaL3CYGF8Tl1dWs4Rph9/HocmNBVYq5btPh1WSvqSYEg1RZI2/Rv
-        51KZt3FiMHLnf++eLVfApLrEfLmERIAPi5qoQyxPFm6ifnabHEXJlQmtQK96vLBoDuC9t/p7WDbP
-        mg9iUp9NXIgn2UN/1oQ6LYDOxe2luJusvV70ryBMOo1Uqki/G7nlnLWlnM0Dfga6dmITtxKbeVxi
-        EK04yNNpwxRcQTM/y48ZAyQ1L9JNOD3JDDC0wnuwYEf2BXRFgaU5Z89ILBSMORpt9H2lPYCt06CH
-        Pblspd+ZPq0sGiXK1UzdqRgOVVS9JSH0p3WodfIlY2Ju/9DAoJFuzrcct1eSrFNQhfXDGnAyO09W
-        eU/zhBNIQQxpHRw7QtUyPEPZw/IcYq9LxAVVRu/y1J5JX7b+n90u43pz4iRttYkYKsG+tzf373Uj
-        5tf8lmMd6Mz+aqG+QuhgxGV5H8TPLAZLydu7Q9BLbe4UIrtgJKATUHl8k8uTOwD27Oi41zHgPP06
-        lPF2+q/+K1cZX7bfy0H+J/LKbqL8dP0zI9UFHTu2NT4AqyZhZQFY+C7OsMH7MO132xHcdkw5oLkZ
-        LVeXfyfD0Eu1ewGXJMV3BiSijH6gQ0fBVguUtCmLdRGTaPJI/9CrL1uDdekQ9Mq9c3tcOXWoBDgS
-        6YDTM/Iz4+5D/l3c4gd0D1/UVFmL5CKNGbdACb8H4fMHW6JP4CH4/IDRwrWIC8/V2Mxw4BUVsgbf
-        bnN+EnJo98z4XlMjv/E9O+lQMnMAPoKtaEjtbhUg0SPhr0js4Goh894RMvhOFjgxf28BXEYURT5I
-        q3MCuHAAAgP7kcqXB6TOI454J15AKw3ztZ9WNENngzChY0i6V+oLihj9N/1Qaa92MHKEGHGZ9qxy
-        PD3F2Mi5B1r6CQ39WAtBvLUBH1gPn2zDd03RwmmeVeh0Uf8SyJ0z27z+Hh98BuVxD/scVdaV3bJd
-        sRUz+vyE6CWbgovT5zLkt+ORShog+9FhjKp+rzzjbW0p4bAUfuY0Whb203TxBUR8odcPHEcOaBEt
-        9nFVZ0WilHYH7HnFj4qN7LEV9CVZmjcKVSiMN1fmxTerE0EG//PyLM+8aI8qQqcLdMF2rLd1g0sL
-        VcUogbFreMbuUZVu+SGRTTGdVeDpC02ljh0xMYV9+Bw+VGEbzWiMiRzs0ZeAkQLDoblGxb9Ywotd
-        qPdGwCzVSmVrvZYklPfUZQAiWZmtxJ5HTuf9GPj6BGCBM/DIVQJMF+EfpvPRaPwsPR6XCDksNSTg
-        aYKD1VOGsM8aPKjYABsqA2smlNwiEfq3l1Xqy8pTScTtqzfWplIv6Mpkf4A6YaA5KfqzoPfYzj9a
-        sgqK1GHrTkKk0C312E8H5c4won2WJt+aYoQOSbXCj9FduWzZiGQEMSkHxQhC72INVA2lH1eYbG7K
-        0PJqQqiT3ezTCjTYuZIDJpWJbQSYk4zED9pJnv/gLhGfAd5u/GmkAEBdImyEa0CELTcCZPzBu3Bp
-        18Q25FGHJGXIEywCdieSKvk6ll0cAYr7Ipp1FhSokFRmgw5+lCHKFCFvUR8UzkUFbhClF4TgVBXO
-        hn5mU5FYlA5Jf7Fupjq7W5mIUDux9WKKDXWrmSlgbWRply6Br7HTRW+EpOHSynoePfNJn9viNDl9
-        TS9AHxbKJ9Rp5oix3gpZIMDaFL7KENQ2xvnX/X8QeKqITozAxshrNGaOZEOR8N3+Q9FCuRQBDWMy
-        eH5mNofANlhPPjlT/grOyfwlLQYCPr6oGDbPHnJpT0MLoN9W0fBJc/rUjJfe/NLcjvG0b0aXYDBr
-        jDJA3GchTCybbKTG3vkZHrlo31aEykoXBawrqyyU3RPMCykuQBJlZjDFQKvyeumwENJtV10ymBwF
-        8zPx1zMRmFI41KRD2haCdrNM/5SWWZGoFREKn4qp3hPpLhFA4wHaVgoHKBlqFq+hkQD9isInBrf6
-        5beeAZ8lQJn1OXj6MZg5f89yPU43OzmMlx431OsoK4h0XXxZMj5CscXiGT7p5K8A+fPTUg8CiQFs
-        FszSZCOyQ4r/n02fn0wIsGQiAwGdoPhXDl8W8B0FwdWjaLnC4+EZr8qa/EjC6WqYV6JPJ1I58SpT
-        5JHYgEPcrh3U2qE1pXE96Sco41OG4Szh0FkNo22SKNaG8bi8xM2x95vXGBReVLqk+kanWa85EZ/s
-        i8+lb8c1rv5N3nyGcRaUqQLMACEXMr56hTgnT0f4hUZ8nCfnrDybrHUaUb5t8SEI6h5vKgEHuDis
-        ScQcC6rUdIL+jrhHw+bTSPuFt5cWYmsAbXBAK3L8Pvu3j42v+bcW+RxZeXeZxE43Trru5oq6e+HC
-        pMDktZ6TKPbbBuSzNk4s44JHzsypFrSMDDyPObyHejf7+GibU2VfOb18KFj6ZUVeiZKkC8aNNQSH
-        wcXpGIi1ZuD9jM6csYcw3ofSR5rXfNiGv0Y6C7UyL11Z9TDDsw7wXQxT3ae6wO/teQ7QxG4ZeW+/
-        n3VvdJH2JkfSDw8qTgKAToSHqQ3XCR7EJRoKWNBtw6L2yHzy1b9A3G/MVDL6OQ+b9Aaf+bVz10B3
-        nTFCJ7nAjft9J97+TOLF5dhDgXQrpJTI1AZlytjxGpH2+EsPwTfQRotFRKd+zwkMZw3FJoWcCmz1
-        nKUJrhR6KL+dR+pn9IUerxcrFMyxIOffZREZ64LSnXavM2JACyq9goDIby2ds9Ay7Z+lg9EuVcFl
-        JsrRR8HFuiH03B0q/kWFvoXSKDevL7DCKhlg9p9i2Rj+AQ==
+      string: "{\"result\":{\"points\":[{\"id\":\"376db314-03f8-550f-b3ca-a6811171d657\",\"version\":5,\"score\":0.579642,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nOne detail in Table I needs to be read carefully. The
+        0 / 3 row still shows a fooled rate near 10% and an accuracy about 9 points
+        below the clean arm, even though no passage is rewritten and both answers
+        see the same retrieved list. That residual is therefore not a retrieval mismatch.
+        It comes from decoding noise under temperature 0.1 across two independent
+        generations, plus a strict keyword matcher that can disagree on near-paraphrases.
+        Recomputing from the 588-run table, clean and poisoned answers are identical
+        in only 76.9% of the 0 / 3 runs. The residual is large relative to some attack
+        increments (the rise from 9.5% to 15.0% fooled between 0 / 3 and 1 / 3 is
+        5.5 points), so strategy contrasts at light poisoning should be read as suggestive
+        until decoding is controlled (fixed seeds, repeated draws) and labels are
+        less brittle. We therefore read the clean-arm column, not the 0 / 3 poisoned
+        cell, as the true no-attack baseline.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":41,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"ea30cb2f-737d-59cf-b337-a6772a16a114\",\"version\":5,\"score\":0.5299175,\"payload\":{\"page_content\":\"TABLE
+        II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS (ALL STRATEGIES, 147
+        RUNS PER ROW).\\n\\n| Poisoned passages   |   Fooled (%) | 95% CI            |
+        \  n |\\n|---------------------|--------------|-------------------|-----|\\n|
+        0 / 3               |          9.5 | [5 . 4 , 14 . 3]  | 147 |\\n| 1 / 3               |
+        \        15.0 | [8 . 8 , 21 . 8]  | 147 |\\n| 2 / 3               |         25.9
+        | [18 . 4 , 33 . 3] | 147 |\\n| 3 / 3               |         34.0 | [24 .
+        5 , 44 . 2] | 147 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":38,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS (ALL STRATEGIES, 147
+        RUNS PER ROW).\\n\\n| Poisoned passages   |   Fooled (%) | 95% CI            |
+        \  n |\\n|---------------------|--------------|-------------------|-----|\\n|
+        0 / 3               |          9.5 | [5 . 4 , 14 . 3]  | 147 |\\n| 1 / 3               |
+        \        15.0 | [8 . 8 , 21 . 8]  | 147 |\\n| 2 / 3               |         25.9
+        | [18 . 4 , 33 . 3] | 147 |\\n| 3 / 3               |         34.0 | [24 .
+        5 , 44 . 2] | 147 |\"}}},{\"id\":\"294903eb-d309-510e-883a-119bc8b01a08\",\"version\":5,\"score\":0.50196266,\"payload\":{\"page_content\":\"TABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n| Poisoned passages   |   Clean
+        acc. (%) |   Poisoned acc. (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|---------------------|------------------|---------------------|-------------------|--------------------|\\n|
+        0 / 3               |             78.2 |                69.4 |               9.5
+        |               21.1 |\\n| 1 / 3               |             77.6 |                63.9
+        |              15.0 |               29.3 |\\n| 2 / 3               |             78.2
+        |                53.1 |              25.9 |               38.8 |\\n| 3 / 3
+        \              |             77.6 |                43.5 |              34.0
+        |               51.7 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n| Poisoned passages   |   Clean
+        acc. (%) |   Poisoned acc. (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|---------------------|------------------|---------------------|-------------------|--------------------|\\n|
+        0 / 3               |             78.2 |                69.4 |               9.5
+        |               21.1 |\\n| 1 / 3               |             77.6 |                63.9
+        |              15.0 |               29.3 |\\n| 2 / 3               |             78.2
+        |                53.1 |              25.9 |               38.8 |\\n| 3 / 3
+        \              |             77.6 |                43.5 |              34.0
+        |               51.7 |\"}}},{\"id\":\"42a63f01-9363-5584-b945-f23754d7697a\",\"version\":5,\"score\":0.5001888,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nTable I tracks the model as more of its context is
+        corrupted. The clean arm stays near 78% throughout, which confirms that the
+        query set itself is not drifting across rows. Poisoned accuracy still moves
+        for reasons other than poisoning alone: the 0 / 3 cell is already 69.4%, nine
+        points below the clean arm, before any passage is rewritten. From that residual
+        baseline the poisoned arm falls further to 63.9% at one corrupted passage
+        and to 43.5% when all three are corrupted. The fooled rate rises from 9.5%
+        at 0 / 3 to 34.0% at 3 / 3 , and abstention climbs from 21% to 52%. Attack
+        effects should be read against the 0 / 3 residual, not against a silent zero.\\nTABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n0 / 3, Clean acc. (%) = 78.2.
+        0 / 3, Poisoned acc. (%) = 69.4. 0 / 3, Fooled rate (%) = 9.5. 0 / 3, Abstain
+        rate (%) = 21.1. 1 / 3, Clean acc. (%) = 77.6. 1 / 3, Poisoned acc. (%) =
+        63.9. 1 / 3, Fooled rate (%) = 15.0. 1 / 3, Abstain rate (%) = 29.3. 2 / 3,
+        Clean acc. (%) = 78.2. 2 / 3, Poisoned acc. (%) = 53.1. 2 / 3, Fooled rate
+        (%) = 25.9. 2 / 3, Abstain rate (%) = 38.8. 3 / 3, Clean acc. (%) = 77.6.
+        3 / 3, Poisoned acc. (%) = 43.5. 3 / 3, Fooled rate (%) = 34.0. 3 / 3, Abstain
+        rate (%) = 51.7\\nTABLE II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS
+        (ALL STRATEGIES, 147 RUNS PER ROW).\\n\\n0 / 3, Fooled (%) = 9.5. 0 / 3, 95%
+        CI = [5 . 4 , 14 . 3]. 0 / 3, n = 147. 1 / 3, Fooled (%) = 15.0. 1 / 3, 95%
+        CI = [8 . 8 , 21 . 8]. 1 / 3, n = 147. 2 / 3, Fooled (%) = 25.9. 2 / 3, 95%
+        CI = [18 . 4 , 33 . 3]. 2 / 3, n = 147. 3 / 3, Fooled (%) = 34.0. 3 / 3, 95%
+        CI = [24 . 5 , 44 . 2]. 3 / 3, n = 147\\nFigure 1 plots the same trend per
+        strategy. The three curves separate clearly. Entity swap drives the steepest
+        fall, and by the full-poisoning level it sits below the other two. The right
+        panel, which shows the gap against the clean arm, makes the ordering explicit
+        and shows that no strategy is harmless once two of the three passages are
+        corrupted.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":35,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"1a47c984-4df1-592f-8378-066f0c299d47\",\"version\":5,\"score\":0.4611633,\"payload\":{\"page_content\":\"C.
+        Uncertainty on the Existing Runs\\nWe do not invent new generations for this
+        revision. We reanalyse the same table with a query-level bootstrap: resample
+        the 49 indexed query slots with replacement (37 distinct texts), keep every
+        run tied to a drawn slot, recompute the fooled rate, and repeat 10 , 000 times
+        with a fixed seed to obtain percentile 95% intervals. Exact McNemar tests
+        on discordant clean/poisoned correctness pairs are reported as a secondary
+        check; effect sizes and intervals remain primary.\\nTable II shows that the
+        climb with poisoning level remains after accounting for query resampling,
+        while neighbouring levels overlap. The comparison that matters for the numeric
+        pattern is isolated next.\\nTABLE III BEHAVIOUR BY STRATEGY, AVERAGED OVER
+        ALL FOUR POISONING LEVELS. EACH STRATEGY AGGREGATES 196 RUNS.\\n\\nEntity
+        swap, Clean acc. (%) = 78.1. Entity swap, Poisoned acc. (%) = 54.6. Entity
+        swap, Fooled rate (%) = 23.5. Entity swap, Abstain rate (%) = 43.4. Number
+        swap, Clean acc. (%) = 77.6. Number swap, Poisoned acc. (%) = 57.7. Number
+        swap, Fooled rate (%) = 20.4. Number swap, Abstain rate (%) = 30.1. Negation,
+        Clean acc. (%) = 78.1. Negation, Poisoned acc. (%) = 60.2. Negation, Fooled
+        rate (%) = 19.4. Negation, Abstain rate (%) = 32.1\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Uncertainty on the Existing Runs\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"b281715f-6ff8-59d3-b753-488bf429f709\",\"version\":5,\"score\":0.45891505,\"payload\":{\"page_content\":\"This
+        is a set of three stacked bar charts comparing model robustness under three
+        perturbation types: Entity swap, Number swap, and Negation. Each chart's x-axis
+        shows the number of poisoned documents (0/3, 1/3, 2/3, 3/3) out of retrieved
+        documents, while the y-axis shows the percentage of clean-correct cases, broken
+        into three categories: \\\"Still correct\\\" (green), \\\"Abstained\\\" (blue),
+        and \\\"Fooled\\\" (red). The data indicates that as poisoned documents increase,
+        the proportion of \\\"Still correct\\\" responses generally declines while
+        \\\"Abstained\\\" and/or \\\"Fooled\\\" responses increase, with Number swap
+        showing the most pronounced increase in \\\"Fooled\\\" cases (reaching ~15-20%
+        at 2/3 and 3/3 poisoned documents) compared to Entity swap and Negation, which
+        show minimal fooling but more abstention.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-005-04\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":68,\"page_no\":5,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-005-04-04d372ba3b61fee1.png\"}}},{\"id\":\"7027e267-6a58-5909-aa35-88bb46b10e9d\",\"version\":15,\"score\":0.45837015,\"payload\":{\"page_content\":\"5.3
+        RLVR does not make citations more faithful\\nRaw rates alone cannot answer
+        the RL question, since a model could post-rationalize heavily and still be
+        no worse than the model it came from. Table 5 therefore reports the difference-indifferences:
+        each agent's attributable rate minus its base model's, on the same dataset.
+        If RLVR taught these agents anything about grounding, this column would run
+        negative.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.3
+        RLVR does not make citations more faithful\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":90,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"7cc06dc1-4df9-5a4c-aa92-828d2e5bc15a\",\"version\":5,\"score\":0.45545143,\"payload\":{\"page_content\":\"D.
+        Which Strategy Hurts Most\\nTable III ranks the strategies. Entity swap has
+        the highest fooled rate at 23.5% and the lowest poisoned accuracy, so it flips
+        the largest share of answers that the model would otherwise get right. It
+        also provokes the most abstention, 43.4%, which fits its mechanism: swapping
+        'Paris, France' for 'Madrid, Spain' can leave the passage internally inconsistent,
+        and the model often reacts to that inconsistency by refusing to answer. Number
+        swap and negation are close behind on fooled rate but keep higher poisoned
+        accuracy.\\nThe heatmap in Figure 2 gives the full strategy-by-level grid.
+        Two patterns stand out. Fooled rates rise from left to right in every row,
+        and the number-swap row is nearly flat across the first two columns before
+        it jumps.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"D.
+        Which Strategy Hurts Most\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":48,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"7c329777-6c76-54b3-a177-62c2bbb303d4\",\"version\":5,\"score\":0.45373917,\"payload\":{\"page_content\":\"This
+        is a line chart depicting the \\\"Fooled Rate (%)\\\" on the y-axis (ranging
+        from 0 to 40%) versus \\\"Poisoned documents (out of 3 retrieved)\\\" on the
+        x-axis (categories: 0/3, 1/3, 2/3, 3/3). Three attack types are plotted: Entity
+        swap (pink dashed line), Number swap (orange solid line with circular markers),
+        and Negation (purple dashed line), all showing an increasing trend in fooled
+        rate as the number of poisoned documents increases. A notable annotation highlights
+        a \\\"+16.3 pp\\\" jump in the Number swap line between the 1/3 and 2/3 data
+        points, where the rate rises sharply from about 10% to roughly 27%, with all
+        three lines converging near 30-37% at 3/3 poisoned documents.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-02\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":60,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-02-1987cd10b5ee32d8.png\"}}},{\"id\":\"82bd2225-a596-5765-ae46-e533ca23520c\",\"version\":5,\"score\":0.44717693,\"payload\":{\"page_content\":\"F.
+        How the Model Fails\\nThe most useful result for a system designer is not
+        how often the model is wrong but how it is wrong. Two failures are possible
+        under attack. The model can accept the falsehood and state it, or it can notice
+        the conflict and decline. It could also invent a third answer grounded in
+        neither, which the hallucination proxy is meant to catch.\\nThe evidence points
+        to abstention as the dominant recorded failure mode. Averaged over all runs
+        the model abstains on 35.2% of poisoned queries, well above the 21.1% fooled
+        rate. Figure 4(a) shows abstention climbing with poisoning for every strategy
+        and reaching 69% for entity swap at full corruption. The lexical-overlap proxy
+        moves the other way. Figure 4(b) shows that low-overlap answers are more common
+        on the clean arm, near 29%, than on the poisoned arm, near 20%. Under this
+        proxy, corrupted context does not look like a surge of unsupported invention;
+        it looks like a surge of refusal. A fuller faithfulness taxonomy (entailment,
+        contradiction, poison adoption, unsupported generation) would be needed before
+        claiming that hallucination itself falls.\\nFig. 1. Accuracy as a function
+        of how many of the three retrieved passages are poisoned. Panel (a) shows
+        poisoned accuracy per strategy against the shared clean baseline; the clean
+        arm stays near 78% while every poisoned curve declines. Panel (b) shows the
+        drop relative to the clean arm, where entity swap opens the widest gap at
+        high poisoning.\\nFig. 2. Fooled rate for every strategy and poisoning level.
+        Colour runs from green (safe) to red (many answers flipped). The number-swap
+        row barely changes between zero and one poisoned passage, then rises steeply.\\nFigure
+        5 decomposes only those queries the model answered correctly on clean context,
+        so every bar starts from a fact the model knew. As poisoning grows, the green
+        'still correct' band shrinks and is replaced mostly by blue abstention, with
+        the red 'fooled' band growing more slowly. Negation is the most resilient:
+        even at full corruption a large share of originally correct answers survives,
+        which matches our expectation that an explicit 'never' is easier to distrust
+        than a silent swap.\\nFig. 3. Fooled rate by poisoning level. Entity swap
+        and negation grow steadily, whereas number swap (bold) stays flat through
+        one poisoned passage and then rises once poisoned passages become the majority.
+        Intervals for the numberswap jump are reported in the text.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"F.
+        How the Model Fails\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":53,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"328797f4-1778-57fe-bd4a-a334aaaa1cbb\",\"version\":5,\"score\":0.44377255,\"payload\":{\"page_content\":\"H.
+        Relation to Prior Work\\nOur findings extend the RAG picture drawn by Lewis
+        et al. [1] from the cooperative case to an adversarial one: retrieval that
+        lifts accuracy on clean corpora becomes a liability on corrupted ones. Where
+        Shi et al. [3] showed that off-topic context distracts a model, we show that
+        on-topic but false context does more, because it wears the appearance of the
+        evidence the model was told to trust. The abstention-overfabrication pattern
+        we measure is an empirical answer, for a small quantized model, to how such
+        a system fails when the context is corrupted rather than merely irrelevant.
+        The retrieval-integrated pre-training of Guu et al. [5] shares the grounding
+        assumption our attack targets. Zhou et al. [4] warn that evaluation can leak
+        into training and inflate scores; we keep the FEVER-derived query set fixed
+        and report every cell from the same 588-run table so strategy comparisons
+        are not an artifact of shifting test items.\\nFig. 4. Failure behaviour across
+        poisoning levels. Panel (a): abstention rises with poisoning for every strategy,
+        most steeply for entity swap. Panel (b): the lexical-overlap proxy of unsupported
+        generation is higher on the clean arm than the poisoned arm for all three
+        strategies.\\nFig. 5. Outcome of queries that were correct on clean context,
+        split by strategy and poisoning level. Green is still correct, blue is abstained,
+        red is fooled. The lost green area is absorbed mainly by abstention, and negation
+        retains the most correct answers.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0015\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"H.
+        Relation to Prior Work\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":65,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a18e8f71-14a2-5568-a215-b9c94feddb47\",\"version\":5,\"score\":0.4426834,\"payload\":{\"page_content\":\"E.
+        A Majority Pattern in Numeric Corruption\\nFigure 3 isolates that pattern.
+        For entity swap and negation the fooled rate grows in roughly even steps as
+        poisoning increases. Number swap behaves differently. It stays at 10.2% for
+        both zero and one corrupted passage (bootstrap 95% CI [2 . 0 , 18 . 4] in
+        both cells), then rises to 26.5% at two ( [14 . 3 , 38 . 8] ) and 34.7% at
+        three ( [22 . 5 , 49 . 0] ). The jump from one to two poisoned passages is
+        16.3 points with CI [2 . 0 , 30 . 6] , which excludes zero but is wide. Exact
+        McNemar tests on clean-versus-poisoned correctness are significant at two
+        and three poisoned passages ( p < 10 -3 ) and not at one ( p = 0 . 22 ). We
+        read this as a majority-leaning pattern consistent with outvoting a single
+        wrong figure, not as a sharp phase transition proven under locked pairs. Because
+        a model cannot sanity-check a bare number the way it can catch 'Madrid, Spain,'
+        numeric corruption remains a quiet risk once it reaches critical mass.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"E.
+        A Majority Pattern in Numeric Corruption\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":51,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"3112d294-65f2-5abe-a8cd-9278a0b94785\",\"version\":5,\"score\":0.4368588,\"payload\":{\"page_content\":\"This
+        is a heatmap chart displaying \\\"Fooled rate (%)\\\" data across three manipulation
+        types (Entity swap, Number swap, Negation) as rows and four levels of poisoned
+        documents (0/3, 1/3, 2/3, 3/3) as columns. The color gradient ranges from
+        green (low fooled rate, ~8-10%) to red (high fooled rate, ~30-37%), showing
+        that fooled rates consistently increase as the number of poisoned documents
+        increases from 0/3 to 3/3. Entity swap shows the highest fooled rates overall
+        (10.2% to 36.7%), while Negation shows comparatively lower rates (8.2% to
+        30.6%), with Number swap falling in between (10.2% to 34.7%).\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-01\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":57,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-01-cce9404722564ef5.png\"}}},{\"id\":\"44b23d4c-78f2-5886-b439-fe95633e2efe\",\"version\":5,\"score\":0.43663126,\"payload\":{\"page_content\":\"TABLE
+        III BEHAVIOUR BY STRATEGY, AVERAGED OVER ALL FOUR POISONING LEVELS. EACH STRATEGY
+        AGGREGATES 196 RUNS.\\n\\n| Strategy    |   Clean acc. (%) |   Poisoned acc.
+        (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|-------------|------------------|---------------------|-------------------|--------------------|\\n|
+        Entity swap |             78.1 |                54.6 |              23.5 |
+        \              43.4 |\\n| Number swap |             77.6 |                57.7
+        |              20.4 |               30.1 |\\n| Negation    |             78.1
+        |                60.2 |              19.4 |               32.1 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0002\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":45,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        III BEHAVIOUR BY STRATEGY, AVERAGED OVER ALL FOUR POISONING LEVELS. EACH STRATEGY
+        AGGREGATES 196 RUNS.\\n\\n| Strategy    |   Clean acc. (%) |   Poisoned acc.
+        (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|-------------|------------------|---------------------|-------------------|--------------------|\\n|
+        Entity swap |             78.1 |                54.6 |              23.5 |
+        \              43.4 |\\n| Number swap |             77.6 |                57.7
+        |              20.4 |               30.1 |\\n| Negation    |             78.1
+        |                60.2 |              19.4 |               32.1 |\"}}},{\"id\":\"a44c45f3-30fe-539c-8e4c-b53e70d91aee\",\"version\":5,\"score\":0.43415368,\"payload\":{\"page_content\":\"D.
+        Evaluation Metrics\\nFor every run the model retrieves once, then answers
+        twice: once from the clean passages and once from a poisoned copy of that
+        same list. Passage identity and order are therefore shared across the pair;
+        what is not locked is decoding (temperature 0.1, two independent generate
+        calls). Four quantities are recorded.\\nAccuracy checks whether the reference
+        keyword for a question appears in the answer, case-insensitively. Keyword
+        presence is a coarse label: a negated or qualified answer can still contain
+        the keyword, and an otherwise correct paraphrase can miss it. We keep it because
+        it is reproducible and applied uniformly, not because it is a gold standard.
+        Fooled rate is the fraction of runs where the clean answer was correct but
+        the poisoned answer was not; it isolates correct-to-incorrect flips from questions
+        the model could not answer anyway. It is not a direct measure of poison adoption,
+        because an incorrect poisoned answer may abstain, contradict the poison, or
+        state a third wrong fact. Abstention rate counts answers that decline to commit,
+        detected through a small set of phrases such as 'not enough information' and
+        'cannot determine.' Unsupported generation (reported in earlier drafts as
+        a hallucination proxy) is approximated by lexical overlap: an answer is flagged
+        when fewer than 30% of its content words appear in any retrieved passage,\\n<!--
+        formula-not-decoded -->\\nwith W a the content words of the answer and W d
+        those of the retrieved passages. Lexical overlap confuses faithful paraphrase
+        with unsupported invention, and it can miss answers that copy poisoned text.
+        We treat the proxy as a trend indicator only.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"D.
+        Evaluation Metrics\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":25,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"23e17e81-fbad-51dc-a1c1-07373bb5e64e\",\"version\":5,\"score\":0.43133748,\"payload\":{\"page_content\":\"C.
+        Poisoning Level\\nThe poisoning level is the number of the three retrieved
+        passages that are corrupted before generation. We sweep all four values, from
+        none to all three:\\n<!-- formula-not-decoded -->\\nAt 0 / 3 the passages
+        are left untouched, giving a withincondition baseline. At 3 / 3 every passage
+        the model sees has been rewritten. The passages to corrupt are chosen at random
+        among the three, which lets a single clean passage sit anywhere in the ordering.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Poisoning Level\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":21,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"dddac35f-5d4b-5ded-8013-36c20a4708fe\",\"version\":15,\"score\":0.42372954,\"payload\":{\"page_content\":\"5.3
+        RLVR does not make citations more faithful\\nIt does not. Search-R1 moves
+        by -1.2, +4.3, -0.9, and +1.3pp across the four datasets; ReSearch by +0.1,
+        -1.6, -1.2, and +0.8pp. Both wander around zero with no pattern, every interval
+        covers zero, and the smallest Holm-adjusted p -value in either row is 0.267,
+        nowhere near signif- icance. Set that against our detection bound: with 80%
+        power at about 7pp, an improvement of that size would have been hard to miss,
+        and nothing close to it appears. Training these agents to produce verifiably
+        correct answers moved their citation faithfulness by an amount we cannot distinguish
+        from nothing.\\nThat result is less surprising once you look at what the reward
+        measures. RLVR compares the final answer with a reference and pays out accordingly;
+        R-Search also rewards steps along its search trajectory. No term anywhere
+        in these objectives asks whether the citation attached to a sentence is the
+        passage that produced it. Citing the wrong passage is free, so the behavior
+        the agents inherit from Qwen2.5-7B-Instruct rides through training untouched.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.3
+        RLVR does not make citations more faithful\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":93,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"d6bfc4cc-f7d3-52b0-bda9-ff9f46064420\",\"version\":15,\"score\":0.4224143,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nREL-UNCITED: the raw rate survives untouched. Read
+        the top block: 52 of 371 NQ claims follow the plant, and 0 of those same 371
+        records cite the doctored passage when we take the span away. The control
+        column is 0/ n on all four datasets, which is what Section 3.3 predicted,
+        because removing four appended words restores the clean context exactly and
+        the clean answer never cited that passage for that claim. Prediction and measurement
+        agree, so +14.0pp on NQ is not a raw rate that needs an asterisk; it is the
+        attributable effect.\\nRANDOM: the control is real but tiny. Swapping in a
+        passage from an unrelated question does occasionally earn a citation on its
+        own, as the 4/433 on HAGRID and 1/864 on RAGTruth show, but the effect is
+        small: 0.2% pooled across the 7,625 control records, with 7 of 16 model-dataset
+        cells at exactly zero and the rest between 0.1% and 0.9% (Appendix D). Between
+        83% and 100% of each raw rate survives as attributable, 97% on average. The
+        confound we built this control to catch turned out to be genuine and negligible,
+        which is worth knowing precisely because we could not have assumed it.\\nCITED-OTHER:
+        the raw rate lies, and the control catches it. The bottom block is the reason
+        we care about all this. Planted rates run from 78.9% to 89.6%, many times
+        the REL-UNCITED rates, and any paper could report them as evidence of rampant
+        post-rationalization. The control column explains them away: 69/69, 123/123,
+        61/61, 623/623. Every single control record cites the doctored passage, because
+        this variant selects a passage the clean answer already cited elsewhere. Subtract,
+        and the attributable effect is negative on all four datasets, from -10.4pp
+        to -21.1pp, with intervals that exclude zero. A raw rate of 79-90% here measures
+        our sampling rule and nothing else. Under the stricter claim-aligned outcome
+        the same records do show genuine post-rationalization, +10.6 to +19.7pp (Appendix
+        D), though only RAGTruth has enough questions to pin it down.\\nThe moral
+        generalizes past this probe: whenever a measurement edits an input and counts
+        how often the output changes, report the unedited baseline, and demonstrate
+        rather than assume that it is zero.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0015\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":78,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"8c166fb5-399b-59e9-a610-789ac782c808\",\"version\":15,\"score\":0.4185621,\"payload\":{\"page_content\":\"3.2
+        What counts as citing the planted passage\\nThe re-run answer may be worded
+        differently, so we first locate the sentence that best matches the original
+        claim by word overlap (Jaccard similarity of at least 0.3), then ask whether
+        that sentence cites the doctored passage. This is our claim-aligned outcome,
+        and the pairing carries the weight: it asks whether the model cited the planted
+        passage for the claim we planted into , not whether the marker turns up loose
+        somewhere in the answer. We keep the looser cited-anywhere outcome as a sensitivity
+        check, and Section 5.1 shows how much slack it introduces.\\nWe score every
+        record, with no filtering on whether the planted span reappears in the new
+        answer. The original probe conditions on exactly that, and our control shows
+        why it should not: with nothing planted at all, those four words come back
+        in 60-74% of answers, simply because the model wrote them in the first place.
+        Span recovery tells us the model repeated itself, not that our plant did anything.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"3.2
+        What counts as citing the planted passage\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":46,\"page_no\":3,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.41741347,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001011369}"
     headers:
       content-type:
       - application/json

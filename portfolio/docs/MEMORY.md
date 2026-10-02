@@ -380,6 +380,28 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-10-02 — first replay failed on zstd; fixed, and replay reproduces the baseline
+
+- **Symptom:** `run_eval.py --replay` died in the setup cassette with `UnicodeDecodeError ... 0xb5`.
+  **Cause:** Qdrant answers httpx's `Accept-Encoding: zstd` with zstd (`zstandard` is installed);
+  vcrpy's `decode_compressed_response` handles gzip/deflate/br only, and our response-header
+  allow-list dropped `content-encoding`, so all 67 Qdrant bodies were stored compressed but
+  labelled JSON. **Fix:** `replay._decode_zstd` decompresses before scrubbing, and any other codec
+  left undecoded now aborts the recording. The committed cassettes were decoded in place (vcrpy's
+  serializer round-trips all 68 files byte-identically, so only the bodies changed).
+- **Second latent CI failure, fixed before it bit:** `langchain_voyageai` tokenizes every embedded
+  text (queries too) via a Hugging Face Hub download. The recording captured only two `HEAD`s off a
+  warm cache; a cold CI runner would `GET` and miss. Tokenization is now offline in record and
+  replay (whitespace count -- one short text per call batches identically); the two HF
+  interactions were removed from `_setup.yaml`.
+- **Verified:** the CI job reproduced locally (Postgres 16 rather than CI's 18, `QDRANT_URL` set to
+  an unresolvable host, dummy keys, no `.env`): `alembic upgrade head`, `eval_registry.py load`,
+  `AGGREGATE_ANSWERING=true run_eval.py --replay --judges --gate` → exit 0, no misses, no remote
+  sockets, **all 43 score cells equal to `baseline_scores.json`**. New unit tests written, not run
+  (user directive).
+- **The `eval-gate` job must set `AGGREGATE_ANSWERING=true`** to match the recording (it was
+  recorded with the flag on) -- set in the same commit.
+
 ### 2026-09-29 (night) — corpus swapped to all-CC-BY, replay + CI gate built, refusals answered
 
 Built by three Sonnet subagents in isolated worktrees (user: "Sonnet agents build, Opus

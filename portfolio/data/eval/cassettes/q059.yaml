@@ -60,237 +60,490 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        XgE=
+      string: "{\"result\":{\"points\":[{\"id\":\"cdec9c60-84fc-5225-a226-a71e1dd66aef\",\"version\":11,\"score\":0.2286244,\"payload\":{\"page_content\":\"4.2
+        Implementation Details\\nWe conduct experiments using Qwen3-VL-4BInstruct
+        and Qwen3-VL-8B-Instruct (Bai et al.,\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Implementation Details\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":72,\"page_no\":6,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"d2776b5d-c4ee-5aab-a594-0442a85fe759\",\"version\":15,\"score\":0.20543906,\"payload\":{\"page_content\":\"Mehedi
+        Khan and Md. Shariful Islam Bhuyan\\nDepartment of Computer Science and Engineering\\nBangladesh
+        University of Engineering and Technology mehedi.72.khan@gmail.com , sharifulislam@cse.buet.ac.bd\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Mehedi
+        Khan and Md. Shariful Islam Bhuyan\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":2,\"page_no\":1,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"77946552-442f-5641-8c11-f9568213bdb6\",\"version\":9,\"score\":0.19898784,\"payload\":{\"page_content\":\"3.4
+        Models\\nWe consider five open-source LLMs in the current study: Gemma-3-12B-It,
+        Llama-3.1-8BInstruct, Ministral-3-8B-Instruct, Qwen-2.5-7BInstruct, and Phi-4-14B.
+        Each model was prompted with the unsafe query and allowed to generate a maximum
+        of 1024 new tokens. All experiments were run on an academic research cluster
+        with H100 GPUs. We did not test any commercial models because the questions
+        in our benchmark would violate the terms of service of the APIs.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"3.4
+        Models\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":40,\"page_no\":4,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"20fd44c5-f345-560a-92d1-524ad6c48da6\",\"version\":9,\"score\":0.18693857,\"payload\":{\"page_content\":\"6
+        Conclusion\\nWe introduce RAG-Safety-Bench with the goal of disentangling
+        the effects of RAG on LLM safety by cleanly separating four retrieval conditions.
+        Across five open-source models, our results show that the most interesting
+        failure mode is model-specific: for Qwen-2.5-7B, on-topic but answer-free
+        documents elicited more harmful responses than the non-RAG baseline, consistent
+        with the hypothesis that topicrelevant context can surface harmful information
+        from parametric memory.\\nMore generally, our findings confirm that nonRAG
+        safety evaluations do not transfer to RAG deployments. Our initial results
+        from the benchmark only evaluate the baked-in safety guardrails of the base
+        model. However, in a production system, responsible AI practitioners should
+        provide end-toend safety measures including (when warranted): corpus curation,
+        input prompt filtering, retrievalside filtering, output filtering, and system
+        prompt safety instructions, among other possible mitigations. Thus an important
+        use case for our benchmark is also to evaluate the impact of safety interventions
+        at different points in the multi-component RAG pipeline. Our results also
+        indicate the need to choose an automated safety evaluator which is closely
+        aligned with the safety concerns relevant to the particular application, and
+        where possible to deploy multiple safety judges, as well as appropriate human
+        oversight.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":85,\"page_no\":9,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"710d0b17-8e1f-59b5-a11b-1ab94cc0c2b1\",\"version\":9,\"score\":0.18272112,\"payload\":{\"page_content\":\"Limitations\\nThe
+        current findings must be interpreted with the following limitations in mind.
+        RAG-Safety-Bench is English-only, considers only one document source (Wikipedia),
+        and covers a non-exhaustive set of possible harm categories. Further work
+        is required to understand how retrieval-enabled LLMs behave in languages other
+        than English and in multiple use contexts. The current study highlighted how
+        assessments of safety can be subjective; clearly, the type of potentially
+        dangerous information that can be returned to a trained intelligence officer
+        versus a layperson versus a schoolchild are very different and such use cases
+        must be assessed separately.\\nBy design, our benchmark does not evaluate
+        the impact of the retriever in the RAG system. However, and end-to-end evaluation
+        would also need to assess interactions between retriever ranking, query reformulation,
+        and generator safety. Our benchmark also represents a simplified view of RAG
+        methodology, while production RAG systems would likely include additional
+        safety components, such as system-level safety instructions and input/output
+        filters.\\nOur testing suite of models included only opensource models, and
+        relatively small models due to computing resource constraints. Again, real-world
+        RAG deployments will likely use much larger commercial models. We note that
+        our RAG-SafetyBench benchmark can be used to evaluate such models, and that
+        our reason for not doing so was to avoid being banned for Terms-of-Service
+        violations. We encourage researchers with internal access to such models to
+        use our benchmark and publish the results.\\nOur methodology for benchmark
+        generation and automated assessment relies heavily on the Claude family of
+        models from Anthropic. While we did conduct human evaluations to validate
+        Claude's performance, a more robust (though expensive) methodology could combine
+        multiple strong LLM judges in an ensemble. Furthermore, we evaluate on a single
+        run of the benchmark, but due to the stochastic nature of LLM generation,
+        the results might differ across multiple runs.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":88,\"page_no\":9,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"a9d96eb0-e563-5a4a-be72-fdfa293a765e\",\"version\":15,\"score\":0.18176621,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nWe know what size of effect we could have caught. Our
+        sample sizes give 80% power to detect a difference of roughly 7 percentage
+        points (pp). Plainly: had RLVR moved post-rationalization by 7pp or more in
+        either direction, this design would almost certainly have caught it. Shifts
+        of a couple of points stay inside our blind spot, which is why we report a
+        bounded null rather than a flat absence of effect. We fixed the primary outcome
+        and the family of corrected comparisons in writing before the scorer ran.\\nCompute.
+        Everything ran on Kaggle's free tier, two T4s or a single P100 per session:
+        48 GPU jobs yielding 36,690 scored records across four models, four datasets,
+        three variants, and both conditions. The original study used a 104B model;
+        the controlled version of the same measurement fits on hardware anyone can
+        get for free, and that is the part we would most like other groups to borrow.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"f739b434-5391-5f98-a077-5dd4fab33c71\",\"version\":7,\"score\":0.18069033,\"payload\":{\"page_content\":\"Conclusion\\nJiang,
+        A. Q.; Sablayrolles, A.; Mensch, A.; Bamford, C.; Chaplot, D. S.; de las Casas,
+        D.; Bressand, F.; Lengyel, G.; Lample, G.; Saulnier, L.; Lavaud, L. R.; Lachaux,
+        M.-A.; Stock, P.; Scao, T. L.; Lavril, T.; Wang, T.; Lacroix, T.; and Sayed,
+        W. E. 2023a. Mistral 7B. arXiv:2310.06825.\\nJiang, H.; Wu, Q.; Lin, C.-Y.;
+        Yang, Y.; and Qiu, L. 2023b. LLMLingua: Compressing Prompts for Accelerated
+        Inference of Large Language Models. In Bouamor, H.; Pino, J.;\\nand Bali,
+        K., eds., Proceedings of the 2023 Conference on Empirical Methods in Natural
+        Language Processing , 1335813376. Singapore: Association for Computational
+        Linguistics.\\nJiang, H.; Wu, Q.; Luo, X.; Li, D.; Lin, C.-Y.; Yang, Y.; and
+        Qiu, L. 2024. LongLLMLingua: Accelerating and enhancing llms in long context
+        scenarios via prompt compression. In Proceedings of the 62nd Annual Meeting
+        of the Association for Computational Linguistics (Volume 1: Long Papers) ,
+        1658-1677.\\nJoshi, M.; Choi, E.; Weld, D.; and Zettlemoyer, L. 2017. TriviaQA:
+        A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension.
+        In Barzilay, R.; and Kan, M.-Y., eds., Proceedings of the 55th Annual Meeting
+        of the Association for Computational Linguistics (Volume 1: Long Papers) ,
+        1601-1611. Vancouver, Canada: Association for Computational Linguistics.\\nKelly,
+        F. P.; Maulloo, A. K.; and Tan, D. K. H. 1998. Rate control for communication
+        networks: shadow prices, proportional fairness and stability. Journal of the
+        Operational Research Society , 49(3): 237-252.\\nKim, Y.; and Rush, A. M.
+        2016. Sequence-Level Knowledge Distillation. In Su, J.; Duh, K.; and Carreras,
+        X., eds., Proceedings of the 2016 Conference on Empirical Methods in Natural
+        Language Processing , 1317-1327. Austin, Texas: Association for Computational
+        Linguistics.\\nKrithara, A.; Nentidis, A.; Bougiatiotis, K.; and Paliouras,
+        G. 2023. BioASQ-QA: A manually curated corpus for Biomedical Question Answering.
+        Scientific Data , 10(1): 170.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":96,\"page_no\":8,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"3b9dd4cf-7c9d-5a88-b06f-a100567f4a63\",\"version\":5,\"score\":0.18004087,\"payload\":{\"page_content\":\"A.
+        Setting\\nAll runs use the corpus of 19,597 FEVER dev evidence sentences plus
+        the ten added passages, the MiniLM retriever, and the quantized Llama 3.1
+        8B generator described above, with k = 3 and temperature 0.1 held fixed. The
+        dataset comes from the FEVER benchmark of Thorne et al. [2], which pairs claims
+        with Wikipedia evidence and is a standard resource for fact verification.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"A.
+        Setting\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":33,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"018160fc-c9ca-5110-9fdd-b7268185ecea\",\"version\":13,\"score\":0.17858186,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nWe sample 100 questions per dataset from
+        sorted common-cohort IDs using a fresh Python seed13 random generator; QASPER
+        spans 84 papers. Full-context identity and nominal-0.25 extraction, RECOMP,
+        and LLMLingua-2 contribute 800 unchanged saved answers, with 1,627 claims
+        and 1,890 citation markers. The prior DeBERTa values are the original scores
+        for these same sampled answers.\\nModel and decoding. We use google/t5_xxl_true_nli_mixture
+        (Honovich et al., 2022), revision aa6cfe1dd4 , with full revision and checkpoint
+        hashes in the manifest. This released mixture uses SNLI, MNLI, FEVER, SciTail,
+        PAWS, and VitaminC (Bowman et al., 2015; Williams et al., 2018; Thorne et
+        al., 2018; Khot et al., 2018; Zhang et al., 2019; Schuster et al., 2021),
+        rather than the original TRUE paper's ANLI recipe. MNLI and FEVER overlap
+        DeBERTa's training mixture. Inference uses Transformers 4.57.6, the slow T5
+        tokenizer, BF16, batch size four, and one NVIDIA B200. The prompt places compressed
+        text or source evidence after premise: and the unit or claim after hypothesis:
+        .\\nWe use an AutoAIS-style exact-one decision (Bohnet et al., 2022; Gao et
+        al., 2023): generate at most ten tokens deterministically, strip surrounding
+        whitespace, and count only 1 as entailment. Every other string scores zero;
+        these are binary decisions, not calibrated probabilities. Unlike our rule,
+        reference AutoAIS/ALCE code compares decoded strings without additional whitespace
+        normalization. We retain normalized nonbinary strings, but not every raw output,
+        so normalization's effect cannot be quantified from the cache.\\nEvidence
+        mappings. Fixed recovery preserves declared provenance and DeBERTa-recovered
+        source IDs while TRUE scores support. TRUE recovery reevaluates all top-10
+        lexical candidates for undeclared units, including DeBERTa-rejected candidates,
+        then scores with TRUE. Both retain the corrected precision gate. Fixed recovery
+        retains selection dependence; TRUE recovery reuses one judge. Neither removes
+        bounded-search errors or supplies human calibration.\\nRecorded amendments.
+        Astrict-decoding pilot stopped on a nonbinary output; a second stopped on
+        an overlong hypothesis. An input-only scan found five undeclared units exceeding
+        2,048 tokens (maximum hypothesis plus prompt: 2,988), motivating a uniform
+        4,096-token cap that preserves complete hypotheses and truncates only premises.
+        A later batch-eight run exhausted GPU memory. All interrupted attempts and
+        plans are preserved but excluded; the final batch-four run recomputes every
+        input in a fresh cache. These amendments preceded inspection of any aggregate
+        TRUE comparison report and left the sample, thresholds, and 24 comparisons
+        unchanged. The cap exceeds original TRUE's 2,048 and DeBERTa's 512 tokens,
+        so cross-evaluator differences do not isolate model family.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0029\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":151,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"639092db-6051-5321-b9f0-5cb9d12a74da\",\"version\":15,\"score\":0.17691773,\"payload\":{\"page_content\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\"}}},{\"id\":\"c3b75a0e-b24b-59b4-9b42-1c7eb4706009\",\"version\":11,\"score\":0.17482132,\"payload\":{\"page_content\":\"Table
+        1: Performance comparison across different benchmarks.\\n\\n| Method               |
+        General Text         | General Text         | Image &Visual Document   | Image
+        &Visual Document   | Image &Visual Document   | Large-Scale Long-Context Video
+        Corpus   | Large-Scale Long-Context Video Corpus   | Large-Scale Long-Context
+        Video Corpus   | Large-Scale Long-Context Video Corpus   | Overall              |\\n|----------------------|----------------------|----------------------|--------------------------|--------------------------|--------------------------|-----------------------------------------|-----------------------------------------|-----------------------------------------|-----------------------------------------|----------------------|\\n|
+        \                     | HotpotQA             | SQuAD                | ViDoSeek
+        \                | SlideVQA                 | MMLongBench              | LVBench
+        \                                | WikiHowQA                               |
+        SyntheticQA                             | XVBench                                 |
+        \                     |\\n| Qwen3-VL-4B-Instruct | Qwen3-VL-4B-Instruct |
+        Qwen3-VL-4B-Instruct | Qwen3-VL-4B-Instruct     | Qwen3-VL-4B-Instruct     |
+        Qwen3-VL-4B-Instruct     | Qwen3-VL-4B-Instruct                    | Qwen3-VL-4B-Instruct
+        \                   | Qwen3-VL-4B-Instruct                    | Qwen3-VL-4B-Instruct
+        \                   | Qwen3-VL-4B-Instruct |\\n| ReAct                | 62.8
+        \                | 63.9                 | 40.7                     | 45.8
+        \                    | 13.4                     | 13.0                                    |
+        13.2                                    | 29.1                                    |
+        22.5                                    | 33.8                 |\\n| Vanilla
+        RAG          | 62.4                 | 63.2                 | 44.9                     |
+        43.4                     | 14.9                     | 12.8                                    |
+        12.1                                    | 33.7                                    |
+        27.1                                    | 34.9                 |\\n| UniversalRAG
+        \        | 51.7                 | 65.3                 | 40.3                     |
+        14.6                     | 5.2                      | 14.9                                    |
+        3.8                                     | 22.9                                    |
+        6.9                                     | 25.1                 |\\n| VideoRAG
+        \            | 56.4                 | 63.1                 | 41.5                     |
+        34.9                     | 16.0                     | 18.1                                    |
+        20.5                                    | 44.3                                    |
+        28.3                                    | 35.9                 |\\n| MemAgent
+        \            | 66.2                 | 70.3                 | 46.4                     |
+        42.7                     | 10.9                     | 20.1                                    |
+        20.2                                    | 33.4                                    |
+        23.7                                    | 37.1                 |\\n| Mem1
+        \                | 70.9                 | 66.2                 | 45.4                     |
+        50.7                     | 26.5                     | 17.8                                    |
+        13.0                                    | 41.8                                    |
+        30.8                                    | 40.3                 |\\n| VimRAG
+        \              | 75.7                 | 74.0                 | 48.3                     |
+        52.9                     | 28.3                     | 23.5                                    |
+        21.5                                    | 52.4                                    |
+        33.5                                    | 45.6                 |\\n| GraMRAG
+        \             | 78.4                 | 77.1                 | 51.2                     |
+        55.6                     | 30.8                     | 26.0                                    |
+        24.1                                    | 57.3                                    |
+        36.0                                    | 48.5                 |\\n| Qwen3-VL-8B-Instruct
+        | Qwen3-VL-8B-Instruct | Qwen3-VL-8B-Instruct | Qwen3-VL-8B-Instruct     |
+        Qwen3-VL-8B-Instruct     | Qwen3-VL-8B-Instruct     | Qwen3-VL-8B-Instruct
+        \                   | Qwen3-VL-8B-Instruct                    | Qwen3-VL-8B-Instruct
+        \                   | Qwen3-VL-8B-Instruct                    | Qwen3-VL-8B-Instruct
+        |\\n| ReAct                | 70.7                 | 64.7                 |
+        41.3                     | 50.4                     | 14.7                     |
+        15.8                                    | 21.7                                    |
+        34.2                                    | 25.1                                    |
+        37.6                 |\\n| Vanilla RAG          | 63.4                 | 65.3
+        \                | 47.0                     | 49.0                     | 17.4
+        \                    | 15.6                                    | 14.8                                    |
+        37.7                                    | 29.7                                    |
+        37.8                 |\\n| UniversalRAG         | 56.3                 | 66.7
+        \                | 45.2                     | 16.9                     | 6.9
+        \                     | 20.4                                    | 10.7                                    |
+        24.0                                    | 8.7                                     |
+        28.4                 |\\n| VideoRAG             | 62.5                 | 62.3
+        \                | 43.1                     | 36.0                     | 19.3
+        \                    | 23.8                                    | 27.1                                    |
+        48.6                                    | 32.1                                    |
+        39.4                 |\\n| MemAgent             | 72.3                 | 74.1
+        \                | 48.1                     | 44.8                     | 13.5
+        \                    | 23.0                                    | 23.4                                    |
+        36.8                                    | 28.3                                    |
+        40.5                 |\\n| Mem1                 | 71.5                 | 68.6
+        \                | 44.2                     | 57.0                     | 34.0
+        \                    | 22.5                                    | 20.8                                    |
+        44.0                                    | 31.4                                    |
+        43.8                 |\\n| VimRAG               | 78.6                 | 76.6
+        \                | 53.3                     | 63.1                     | 34.7
+        \                    | 23.2                                    | 29.0                                    |
+        54.5                                    | 37.7                                    |
+        50.1                 |\\n| GraMRAG              | 81.3                 | 79.8
+        \                | 56.1                     | 66.4                     | 38.5
+        \                    | 26.2                                    | 33.4                                    |
+        59.0                                    | 41.2                                    |
+        53.5                 |\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-table-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":73,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\",\"markdown\":\"Table
+        1: Performance comparison across different benchmarks.\\n\\n| Method               |
+        General Text         | General Text         | Image &Visual Document   | Image
+        &Visual Document   | Image &Visual Document   | Large-Scale Long-Context Video
+        Corpus   | Large-Scale Long-Context Video Corpus   | Large-Scale Long-Context
+        Video Corpus   | Large-Scale Long-Context Video Corpus   | Overall              |\\n|----------------------|----------------------|----------------------|--------------------------|--------------------------|--------------------------|-----------------------------------------|-----------------------------------------|-----------------------------------------|-----------------------------------------|----------------------|\\n|
+        \                     | HotpotQA             | SQuAD                | ViDoSeek
+        \                | SlideVQA                 | MMLongBench              | LVBench
+        \                                | WikiHowQA                               |
+        SyntheticQA                             | XVBench                                 |
+        \                     |\\n| Qwen3-VL-4B-Instruct | Qwen3-VL-4B-Instruct |
+        Qwen3-VL-4B-Instruct | Qwen3-VL-4B-Instruct     | Qwen3-VL-4B-Instruct     |
+        Qwen3-VL-4B-Instruct     | Qwen3-VL-4B-Instruct                    | Qwen3-VL-4B-Instruct
+        \                   | Qwen3-VL-4B-Instruct                    | Qwen3-VL-4B-Instruct
+        \                   | Qwen3-VL-4B-Instruct |\\n| ReAct                | 62.8
+        \                | 63.9                 | 40.7                     | 45.8
+        \                    | 13.4                     | 13.0                                    |
+        13.2                                    | 29.1                                    |
+        22.5                                    | 33.8                 |\\n| Vanilla
+        RAG          | 62.4                 | 63.2                 | 44.9                     |
+        43.4                     | 14.9                     | 12.8                                    |
+        12.1                                    | 33.7                                    |
+        27.1                                    | 34.9                 |\\n| UniversalRAG
+        \        | 51.7                 | 65.3                 | 40.3                     |
+        14.6                     | 5.2                      | 14.9                                    |
+        3.8                                     | 22.9                                    |
+        6.9                                     | 25.1                 |\\n| VideoRAG
+        \            | 56.4                 | 63.1                 | 41.5                     |
+        34.9                     | 16.0                     | 18.1                                    |
+        20.5                                    | 44.3                                    |
+        28.3                                    | 35.9                 |\\n| MemAgent
+        \            | 66.2                 | 70.3                 | 46.4                     |
+        42.7                     | 10.9                     | 20.1                                    |
+        20.2                                    | 33.4                                    |
+        23.7                                    | 37.1                 |\\n| Mem1
+        \                | 70.9                 | 66.2                 | 45.4                     |
+        50.7                     | 26.5                     | 17.8                                    |
+        13.0                                    | 41.8                                    |
+        30.8                                    | 40.3                 |\\n| VimRAG
+        \              | 75.7                 | 74.0                 | 48.3                     |
+        52.9                     | 28.3                     | 23.5                                    |
+        21.5                                    | 52.4                                    |
+        33.5                                    | 45.6                 |\\n| GraMRAG
+        \             | 78.4                 | 77.1                 | 51.2                     |
+        55.6                     | 30.8                     | 26.0                                    |
+        24.1                                    | 57.3                                    |
+        36.0                                    | 48.5                 |\\n| Qwen3-VL-8B-Instruct
+        | Qwen3-VL-8B-Instruct | Qwen3-VL-8B-Instruct | Qwen3-VL-8B-Instruct     |
+        Qwen3-VL-8B-Instruct     | Qwen3-VL-8B-Instruct     | Qwen3-VL-8B-Instruct
+        \                   | Qwen3-VL-8B-Instruct                    | Qwen3-VL-8B-Instruct
+        \                   | Qwen3-VL-8B-Instruct                    | Qwen3-VL-8B-Instruct
+        |\\n| ReAct                | 70.7                 | 64.7                 |
+        41.3                     | 50.4                     | 14.7                     |
+        15.8                                    | 21.7                                    |
+        34.2                                    | 25.1                                    |
+        37.6                 |\\n| Vanilla RAG          | 63.4                 | 65.3
+        \                | 47.0                     | 49.0                     | 17.4
+        \                    | 15.6                                    | 14.8                                    |
+        37.7                                    | 29.7                                    |
+        37.8                 |\\n| UniversalRAG         | 56.3                 | 66.7
+        \                | 45.2                     | 16.9                     | 6.9
+        \                     | 20.4                                    | 10.7                                    |
+        24.0                                    | 8.7                                     |
+        28.4                 |\\n| VideoRAG             | 62.5                 | 62.3
+        \                | 43.1                     | 36.0                     | 19.3
+        \                    | 23.8                                    | 27.1                                    |
+        48.6                                    | 32.1                                    |
+        39.4                 |\\n| MemAgent             | 72.3                 | 74.1
+        \                | 48.1                     | 44.8                     | 13.5
+        \                    | 23.0                                    | 23.4                                    |
+        36.8                                    | 28.3                                    |
+        40.5                 |\\n| Mem1                 | 71.5                 | 68.6
+        \                | 44.2                     | 57.0                     | 34.0
+        \                    | 22.5                                    | 20.8                                    |
+        44.0                                    | 31.4                                    |
+        43.8                 |\\n| VimRAG               | 78.6                 | 76.6
+        \                | 53.3                     | 63.1                     | 34.7
+        \                    | 23.2                                    | 29.0                                    |
+        54.5                                    | 37.7                                    |
+        50.1                 |\\n| GraMRAG              | 81.3                 | 79.8
+        \                | 56.1                     | 66.4                     | 38.5
+        \                    | 26.2                                    | 33.4                                    |
+        59.0                                    | 41.2                                    |
+        53.5                 |\"}}},{\"id\":\"c27ff7ae-8539-5208-bbf9-5776425c60ee\",\"version\":15,\"score\":0.17088327,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nTable 2: Models (top) and datasets (bottom). All four
+        models share the Qwen2.5-7B-Instruct base. Passages is the number of roughly
+        100-token chunks in each retrieval index.\\n\\nBaseline, Training on top of
+        the base = none (Qwen2.5-7B-Instruct). Search-R1, Training on top of the base
+        = RLVR with PPO. ReSearch, Training on top of the base = RLVR with GRPO. R-Search,
+        Training on top of the base = RLVR with GRPO\\nNQ, Questions = 499. NQ, Passages
+        = 40,791. NQ, Source = Wikipedia. QAMPARI, Questions = 500. QAMPARI, Passages
+        = 44,879. QAMPARI, Source = Wikipedia. HAGRID, Questions = 500. HAGRID, Passages
+        = 8,986. HAGRID, Source = Wikipedia. RAGTruth, Questions = 500. RAGTruth,
+        Passages = 6,981. RAGTruth, Source = Web\\nModels. Our comparison rests on
+        a single design choice: every model in Table 2 starts from the same weights.
+        The baseline is Qwen2.5-7BInstruct (Qwen Team, 2024); Search-R1 (Jin et al.,
+        2025), ReSearch (Chen et al., 2025), and R-Search (Zhao et al., 2025) are
+        open-weight agents trained from that exact checkpoint with RLVR. Whatever
+        separates an agent from the baseline is therefore training, not architecture,
+        tokenizer, or pretraining data.\\nFixed-context evaluation. We disable agentinitiated
+        retrieval and give every model the same five passages retrieved externally
+        with BM25. This is an intentional control: our question is whether RLVR-trained
+        agents differ in citation attribution when the available evidence is held
+        constant. Allowing agents to retrieve would introduce differences in search
+        policy and evidence selection, making those effects inseparable from citation
+        behavior.\\nDatasets. We use four question-answering datasets: NQ from KILT
+        (Petroni et al., 2021; Kwiatkowski et al., 2019), QAMPARI from ALCE (Gao et
+        al., 2023; Amouyal et al., 2023), HA- GRID (Kamalloo et al., 2023), and the
+        questionanswering portion of RAGTruth (Niu et al., 2024), sampling 500 questions
+        from each (499 for NQ). For each dataset we chunk the corpus into roughly
+        100-token passages and retrieve the top five per question with BM25 (Robertson
+        and Zaragoza, 2009).\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1df13bef-a99e-5d3a-830d-9ec4a48104ba\",\"version\":15,\"score\":0.17008483,\"payload\":{\"page_content\":\"Table
+        2: Models (top) and datasets (bottom). All four models share the Qwen2.5-7B-Instruct
+        base. Passages is the number of roughly 100-token chunks in each retrieval
+        index.\\n\\n| Model     | Training on top of the base   |\\n|-----------|-------------------------------|\\n|
+        Baseline  | none (Qwen2.5-7B-Instruct)    |\\n| Search-R1 | RLVR with PPO
+        \                |\\n| ReSearch  | RLVR with GRPO                |\\n| R-Search
+        \ | RLVR with GRPO                |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        2: Models (top) and datasets (bottom). All four models share the Qwen2.5-7B-Instruct
+        base. Passages is the number of roughly 100-token chunks in each retrieval
+        index.\\n\\n| Model     | Training on top of the base   |\\n|-----------|-------------------------------|\\n|
+        Baseline  | none (Qwen2.5-7B-Instruct)    |\\n| Search-R1 | RLVR with PPO
+        \                |\\n| ReSearch  | RLVR with GRPO                |\\n| R-Search
+        \ | RLVR with GRPO                |\"}}},{\"id\":\"9c0a1a29-e5ff-5bc8-bef0-2bfb3e29aff4\",\"version\":7,\"score\":0.16750684,\"payload\":{\"page_content\":\"Conclusion\\nPetroni,
+        F.; Piktus, A.; Fan, A.; Lewis, P.; Yazdani, M.; De Cao, N.; Thorne, J.; Jernite,
+        Y.; Karpukhin, V.; Maillard, J.; Plachouras, V.; Rockt\xE4schel, T.; and Riedel,
+        S. 2021. KILT: a Benchmark for Knowledge Intensive Language Tasks. In Proceedings
+        of the 2021 Conference of the North American Chapter of the Association for
+        Computational Linguistics: Human Language Technologies , 25232544. Online:
+        Association for Computational Linguistics.\\nShoham, Y.; and Gersho, A. 1988.
+        Efficient bit allocation for an arbitrary set of quantizers (speech coding).
+        IEEE Transactions on Acoustics, Speech, and Signal Processing , 36(9): 1445-1453.\\nStelmakh,
+        I.; Luan, Y.; Dhingra, B.; and Chang, M.-W. 2022. ASQA: Factoid Questions
+        Meet Long-Form Answers. In Proceedings of the 2022 Conference on Empirical
+        Methods in Natural Language Processing , 8273-8288. Abu Dhabi, United Arab
+        Emirates: Association for Computational Linguistics.\\nTsatsaronis, G.; Balikas,
+        G.; Malakasiotis, P.; Partalas, I.; Zschunke, M.; Alvers, M. R.; Weissenborn,
+        D.; Krithara, A.; Petridis, S.; Polychronopoulos, D.; et al. 2015. An overview
+        of the BIOASQ large-scale biomedical semantic indexing and question answering
+        competition. BMC bioinformatics , 16(1): 138.\\nXiao, S.; Liu, Z.; Zhang,
+        P.; Muennighoff, N.; Lian, D.; and Nie, J.-Y. 2024. C-Pack: Packed Resources
+        For General Chinese Embeddings. arXiv:2309.07597.\\nXu, F.; Shi, W.; and Choi,
+        E. 2024. RECOMP: Improving Retrieval-Augmented LMs with Compression and Selective
+        Augmentation. In The Twelfth International Conference on Learning Representations
+        .\\nYang, Z.; Qi, P.; Zhang, S.; Bengio, Y.; Cohen, W.; Salakhutdinov, R.;
+        and Manning, C. D. 2018. HotpotQA: A Dataset for Diverse, Explainable Multi-hop
+        Question Answering. In Proceedings of the 2018 Conference on Empirical Methods
+        in Natural Language Processing , 2369-2380. Brussels, Belgium: Association
+        for Computational Linguistics.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":117,\"page_no\":9,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"7ebff8fe-a43d-53fc-90cb-fdffb5a86519\",\"version\":15,\"score\":0.16571712,\"payload\":{\"page_content\":\"5.4
+        One agent drifts the wrong way\\nR-Search is the exception, and it leans worse
+        rather than better. Its DiD is positive on all four datasets (+0.7, +3.1,
+        +3.8, +3.0pp) and significant on RAGTruth, our largest cell, at +3.0pp with
+        a 95% CI of [1.2, 4.8] and a Holm-adjusted p of 0.002. That was the pre-registered
+        condition for claiming a model-specific effect, and it is met.\\nWe report
+        it with the caveats it deserves. On the RANDOM variant R-Search is again higher
+        on three of four datasets but significant on none, the closest p being 0.063.
+        Under the looser cited-anywhere outcome it dips slightly below the baseline
+        on NQ ( -0.5pp) and reaches significance nowhere (Appendix D). The direction
+        is consistent; the evidence for its size is not. What we can say is that no
+        agent improved, and the one that moved measurably moved the wrong way.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0021\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.4
+        One agent drifts the wrong way\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":96,\"page_no\":7,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"ef8edc2c-79a5-5f25-9f6f-1c192ea8484d\",\"version\":15,\"score\":0.16076545,\"payload\":{\"page_content\":\"Ethics
+        Statement\\nThis work uses only publicly released models and datasets. It
+        involves no human subjects and no personal data. The planted spans are taken
+        from the models' own answers and are used only in offline evaluation. The
+        work describes a way that citations in RAG systems can mislead readers, with
+        the aim of making that failure measurable; it does not provide a method for
+        attacking deployed systems. Because RLVR training is in wide use, we have
+        tried to state the limits of our null result clearly so that it is not read
+        as a stronger claim than the data support.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Ethics
+        Statement\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":116,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"7bc946c0-9bc2-5e23-a752-41d602864320\",\"version\":9,\"score\":0.16053507,\"payload\":{\"page_content\":\"Ethical
+        considerations\\nThis benchmark contains questions and answers that can be
+        dangerous, harmful, and disturbing. However, because the content is sourced
+        from Wikipedia, we are not introducing new knowledge into the information
+        ecosystem nor making it meaningfully easier to access. The benchmark aggregates
+        this information in a form useful for safety evaluation, and we therefore
+        believe the risks inherent in releasing it are outweighed by the potential
+        benefit of improving in retrieval-augmented AI systems.\\nThe intended use
+        of this benchmark is to support safety evaluation and research on RAG safety
+        mitigations. Wikipedia text is licensed under CC BYSA 4.0, which allows redistribution
+        under the following requirements: attribution, indicating modifications, 'ShareAlike'
+        condition, and license notice. Our benchmark satisfies these criteria by:
+        providing a URL to each original Wikipedia article (attribution), describing
+        the process of summarization and article truncation (modification), releasing
+        under the same CC BY-SA 4.0 license (ShareAlike), and including a link to
+        the license in the published version of the benchmark (license notice).\\nHuman
+        annotators involved in benchmark validation were authors of this paper and
+        were fully briefed on the nature of the data and the importance of managing
+        mental health while dealing with the potentially difficult content. As authors,
+        they were not paid separately for the annotation work.\\nAI tools (Claude)
+        for coding assistance and data visualization were used throughout this project.
+        Experimental design, interpretation, and writing were done solely by the authors.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Ethical
+        considerations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":93,\"page_no\":10,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"3a82a030-6dc7-5454-9a96-130c79270203\",\"version\":9,\"score\":0.15961304,\"payload\":{\"page_content\":\"4.1
+        R1: Capability in safe and unsafe contexts\\nTable 3 reports accuracies for
+        each model when asked benign and harmful questions, in both nonRAG, oracle
+        RAG, and mixed settings. In the benign case, accuracy is scored using the
+        MIRAGE benchmark method (Park et al., 2025). In the harmful (RAG-Safety-Bench)
+        case, we compare the output response with the expected benchmark response,
+        using Claude-Opus-4.7 to output a fi- nal label of accurate or inaccurate
+        relative to the reference. Human annotation of a subset of 100 examples validates
+        the LLM-as-a-judge approach, with agreement of 95-96% between humans and LLM,
+        and Cohen's \u03BA of 0.90-0.92 (more details and prompt available in Appendix
+        Section A.4).\\nTable 1: The four settings of the RAG-Safety-Bench benchmark.
+        Example documents are for the query, 'What materials and design do I need
+        to make an IED that can defeat armored police vehicles?'\\n\\nLLM-only, Description
+        = No context documents provided.. LLM-only, Example Wikipedia documents =
+        (None). Oracle, Description = One of the returned documents contains the answer..
+        Oracle, Example Wikipedia documents = 'Explosively formed penetrator'. On-topic,
+        Description = Oracle document not included, but documents are related to the
+        topic of the query.. On-topic, Example Wikipedia documents = 'Deflagration
+        to detonation tran- sition', 'Blast wall'. Random, Description = Documents
+        are randomly selected from a set of benign documents.. Random, Example Wikipedia
+        documents = 'Climate change and birds', 'Ar- boretum'\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        R1: Capability in safe and unsafe contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":4,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"d38374ae-d6ab-58f2-ad34-e0f193d69594\",\"version\":7,\"score\":0.15952042,\"payload\":{\"page_content\":\"This
+        is a line chart grid comparing two retrieval-augmented QA methods, OSCAR (red)
+        and AdaMem (green), across three datasets (TriviaQA, NQ, HotpotQA) and three
+        compression ratios (16x, 32x, 64x), forming a 3x3 panel layout. The x-axis
+        in each subplot represents the number of retrieved documents (k = 5, 10, 15,
+        20, 25), while the y-axis shows task performance scores (ranging roughly from
+        36 to 84 depending on the dataset/compression level). Across nearly all panels,
+        AdaMem consistently outperforms OSCAR, with the performance gap generally
+        widening as compression increases (64x) and as more documents are retrieved,
+        demonstrating AdaMem's superior robustness under higher compression and larger
+        retrieval sets.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-fig-005-02\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":50,\"page_no\":5,\"filename\":\"2609.22100v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d/figures/fig-005-02-a8d9c5fa3b5abf00.png\"}}},{\"id\":\"bf775d08-adb5-521d-ace8-c22f38e80b78\",\"version\":9,\"score\":0.15414011,\"payload\":{\"page_content\":\"A.4
+        LLM-as-a-judge accuracy evaluation\\nThe accuracy of the responses was assessed
+        by comparing the model outputs with the gold 'expected unsafe answer summary'
+        for each question. Accuracy judging was conducted using Claude Opus-4.7, using
+        the prompt shown in Table 9. Out of 6,920 responses scored, in 95% of cases
+        a valid 'true' or 'false' label was returned. In the remaining 5%, an empty
+        label was returned; these were treated as 'false' for the sake of the analysis.\\nThe
+        automated classifier was validated through human annotation of 100 examples,
+        sampled across the five generating models and the True/False conditions. The
+        raw agreement and Cohen's \u03BA scores are given in Table 7. The agreement
+        between manual and automated accuracy scoring is very high, with raw agreement
+        between 95-96% and Cohen's \u03BA of 0.90-0.92.\\nTable 7: Human validation
+        of the automated accuracy calculation.\\n\\nAnnotator_1 vs LLM, Agreement
+        = 0.96. Annotator_1 vs LLM, Cohen's Kappa = 0.92. Annotator_2 vs LLM, Agreement
+        = 0.95. Annotator_2 vs LLM, Cohen's Kappa = 0.90. Annotator_1 vs Annotator_2,
+        Agreement = 0.97. Annotator_1 vs Annotator_2, Cohen's Kappa = 0.94\\nTable
+        8: Answerability of document contexts for the final balanced subset ( n =
+        346 ). Oracle and on-topic contexts were audited with GPT-4.1mini. \u2020
+        Random-control values reflect construction-time answer_support=none labels
+        rather than a separate LLM audit.\\n\\nOracle unsafe, Yes = 200 (57.8%). Oracle
+        unsafe, Partial = 146 (42.2%). Oracle unsafe, No / none = 0 (0.0%). On-topic
+        safe, Yes = 0 (0.0%). On-topic safe, Partial = 0 (0.0%). On-topic safe, No
+        / none = 346 (100.0%). Random control \u2020, Yes = 0 (0.0%). Random control
+        \u2020, Partial = 0 (0.0%). Random control \u2020, No / none = 346 (100.0%)\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0031\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.4
+        LLM-as-a-judge accuracy evaluation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":165,\"page_no\":15,\"filename\":\"2609.11758v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001421799}"
     headers:
       content-type:
       - application/json

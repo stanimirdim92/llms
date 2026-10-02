@@ -61,182 +61,425 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
+      string: "{\"result\":{\"points\":[{\"id\":\"c5ad079d-2174-562b-a2c7-cfb5337eb098\",\"version\":9,\"score\":0.585449,\"payload\":{\"page_content\":\"This
+        is a heatmap (confusion matrix-style chart) displaying pairwise rater agreement
+        using Cohen's \u03BA among four raters/models: Llama-Guard, WildGuard, ShieldGemma,
+        and Accuracy. The overall Fleiss' \u03BA is 0.56 (n=6920), indicating moderate
+        agreement. The diagonal shows perfect agreement (1.00), while off-diagonal
+        values range from 0.47 to 0.67, with WildGuard and Accuracy showing the highest
+        pairwise agreement (0.67) and Llama-Guard/ShieldGemma and ShieldGemma/Accuracy
+        showing lower agreement (0.48\u20130.49); the color scale ranges from 0 to
+        1.0 (yellow to dark red).\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-008-03\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":73,\"page_no\":8,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-008-03-209562886654c9ad.png\"}}},{\"id\":\"d8117747-1c74-59a9-92ec-afe458058070\",\"version\":9,\"score\":0.4297139,\"payload\":{\"page_content\":\"4.4
+        R4: Subjectivity of harm\\nFigure 4 presents the Cohen's Kappa scores for
+        inter-annotator agreement. LlamaGuard and WildGuard have an agreement of 0.66,
+        indicating substantial agreement. The other pairwise comparisons between the
+        LLM safety judges are 0.47 and 0.48, indicating only moderate agreement. In
+        general, our hypothesis H4 that the automated safety evaluators will disagree
+        on many cases is supported. We additionally include the evaluation of whether
+        the answer was judged to be accurate, compared to the reference answer. The
+        accuracy measure agrees most with the safety ratings of WildGuard with \u03BA
+        = 0 . 67 . These results highlight that different methods of evaluating safety
+        versus harm may lead to different interpretations of the same phenomenon.
+        Overall, the four-way Fleiss's kappa is 0.56, indicating only moderate agreement.
+        However, Figure 5 in the Appendix, which provides a more detailed view of
+        the safety evaluations, suggests that even when the absolute numbers differ,
+        when averaged over a large number of samples, the trends observed using each
+        of the evaluation methods remain generally consistent.\\nTo explore the differences
+        between automated safety evaluators further, Table 4 presents a finegrained
+        analysis of the predicted positive rate for each evaluator on each sub-category
+        of the RAGSafety-Bench benchmark, averaged over all generating models. When
+        averaged over all models and conditions, the predicted positive rate of the
+        evaluators is similar (14% for LlamaGuard, 17% for ShieldGemma, and 20% for
+        WildGuard). However, each evaluator is more sensitive to certain subcategories
+        of harm. For example, LlamaGuard flags responses less often than the other
+        two evaluators Cohen's K\\nFigure 3: Refusal behaviors by model and condition.\\nFigure
+        4: Pairwise Cohen's Kappa scores for each automated safety judge, as well
+        as four-way Fleiss's Kappa.\\nin categories like assault/battery and drugs.
+        ShieldGemma flags far fewer responses in the subcategories of cyberattacks
+        and financial crimes, while flagging more often in categories like chemical
+        weapons, radiological weapons, and explosives. WildGuard is more sensitive
+        to subcategories like hate speech and sexual harassment.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.4
+        R4: Subjectivity of harm\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":69,\"page_no\":7,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"f2ed72a0-6638-5434-a340-461011986b9f\",\"version\":9,\"score\":0.4172028,\"payload\":{\"page_content\":\"Table
+        11: Human validation of the automated refusal classification.\\n\\n| Comparison
+        \                |   Raw agreement |   Cohen's Kappa |\\n|----------------------------|-----------------|-----------------|\\n|
+        Annotator_1 vs LLM         |            0.84 |            0.71 |\\n| Annotator_2
+        vs LLM         |            0.85 |            0.73 |\\n| Annotator_1 vs Annotator_2
+        |            0.92 |            0.86 |\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-table-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":196,\"page_no\":17,\"filename\":\"2609.11758v1.pdf\",\"markdown\":\"Table
+        11: Human validation of the automated refusal classification.\\n\\n| Comparison
+        \                |   Raw agreement |   Cohen's Kappa |\\n|----------------------------|-----------------|-----------------|\\n|
+        Annotator_1 vs LLM         |            0.84 |            0.71 |\\n| Annotator_2
+        vs LLM         |            0.85 |            0.73 |\\n| Annotator_1 vs Annotator_2
+        |            0.92 |            0.86 |\"}}},{\"id\":\"11221c9e-b37f-5f69-9316-ca0130f5aa1d\",\"version\":9,\"score\":0.40751112,\"payload\":{\"page_content\":\"Table
+        7: Human validation of the automated accuracy calculation.\\n\\n| Comparison
+        \                |   Agreement |   Cohen's Kappa |\\n|----------------------------|-------------|-----------------|\\n|
+        Annotator_1 vs LLM         |        0.96 |            0.92 |\\n| Annotator_2
+        vs LLM         |        0.95 |            0.90 |\\n| Annotator_1 vs Annotator_2
+        |        0.97 |            0.94 |\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-table-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":167,\"page_no\":15,\"filename\":\"2609.11758v1.pdf\",\"markdown\":\"Table
+        7: Human validation of the automated accuracy calculation.\\n\\n| Comparison
+        \                |   Agreement |   Cohen's Kappa |\\n|----------------------------|-------------|-----------------|\\n|
+        Annotator_1 vs LLM         |        0.96 |            0.92 |\\n| Annotator_2
+        vs LLM         |        0.95 |            0.90 |\\n| Annotator_1 vs Annotator_2
+        |        0.97 |            0.94 |\"}}},{\"id\":\"bf775d08-adb5-521d-ace8-c22f38e80b78\",\"version\":9,\"score\":0.39549494,\"payload\":{\"page_content\":\"A.4
+        LLM-as-a-judge accuracy evaluation\\nThe accuracy of the responses was assessed
+        by comparing the model outputs with the gold 'expected unsafe answer summary'
+        for each question. Accuracy judging was conducted using Claude Opus-4.7, using
+        the prompt shown in Table 9. Out of 6,920 responses scored, in 95% of cases
+        a valid 'true' or 'false' label was returned. In the remaining 5%, an empty
+        label was returned; these were treated as 'false' for the sake of the analysis.\\nThe
+        automated classifier was validated through human annotation of 100 examples,
+        sampled across the five generating models and the True/False conditions. The
+        raw agreement and Cohen's \u03BA scores are given in Table 7. The agreement
+        between manual and automated accuracy scoring is very high, with raw agreement
+        between 95-96% and Cohen's \u03BA of 0.90-0.92.\\nTable 7: Human validation
+        of the automated accuracy calculation.\\n\\nAnnotator_1 vs LLM, Agreement
+        = 0.96. Annotator_1 vs LLM, Cohen's Kappa = 0.92. Annotator_2 vs LLM, Agreement
+        = 0.95. Annotator_2 vs LLM, Cohen's Kappa = 0.90. Annotator_1 vs Annotator_2,
+        Agreement = 0.97. Annotator_1 vs Annotator_2, Cohen's Kappa = 0.94\\nTable
+        8: Answerability of document contexts for the final balanced subset ( n =
+        346 ). Oracle and on-topic contexts were audited with GPT-4.1mini. \u2020
+        Random-control values reflect construction-time answer_support=none labels
+        rather than a separate LLM audit.\\n\\nOracle unsafe, Yes = 200 (57.8%). Oracle
+        unsafe, Partial = 146 (42.2%). Oracle unsafe, No / none = 0 (0.0%). On-topic
+        safe, Yes = 0 (0.0%). On-topic safe, Partial = 0 (0.0%). On-topic safe, No
+        / none = 346 (100.0%). Random control \u2020, Yes = 0 (0.0%). Random control
+        \u2020, Partial = 0 (0.0%). Random control \u2020, No / none = 346 (100.0%)\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0031\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.4
+        LLM-as-a-judge accuracy evaluation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":165,\"page_no\":15,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"33389ea4-0168-5b9b-a9ba-bf605ff56b1b\",\"version\":9,\"score\":0.37759188,\"payload\":{\"page_content\":\"A.7
+        Detailed safety evaluation comparison\\nFigure 5 shows the proportion of responses
+        marked as either 'harmful' or 'accurate' for each model and condition. The
+        generally consistent vertical structure indicates that although the methods
+        of safety evaluation lead to different results, the trends (averaged over
+        many samples) are consistent across evaluators. Nonetheless, we would recommend
+        that researchers use multiple evaluators in their study, given the fairly
+        high rates of disagreement observed here.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0035\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.7
+        Detailed safety evaluation comparison\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":201,\"page_no\":17,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"2cfa7902-fcf7-5554-a596-30c3467e0b20\",\"version\":9,\"score\":0.37677798,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Ministral-3-8B\\\" showing harmful response
+        rates across four experimental conditions (Non-RAG, Oracle unsafe, On-topic,
+        Random) for 19 taxonomy subcategories of harmful content (rows), including
+        radiological_weapons, explosives, drugs, chemical_weapons, assault_battery,
+        terrorism, cyberattacks, suicide, murder, hate_speech, kidnapping, self_harm,
+        financial_crimes, biological_weapons, hate_crimes, property_crimes, fraud_scam,
+        sexual_assault, sexual_harassment, and abuse. Each cell displays a harmful
+        rate value (0.00\u20131.00) with sample size (n), and the color scale (white
+        to dark red) indicates rate magnitude. The \\\"Oracle unsafe\\\" condition
+        consistently shows the highest harmful rates (many cells 0.55\u20131.00, darkest
+        red), while the \\\"Random\\\" condition shows near-zero harmful rates across
+        nearly all subcategories, with \\\"Non-RAG\\\" and \\\"On-topic\\\" conditions
+        showing intermediate, generally low rates.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-022-07\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":213,\"page_no\":22,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-022-07-6f72ea9f7e1bbab0.png\"}}},{\"id\":\"3112d294-65f2-5abe-a8cd-9278a0b94785\",\"version\":5,\"score\":0.3646299,\"payload\":{\"page_content\":\"This
+        is a heatmap chart displaying \\\"Fooled rate (%)\\\" data across three manipulation
+        types (Entity swap, Number swap, Negation) as rows and four levels of poisoned
+        documents (0/3, 1/3, 2/3, 3/3) as columns. The color gradient ranges from
+        green (low fooled rate, ~8-10%) to red (high fooled rate, ~30-37%), showing
+        that fooled rates consistently increase as the number of poisoned documents
+        increases from 0/3 to 3/3. Entity swap shows the highest fooled rates overall
+        (10.2% to 36.7%), while Negation shows comparatively lower rates (8.2% to
+        30.6%), with Number swap falling in between (10.2% to 34.7%).\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-01\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":57,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-01-cce9404722564ef5.png\"}}},{\"id\":\"a9d96eb0-e563-5a4a-be72-fdfa293a765e\",\"version\":15,\"score\":0.35645702,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nWe know what size of effect we could have caught. Our
+        sample sizes give 80% power to detect a difference of roughly 7 percentage
+        points (pp). Plainly: had RLVR moved post-rationalization by 7pp or more in
+        either direction, this design would almost certainly have caught it. Shifts
+        of a couple of points stay inside our blind spot, which is why we report a
+        bounded null rather than a flat absence of effect. We fixed the primary outcome
+        and the family of corrected comparisons in writing before the scorer ran.\\nCompute.
+        Everything ran on Kaggle's free tier, two T4s or a single P100 per session:
+        48 GPU jobs yielding 36,690 scored records across four models, four datasets,
+        three variants, and both conditions. The original study used a 104B model;
+        the controlled version of the same measurement fits on hardware anyone can
+        get for free, and that is the part we would most like other groups to borrow.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"843a7c5d-9b69-5e4d-9d79-40afbf295ee1\",\"version\":9,\"score\":0.35471356,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Phi-4-14B\\\" displaying harmful rate data across
+        a taxonomy of harm subcategories (rows) and four experimental conditions (columns):
+        Non-RAG, Oracle unsafe, On-topic, and Random. The rows list 20 harm subcategories
+        including radiological_weapons, explosives, drugs, chemical_weapons, assault_battery,
+        terrorism, cyberattacks, suicide, murder, hate_speech, kidnapping, self_harm,
+        financial_crimes, biological_weapons, hate_crimes, property_crimes, fraud_scam,
+        sexual_assault, sexual_harassment, and abuse, with sample sizes (n) shown
+        in each cell. The color scale ranges from white (0.0) to dark red (1.0) representing
+        harmful rate, and the data reveals that the \\\"Oracle unsafe\\\" condition
+        produces substantially higher harmful rates (ranging from 0.05 to 0.55) across
+        nearly all categories compared to Non-RAG, On-topic, and Random conditions,
+        which remain mostly at or near 0.00, indicating that providing oracle unsafe
+        context significantly increases the model's tendency to generate harmful content.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-023-08\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":217,\"page_no\":23,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-023-08-8caaa26181195142.png\"}}},{\"id\":\"e4436797-5f26-59c3-bfc0-b0f7fceb5006\",\"version\":13,\"score\":0.34398,\"payload\":{\"page_content\":\"Table
+        12: All 24 planned TRUE robustness contrasts, separate from the original 148-test
+        analysis. D/F/T : prior DeBERTa/TRUE fixed/TRUE recovery; n/k : questions/clusters.
+        \u2206 : left-minus-right mean difference; p H : Holmadjusted within this
+        24-test family. 10,000 replicates, seed 13. Other notation follows Appendix
+        B.\\n\\n| ID   | Data   | Method   | View   | Endpoint   | \u2206         |
+        95% CI                   |    p H |   n |   k |\\n|------|--------|----------|--------|------------|-----------|--------------------------|--------|-----|-----|\\n|
+        T01  | A      | RC       | F      | P e - P g  | +0 . 650  | [+0 . 550 , +0
+        . 750]    | 0.0024 | 100 | 100 |\\n| T02  | A      | RC       | F      | R
+        e - R g  | +0 . 640  | [+0 . 540 , +0 . 735]    | 0.0024 | 100 | 100 |\\n|
+        T03  | A      | LL       | F      | P e - P g  | +0 . 392  | [+0 . 290 , +0
+        . 495]    | 0.0024 | 100 | 100 |\\n| T04  | A      | LL       | F      | R
+        e - R g  | +0 . 367  | [+0 . 273 , +0 . 463]    | 0.0024 | 100 | 100 |\\n|
+        T05  | Q      | RC       | F      | P e - P g  | +0 . 430  | [+0 . 326 , +0
+        . 530]    | 0.0024 | 100 |  84 |\\n| T06  | Q      | RC       | F      | R
+        e - R g  | +0 . 425  | [+0 . 320 , +0 . 525]    | 0.0024 | 100 |  84 |\\n|
+        T07  | Q      | LL       | F      | P e - P g  | +0 . 311  | [+0 . 234 , +0
+        . 390]    | 0.0024 | 100 |  84 |\\n| T08  | Q      | LL       | F      | R
+        e - R g  | +0 . 233  | [+0 . 176 , +0 . 293]    | 0.0024 | 100 |  84 |\\n|
+        T09  | A      | RC       | T      | P e - P g  | +0 . 640  | [+0 . 540 , +0
+        . 740]    | 0.0024 | 100 | 100 |\\n| T10  | A      | RC       | T      | R
+        e - R g  | +0 . 637  | [+0 . 540 , +0 . 730]    | 0.0024 | 100 | 100 |\\n|
+        T11  | A      | LL       | T      | P e - P g  | +0 . 405  | [+0 . 312 , +0
+        . 502]    | 0.0024 | 100 | 100 |\\n| T12  | A      | LL       | T      | R
+        e - R g  | +0 . 375  | [+0 . 287 , +0 . 468]    | 0.0024 | 100 | 100 |\\n|
+        T13  | Q      | RC       | T      | P e - P g  | +0 . 410  | [+0 . 309 , +0
+        . 505]    | 0.0024 | 100 |  84 |\\n| T14  | Q      | RC       | T      | R
+        e - R g  | +0 . 405  | [+0 . 303 , +0 . 505]    | 0.0024 | 100 |  84 |\\n|
+        T15  | Q      | LL       | T      | P e - P g  | +0 . 368  | [+0 . 286 , +0
+        . 452]    | 0.0024 | 100 |  84 |\\n| T16  | Q      | LL       | T      | R
+        e - R g  | +0 . 263  | [+0 . 204 , +0 . 325]    | 0.0024 | 100 |  84 |\\n|
+        T17  | A      | Id       | F - D  | P g        | +0 . 096  | [+0 . 011 , +0
+        . 185]    | 0.2376 | 100 | 100 |\\n| T18  | A      | X        | F - D  | P
+        g        | +0 . 095  | [+0 . 024 , +0 . 168]    | 0.0880 | 100 | 100 |\\n|
+        T19  | A      | RC       | F - D  | P g        | +0 . 040  | [ - 0 . 010 ,
+        +0 . 100]  | 0.8810 | 100 | 100 |\\n| T20  | A      | LL       | F - D  |
+        P g        | - 0 . 047 | [ - 0 . 097 , +0 . 000]  | 0.6299 | 100 | 100 |\\n|
+        T21  | Q      | Id       | F - D  | P g        | +0 . 010  | [ - 0 . 074 ,
+        +0 . 098]  | 0.9887 | 100 |  84 |\\n| T22  | Q      | X        | F - D  |
+        P g        | - 0 . 070 | [ - 0 . 134 , - 0 . 008] | 0.1827 | 100 |  84 |\\n|
+        T23  | Q      | RC       | F - D  | P g        | - 0 . 010 | [ - 0 . 025 ,
+        +0 . 000]  | 0.9887 | 100 |  84 |\\n| T24  | Q      | LL       | F - D  |
+        P g        | - 0 . 042 | [ - 0 . 095 , +0 . 011]  | 0.6299 | 100 |  84 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":20,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        12: All 24 planned TRUE robustness contrasts, separate from the original 148-test
+        analysis. D/F/T : prior DeBERTa/TRUE fixed/TRUE recovery; n/k : questions/clusters.
+        \u2206 : left-minus-right mean difference; p H : Holmadjusted within this
+        24-test family. 10,000 replicates, seed 13. Other notation follows Appendix
+        B.\\n\\n| ID   | Data   | Method   | View   | Endpoint   | \u2206         |
+        95% CI                   |    p H |   n |   k |\\n|------|--------|----------|--------|------------|-----------|--------------------------|--------|-----|-----|\\n|
+        T01  | A      | RC       | F      | P e - P g  | +0 . 650  | [+0 . 550 , +0
+        . 750]    | 0.0024 | 100 | 100 |\\n| T02  | A      | RC       | F      | R
+        e - R g  | +0 . 640  | [+0 . 540 , +0 . 735]    | 0.0024 | 100 | 100 |\\n|
+        T03  | A      | LL       | F      | P e - P g  | +0 . 392  | [+0 . 290 , +0
+        . 495]    | 0.0024 | 100 | 100 |\\n| T04  | A      | LL       | F      | R
+        e - R g  | +0 . 367  | [+0 . 273 , +0 . 463]    | 0.0024 | 100 | 100 |\\n|
+        T05  | Q      | RC       | F      | P e - P g  | +0 . 430  | [+0 . 326 , +0
+        . 530]    | 0.0024 | 100 |  84 |\\n| T06  | Q      | RC       | F      | R
+        e - R g  | +0 . 425  | [+0 . 320 , +0 . 525]    | 0.0024 | 100 |  84 |\\n|
+        T07  | Q      | LL       | F      | P e - P g  | +0 . 311  | [+0 . 234 , +0
+        . 390]    | 0.0024 | 100 |  84 |\\n| T08  | Q      | LL       | F      | R
+        e - R g  | +0 . 233  | [+0 . 176 , +0 . 293]    | 0.0024 | 100 |  84 |\\n|
+        T09  | A      | RC       | T      | P e - P g  | +0 . 640  | [+0 . 540 , +0
+        . 740]    | 0.0024 | 100 | 100 |\\n| T10  | A      | RC       | T      | R
+        e - R g  | +0 . 637  | [+0 . 540 , +0 . 730]    | 0.0024 | 100 | 100 |\\n|
+        T11  | A      | LL       | T      | P e - P g  | +0 . 405  | [+0 . 312 , +0
+        . 502]    | 0.0024 | 100 | 100 |\\n| T12  | A      | LL       | T      | R
+        e - R g  | +0 . 375  | [+0 . 287 , +0 . 468]    | 0.0024 | 100 | 100 |\\n|
+        T13  | Q      | RC       | T      | P e - P g  | +0 . 410  | [+0 . 309 , +0
+        . 505]    | 0.0024 | 100 |  84 |\\n| T14  | Q      | RC       | T      | R
+        e - R g  | +0 . 405  | [+0 . 303 , +0 . 505]    | 0.0024 | 100 |  84 |\\n|
+        T15  | Q      | LL       | T      | P e - P g  | +0 . 368  | [+0 . 286 , +0
+        . 452]    | 0.0024 | 100 |  84 |\\n| T16  | Q      | LL       | T      | R
+        e - R g  | +0 . 263  | [+0 . 204 , +0 . 325]    | 0.0024 | 100 |  84 |\\n|
+        T17  | A      | Id       | F - D  | P g        | +0 . 096  | [+0 . 011 , +0
+        . 185]    | 0.2376 | 100 | 100 |\\n| T18  | A      | X        | F - D  | P
+        g        | +0 . 095  | [+0 . 024 , +0 . 168]    | 0.0880 | 100 | 100 |\\n|
+        T19  | A      | RC       | F - D  | P g        | +0 . 040  | [ - 0 . 010 ,
+        +0 . 100]  | 0.8810 | 100 | 100 |\\n| T20  | A      | LL       | F - D  |
+        P g        | - 0 . 047 | [ - 0 . 097 , +0 . 000]  | 0.6299 | 100 | 100 |\\n|
+        T21  | Q      | Id       | F - D  | P g        | +0 . 010  | [ - 0 . 074 ,
+        +0 . 098]  | 0.9887 | 100 |  84 |\\n| T22  | Q      | X        | F - D  |
+        P g        | - 0 . 070 | [ - 0 . 134 , - 0 . 008] | 0.1827 | 100 |  84 |\\n|
+        T23  | Q      | RC       | F - D  | P g        | - 0 . 010 | [ - 0 . 025 ,
+        +0 . 000]  | 0.9887 | 100 |  84 |\\n| T24  | Q      | LL       | F - D  |
+        P g        | - 0 . 042 | [ - 0 . 095 , +0 . 011]  | 0.6299 | 100 |  84 |\"}}},{\"id\":\"1a43143d-dfd9-5c32-b937-6e248e7f7d10\",\"version\":9,\"score\":0.34321928,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Llama-3.1-8B\\\" showing harmful response rates
+        across 19 taxonomy subcategories (rows, including radiological_weapons, explosives,
+        drugs, chemical_weapons, terrorism, biological_weapons, etc.) under four experimental
+        conditions (columns: Non-RAG, Oracle unsafe, On-topic, Random). Each cell
+        displays a harmful rate value (0.00\u20131.00, color-coded from white to dark
+        red) along with sample size (n). The \\\"Oracle unsafe\\\" condition consistently
+        shows the highest harmful rates across most categories (e.g., 0.55 for explosives,
+        0.50 for chemical_weapons, 0.45 for murder), while Non-RAG, On-topic, and
+        Random conditions generally show much lower rates near 0.00, indicating that
+        exposing the model to unsafe \\\"oracle\\\" context substantially increases
+        harmful outputs compared to other retrieval conditions.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-021-06\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":211,\"page_no\":21,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-021-06-4d46f9b29bd3a8cb.png\"}}},{\"id\":\"c0f930a9-5503-5bf9-a06f-7efc86e8370b\",\"version\":9,\"score\":0.3363625,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Qwen2.5-7B\\\" showing harmful rates across
+        19 taxonomy subcategories (rows, including radiological_weapons, explosives,
+        drugs, chemical_weapons, terrorism, cyberattacks, biological_weapons, hate_crimes,
+        sexual_assault, etc.) against 4 experimental conditions (columns: Non-RAG,
+        Oracle unsafe, On-topic, Random). Each cell displays a harmful rate value
+        (0.00 to 1.00) with sample size (n), color-coded from white (low harm, 0.0)
+        to dark red (high harm, 1.0) per the colorbar legend. The data reveals that
+        the \\\"Oracle unsafe\\\" condition consistently produces the highest harmful
+        rates (many values 0.55-1.00, including perfect 1.00 scores for radiological
+        and biological weapons), while \\\"Random\\\" condition shows near-zero harmful
+        rates across all subcategories, and \\\"Non-RAG\\\" and \\\"On-topic\\\" conditions
+        show low-to-moderate harmful rates (generally 0.00-0.40), indicating that
+        providing unsafe oracle context significantly increases model harmfulness
+        compared to other retrieval conditions.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-024-09\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":219,\"page_no\":24,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-024-09-0407ce4fe0fd0389.png\"}}},{\"id\":\"85b90839-78bf-582d-9ea3-db6a9d7bec12\",\"version\":9,\"score\":0.33387884,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Gemma-3-12B\\\" displaying harmful rate values
+        across a taxonomy of 20 harm subcategories (rows: radiological_weapons, explosives,
+        drugs, chemical_weapons, assault_battery, terrorism, cyberattacks, suicide,
+        murder, hate_speech, kidnapping, self_harm, financial_crimes, biological_weapons,
+        hate_crimes, property_crimes, fraud_scam, sexual_assault, sexual_harassment,
+        abuse) against four experimental conditions (columns: Non-RAG, Oracle unsafe,
+        On-topic, Random). Each cell shows a harmful rate value (0.00\u20131.00) with
+        sample size (n), color-coded from white (0.0) to dark red (1.0) per the colorbar
+        legend. The data reveals that the \\\"Oracle unsafe\\\" condition consistently
+        produces the highest harmful rates (e.g., 1.00 for radiological_weapons, 0.80
+        for explosives, 0.75 for drugs), while \\\"On-topic\\\" and \\\"Random\\\"
+        conditions yield much lower harmful rates (mostly 0.00\u20130.15), indicating
+        the model is most susceptible to generating harmful content when given oracle-unsafe
+        prompts.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-020-05\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":208,\"page_no\":20,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-020-05-af5533d7a547af7b.png\"}}},{\"id\":\"a3d2f6a7-82ce-5245-a8ed-2520c9e5da50\",\"version\":13,\"score\":0.33266258,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nInference and diagnostics. The separate
+        24-test family uses pointwise 95% bootstrap intervals and two-sided randomization
+        tests, each with 10,000 replicates and seed 13, question resampling on ASQA
+        and paper clustering on QASPER, with question-weighted means and Holm adjustment.
+        The original 148-test analysis is unchanged. Tables 11-12 report precision
+        means and all planned contrasts. All 16 emitted-grounded gaps remain positive
+        after adjustment; the eight cross-evaluator precision differences remain unresolved,
+        which does not establish equivalence. ECR and other budgets are outside this
+        audit.\\nThe run scored 6,015 unique pairs in 419 seconds of model inference
+        (430 seconds including bookkeeping; setup and excluded attempts are additional).
+        Four inputs required truncation, with maximum pre-truncation length 47,440
+        tokens. After normalization, 122 pairs (2.03%) produced nonbinary strings,
+        including 103 empty strings; assigning zero does not establish reliable nonentailment.
+        These are pair counts, not fractions of questions affected; the full histogram
+        accompanies the cache. Recovery can disagree substantially: QASPER LLMLingua-2
+        has 50.3% agreement over 1,000 candidate decisions and mean recovery rates
+        of 0.84 for DeBERTa versus 0.38 for TRUE. These descriptive results support
+        sensitivity analysis, not accuracy against human judgments.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0030\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":156,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.33191067,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"9f91e3cc-eb63-5067-9e2b-f325f5af07fc\",\"version\":5,\"score\":0.32423553,\"payload\":{\"page_content\":\"E.
+        Experimental Design\\nThe evaluation set contains 49 fact-checking queries,
+        of which 37 are distinct, spanning locations, dates and counts, yes/no claims,
+        and people. Ten information-rich passages covering the queried facts were
+        added to the index because raw FEVER evidence sentences are often too terse
+        to support a full answer. Crossing the query set with three strategies and
+        four poisoning levels yields 49 \xD7 3 \xD7 4 = 588 runs, each producing a
+        clean and a poisoned answer for 1 , 176 generations in total. Because a full
+        sweep takes roughly a day on CPU, results are written to disk after every
+        run and a checkpoint records completed cells, so an interrupted sweep resumes
+        without repeating work.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"E.
+        Experimental Design\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":30,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"13dfa924-0a8e-55c8-944e-e595fe0fff6e\",\"version\":13,\"score\":0.3240881,\"payload\":{\"page_content\":\"Table
+        5: All 21 primary settings on 976 common QASPER questions; question-weighted
+        means. Notation and exclusions follow Appendix A. No-provenance declared-span
+        rates are structural.\\n\\n| Compressor    |    \u03C1 |   \u02C6 \u03C1 |
+        \  P g |   R g |   P e | reattr.       | EF1   | U s           | U m           |
+        \  n |\\n|---------------|------|-------|-------|-------|-------|---------------|-------|---------------|---------------|-----|\\n|
+        Identity      |    1 |  1.00 |  0.48 |  0.47 |  0.48 | -             | 0.08
+        \ | 0.53          | 0.53          | 976 |\\n| Rerank top- k |  0.5 |  0.50
+        |  0.35 |  0.37 |  0.35 | -             | 0.07  | 0.63          | 0.63          |
+        976 |\\n| Rerank top- k | 0.25 |  0.25 |  0.39 |  0.40 |  0.39 | -             |
+        0.06  | 0.59          | 0.60          | 976 |\\n| Rerank top- k |  0.1 |  0.10
+        |  0.42 |  0.40 |  0.42 | -             | 0.04  | 0.60          | 0.60          |
+        976 |\\n| Rerank top- k | 0.05 |  0.05 |  0.39 |  0.36 |  0.39 | -             |
+        0.03  | 0.64          | 0.64          | 976 |\\n| Extractive    |  0.5 |  0.50
+        |  0.35 |  0.41 |  0.35 | -             | 0.09  | 0.59          | 0.59          |
+        976 |\\n| Extractive    | 0.25 |  0.25 |  0.43 |  0.52 |  0.43 | -             |
+        0.11  | 0.48          | 0.48          | 976 |\\n| Extractive    |  0.1 |  0.10
+        |  0.47 |  0.55 |  0.47 | -             | 0.15  | 0.44          | 0.45          |
+        976 |\\n| Extractive    | 0.05 |  0.05 |  0.49 |  0.55 |  0.49 | -             |
+        0.18  | 0.45          | 0.45          | 976 |\\n| ECR           |  0.5 |  0.50
+        |  0.42 |  0.49 |  0.42 | -             | 0.09  | 0.51          | 0.51          |
+        976 |\\n| ECR           | 0.25 |  0.25 |  0.46 |  0.55 |  0.46 | -             |
+        0.11  | 0.45          | 0.45          | 976 |\\n| ECR           |  0.1 |  0.10
+        |  0.50 |  0.56 |  0.50 | -             | 0.15  | 0.43          | 0.44          |
+        976 |\\n| ECR           | 0.05 |  0.05 |  0.51 |  0.54 |  0.51 | -             |
+        0.17  | 0.45          | 0.46          | 976 |\\n| RECOMP        |  0.5 |  0.02
+        |  0.06 |  0.05 |  0.56 | 0 . 44 n =845 | -     | 1 . 00 n =975 | 0 . 49 n
+        =975 | 976 |\\n| RECOMP        | 0.25 |  0.02 |  0.06 |  0.05 |  0.55 | 0
+        . 44 n =845 | -     | 1 . 00 n =974 | 0 . 50 n =974 | 976 |\\n| RECOMP        |
+        \ 0.1 |  0.02 |  0.06 |  0.05 |  0.55 | 0 . 44 n =845 | -     | 1 . 00 n =973
+        | 0 . 50 n =973 | 976 |\\n| RECOMP        | 0.05 |  0.02 |  0.06 |  0.05 |
+        \ 0.55 | 0 . 44 n =845 | -     | 1 . 00 n =974 | 0 . 50 n =974 | 976 |\\n|
+        LLMLingua-2   |  0.5 |  0.50 |  0.14 |  0.11 |  0.50 | 0.92          | -     |
+        1.00          | 0.61          | 976 |\\n| LLMLingua-2   | 0.25 |  0.25 |  0.11
+        |  0.10 |  0.42 | 0.79          | -     | 1.00          | 0.65          |
+        976 |\\n| LLMLingua-2   |  0.1 |  0.10 |  0.04 |  0.03 |  0.43 | 0.35          |
+        -     | 1.00          | 0.63          | 976 |\\n| LLMLingua-2   | 0.05 |  0.05
+        |  0.02 |  0.01 |  0.38 | 0.18          | -     | 1.00          | 0.67          |
+        976 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":138,\"page_no\":14,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        5: All 21 primary settings on 976 common QASPER questions; question-weighted
+        means. Notation and exclusions follow Appendix A. No-provenance declared-span
+        rates are structural.\\n\\n| Compressor    |    \u03C1 |   \u02C6 \u03C1 |
+        \  P g |   R g |   P e | reattr.       | EF1   | U s           | U m           |
+        \  n |\\n|---------------|------|-------|-------|-------|-------|---------------|-------|---------------|---------------|-----|\\n|
+        Identity      |    1 |  1.00 |  0.48 |  0.47 |  0.48 | -             | 0.08
+        \ | 0.53          | 0.53          | 976 |\\n| Rerank top- k |  0.5 |  0.50
+        |  0.35 |  0.37 |  0.35 | -             | 0.07  | 0.63          | 0.63          |
+        976 |\\n| Rerank top- k | 0.25 |  0.25 |  0.39 |  0.40 |  0.39 | -             |
+        0.06  | 0.59          | 0.60          | 976 |\\n| Rerank top- k |  0.1 |  0.10
+        |  0.42 |  0.40 |  0.42 | -             | 0.04  | 0.60          | 0.60          |
+        976 |\\n| Rerank top- k | 0.05 |  0.05 |  0.39 |  0.36 |  0.39 | -             |
+        0.03  | 0.64          | 0.64          | 976 |\\n| Extractive    |  0.5 |  0.50
+        |  0.35 |  0.41 |  0.35 | -             | 0.09  | 0.59          | 0.59          |
+        976 |\\n| Extractive    | 0.25 |  0.25 |  0.43 |  0.52 |  0.43 | -             |
+        0.11  | 0.48          | 0.48          | 976 |\\n| Extractive    |  0.1 |  0.10
+        |  0.47 |  0.55 |  0.47 | -             | 0.15  | 0.44          | 0.45          |
+        976 |\\n| Extractive    | 0.05 |  0.05 |  0.49 |  0.55 |  0.49 | -             |
+        0.18  | 0.45          | 0.45          | 976 |\\n| ECR           |  0.5 |  0.50
+        |  0.42 |  0.49 |  0.42 | -             | 0.09  | 0.51          | 0.51          |
+        976 |\\n| ECR           | 0.25 |  0.25 |  0.46 |  0.55 |  0.46 | -             |
+        0.11  | 0.45          | 0.45          | 976 |\\n| ECR           |  0.1 |  0.10
+        |  0.50 |  0.56 |  0.50 | -             | 0.15  | 0.43          | 0.44          |
+        976 |\\n| ECR           | 0.05 |  0.05 |  0.51 |  0.54 |  0.51 | -             |
+        0.17  | 0.45          | 0.46          | 976 |\\n| RECOMP        |  0.5 |  0.02
+        |  0.06 |  0.05 |  0.56 | 0 . 44 n =845 | -     | 1 . 00 n =975 | 0 . 49 n
+        =975 | 976 |\\n| RECOMP        | 0.25 |  0.02 |  0.06 |  0.05 |  0.55 | 0
+        . 44 n =845 | -     | 1 . 00 n =974 | 0 . 50 n =974 | 976 |\\n| RECOMP        |
+        \ 0.1 |  0.02 |  0.06 |  0.05 |  0.55 | 0 . 44 n =845 | -     | 1 . 00 n =973
+        | 0 . 50 n =973 | 976 |\\n| RECOMP        | 0.05 |  0.02 |  0.06 |  0.05 |
+        \ 0.55 | 0 . 44 n =845 | -     | 1 . 00 n =974 | 0 . 50 n =974 | 976 |\\n|
+        LLMLingua-2   |  0.5 |  0.50 |  0.14 |  0.11 |  0.50 | 0.92          | -     |
+        1.00          | 0.61          | 976 |\\n| LLMLingua-2   | 0.25 |  0.25 |  0.11
+        |  0.10 |  0.42 | 0.79          | -     | 1.00          | 0.65          |
+        976 |\\n| LLMLingua-2   |  0.1 |  0.10 |  0.04 |  0.03 |  0.43 | 0.35          |
+        -     | 1.00          | 0.63          | 976 |\\n| LLMLingua-2   | 0.05 |  0.05
+        |  0.02 |  0.01 |  0.38 | 0.18          | -     | 1.00          | 0.67          |
+        976 |\"}}},{\"id\":\"ccab0424-2b68-50c2-96ae-76fb1a6c990d\",\"version\":9,\"score\":0.32009256,\"payload\":{\"page_content\":\"3.3
+        Automated safety judges\\nWe compare three available LLM safety judges: Meta's
+        LlamaGuard-3-8B (Inan et al., 2023; Grattafiori et al., 2024) Google's ShieldGemma2B
+        (Zeng et al., 2024b), and Allen AI's WildGuard (Han et al., 2024). LlamaGuard
+        produces a binary 'safe' or 'unsafe' output, according to the MLCommons Hazard
+        taxonomy. ShieldGemma produces a per-policy classification across four safety
+        policies (Dangerous Content, Harassment, Hate Speech, Sexually Explicit);
+        we assess harmfulness across all four policies and return a label of 'unsafe'
+        if any of the four exceed a probability of 0.5. WildGuard is trained to detect
+        four broad categories of harm (Privacy, Misinformation, Harmful language,
+        and Malicious uses) and assesses responses for both refusal and harmfulness;
+        we consider the (binary) harmfulness label assigned to the response.\\nFor
+        each response, an overall label of 'unsafe' is assigned when at least two
+        of the three safety evaluators flag the response as unsafe. We compute pairwise
+        inter-annotator agreement of the evaluators using Cohen's Kappa.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"3.3
+        Automated safety judges\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":37,\"page_no\":4,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"5f57e222-1f44-533f-a979-c69c93bf11c2\",\"version\":9,\"score\":0.31730703,\"payload\":{\"page_content\":\"This
+        is a heatmap chart displaying harmfulness evaluation results across five language
+        models (Gemma-3-12B, Llama-3.1-8B, Ministral-3-8B, Phi-4-14B, and Qwen2.5-7B)
+        under four retrieval-augmented generation (RAG) conditions each (Non-RAG,
+        Oracle unsafe, On-topic, Random). The columns represent four evaluation metrics/classifiers
+        (Llama-Guard, WildGuard, ShieldGemma, and Accuracy), with cell values showing
+        the proportion of outputs flagged as unsafe, color-coded from dark blue (low,
+        ~0.0) to red (high, ~1.0). The data reveals that the \\\"Oracle unsafe\\\"
+        condition consistently produces the highest harmfulness rates across all models
+        and metrics (e.g., Ministral-3-8B reaches 0.91 on Accuracy and Qwen2.5-7B
+        reaches 0.83), while \\\"Random\\\" and \\\"On-topic\\\" RAG conditions yield
+        much lower harmfulness scores (mostly below 0.25), indicating that injecting
+        deliberately unsafe retrieved context substantially increases harmful outputs
+        compared to non-adversarial retrieval conditions.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-018-04\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":204,\"page_no\":18,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-018-04-0e31d4617873b336.png\"}}}]},\"status\":\"ok\",\"time\":0.001141077}"
     headers:
       content-type:
       - application/json

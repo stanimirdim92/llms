@@ -31,6 +31,7 @@ from app.eval.replay import (
     Harness,
     Mode,
     ReplayError,
+    _scrub_response,
     build_meta,
     current_models,
     current_pipeline,
@@ -438,3 +439,34 @@ def test_meta_records_what_a_replay_needs_to_judge_the_recording() -> None:
 def test_reading_meta_that_was_never_written_says_the_recording_is_incomplete(tmp_path: Path) -> None:
     with pytest.raises(ReplayError, match="never fully recorded"):
         read_meta(tmp_path)
+
+
+def test_a_zstd_response_is_stored_decompressed_without_its_encoding_header() -> None:
+    """The first real recording stored Qdrant's zstd bodies compressed and dropped the header that
+    said so; every replay then died in `response.json()` on byte 0xb5.
+    """
+    import zstandard  # noqa: PLC0415 -- only this test needs it
+
+    body = b'{"result": {"exists": true}}'
+    response = {
+        "headers": {"Content-Type": ["application/json"], "Content-Encoding": ["zstd"]},
+        "body": {"string": zstandard.ZstdCompressor().compress(body)},
+    }
+    scrubbed = _scrub_response(response)
+    assert scrubbed["body"]["string"] == body
+    assert scrubbed["headers"] == {"Content-Type": ["application/json"]}
+
+
+def test_a_codec_nothing_decoded_aborts_the_recording() -> None:
+    response = {"headers": {"content-encoding": ["compress"]}, "body": {"string": b"\x1f\x9d"}}
+    with pytest.raises(ReplayError, match="compress"):
+        _scrub_response(response)
+
+
+def test_voyage_tokenization_never_reaches_the_hugging_face_hub() -> None:
+    """A cold Hub cache on a CI runner turned the tokenizer download into a cassette miss."""
+    import voyageai  # noqa: PLC0415
+
+    with offline_environment(Mode.REPLAY):
+        tokens = voyageai.Client(api_key="replay").tokenize(["two words", "one"], model="voyage-4")
+    assert [len(t) for t in tokens] == [2, 1]

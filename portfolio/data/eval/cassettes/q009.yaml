@@ -60,146 +60,261 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        OHdjV88HpYuOjqddAQ==
+      string: "{\"result\":{\"points\":[{\"id\":\"3112d294-65f2-5abe-a8cd-9278a0b94785\",\"version\":5,\"score\":0.5873685,\"payload\":{\"page_content\":\"This
+        is a heatmap chart displaying \\\"Fooled rate (%)\\\" data across three manipulation
+        types (Entity swap, Number swap, Negation) as rows and four levels of poisoned
+        documents (0/3, 1/3, 2/3, 3/3) as columns. The color gradient ranges from
+        green (low fooled rate, ~8-10%) to red (high fooled rate, ~30-37%), showing
+        that fooled rates consistently increase as the number of poisoned documents
+        increases from 0/3 to 3/3. Entity swap shows the highest fooled rates overall
+        (10.2% to 36.7%), while Negation shows comparatively lower rates (8.2% to
+        30.6%), with Number swap falling in between (10.2% to 34.7%).\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-01\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":57,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-01-cce9404722564ef5.png\"}}},{\"id\":\"2cfa7902-fcf7-5554-a596-30c3467e0b20\",\"version\":9,\"score\":0.48938662,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Ministral-3-8B\\\" showing harmful response
+        rates across four experimental conditions (Non-RAG, Oracle unsafe, On-topic,
+        Random) for 19 taxonomy subcategories of harmful content (rows), including
+        radiological_weapons, explosives, drugs, chemical_weapons, assault_battery,
+        terrorism, cyberattacks, suicide, murder, hate_speech, kidnapping, self_harm,
+        financial_crimes, biological_weapons, hate_crimes, property_crimes, fraud_scam,
+        sexual_assault, sexual_harassment, and abuse. Each cell displays a harmful
+        rate value (0.00\u20131.00) with sample size (n), and the color scale (white
+        to dark red) indicates rate magnitude. The \\\"Oracle unsafe\\\" condition
+        consistently shows the highest harmful rates (many cells 0.55\u20131.00, darkest
+        red), while the \\\"Random\\\" condition shows near-zero harmful rates across
+        nearly all subcategories, with \\\"Non-RAG\\\" and \\\"On-topic\\\" conditions
+        showing intermediate, generally low rates.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-022-07\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":213,\"page_no\":22,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-022-07-6f72ea9f7e1bbab0.png\"}}},{\"id\":\"7c329777-6c76-54b3-a177-62c2bbb303d4\",\"version\":5,\"score\":0.48072192,\"payload\":{\"page_content\":\"This
+        is a line chart depicting the \\\"Fooled Rate (%)\\\" on the y-axis (ranging
+        from 0 to 40%) versus \\\"Poisoned documents (out of 3 retrieved)\\\" on the
+        x-axis (categories: 0/3, 1/3, 2/3, 3/3). Three attack types are plotted: Entity
+        swap (pink dashed line), Number swap (orange solid line with circular markers),
+        and Negation (purple dashed line), all showing an increasing trend in fooled
+        rate as the number of poisoned documents increases. A notable annotation highlights
+        a \\\"+16.3 pp\\\" jump in the Number swap line between the 1/3 and 2/3 data
+        points, where the rate rises sharply from about 10% to roughly 27%, with all
+        three lines converging near 30-37% at 3/3 poisoned documents.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-02\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":60,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-02-1987cd10b5ee32d8.png\"}}},{\"id\":\"c5ad079d-2174-562b-a2c7-cfb5337eb098\",\"version\":9,\"score\":0.46609947,\"payload\":{\"page_content\":\"This
+        is a heatmap (confusion matrix-style chart) displaying pairwise rater agreement
+        using Cohen's \u03BA among four raters/models: Llama-Guard, WildGuard, ShieldGemma,
+        and Accuracy. The overall Fleiss' \u03BA is 0.56 (n=6920), indicating moderate
+        agreement. The diagonal shows perfect agreement (1.00), while off-diagonal
+        values range from 0.47 to 0.67, with WildGuard and Accuracy showing the highest
+        pairwise agreement (0.67) and Llama-Guard/ShieldGemma and ShieldGemma/Accuracy
+        showing lower agreement (0.48\u20130.49); the color scale ranges from 0 to
+        1.0 (yellow to dark red).\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-008-03\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":73,\"page_no\":8,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-008-03-209562886654c9ad.png\"}}},{\"id\":\"7e3929c0-df5c-54d0-8f5c-4c783013f908\",\"version\":5,\"score\":0.44984314,\"payload\":{\"page_content\":\"This
+        is a horizontal bar chart titled with the x-axis label \\\"Fooled rate across
+        all conditions,\\\" showing ten different questions about Obama and the Eiffel
+        Tower ranked by their fooled rate percentage (0-100 scale). The questions
+        range from \\\"Where did Obama go to law school?\\\" (highest fooled rate,
+        around 75%) down to \\\"Was Obama the 44th president?\\\" (lowest, around
+        40%), with other questions including \\\"Is the Eiffel Tower the most visited
+        monument,\\\" \\\"Was Obama born in Hawaii,\\\" \\\"When did Obama start his
+        presidency,\\\" \\\"Where was Obama born,\\\" \\\"Did Obama go to Harvard,\\\"
+        \\\"Where was Barack Obama born,\\\" \\\"Where is the Eiffel Tower,\\\" and
+        \\\"Is the Eiffel Tower in France\\\" falling in between. The chart appears
+        to illustrate how often an AI model or system was \\\"fooled\\\" or gave incorrect
+        responses to various fact-based or trick questions, with a dashed vertical
+        reference line near 50%.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-006-05\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":73,\"page_no\":6,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-006-05-2f8ac014aa1853ff.png\"}}},{\"id\":\"843a7c5d-9b69-5e4d-9d79-40afbf295ee1\",\"version\":9,\"score\":0.44502187,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Phi-4-14B\\\" displaying harmful rate data across
+        a taxonomy of harm subcategories (rows) and four experimental conditions (columns):
+        Non-RAG, Oracle unsafe, On-topic, and Random. The rows list 20 harm subcategories
+        including radiological_weapons, explosives, drugs, chemical_weapons, assault_battery,
+        terrorism, cyberattacks, suicide, murder, hate_speech, kidnapping, self_harm,
+        financial_crimes, biological_weapons, hate_crimes, property_crimes, fraud_scam,
+        sexual_assault, sexual_harassment, and abuse, with sample sizes (n) shown
+        in each cell. The color scale ranges from white (0.0) to dark red (1.0) representing
+        harmful rate, and the data reveals that the \\\"Oracle unsafe\\\" condition
+        produces substantially higher harmful rates (ranging from 0.05 to 0.55) across
+        nearly all categories compared to Non-RAG, On-topic, and Random conditions,
+        which remain mostly at or near 0.00, indicating that providing oracle unsafe
+        context significantly increases the model's tendency to generate harmful content.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-023-08\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":217,\"page_no\":23,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-023-08-8caaa26181195142.png\"}}},{\"id\":\"c0f930a9-5503-5bf9-a06f-7efc86e8370b\",\"version\":9,\"score\":0.4437012,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Qwen2.5-7B\\\" showing harmful rates across
+        19 taxonomy subcategories (rows, including radiological_weapons, explosives,
+        drugs, chemical_weapons, terrorism, cyberattacks, biological_weapons, hate_crimes,
+        sexual_assault, etc.) against 4 experimental conditions (columns: Non-RAG,
+        Oracle unsafe, On-topic, Random). Each cell displays a harmful rate value
+        (0.00 to 1.00) with sample size (n), color-coded from white (low harm, 0.0)
+        to dark red (high harm, 1.0) per the colorbar legend. The data reveals that
+        the \\\"Oracle unsafe\\\" condition consistently produces the highest harmful
+        rates (many values 0.55-1.00, including perfect 1.00 scores for radiological
+        and biological weapons), while \\\"Random\\\" condition shows near-zero harmful
+        rates across all subcategories, and \\\"Non-RAG\\\" and \\\"On-topic\\\" conditions
+        show low-to-moderate harmful rates (generally 0.00-0.40), indicating that
+        providing unsafe oracle context significantly increases model harmfulness
+        compared to other retrieval conditions.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-024-09\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":219,\"page_no\":24,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-024-09-0407ce4fe0fd0389.png\"}}},{\"id\":\"ea30cb2f-737d-59cf-b337-a6772a16a114\",\"version\":5,\"score\":0.44257846,\"payload\":{\"page_content\":\"TABLE
+        II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS (ALL STRATEGIES, 147
+        RUNS PER ROW).\\n\\n| Poisoned passages   |   Fooled (%) | 95% CI            |
+        \  n |\\n|---------------------|--------------|-------------------|-----|\\n|
+        0 / 3               |          9.5 | [5 . 4 , 14 . 3]  | 147 |\\n| 1 / 3               |
+        \        15.0 | [8 . 8 , 21 . 8]  | 147 |\\n| 2 / 3               |         25.9
+        | [18 . 4 , 33 . 3] | 147 |\\n| 3 / 3               |         34.0 | [24 .
+        5 , 44 . 2] | 147 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":38,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS (ALL STRATEGIES, 147
+        RUNS PER ROW).\\n\\n| Poisoned passages   |   Fooled (%) | 95% CI            |
+        \  n |\\n|---------------------|--------------|-------------------|-----|\\n|
+        0 / 3               |          9.5 | [5 . 4 , 14 . 3]  | 147 |\\n| 1 / 3               |
+        \        15.0 | [8 . 8 , 21 . 8]  | 147 |\\n| 2 / 3               |         25.9
+        | [18 . 4 , 33 . 3] | 147 |\\n| 3 / 3               |         34.0 | [24 .
+        5 , 44 . 2] | 147 |\"}}},{\"id\":\"85b90839-78bf-582d-9ea3-db6a9d7bec12\",\"version\":9,\"score\":0.43886232,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Gemma-3-12B\\\" displaying harmful rate values
+        across a taxonomy of 20 harm subcategories (rows: radiological_weapons, explosives,
+        drugs, chemical_weapons, assault_battery, terrorism, cyberattacks, suicide,
+        murder, hate_speech, kidnapping, self_harm, financial_crimes, biological_weapons,
+        hate_crimes, property_crimes, fraud_scam, sexual_assault, sexual_harassment,
+        abuse) against four experimental conditions (columns: Non-RAG, Oracle unsafe,
+        On-topic, Random). Each cell shows a harmful rate value (0.00\u20131.00) with
+        sample size (n), color-coded from white (0.0) to dark red (1.0) per the colorbar
+        legend. The data reveals that the \\\"Oracle unsafe\\\" condition consistently
+        produces the highest harmful rates (e.g., 1.00 for radiological_weapons, 0.80
+        for explosives, 0.75 for drugs), while \\\"On-topic\\\" and \\\"Random\\\"
+        conditions yield much lower harmful rates (mostly 0.00\u20130.15), indicating
+        the model is most susceptible to generating harmful content when given oracle-unsafe
+        prompts.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-020-05\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":208,\"page_no\":20,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-020-05-af5533d7a547af7b.png\"}}},{\"id\":\"1a43143d-dfd9-5c32-b937-6e248e7f7d10\",\"version\":9,\"score\":0.43128967,\"payload\":{\"page_content\":\"This
+        is a heatmap chart titled \\\"Llama-3.1-8B\\\" showing harmful response rates
+        across 19 taxonomy subcategories (rows, including radiological_weapons, explosives,
+        drugs, chemical_weapons, terrorism, biological_weapons, etc.) under four experimental
+        conditions (columns: Non-RAG, Oracle unsafe, On-topic, Random). Each cell
+        displays a harmful rate value (0.00\u20131.00, color-coded from white to dark
+        red) along with sample size (n). The \\\"Oracle unsafe\\\" condition consistently
+        shows the highest harmful rates across most categories (e.g., 0.55 for explosives,
+        0.50 for chemical_weapons, 0.45 for murder), while Non-RAG, On-topic, and
+        Random conditions generally show much lower rates near 0.00, indicating that
+        exposing the model to unsafe \\\"oracle\\\" context substantially increases
+        harmful outputs compared to other retrieval conditions.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-021-06\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":211,\"page_no\":21,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-021-06-4d46f9b29bd3a8cb.png\"}}},{\"id\":\"b281715f-6ff8-59d3-b753-488bf429f709\",\"version\":5,\"score\":0.41226512,\"payload\":{\"page_content\":\"This
+        is a set of three stacked bar charts comparing model robustness under three
+        perturbation types: Entity swap, Number swap, and Negation. Each chart's x-axis
+        shows the number of poisoned documents (0/3, 1/3, 2/3, 3/3) out of retrieved
+        documents, while the y-axis shows the percentage of clean-correct cases, broken
+        into three categories: \\\"Still correct\\\" (green), \\\"Abstained\\\" (blue),
+        and \\\"Fooled\\\" (red). The data indicates that as poisoned documents increase,
+        the proportion of \\\"Still correct\\\" responses generally declines while
+        \\\"Abstained\\\" and/or \\\"Fooled\\\" responses increase, with Number swap
+        showing the most pronounced increase in \\\"Fooled\\\" cases (reaching ~15-20%
+        at 2/3 and 3/3 poisoned documents) compared to Entity swap and Negation, which
+        show minimal fooling but more abstention.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-005-04\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":68,\"page_no\":5,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-005-04-04d372ba3b61fee1.png\"}}},{\"id\":\"7cc06dc1-4df9-5a4c-aa92-828d2e5bc15a\",\"version\":5,\"score\":0.4100223,\"payload\":{\"page_content\":\"D.
+        Which Strategy Hurts Most\\nTable III ranks the strategies. Entity swap has
+        the highest fooled rate at 23.5% and the lowest poisoned accuracy, so it flips
+        the largest share of answers that the model would otherwise get right. It
+        also provokes the most abstention, 43.4%, which fits its mechanism: swapping
+        'Paris, France' for 'Madrid, Spain' can leave the passage internally inconsistent,
+        and the model often reacts to that inconsistency by refusing to answer. Number
+        swap and negation are close behind on fooled rate but keep higher poisoned
+        accuracy.\\nThe heatmap in Figure 2 gives the full strategy-by-level grid.
+        Two patterns stand out. Fooled rates rise from left to right in every row,
+        and the number-swap row is nearly flat across the first two columns before
+        it jumps.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"D.
+        Which Strategy Hurts Most\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":48,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"294903eb-d309-510e-883a-119bc8b01a08\",\"version\":5,\"score\":0.4022407,\"payload\":{\"page_content\":\"TABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n| Poisoned passages   |   Clean
+        acc. (%) |   Poisoned acc. (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|---------------------|------------------|---------------------|-------------------|--------------------|\\n|
+        0 / 3               |             78.2 |                69.4 |               9.5
+        |               21.1 |\\n| 1 / 3               |             77.6 |                63.9
+        |              15.0 |               29.3 |\\n| 2 / 3               |             78.2
+        |                53.1 |              25.9 |               38.8 |\\n| 3 / 3
+        \              |             77.6 |                43.5 |              34.0
+        |               51.7 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n| Poisoned passages   |   Clean
+        acc. (%) |   Poisoned acc. (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|---------------------|------------------|---------------------|-------------------|--------------------|\\n|
+        0 / 3               |             78.2 |                69.4 |               9.5
+        |               21.1 |\\n| 1 / 3               |             77.6 |                63.9
+        |              15.0 |               29.3 |\\n| 2 / 3               |             78.2
+        |                53.1 |              25.9 |               38.8 |\\n| 3 / 3
+        \              |             77.6 |                43.5 |              34.0
+        |               51.7 |\"}}},{\"id\":\"745af299-c95e-5500-8366-5362d8e17e13\",\"version\":5,\"score\":0.3948571,\"payload\":{\"page_content\":\"This
+        image consists of two line/bar charts comparing the effects of poisoned documents
+        on model behavior, plotted against \\\"Poisoned documents (out of 3 retrieved)\\\"
+        (0/3, 1/3, 2/3, 3/3) on the x-axis.\\n\\nPanel (a) is a line chart showing
+        \\\"Abstention rate (%)\\\" for four conditions: Entity swap (red), Number
+        swap (orange), Negation (purple), and Clean arm (green dashed baseline ~13%).
+        As poisoned documents increase, abstention rises sharply for Entity swap (up
+        to ~70%), while Number swap and Negation show moderate increases (up to ~42%),
+        and the Clean arm remains flat.\\n\\nPanel (b) is a grouped bar chart showing
+        \\\"Hallucination rate (%)\\\" for Clean arm (blue) versus Poisoned arm (red)
+        across the same x-axis categories, revealing that hallucination rates decrease
+        as poisoned documents increase for both arms, with the Poisoned arm dropping
+        from 26.5% to 12.2% and the Clean arm from 31.3% to 29.9%.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-005-03\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":66,\"page_no\":5,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-005-03-f1d4adf3f7b93682.png\"}}},{\"id\":\"5f57e222-1f44-533f-a979-c69c93bf11c2\",\"version\":9,\"score\":0.39280307,\"payload\":{\"page_content\":\"This
+        is a heatmap chart displaying harmfulness evaluation results across five language
+        models (Gemma-3-12B, Llama-3.1-8B, Ministral-3-8B, Phi-4-14B, and Qwen2.5-7B)
+        under four retrieval-augmented generation (RAG) conditions each (Non-RAG,
+        Oracle unsafe, On-topic, Random). The columns represent four evaluation metrics/classifiers
+        (Llama-Guard, WildGuard, ShieldGemma, and Accuracy), with cell values showing
+        the proportion of outputs flagged as unsafe, color-coded from dark blue (low,
+        ~0.0) to red (high, ~1.0). The data reveals that the \\\"Oracle unsafe\\\"
+        condition consistently produces the highest harmfulness rates across all models
+        and metrics (e.g., Ministral-3-8B reaches 0.91 on Accuracy and Qwen2.5-7B
+        reaches 0.83), while \\\"Random\\\" and \\\"On-topic\\\" RAG conditions yield
+        much lower harmfulness scores (mostly below 0.25), indicating that injecting
+        deliberately unsafe retrieved context substantially increases harmful outputs
+        compared to non-adversarial retrieval conditions.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-fig-018-04\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":204,\"page_no\":18,\"filename\":\"2609.11758v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a/figures/fig-018-04-0e31d4617873b336.png\"}}},{\"id\":\"1a47c984-4df1-592f-8378-066f0c299d47\",\"version\":5,\"score\":0.39111656,\"payload\":{\"page_content\":\"C.
+        Uncertainty on the Existing Runs\\nWe do not invent new generations for this
+        revision. We reanalyse the same table with a query-level bootstrap: resample
+        the 49 indexed query slots with replacement (37 distinct texts), keep every
+        run tied to a drawn slot, recompute the fooled rate, and repeat 10 , 000 times
+        with a fixed seed to obtain percentile 95% intervals. Exact McNemar tests
+        on discordant clean/poisoned correctness pairs are reported as a secondary
+        check; effect sizes and intervals remain primary.\\nTable II shows that the
+        climb with poisoning level remains after accounting for query resampling,
+        while neighbouring levels overlap. The comparison that matters for the numeric
+        pattern is isolated next.\\nTABLE III BEHAVIOUR BY STRATEGY, AVERAGED OVER
+        ALL FOUR POISONING LEVELS. EACH STRATEGY AGGREGATES 196 RUNS.\\n\\nEntity
+        swap, Clean acc. (%) = 78.1. Entity swap, Poisoned acc. (%) = 54.6. Entity
+        swap, Fooled rate (%) = 23.5. Entity swap, Abstain rate (%) = 43.4. Number
+        swap, Clean acc. (%) = 77.6. Number swap, Poisoned acc. (%) = 57.7. Number
+        swap, Fooled rate (%) = 20.4. Number swap, Abstain rate (%) = 30.1. Negation,
+        Clean acc. (%) = 78.1. Negation, Poisoned acc. (%) = 60.2. Negation, Fooled
+        rate (%) = 19.4. Negation, Abstain rate (%) = 32.1\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Uncertainty on the Existing Runs\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a0c166f0-1173-5173-9ab5-499d03def381\",\"version\":7,\"score\":0.37120432,\"payload\":{\"page_content\":\"This
+        is a line chart comparing two methods for setting \\\"allocation temperature\\\"
+        (\u03C4) against compression rate (x-axis, log scale: 16, 32, 64, 128). The
+        blue solid line labeled \\\"Empirical optimum\\\" shows \u03C4 decreasing
+        gradually from 1.0 at compression rate 16 to about 0.5 at rate 128, with match
+        accuracy scores annotated at each point (84.00, 84.45, 83.90, 83.15). The
+        orange dashed line labeled \\\"Theory: \u03C4 \u221D B(\u03C1) (anchored at
+        16x)\\\" declines more steeply, from 1.0 at rate 16 to about 0.22 at rate
+        128, with corresponding match scores (84.35, 83.35, 82.25). A gray dotted
+        horizontal reference line marks \\\"Fixed \u03C4 = 1\\\" with a match score
+        of 81.30 at compression rate 128, illustrating that both adaptive temperature
+        approaches outperform a fixed temperature baseline at high compression rates.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-fig-007-05\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":81,\"page_no\":7,\"filename\":\"2609.22100v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d/figures/fig-007-05-af44834945b0ff05.png\"}}},{\"id\":\"a18e8f71-14a2-5568-a215-b9c94feddb47\",\"version\":5,\"score\":0.36987612,\"payload\":{\"page_content\":\"E.
+        A Majority Pattern in Numeric Corruption\\nFigure 3 isolates that pattern.
+        For entity swap and negation the fooled rate grows in roughly even steps as
+        poisoning increases. Number swap behaves differently. It stays at 10.2% for
+        both zero and one corrupted passage (bootstrap 95% CI [2 . 0 , 18 . 4] in
+        both cells), then rises to 26.5% at two ( [14 . 3 , 38 . 8] ) and 34.7% at
+        three ( [22 . 5 , 49 . 0] ). The jump from one to two poisoned passages is
+        16.3 points with CI [2 . 0 , 30 . 6] , which excludes zero but is wide. Exact
+        McNemar tests on clean-versus-poisoned correctness are significant at two
+        and three poisoned passages ( p < 10 -3 ) and not at one ( p = 0 . 22 ). We
+        read this as a majority-leaning pattern consistent with outvoting a single
+        wrong figure, not as a sharp phase transition proven under locked pairs. Because
+        a model cannot sanity-check a bare number the way it can catch 'Madrid, Spain,'
+        numeric corruption remains a quiet risk once it reaches critical mass.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"E.
+        A Majority Pattern in Numeric Corruption\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":51,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"44b23d4c-78f2-5886-b439-fe95633e2efe\",\"version\":5,\"score\":0.36227596,\"payload\":{\"page_content\":\"TABLE
+        III BEHAVIOUR BY STRATEGY, AVERAGED OVER ALL FOUR POISONING LEVELS. EACH STRATEGY
+        AGGREGATES 196 RUNS.\\n\\n| Strategy    |   Clean acc. (%) |   Poisoned acc.
+        (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|-------------|------------------|---------------------|-------------------|--------------------|\\n|
+        Entity swap |             78.1 |                54.6 |              23.5 |
+        \              43.4 |\\n| Number swap |             77.6 |                57.7
+        |              20.4 |               30.1 |\\n| Negation    |             78.1
+        |                60.2 |              19.4 |               32.1 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0002\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":45,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        III BEHAVIOUR BY STRATEGY, AVERAGED OVER ALL FOUR POISONING LEVELS. EACH STRATEGY
+        AGGREGATES 196 RUNS.\\n\\n| Strategy    |   Clean acc. (%) |   Poisoned acc.
+        (%) |   Fooled rate (%) |   Abstain rate (%) |\\n|-------------|------------------|---------------------|-------------------|--------------------|\\n|
+        Entity swap |             78.1 |                54.6 |              23.5 |
+        \              43.4 |\\n| Number swap |             77.6 |                57.7
+        |              20.4 |               30.1 |\\n| Negation    |             78.1
+        |                60.2 |              19.4 |               32.1 |\"}}},{\"id\":\"376db314-03f8-550f-b3ca-a6811171d657\",\"version\":5,\"score\":0.36042327,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nOne detail in Table I needs to be read carefully. The
+        0 / 3 row still shows a fooled rate near 10% and an accuracy about 9 points
+        below the clean arm, even though no passage is rewritten and both answers
+        see the same retrieved list. That residual is therefore not a retrieval mismatch.
+        It comes from decoding noise under temperature 0.1 across two independent
+        generations, plus a strict keyword matcher that can disagree on near-paraphrases.
+        Recomputing from the 588-run table, clean and poisoned answers are identical
+        in only 76.9% of the 0 / 3 runs. The residual is large relative to some attack
+        increments (the rise from 9.5% to 15.0% fooled between 0 / 3 and 1 / 3 is
+        5.5 points), so strategy contrasts at light poisoning should be read as suggestive
+        until decoding is controlled (fixed seeds, repeated draws) and labels are
+        less brittle. We therefore read the clean-arm column, not the 0 / 3 poisoned
+        cell, as the true no-attack baseline.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":41,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001383001}"
     headers:
       content-type:
       - application/json

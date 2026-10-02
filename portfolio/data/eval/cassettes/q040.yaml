@@ -62,228 +62,534 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        Y3l+Y/8fKymJ8Hd/
+      string: "{\"result\":{\"points\":[{\"id\":\"f03b562b-0085-55ad-9da7-35c22be7632a\",\"version\":13,\"score\":0.6087978,\"payload\":{\"page_content\":\"5
+        Results\\nEmitted and grounded scores diverge (H1). Figures 1 and 2 show the
+        frontier. On ASQA at nominal budget 0.25 (achieved ratio 0.08), RECOMP receives
+        emitted citation precision of 0.86 against its summaries and grounded preci-
+        A n s w e r   c o r r e c t n e s s   ( s t r - E M )\\n0 . 0\\nA c h i e
+        v e d   c o n t e x t   f r a c t i o n\\nFigure 1: The attribution-compression
+        frontier on 944 common ASQA questions. Compression increases rightward ( x
+        : achieved fraction of retrieved context). Curves show descriptive means under
+        the shared evaluator and recovery protocol; paired difference intervals and
+        tests appear in Appendix B. The right panel reports str-EM.\\nD e c l a r
+        e d - e v i d e n c e   F 1\\n0 . 0\\nA c h i e v e d   c o n t e x t   f
+        r a c t i o n\\nFigure 2: The frontier on 976 common QASPER questions from
+        271 papers, axes as in Figure 1. The third panel scores each compressor's
+        declared evidence against gold paragraphs; it is undefined for no-provenance
+        methods. Small plotted differences do not establish equivalence.\\nsion of
+        0.12 against source spans; its mean perquestion recovery rate is 0.41. The
+        paired precision gap is 0.740 (95% CI [0.711, 0.767], p H = 0 . 0148 ). The
+        gap combines effects of compression, bounded recovery, and NLI judgments;
+        these measurements do not separate their contributions. On QASPER the corresponding
+        scores are 0.55 and 0.06 (achieved ratio 0.015), with gap 0.491 [0.457, 0.525]
+        and p H = 0 . 0148 . LLMLingua2's grounded precision means decrease across
+        budgets: 0.16, 0.10, 0.05, 0.03 on ASQA and 0.14, 0.11, 0.04, 0.02 on QASPER.
+        All no-provenance settings score below their dataset's identity reference
+        (0.51 on ASQA, 0.48 on QASPER), with p H = 0 . 0148 for each comparison.\\nExtraction
+        and reranking trade off citation scores and answer quality. ASQA extraction
+        yields grounded precision 0.43, 0.49, 0.49, and\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"5
+        Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":44,\"page_no\":5,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"b6d547be-b181-5b13-8b6b-4ee45895eb9f\",\"version\":13,\"score\":0.5848511,\"payload\":{\"page_content\":\"Table
+        1: Citation precision and unsupported rates at nominal budget 0.25 (identity:
+        full context), on 944 ASQA and 976 QASPER questions. Notation follows Section
+        3; no-provenance declared-span rates are structural. Two zero-claim RECOMP
+        answers are excluded from QASPER verification rates.\\n\\n| Compressor    |
+        \  \u02C6 \u03C1 |   P g |   P e |   U s |   U m |   U r |\\n|---------------|-------|-------|-------|-------|-------|-------|\\n|
+        ASQA          |       |       |       |       |       |       |\\n| Identity
+        \     |  1.00 |  0.51 |  0.51 |  0.44 |  0.44 |  0.44 |\\n| Rerank top- k
+        |  0.20 |  0.69 |  0.69 |  0.36 |  0.37 |  0.36 |\\n| Extractive    |  0.26
+        |  0.49 |  0.49 |  0.46 |  0.46 |  0.46 |\\n| ECR           |  0.26 |  0.48
+        |  0.49 |  0.46 |  0.45 |  0.46 |\\n| RECOMP        |  0.08 |  0.12 |  0.86
+        |  1.00 |  0.17 |  0.88 |\\n| LLMLingua-2   |  0.26 |  0.10 |  0.53 |  1.00
+        |  0.51 |  0.90 |\\n| QASPER        |       |       |       |       |       |
+        \      |\\n| Identity      |  1.00 |  0.48 |  0.48 |  0.53 |  0.53 |  0.53
+        |\\n| Rerank top- k |  0.25 |  0.39 |  0.39 |  0.59 |  0.60 |  0.59 |\\n|
+        Extractive    |  0.25 |  0.43 |  0.43 |  0.48 |  0.48 |  0.48 |\\n| ECR           |
+        \ 0.25 |  0.46 |  0.46 |  0.45 |  0.45 |  0.45 |\\n| RECOMP        |  0.02
+        |  0.06 |  0.55 |  1.00 |  0.50 |  0.95 |\\n| LLMLingua-2   |  0.25 |  0.11
+        |  0.42 |  1.00 |  0.65 |  0.91 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":39,\"page_no\":5,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        1: Citation precision and unsupported rates at nominal budget 0.25 (identity:
+        full context), on 944 ASQA and 976 QASPER questions. Notation follows Section
+        3; no-provenance declared-span rates are structural. Two zero-claim RECOMP
+        answers are excluded from QASPER verification rates.\\n\\n| Compressor    |
+        \  \u02C6 \u03C1 |   P g |   P e |   U s |   U m |   U r |\\n|---------------|-------|-------|-------|-------|-------|-------|\\n|
+        ASQA          |       |       |       |       |       |       |\\n| Identity
+        \     |  1.00 |  0.51 |  0.51 |  0.44 |  0.44 |  0.44 |\\n| Rerank top- k
+        |  0.20 |  0.69 |  0.69 |  0.36 |  0.37 |  0.36 |\\n| Extractive    |  0.26
+        |  0.49 |  0.49 |  0.46 |  0.46 |  0.46 |\\n| ECR           |  0.26 |  0.48
+        |  0.49 |  0.46 |  0.45 |  0.46 |\\n| RECOMP        |  0.08 |  0.12 |  0.86
+        |  1.00 |  0.17 |  0.88 |\\n| LLMLingua-2   |  0.26 |  0.10 |  0.53 |  1.00
+        |  0.51 |  0.90 |\\n| QASPER        |       |       |       |       |       |
+        \      |\\n| Identity      |  1.00 |  0.48 |  0.48 |  0.53 |  0.53 |  0.53
+        |\\n| Rerank top- k |  0.25 |  0.39 |  0.39 |  0.59 |  0.60 |  0.59 |\\n|
+        Extractive    |  0.25 |  0.43 |  0.43 |  0.48 |  0.48 |  0.48 |\\n| ECR           |
+        \ 0.25 |  0.46 |  0.46 |  0.45 |  0.45 |  0.45 |\\n| RECOMP        |  0.02
+        |  0.06 |  0.55 |  1.00 |  0.50 |  0.95 |\\n| LLMLingua-2   |  0.25 |  0.11
+        |  0.42 |  1.00 |  0.65 |  0.91 |\"}}},{\"id\":\"b9c26351-e63f-59db-9a93-06768b8d60ef\",\"version\":13,\"score\":0.5747249,\"payload\":{\"page_content\":\"3.2
+        Emitted vs. Grounded Citations\\nWescore every run under two views. We write
+        precision as P and recall as R , with subscripts e for emitted and g for grounded.
+        Emitted scores citations against the unit texts the generator actually saw;
+        it measures consistency with the compressed context, and is what one implicitly
+        measures when compressed units are treated as citable documents. Grounded
+        fi rst resolves each citation to retrieved source spans and scores against
+        those. Units with declared provenance resolve to their declared sids. Units
+        without declared provenance pass through our re-attributability protocol:
+        rank source snippets by lexical similarity to the unit, run NLI on the top
+        10 candidates, and keep those judged to individually entail the unit at \u03C4
+        . A citation with no recovered span receives no precision credit and cannot
+        support recall under this protocol. The reattribution rate is the fraction
+        of units without declared provenance with at least one recovered span, averaged
+        across examples.\\nEvaluator dependence. The same NLI model filters recovered
+        spans and scores citation support, creating a circularity risk: selection
+        and evaluation errors can be correlated. Lexical retrieval can miss paraphrases,
+        and the single-snippet test can reject units supported only by combined evidence.
+        Thus failed recovery does not establish that support is absent from the source,
+        and the direction of overall scoring bias is unknown. Appendix C reports a
+        second-evaluator sensitivity check; human calibration remains absent.\\nThe
+        emitted -grounded gap is an operational diagnostic of attribution laundering
+        : claims receive credit against compressed text that is not supported through
+        the source mappings accepted by our protocol. It does not by itself distinguish
+        missing evidence from recovery or NLI errors.\\nNominal vs. achieved compression.
+        Budgets are nominal fractions { 0 . 5 , 0 . 25 , 0 . 1 , 0 . 05 } of each
+        example's retrieved context, enforced in generator-tokenizer tokens. Extractive
+        families track their budgets closely, but abstractive compressors emit what
+        their decoder emits: RECOMP realizes achieved ratios of 0 . 05 -0 . 08 on
+        ASQA and \u2248 0 . 015 on QASPER across all four nominal budgets-distinct
+        nominal operating points collapse together. All curves therefore use the achieved
+        ratio on the compression axis; plotting against nominal budgets would misplace
+        abstractive systems by more than an order of magnitude in the worst case.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"3.2
+        Emitted vs. Grounded Citations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":24,\"page_no\":3,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"2f8a40b6-be17-5a91-a1a4-eeffcbaf50c8\",\"version\":13,\"score\":0.56784075,\"payload\":{\"page_content\":\"A
+        Results on Common Questions\\nTables 4 and 5 report all primary settings.
+        \u03C1 : nominal budget; \u02C6 \u03C1 : achieved ratio; P g /R g : grounded
+        citation precision/recall; P e : emitted citation precision; reattr.: re-attribution
+        rate (units without declared provenance recovering at least one source span
+        under the NLI protocol); U s /U m : unsupported-claim rate under declared-span-only
+        and summary-checked verification; str-EM: answer string exact match (ASQA);
+        EF1: declaredevidence F1 (QASPER only). Every setting uses the same 944 ASQA
+        or 976 QASPER successful questions; n denotes that common cohort, with metric-specific
+        omissions identified in the tables. Scores are question-weighted means over
+        defined values; superscript n = \xB7 \xB7 \xB7 gives the nonmissing count
+        when smaller than the cohort, and dashes mark undefined metrics. QASPER verification
+        rates exclude 1, 2, 3, and 2 zero-claim RECOMP answers at nominal budgets
+        0.50, 0.25, 0.10, and 0.05, respectively; other settings use the full cohort.
+        The 1 . 00 declared-span rates for noprovenance methods are structural; this
+        verification mode does not attempt recovery. Exploratory slot-compressor runs
+        are excluded. RECOMP emits identical per-question contexts at nominal budgets
+        0.50 and 0.25 on ASQA, and at 0.50, 0.25, and 0.10 on QASPER. Separate generation
+        passes are retained as distinct operating points.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0027\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"A
+        Results on Common Questions\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":131,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"2e58c799-e2ab-5edb-98ef-808cd1e1ca71\",\"version\":13,\"score\":0.55968696,\"payload\":{\"page_content\":\"Table
+        3: Recovery-threshold sensitivity on 944 ASQA questions at nominal budget
+        0.25; citation scoring stays at \u03C4 = 0 . 5 . P g : grounded precision;
+        reattr.: reattribution rate. Superscripts count defined values; dashes mark
+        undefined metrics.\\n\\n|     | RECOMP   | RECOMP        | LLMLingua-2   |
+        LLMLingua-2   |\\n|-----|----------|---------------|---------------|---------------|\\n|
+        \u03C4   | P g      | reattr.       | P g           | reattr.       |\\n|
+        0.3 | 0.15     | 0 . 48 n =929 | 0.16          | 0.54          |\\n| 0.4 |
+        0.13     | 0 . 44 n =929 | 0.13          | 0.47          |\\n| 0.5 | 0.12
+        \    | 0 . 41 n =929 | 0.10          | 0.40          |\\n| 0.6 | 0.11     |
+        0 . 38 n =929 | 0.08          | 0.34          |\\n| 0.7 | 0.09     | 0 . 34
+        n =929 | 0.05          | 0.27          |\\n| 0.8 | 0.08     | 0 . 31 n =929
+        | 0.04          | 0.20          |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0002\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":67,\"page_no\":8,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        3: Recovery-threshold sensitivity on 944 ASQA questions at nominal budget
+        0.25; citation scoring stays at \u03C4 = 0 . 5 . P g : grounded precision;
+        reattr.: reattribution rate. Superscripts count defined values; dashes mark
+        undefined metrics.\\n\\n|     | RECOMP   | RECOMP        | LLMLingua-2   |
+        LLMLingua-2   |\\n|-----|----------|---------------|---------------|---------------|\\n|
+        \u03C4   | P g      | reattr.       | P g           | reattr.       |\\n|
+        0.3 | 0.15     | 0 . 48 n =929 | 0.16          | 0.54          |\\n| 0.4 |
+        0.13     | 0 . 44 n =929 | 0.13          | 0.47          |\\n| 0.5 | 0.12
+        \    | 0 . 41 n =929 | 0.10          | 0.40          |\\n| 0.6 | 0.11     |
+        0 . 38 n =929 | 0.08          | 0.34          |\\n| 0.7 | 0.09     | 0 . 34
+        n =929 | 0.05          | 0.27          |\\n| 0.8 | 0.08     | 0 . 31 n =929
+        | 0.04          | 0.20          |\"}}},{\"id\":\"1ea894f7-bdd5-5452-86f3-aae2ce06fb6c\",\"version\":13,\"score\":0.55764616,\"payload\":{\"page_content\":\"Sensitivity
+        to the re-attribution threshold.\\nThe re-attributability protocol depends
+        on the entailment threshold \u03C4 . Table 3 sweeps \u03C4 from 0.3 to 0.8
+        for both no-provenance methods on ASQA (citation scoring fixed at the production
+        threshold of 0.5). Grounded precision ranges from 0.15 to 0.08 for RECOMP
+        and from 0.16 to 0.04 for LLMLingua-2, while recovery rates fall from 0.48
+        to 0.31 and from 0.54 to 0.20, respectively. Emitted precision exceeds grounded
+        precision at every tested recovery threshold for both methods ( p H = 0 .
+        0148 throughout). This is sensitivity analysis of one operating choice, not
+        independent validation: the evaluator, top-10 lexical search, and singlesnippet
+        support requirement remain fixed.\\nTable 3: Recovery-threshold sensitivity
+        on 944 ASQA questions at nominal budget 0.25; citation scoring stays at \u03C4
+        = 0 . 5 . P g : grounded precision; reattr.: reattribution rate. Superscripts
+        count defined values; dashes mark undefined metrics.\\n\\n0.3, RECOMP.P g
+        = 0.15. 0.3, RECOMP.reattr. = 0 . 48 n =929. 0.3, LLMLingua-2.P g = 0.16.
+        0.3, LLMLingua-2.reattr. = 0.54. 0.4, RECOMP.P g = 0.13. 0.4, RECOMP.reattr.
+        = 0 . 44 n =929. 0.4, LLMLingua-2.P g = 0.13. 0.4, LLMLingua-2.reattr. = 0.47.
+        0.5, RECOMP.P g = 0.12. 0.5, RECOMP.reattr. = 0 . 41 n =929. 0.5, LLMLingua-2.P
+        g = 0.10. 0.5, LLMLingua-2.reattr. = 0.40. 0.6, RECOMP.P g = 0.11. 0.6, RECOMP.reattr.
+        = 0 . 38 n =929. 0.6, LLMLingua-2.P g = 0.08. 0.6, LLMLingua-2.reattr. = 0.34.
+        0.7, RECOMP.P g = 0.09. 0.7, RECOMP.reattr. = 0 . 34 n =929. 0.7, LLMLingua-2.P
+        g = 0.05. 0.7, LLMLingua-2.reattr. = 0.27. 0.8, RECOMP.P g = 0.08. 0.8, RECOMP.reattr.
+        = 0 . 31 n =929. 0.8, LLMLingua-2.P g = 0.04. 0.8, LLMLingua-2.reattr. = 0.20\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"Sensitivity
+        to the re-attribution threshold.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":66,\"page_no\":7,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"755a4d26-3cb7-5a56-9713-10b1c44e5c50\",\"version\":13,\"score\":0.5288978,\"payload\":{\"page_content\":\"5
+        Results\\n0.42 across achieved ratios 0.51, 0.26, 0.11, and 0.06. Relative
+        to identity, precision is lower at nominal 0.50 and 0.05 ( p H = 0 . 0148
+        ); the intermediate differences are unresolved ( p H = 1 ), not evidence of
+        preservation. Its str-EM decreases from identity's 0.34 through 0.32, 0.26,
+        and 0.19 to 0.15, with every adjacent decrease supported ( p H = 0 . 0148
+        ). ASQA reranking at nominal 0.25 increases precision from 0.51 to 0.69 (
+        \u2206 = 0 . 184 , CI [0.149, 0.219], p H = 0 . 0148 ), while recall rises
+        from 0.56 to 0.63 and str-EM falls from 0.34 to 0.25 (both p H = 0 . 0148
+        ). The corresponding QASPER precision difference is negative ( \u2206 = -0
+        . 089 , CI [ -0 . 124 , -0 . 052 ], p H = 0 . 0148 ). These dataset-specific
+        results do not isolate a causal effect of citation granularity.\\nDeclared
+        provenance determines verification coverage (H4). Table 1 contrasts declared-span
+        and summary checking. For RECOMP on ASQA the unsupported rates are 1.00 and
+        0.17, respectively; the corresponding QASPER values are 1.00 and 0.50. LLMLingua-2
+        has rates of 1.00 vs. 0.51 on ASQA and 1.00 vs. 0.65 on QASPER. Every 1 .
+        00 here is structural: no declared source evidence reaches the span verifier,
+        so claims fail without an entailment judgment. These values do not establish
+        that all claims lack recoverable source support. Recovered-source verification
+        now supplies a direct claim-level comparison: for RECOMP, unsupported rates
+        are 0.88 on ASQA and 0.95 on QASPER. Their paired differences from summary
+        checking are 0.712 (CI [0.683, 0.739]) and 0.450 [0.417, 0.483], both p H
+        = 0 . 0148 . LLMLingua-2's recovered-source rates are 0.90 and 0.91, with
+        differences 0.394 [0.362, 0.426] and 0.253 [0.225, 0.282] (both p H = 0 .
+        0148 ). These gaps persist when recovery is attempted, but remain conditional
+        on the bounded search and shared NLI evaluator. For provenance-declaring methods,
+        displayed rate differences are below 0.01 in magnitude; no mode comparison
+        survives Holm correction, which does not establish equivalence.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"5
+        Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":56,\"page_no\":6,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"a9b43285-5f62-5767-bb3d-647de070ca2f\",\"version\":13,\"score\":0.50890756,\"payload\":{\"page_content\":\"Sensitivity
+        to the re-attribution threshold.\\nSecond-evaluator sensitivity. We rescore
+        100 questions per dataset with TRUE T5-XXL (Honovich et al., 2022), covering
+        full-context identity plus extraction, RECOMP, and LLMLingua-2 at nominal
+        0.25. With source mappings fixed, RECOMP's emitted/grounded precision is 0.78/0.13
+        on ASQA and 0.44/0.01 on QASPER. The paired gaps are 0.65 [0.55, 0.75] and
+        0.43 [0.33, 0.53], respectively. When TRUE also selects recovered spans, grounded
+        precision is 0.14 and 0.03. All 16 planned emitted-minus-grounded precision
+        and recall gaps across both methods, datasets, and recovery modes are positive
+        ( p H = 0 . 0024 in a separate 24-test family). None of the eight cross-evaluator
+        grounded-precision differences passes Holm adjustment; this does not establish
+        equivalence or validate the primary numbers. Appendix C reports all comparisons,
+        the 4,096-token input configuration, decoder anomalies, and documented restarts.
+        The pattern persists under a second scoring family, with recovery and calibration
+        limitations retained.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"Sensitivity
+        to the re-attribution threshold.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":69,\"page_no\":8,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"2fae35a8-3987-5d65-8f18-c970ac738605\",\"version\":13,\"score\":0.49996206,\"payload\":{\"page_content\":\"Table
+        11: Precision on the same sampled saved answers: 100 ASQA (A) and 100 QASPER
+        (Q) questions (84 QASPER papers). P e /P g : emitted/grounded precision. Mappings
+        and evaluation details follow Appendix C; superscripts give nonmissing counts
+        and dashes undefined values.\\n\\n|      |             | Prior DeBERTa   |
+        Prior DeBERTa   | TRUE fixed   | TRUE fixed   | TRUE recovery   | TRUE recovery
+        \  |\\n|------|-------------|-----------------|-----------------|--------------|--------------|-----------------|-----------------|\\n|
+        Data | Method      | P e             | P g             | P e          | P
+        g          | P e             | P g             |\\n| A    | Identity    |
+        0.467           | 0.467           | 0.563        | 0.563        | 0.563           |
+        0.563           |\\n| A    | Extractive  | 0.402           | 0.402           |
+        0.497        | 0.497        | 0.497           | 0.497           |\\n| A    |
+        RECOMP      | 0.790           | 0.090           | 0.780        | 0.130        |
+        0.780           | 0.140           |\\n| A    | LLMLingua-2 | 0.480           |
+        0.070           | 0.415        | 0.023        | 0.415           | 0.010           |\\n|
+        Q    | Identity    | 0.487           | 0.487           | 0.498        | 0.498
+        \       | 0.498           | 0.498           |\\n| Q    | Extractive  | 0.461
+        \          | 0.461           | 0.391        | 0.391        | 0.391           |
+        0.391           |\\n| Q    | RECOMP      | 0.550           | 0.020           |
+        0.440        | 0.010        | 0.440           | 0.030           |\\n| Q    |
+        LLMLingua-2 | 0.490           | 0.118           | 0.387        | 0.076        |
+        0.387           | 0.019           |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":158,\"page_no\":20,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        11: Precision on the same sampled saved answers: 100 ASQA (A) and 100 QASPER
+        (Q) questions (84 QASPER papers). P e /P g : emitted/grounded precision. Mappings
+        and evaluation details follow Appendix C; superscripts give nonmissing counts
+        and dashes undefined values.\\n\\n|      |             | Prior DeBERTa   |
+        Prior DeBERTa   | TRUE fixed   | TRUE fixed   | TRUE recovery   | TRUE recovery
+        \  |\\n|------|-------------|-----------------|-----------------|--------------|--------------|-----------------|-----------------|\\n|
+        Data | Method      | P e             | P g             | P e          | P
+        g          | P e             | P g             |\\n| A    | Identity    |
+        0.467           | 0.467           | 0.563        | 0.563        | 0.563           |
+        0.563           |\\n| A    | Extractive  | 0.402           | 0.402           |
+        0.497        | 0.497        | 0.497           | 0.497           |\\n| A    |
+        RECOMP      | 0.790           | 0.090           | 0.780        | 0.130        |
+        0.780           | 0.140           |\\n| A    | LLMLingua-2 | 0.480           |
+        0.070           | 0.415        | 0.023        | 0.415           | 0.010           |\\n|
+        Q    | Identity    | 0.487           | 0.487           | 0.498        | 0.498
+        \       | 0.498           | 0.498           |\\n| Q    | Extractive  | 0.461
+        \          | 0.461           | 0.391        | 0.391        | 0.391           |
+        0.391           |\\n| Q    | RECOMP      | 0.550           | 0.020           |
+        0.440        | 0.010        | 0.440           | 0.030           |\\n| Q    |
+        LLMLingua-2 | 0.490           | 0.118           | 0.387        | 0.076        |
+        0.387           | 0.019           |\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.48944536,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"9a45527a-69f1-5359-860f-9612cf9636fd\",\"version\":13,\"score\":0.48190755,\"payload\":{\"page_content\":\"6
+        Analysis\\nRe-attribution varies across no-provenance methods. The re-attribution
+        rate measures whether at least one candidate source snippet passes the NLI
+        entailment threshold for a unit without declared provenance. On ASQA, RECOMP's
+        rates are 0.41, 0.41, 0.42, and 0.39 across nominal budgets 0.5 through 0.05,
+        excluding examples without summary units. Averaged over these examples, roughly
+        three-fifths of its units have no passing candidate; this does not establish
+        that the source contains no supporting evidence. LLMLingua-2's ASQA rate means
+        decrease from 0.56 to 0.40, 0.25, and 0.20 as budgets tighten; the first two
+        adjacent decreases have p H = 0 . 0148 , while the final decrease is unresolved
+        ( p H = 0 . 242 ). Recovery coverage depends on method, budget, and dataset
+        as well as the search and evaluator; these observations provide no universal
+        ceiling on recoverable support.\\nTable 2: Mean input tokens on 944 ASQA questions
+        at nominal budget 0.25 (identity: full context). Total includes generator
+        and declared-span verification input; compression, output, and recovery are
+        excluded.\\n\\nIdentity, Gen. in = 798. Identity, Ver. span = 371. Identity,
+        Ver. sum. = 382. Identity, Total = 1169. Rerank top- k, Gen. in = 210. Rerank
+        top- k, Ver. span = 171. Rerank top- k, Ver. sum. = 174. Rerank top- k, Total
+        = 381. Extractive, Gen. in = 277. Extractive, Ver. span = 112. Extractive,
+        Ver. sum. = 114. Extractive, Total = 389. ECR, Gen. in = 277. ECR, Ver. span
+        = 118. ECR, Ver. sum. = 107. ECR, Total = 395. RECOMP, Gen. in = 127. RECOMP,
+        Ver. span = 0. RECOMP, Ver. sum. = 84. RECOMP, Total = 127. LLMLingua-2, Gen.
+        in = 253. LLMLingua-2, Ver. span = 0. LLMLingua-2, Ver. sum. = 240. LLMLingua-2,
+        Total = 253\\nVerification adds input tokens. Table 2 reports a generator-input-plus-verifier-input
+        proxy, measured in generator-tokenizer tokens before NLI truncation. It excludes
+        compressor inference, generated output, recovery, and differences in model-specific
+        tokenization or per-token cost. The declared-span column is zero for no-provenance
+        compressors because this policy rejects their claims without an NLI call.
+        That zero does not describe the cost of recovering and checking source evidence.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Analysis\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":60,\"page_no\":7,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"77f26e0a-bd5e-5a63-a1d7-18e0907f7612\",\"version\":13,\"score\":0.48018646,\"payload\":{\"page_content\":\"Abstract\\nContext
+        compression reduces generator input in retrieval-augmented generation, but
+        answer quality alone does not characterize citation attribution. We measure
+        citation attribution across compression methods and budgets, comparing reranking,
+        extractive selection, abstractive summarization, token pruning, and an extract-cluster-rewrite
+        construction on ASQA and QASPER under a fixed generator and primary entailment
+        evaluator. On ASQA at a nominal 0.25 budget (achieved compression 0.08), a
+        RECOMP-style compressor's citations score 0.86 precision against its summaries
+        but 0.12 against source spans under our re-attributability protocol. These
+        estimates depend on a shared NLI model for span recovery and citation scoring
+        and lack independent human calibration. Extractive selection's observed grounded
+        precision ranges from 0.43 to 0.49 across nominal budgets from one-half to
+        one-tenth of the ASQA context, while answer quality declines. For the same
+        RECOMP setting, claim verification after source recovery yields an unsupported
+        rate of 0.88 versus 0.17 when checking summaries. This gap persists beyond
+        structural rejection of missing provenance, but remains evaluator-dependent.
+        A 200-question TRUE T5-XXL audit also finds emitted-grounded gaps under both
+        fixed and recomputed source mappings, without establishing human-calibrated
+        support rates.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"Abstract\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":4,\"page_no\":1,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"21d6e85f-96a3-5bc7-9f3f-0f7d3137d50c\",\"version\":13,\"score\":0.4713671,\"payload\":{\"page_content\":\"5
+        Results\\nECR's advantage is limited to one tested setting. On QASPER, ECR
+        improves grounded precision over extraction at nominal 0.50 ( \u2206 = 0 .
+        063 , CI [0.033, 0.092], p H = 0 . 0148 ). Its other QASPER precision differences
+        and all four ASQA differences lack adjusted statistical support. The tightest
+        QASPER ECR setting also does not establish an advantage over identity ( \u2206
+        = 0 . 028 , CI [ -0 . 010 , 0.064], p H = 1 ). ECR's QASPER declared-evidence
+        F1 is slightly lower than extraction at every budget, by 0.00065-0.00295 (all
+        p H < 0 . 05 ). Thus the results support a settingspecific precision gain,
+        not general superiority or lossless redundancy removal.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"5
+        Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":7,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"4dcbbe24-cdd2-5b3f-b8f6-a9f0f4d50acc\",\"version\":13,\"score\":0.47004813,\"payload\":{\"page_content\":\"4.1
+        Experimental Setup\\nWe evaluate on two attribution benchmarks with different
+        retrieval granularities. ASQA comprises 948 ambiguous factoid questions from
+        the ALCE release (Gao et al., 2023), each paired with the top-5 GTR-retrieved
+        passages, sentencesegmented into citable snippets; answer quality is string
+        exact match (str-EM). QASPER (Dasigi et al., 2021) is the 1,005-question dev
+        split over 281 NLP papers, using each supplied paper's abstract and full text.
+        Gold evidence is paragraphlevel, so identity presents paragraphs as citable
+        units while compressors operate on sentence snippets; declared sids map to
+        paragraphs for setF1 against gold evidence, max over annotators. The generator
+        is Qwen2.5-7B-Instruct served via vLLM with greedy decoding and ALCE-style
+        numbered-context citation prompting (Gao et al., 2023). Primary entailment
+        judgments use the development-grade DeBERTa NLI evaluator of \xA73.1 at \u03C4
+        = 0 . 5 . We compare six compressors: identity (no compression; documentlevel
+        on ASQA, paragraph-level on QASPER), cross-encoder rerank topk (ms-marco-MiniLML-6-v2),
+        embedding-based extractive sentence selection (all-MiniLM-L6-v2), the RECOMP
+        abstractive summarizer (NQ checkpoint) (Xu et al., 2024), LLMLingua-2 token
+        pruning (Pan et al., 2024), and our extract-cluster-rewrite (ECR) variant,
+        which ranks sentences, greedily clusters nearduplicates by Jaccard word overlap
+        (threshold 0.5, with a negation guard), and emits one unit per cluster-the
+        highest-relevance member sentence verbatim-citing all member sentence ids.
+        Although LLMLingua-2 prunes tokens verbatim, its output is a token stream
+        with no unit-level sid mapping in our pipeline, so it declares no provenance
+        and is scored with the no-provenance family alongside RECOMP. Each compressor
+        runs at nominal budgets { 0 . 5 , 0 . 25 , 0 . 1 , 0 . 05 } of the retrieved
+        context, enforced in generator-tokenizer tokens. Because compressors do not
+        reliably hit their nominal budgets, the frontier figures and primary summary
+        tables report the achieved ratio: RECOMP's summary length is nearly budget-independent,
+        saturating at achieved ratios of 0.05-0.08 on ASQA and \u2248 0.015 on QASPER
+        across all four nominal budgets. All primary comparisons use the same successful
+        questions across all 21 settings: 944 on ASQA and 976 from 271 papers on QASPER.
+        Only identity has failures: 4 budget-check failures on ASQA, and 15 budget-check
+        plus 14 promptoverflow failures on QASPER; their question IDs are excluded
+        from every primary setting. Fullcohort descriptive aggregates remain available
+        in the evaluation artifacts.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":33,\"page_no\":4,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"48f13ee2-cca1-5a90-8a2c-c4e37fc6acd7\",\"version\":13,\"score\":0.4636618,\"payload\":{\"page_content\":\"8
+        Conclusion\\nWe measured citation attribution across contextcompression methods
+        and budgets under a fixed generator and primary NLI evaluator. Emitted and
+        grounded scores diverge, but their magnitudes depend on recovery and evaluation
+        choices that have not been independently calibrated. Declaredspan verification
+        rejects claims lacking declared evidence by policy; it does not determine
+        whether support could be recovered. Paired comparisons quantify sampling uncertainty
+        conditional on the fixed outputs and evaluator, with only limited evidence
+        for ECR's advantage. We recommend reporting grounded alongside emitted citation
+        scores and achieved alongside nominal compression. The TRUE subsample retains
+        the emitted-grounded gaps; human calibration and broader replication remain
+        necessary.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"8
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":76,\"page_no\":8,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"878a74c1-67eb-59c3-a48e-9f65fa4e61bd\",\"version\":13,\"score\":0.46349204,\"payload\":{\"page_content\":\"1
+        Introduction\\nContext compression reduces generator input in retrieval-augmented
+        generation (RAG) (Xu et al., 2024; Jiang et al., 2024; Pan et al., 2024; Chirkova
+        et al., 2025). Citation-grade attribution requires locatable evidence: a reader
+        must be able to retrieve and check the cited source (Rashkin et al., 2023;
+        Bohnet et al., 2022). Abstractive compression can interrupt this link when
+        citations identify compressor-generated text without its supporting source
+        spans. We call it attribution launder- ing when consistency with compressor-generated
+        text is treated as evidence of support from original sources. On ASQA at nominal
+        budget 0 . 25 (achieved ratio 0 . 08 ), a RECOMP-style compressor's citations
+        score 0.86 precision against its summaries and 0.12 against source spans under
+        our recovery protocol. These automatic scores depend on a shared NLI evaluator
+        and bounded candidate search; they have not been independently calibrated.\\nRelated
+        work already identifies a divergence between answer quality and citation grounding
+        under compression (Li et al., 2026a), while citation support does not establish
+        causal reliance on evidence (Wallat et al., 2025). We examine this problem
+        across compressor families and two datasets, reporting achieved context fractions,
+        explicit sourcerecovery rules, and paired comparisons on shared questions.
+        Our measurements concern source support under an automatic evaluation protocol;
+        they do not test causal citation faithfulness.\\nWe conduct a controlled measurement
+        study with a fixed generator (Qwen2.5-7B-Instruct with ALCE-style numbered-context
+        citation prompting), a fixed primary NLI evaluator, and nominal budgets of
+        { 0 . 5 , 0 . 25 , 0 . 1 , 0 . 05 } in generatortokenizer tokens. Our contributions
+        are:\\n- The attribution-compression frontier. A comparison across reranking,
+        extractive selection, abstraction, token pruning, ECR, and an identity reference
+        against achieved context fractions. All settings share 944 successful ASQAquestions
+        and 976 QASPER questions from 271 papers; paired tests quantify their differences.\\n-
+        A re-attributability protocol. A unit without declared provenance is counted
+        as reattributable when NLI predicts entailment from a candidate source snippet;
+        recovered sources support grounded citation scores\\n- alongside emitted scores
+        against compressed text.\\n- Three verification modes. We separate consistency
+        with summaries, availability of declared provenance, and claim support after
+        source recovery. Structural rejection under declared-only checking is distinguished
+        from measured rejection after recovery.\\n- An extract-cluster-rewrite (ECR)
+        observation. A simple construction greedily merges near-duplicate sentences
+        and cites all members of each cluster; paired comparisons quantify its measured
+        differences from extraction across budgets.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0002\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"1
+        Introduction\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":6,\"page_no\":1,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"0bd42ba8-593c-5377-8a5c-0d377970ec6e\",\"version\":13,\"score\":0.46031797,\"payload\":{\"page_content\":\"This
+        is a set of three line/scatter plots comparing context compression methods
+        for retrieval-augmented generation, plotting \\\"Achieved context fraction\\\"
+        (x-axis, reversed from 1.0 to 0.0) against three metrics: Grounded citation
+        precision, Grounded citation recall, and Declared-evidence F1 (y-axes, 0.0
+        to 1.0 or 0.0 to 0.20 scales). Six methods are compared: Identity (full context,
+        green dot at x=1.0), Extractive (orange), Rerank top-k (brown), ECR (blue),
+        RECOMP (purple, near x=0), and LLMLingua-2 (red). ECR consistently achieves
+        the highest precision and recall among compression methods across context
+        fractions (~0.4-0.55), while LLMLingua-2 performs poorly (near 0.0-0.15) on
+        citation precision/recall; for Declared-evidence F1, ECR and Extractive show
+        increasing values (up to ~0.17) as context fraction decreases, outperforming
+        Rerank top-k, which stays low (~0.05-0.08).\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-fig-006-01\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":52,\"page_no\":6,\"filename\":\"2609.14245v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde/figures/fig-006-01-a0e259bb5c9608cc.png\"}}},{\"id\":\"701c0db8-c478-5e86-ab74-c5c16767a234\",\"version\":13,\"score\":0.4586185,\"payload\":{\"page_content\":\"Table
+        4: All 21 primary settings on 944 common ASQA questions; question-weighted
+        means. Notation and exclusions follow Appendix A. No-provenance declared-span
+        rates are structural.\\n\\n| Compressor    |    \u03C1 |   \u02C6 \u03C1 |
+        \  P g |   R g |   P e | reattr.       |   str-EM |   U s |   U m |   n |\\n|---------------|------|-------|-------|-------|-------|---------------|----------|-------|-------|-----|\\n|
+        Identity      |    1 |  1.00 |  0.51 |  0.56 |  0.51 | -             |     0.34
+        |  0.44 |  0.44 | 944 |\\n| Rerank top- k |  0.5 |  0.40 |  0.61 |  0.62 |
+        \ 0.61 | -             |     0.30 |  0.38 |  0.38 | 944 |\\n| Rerank top-
+        k | 0.25 |  0.20 |  0.69 |  0.63 |  0.69 | -             |     0.25 |  0.36
+        |  0.37 | 944 |\\n| Rerank top- k |  0.1 |  0.11 |  0.38 |  0.37 |  0.38 |
+        -             |     0.19 |  0.63 |  0.63 | 944 |\\n| Rerank top- k | 0.05
+        |  0.06 |  0.24 |  0.22 |  0.24 | -             |     0.12 |  0.78 |  0.78
+        | 944 |\\n| Extractive    |  0.5 |  0.51 |  0.43 |  0.52 |  0.43 | -             |
+        \    0.32 |  0.47 |  0.48 | 944 |\\n| Extractive    | 0.25 |  0.26 |  0.49
+        |  0.54 |  0.49 | -             |     0.26 |  0.46 |  0.46 | 944 |\\n| Extractive
+        \   |  0.1 |  0.11 |  0.49 |  0.48 |  0.49 | -             |     0.19 |  0.52
+        |  0.52 | 944 |\\n| Extractive    | 0.05 |  0.06 |  0.42 |  0.39 |  0.42 |
+        -             |     0.15 |  0.61 |  0.61 | 944 |\\n| ECR           |  0.5
+        |  0.51 |  0.44 |  0.54 |  0.45 | -             |     0.31 |  0.45 |  0.44
+        | 944 |\\n| ECR           | 0.25 |  0.26 |  0.48 |  0.54 |  0.49 | -             |
+        \    0.27 |  0.46 |  0.45 | 944 |\\n| ECR           |  0.1 |  0.11 |  0.48
+        |  0.49 |  0.49 | -             |     0.21 |  0.51 |  0.51 | 944 |\\n| ECR
+        \          | 0.05 |  0.06 |  0.39 |  0.37 |  0.39 | -             |     0.14
+        |  0.63 |  0.63 | 944 |\\n| RECOMP        |  0.5 |  0.08 |  0.12 |  0.12 |
+        \ 0.86 | 0 . 41 n =929 |     0.29 |  1.00 |  0.17 | 944 |\\n| RECOMP        |
+        0.25 |  0.08 |  0.12 |  0.12 |  0.86 | 0 . 41 n =929 |     0.29 |  1.00 |
+        \ 0.17 | 944 |\\n| RECOMP        |  0.1 |  0.08 |  0.12 |  0.11 |  0.86 |
+        0 . 42 n =929 |     0.29 |  1.00 |  0.17 | 944 |\\n| RECOMP        | 0.05
+        |  0.05 |  0.17 |  0.17 |  0.80 | 0 . 39 n =928 |     0.28 |  1.00 |  0.24
+        | 944 |\\n| LLMLingua-2   |  0.5 |  0.51 |  0.16 |  0.14 |  0.58 | 0.56          |
+        \    0.30 |  1.00 |  0.45 | 944 |\\n| LLMLingua-2   | 0.25 |  0.26 |  0.10
+        |  0.10 |  0.53 | 0.40          |     0.24 |  1.00 |  0.51 | 944 |\\n| LLMLingua-2
+        \  |  0.1 |  0.11 |  0.05 |  0.05 |  0.31 | 0.25          |     0.16 |  1.00
+        |  0.73 | 944 |\\n| LLMLingua-2   | 0.05 |  0.06 |  0.03 |  0.03 |  0.16 |
+        0.20          |     0.12 |  1.00 |  0.86 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":136,\"page_no\":14,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        4: All 21 primary settings on 944 common ASQA questions; question-weighted
+        means. Notation and exclusions follow Appendix A. No-provenance declared-span
+        rates are structural.\\n\\n| Compressor    |    \u03C1 |   \u02C6 \u03C1 |
+        \  P g |   R g |   P e | reattr.       |   str-EM |   U s |   U m |   n |\\n|---------------|------|-------|-------|-------|-------|---------------|----------|-------|-------|-----|\\n|
+        Identity      |    1 |  1.00 |  0.51 |  0.56 |  0.51 | -             |     0.34
+        |  0.44 |  0.44 | 944 |\\n| Rerank top- k |  0.5 |  0.40 |  0.61 |  0.62 |
+        \ 0.61 | -             |     0.30 |  0.38 |  0.38 | 944 |\\n| Rerank top-
+        k | 0.25 |  0.20 |  0.69 |  0.63 |  0.69 | -             |     0.25 |  0.36
+        |  0.37 | 944 |\\n| Rerank top- k |  0.1 |  0.11 |  0.38 |  0.37 |  0.38 |
+        -             |     0.19 |  0.63 |  0.63 | 944 |\\n| Rerank top- k | 0.05
+        |  0.06 |  0.24 |  0.22 |  0.24 | -             |     0.12 |  0.78 |  0.78
+        | 944 |\\n| Extractive    |  0.5 |  0.51 |  0.43 |  0.52 |  0.43 | -             |
+        \    0.32 |  0.47 |  0.48 | 944 |\\n| Extractive    | 0.25 |  0.26 |  0.49
+        |  0.54 |  0.49 | -             |     0.26 |  0.46 |  0.46 | 944 |\\n| Extractive
+        \   |  0.1 |  0.11 |  0.49 |  0.48 |  0.49 | -             |     0.19 |  0.52
+        |  0.52 | 944 |\\n| Extractive    | 0.05 |  0.06 |  0.42 |  0.39 |  0.42 |
+        -             |     0.15 |  0.61 |  0.61 | 944 |\\n| ECR           |  0.5
+        |  0.51 |  0.44 |  0.54 |  0.45 | -             |     0.31 |  0.45 |  0.44
+        | 944 |\\n| ECR           | 0.25 |  0.26 |  0.48 |  0.54 |  0.49 | -             |
+        \    0.27 |  0.46 |  0.45 | 944 |\\n| ECR           |  0.1 |  0.11 |  0.48
+        |  0.49 |  0.49 | -             |     0.21 |  0.51 |  0.51 | 944 |\\n| ECR
+        \          | 0.05 |  0.06 |  0.39 |  0.37 |  0.39 | -             |     0.14
+        |  0.63 |  0.63 | 944 |\\n| RECOMP        |  0.5 |  0.08 |  0.12 |  0.12 |
+        \ 0.86 | 0 . 41 n =929 |     0.29 |  1.00 |  0.17 | 944 |\\n| RECOMP        |
+        0.25 |  0.08 |  0.12 |  0.12 |  0.86 | 0 . 41 n =929 |     0.29 |  1.00 |
+        \ 0.17 | 944 |\\n| RECOMP        |  0.1 |  0.08 |  0.12 |  0.11 |  0.86 |
+        0 . 42 n =929 |     0.29 |  1.00 |  0.17 | 944 |\\n| RECOMP        | 0.05
+        |  0.05 |  0.17 |  0.17 |  0.80 | 0 . 39 n =928 |     0.28 |  1.00 |  0.24
+        | 944 |\\n| LLMLingua-2   |  0.5 |  0.51 |  0.16 |  0.14 |  0.58 | 0.56          |
+        \    0.30 |  1.00 |  0.45 | 944 |\\n| LLMLingua-2   | 0.25 |  0.26 |  0.10
+        |  0.10 |  0.53 | 0.40          |     0.24 |  1.00 |  0.51 | 944 |\\n| LLMLingua-2
+        \  |  0.1 |  0.11 |  0.05 |  0.05 |  0.31 | 0.25          |     0.16 |  1.00
+        |  0.73 | 944 |\\n| LLMLingua-2   | 0.05 |  0.06 |  0.03 |  0.03 |  0.16 |
+        0.20          |     0.12 |  1.00 |  0.86 | 944 |\"}}},{\"id\":\"88b6c469-ceb4-5829-8847-b818918c18b3\",\"version\":15,\"score\":0.45511544,\"payload\":{\"page_content\":\"Table
+        4: How often each model follows the planted span: attributable rate on REL-UNCITED
+        in %, with cited records over all records below. The control is 0 in every
+        cell, so these equal the raw rates. Baseline 95% CIs: NQ [10.4, 17.8], QAMPARI
+        [6.2, 12.0], HAGRID [11.8, 18.2], RAGTruth [1.8, 3.9].\\n\\n| Dataset   |
+        Baseline    | Search-R1   | ReSearch    | R-Search    |\\n|-----------|-------------|-------------|-------------|-------------|\\n|
+        NQ        | 14.0 52/371 | 12.8 36/281 | 14.1 50/355 | 14.7 57/387 |\\n| QAMPARI
+        \  | 9.1 29/319  | 13.4 38/283 | 7.5 25/332  | 12.2 43/352 |\\n| HAGRID    |
+        14.8 64/433 | 13.8 53/383 | 13.6 59/434 | 18.6 80/430 |\\n| RAGTruth  | 2.9
+        25/864  | 4.1 29/699  | 3.6 30/823  | 5.9 52/879  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":84,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        4: How often each model follows the planted span: attributable rate on REL-UNCITED
+        in %, with cited records over all records below. The control is 0 in every
+        cell, so these equal the raw rates. Baseline 95% CIs: NQ [10.4, 17.8], QAMPARI
+        [6.2, 12.0], HAGRID [11.8, 18.2], RAGTruth [1.8, 3.9].\\n\\n| Dataset   |
+        Baseline    | Search-R1   | ReSearch    | R-Search    |\\n|-----------|-------------|-------------|-------------|-------------|\\n|
+        NQ        | 14.0 52/371 | 12.8 36/281 | 14.1 50/355 | 14.7 57/387 |\\n| QAMPARI
+        \  | 9.1 29/319  | 13.4 38/283 | 7.5 25/332  | 12.2 43/352 |\\n| HAGRID    |
+        14.8 64/433 | 13.8 53/383 | 13.6 59/434 | 18.6 80/430 |\\n| RAGTruth  | 2.9
+        25/864  | 4.1 29/699  | 3.6 30/823  | 5.9 52/879  |\"}}},{\"id\":\"9e0c006f-57cc-5504-a551-4841921ff611\",\"version\":15,\"score\":0.45458817,\"payload\":{\"page_content\":\"Table
+        11: Robustness check 2: agent minus baseline on REL-UNCITED under the cited-anywhere
+        outcome (DiD, pp), Holm-adjusted p in parentheses. No comparison reaches p
+        &lt; 0 . 05 . Under this outcome the baseline's own rate is 17.8%, 13.2%,
+        16.6%, and 7.1% on the four datasets, and every interval still excludes zero.\\n\\n|
+        Dataset   | Search-R1     | ReSearch      | R-Search      |\\n|-----------|---------------|---------------|---------------|\\n|
+        NQ        | - 2.5 (1.000) | - 0.6 (1.000) | - 0.5 (1.000) |\\n| QAMPARI   |
+        +6.6 (0.102)  | - 1.7 (0.473) | +3.3 (0.460)  |\\n| HAGRID    | - 1.0 (0.665)
+        | - 2.1 (0.586) | +3.1 (0.420)  |\\n| RAGTruth  | +3.4 (0.051)  | +1.7 (0.224)
+        \ | +2.3 (0.224)  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":164,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        11: Robustness check 2: agent minus baseline on REL-UNCITED under the cited-anywhere
+        outcome (DiD, pp), Holm-adjusted p in parentheses. No comparison reaches p
+        &lt; 0 . 05 . Under this outcome the baseline's own rate is 17.8%, 13.2%,
+        16.6%, and 7.1% on the four datasets, and every interval still excludes zero.\\n\\n|
+        Dataset   | Search-R1     | ReSearch      | R-Search      |\\n|-----------|---------------|---------------|---------------|\\n|
+        NQ        | - 2.5 (1.000) | - 0.6 (1.000) | - 0.5 (1.000) |\\n| QAMPARI   |
+        +6.6 (0.102)  | - 1.7 (0.473) | +3.3 (0.460)  |\\n| HAGRID    | - 1.0 (0.665)
+        | - 2.1 (0.586) | +3.1 (0.420)  |\\n| RAGTruth  | +3.4 (0.051)  | +1.7 (0.224)
+        \ | +2.3 (0.224)  |\"}}}]},\"status\":\"ok\",\"time\":0.00110896}"
     headers:
       content-type:
       - application/json

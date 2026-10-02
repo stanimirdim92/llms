@@ -61,252 +61,421 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        /wE=
+      string: "{\"result\":{\"points\":[{\"id\":\"9f91e3cc-eb63-5067-9e2b-f325f5af07fc\",\"version\":5,\"score\":0.6780932,\"payload\":{\"page_content\":\"E.
+        Experimental Design\\nThe evaluation set contains 49 fact-checking queries,
+        of which 37 are distinct, spanning locations, dates and counts, yes/no claims,
+        and people. Ten information-rich passages covering the queried facts were
+        added to the index because raw FEVER evidence sentences are often too terse
+        to support a full answer. Crossing the query set with three strategies and
+        four poisoning levels yields 49 \xD7 3 \xD7 4 = 588 runs, each producing a
+        clean and a poisoned answer for 1 , 176 generations in total. Because a full
+        sweep takes roughly a day on CPU, results are written to disk after every
+        run and a checkpoint records completed cells, so an interrupted sweep resumes
+        without repeating work.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"E.
+        Experimental Design\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":30,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a44c45f3-30fe-539c-8e4c-b53e70d91aee\",\"version\":5,\"score\":0.4868294,\"payload\":{\"page_content\":\"D.
+        Evaluation Metrics\\nFor every run the model retrieves once, then answers
+        twice: once from the clean passages and once from a poisoned copy of that
+        same list. Passage identity and order are therefore shared across the pair;
+        what is not locked is decoding (temperature 0.1, two independent generate
+        calls). Four quantities are recorded.\\nAccuracy checks whether the reference
+        keyword for a question appears in the answer, case-insensitively. Keyword
+        presence is a coarse label: a negated or qualified answer can still contain
+        the keyword, and an otherwise correct paraphrase can miss it. We keep it because
+        it is reproducible and applied uniformly, not because it is a gold standard.
+        Fooled rate is the fraction of runs where the clean answer was correct but
+        the poisoned answer was not; it isolates correct-to-incorrect flips from questions
+        the model could not answer anyway. It is not a direct measure of poison adoption,
+        because an incorrect poisoned answer may abstain, contradict the poison, or
+        state a third wrong fact. Abstention rate counts answers that decline to commit,
+        detected through a small set of phrases such as 'not enough information' and
+        'cannot determine.' Unsupported generation (reported in earlier drafts as
+        a hallucination proxy) is approximated by lexical overlap: an answer is flagged
+        when fewer than 30% of its content words appear in any retrieved passage,\\n<!--
+        formula-not-decoded -->\\nwith W a the content words of the answer and W d
+        those of the retrieved passages. Lexical overlap confuses faithful paraphrase
+        with unsupported invention, and it can miss answers that copy poisoned text.
+        We treat the proxy as a trend indicator only.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"D.
+        Evaluation Metrics\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":25,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"1a47c984-4df1-592f-8378-066f0c299d47\",\"version\":5,\"score\":0.4756722,\"payload\":{\"page_content\":\"C.
+        Uncertainty on the Existing Runs\\nWe do not invent new generations for this
+        revision. We reanalyse the same table with a query-level bootstrap: resample
+        the 49 indexed query slots with replacement (37 distinct texts), keep every
+        run tied to a drawn slot, recompute the fooled rate, and repeat 10 , 000 times
+        with a fixed seed to obtain percentile 95% intervals. Exact McNemar tests
+        on discordant clean/poisoned correctness pairs are reported as a secondary
+        check; effect sizes and intervals remain primary.\\nTable II shows that the
+        climb with poisoning level remains after accounting for query resampling,
+        while neighbouring levels overlap. The comparison that matters for the numeric
+        pattern is isolated next.\\nTABLE III BEHAVIOUR BY STRATEGY, AVERAGED OVER
+        ALL FOUR POISONING LEVELS. EACH STRATEGY AGGREGATES 196 RUNS.\\n\\nEntity
+        swap, Clean acc. (%) = 78.1. Entity swap, Poisoned acc. (%) = 54.6. Entity
+        swap, Fooled rate (%) = 23.5. Entity swap, Abstain rate (%) = 43.4. Number
+        swap, Clean acc. (%) = 77.6. Number swap, Poisoned acc. (%) = 57.7. Number
+        swap, Fooled rate (%) = 20.4. Number swap, Abstain rate (%) = 30.1. Negation,
+        Clean acc. (%) = 78.1. Negation, Poisoned acc. (%) = 60.2. Negation, Fooled
+        rate (%) = 19.4. Negation, Abstain rate (%) = 32.1\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Uncertainty on the Existing Runs\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a716a2fa-3025-5ba0-944d-aa1ad9714cc9\",\"version\":5,\"score\":0.46800798,\"payload\":{\"page_content\":\"REFERENCES\\n-
+        [1] P. Lewis et al. , 'Retrieval-augmented generation for knowledge-intensive
+        NLP tasks,' in Advances in Neural Information Processing Systems , vol. 33,
+        2020, pp. 9459-9474.\\n- [2] J. Thorne, A. Vlachos, C. Christodoulopoulos,
+        and A. Mittal, 'FEVER: a large-scale dataset for fact extraction and verification,'
+        in Proc. Conf. North American Chapter of the Association for Computational
+        Linguistics (NAACL-HLT) , 2018, pp. 809-819.\\n- [3] F. Shi et al. , 'Large
+        language models can be easily distracted by irrelevant context,' in Proc.
+        Int. Conf. Machine Learning (ICML) , 2023, pp. 31210-31227.\\n- [4] K. Zhou
+        et al. , 'Don't make your LLM an evaluation benchmark cheater,' arXiv preprint
+        arXiv:2311.01964, 2023.\\nFooled rate across all conditions (%)\\nFig. 6.
+        The ten queries with the highest fooled rate across all conditions. Biographical
+        and landmark questions dominate because the passages that answer them carry
+        many swappable entities.\\nserve as a cheap early warning of a poisoned store.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"REFERENCES\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":75,\"page_no\":6,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"ea30cb2f-737d-59cf-b337-a6772a16a114\",\"version\":5,\"score\":0.46773612,\"payload\":{\"page_content\":\"TABLE
+        II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS (ALL STRATEGIES, 147
+        RUNS PER ROW).\\n\\n| Poisoned passages   |   Fooled (%) | 95% CI            |
+        \  n |\\n|---------------------|--------------|-------------------|-----|\\n|
+        0 / 3               |          9.5 | [5 . 4 , 14 . 3]  | 147 |\\n| 1 / 3               |
+        \        15.0 | [8 . 8 , 21 . 8]  | 147 |\\n| 2 / 3               |         25.9
+        | [18 . 4 , 33 . 3] | 147 |\\n| 3 / 3               |         34.0 | [24 .
+        5 , 44 . 2] | 147 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":38,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\",\"markdown\":\"TABLE
+        II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS (ALL STRATEGIES, 147
+        RUNS PER ROW).\\n\\n| Poisoned passages   |   Fooled (%) | 95% CI            |
+        \  n |\\n|---------------------|--------------|-------------------|-----|\\n|
+        0 / 3               |          9.5 | [5 . 4 , 14 . 3]  | 147 |\\n| 1 / 3               |
+        \        15.0 | [8 . 8 , 21 . 8]  | 147 |\\n| 2 / 3               |         25.9
+        | [18 . 4 , 33 . 3] | 147 |\\n| 3 / 3               |         34.0 | [24 .
+        5 , 44 . 2] | 147 |\"}}},{\"id\":\"3b9dd4cf-7c9d-5a88-b06f-a100567f4a63\",\"version\":5,\"score\":0.45699346,\"payload\":{\"page_content\":\"A.
+        Setting\\nAll runs use the corpus of 19,597 FEVER dev evidence sentences plus
+        the ten added passages, the MiniLM retriever, and the quantized Llama 3.1
+        8B generator described above, with k = 3 and temperature 0.1 held fixed. The
+        dataset comes from the FEVER benchmark of Thorne et al. [2], which pairs claims
+        with Wikipedia evidence and is a standard resource for fact verification.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"A.
+        Setting\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":33,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a3d2f6a7-82ce-5245-a8ed-2520c9e5da50\",\"version\":13,\"score\":0.4546993,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nInference and diagnostics. The separate
+        24-test family uses pointwise 95% bootstrap intervals and two-sided randomization
+        tests, each with 10,000 replicates and seed 13, question resampling on ASQA
+        and paper clustering on QASPER, with question-weighted means and Holm adjustment.
+        The original 148-test analysis is unchanged. Tables 11-12 report precision
+        means and all planned contrasts. All 16 emitted-grounded gaps remain positive
+        after adjustment; the eight cross-evaluator precision differences remain unresolved,
+        which does not establish equivalence. ECR and other budgets are outside this
+        audit.\\nThe run scored 6,015 unique pairs in 419 seconds of model inference
+        (430 seconds including bookkeeping; setup and excluded attempts are additional).
+        Four inputs required truncation, with maximum pre-truncation length 47,440
+        tokens. After normalization, 122 pairs (2.03%) produced nonbinary strings,
+        including 103 empty strings; assigning zero does not establish reliable nonentailment.
+        These are pair counts, not fractions of questions affected; the full histogram
+        accompanies the cache. Recovery can disagree substantially: QASPER LLMLingua-2
+        has 50.3% agreement over 1,000 candidate decisions and mean recovery rates
+        of 0.84 for DeBERTa versus 0.38 for TRUE. These descriptive results support
+        sensitivity analysis, not accuracy against human judgments.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0030\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":156,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.44462362,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"376db314-03f8-550f-b3ca-a6811171d657\",\"version\":5,\"score\":0.44237226,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nOne detail in Table I needs to be read carefully. The
+        0 / 3 row still shows a fooled rate near 10% and an accuracy about 9 points
+        below the clean arm, even though no passage is rewritten and both answers
+        see the same retrieved list. That residual is therefore not a retrieval mismatch.
+        It comes from decoding noise under temperature 0.1 across two independent
+        generations, plus a strict keyword matcher that can disagree on near-paraphrases.
+        Recomputing from the 588-run table, clean and poisoned answers are identical
+        in only 76.9% of the 0 / 3 runs. The residual is large relative to some attack
+        increments (the rise from 9.5% to 15.0% fooled between 0 / 3 and 1 / 3 is
+        5.5 points), so strategy contrasts at light poisoning should be read as suggestive
+        until decoding is controlled (fixed seeds, repeated draws) and labels are
+        less brittle. We therefore read the clean-arm column, not the 0 / 3 poisoned
+        cell, as the true no-attack baseline.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":41,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"88c1d775-10f5-5d8f-a4f1-648fafc67511\",\"version\":5,\"score\":0.43825206,\"payload\":{\"page_content\":\"This
+        is a pair of line charts (two-panel plot) illustrating the effect of poisoned
+        retrieved documents on question-answering accuracy for three perturbation
+        types: Entity swap, Number swap, and Negation.\\n\\nPanel (a) shows \\\"Accuracy
+        under poisoning,\\\" plotting Accuracy (%) against the number of poisoned
+        documents out of 3 retrieved (0/3, 1/3, 2/3, 3/3). A dashed green \\\"Clean
+        arm\\\" baseline stays flat around 78%, while all three perturbation conditions
+        decline from roughly 65-72% at 0/3 poisoned documents down to about 41-48%
+        at 3/3 poisoned documents.\\n\\nPanel (b) shows \\\"Drop vs. clean arm,\\\"
+        plotting the accuracy drop in percentage points against the same poisoned
+        document ratios, with all three lines starting near 0-10 pp at 0/3 and rising
+        to approximately 31-37 pp drop at 3/3 poisoned documents, with Entity swap
+        showing the steepest degradation.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-00\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":55,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-00-f42f83d4b19d14d8.png\"}}},{\"id\":\"85179e08-8e6f-59a9-ae44-68205f2042e1\",\"version\":5,\"score\":0.43654406,\"payload\":{\"page_content\":\"V.
+        CONCLUSION\\nWe measured how a 4-bit Llama 3.1 8B model behaves when its retrieved
+        context is poisoned, across three corruption strategies and four poisoning
+        levels in a 588-run sweep. Accuracy falls from 77.9% to 43.5% as corruption
+        goes from none to total. Entity swap flips the most answers. Numeric corruption
+        shows a majority-leaning jump once two of three passages are poisoned, with
+        a bootstrap interval on that jump that excludes zero but remains wide. The
+        model's main recorded response to attack is to abstain rather than to state
+        a wrong answer, and the lexical-overlap proxy of unsupported generation falls
+        under poisoning rather than rising.\\nThe study has clear limits. It covers
+        one small quantized model on a compact query set with rule-based corruption,
+        so the absolute numbers should not be read as universal. Retrieval is shared
+        across the pair, but decoding is not locked (temperature 0.1, two independent
+        generations), and the 0 / 3 residual shows that background pair noise is non-trivial.
+        Keyword matching is a weak correctness criterion, and the overlap proxy is
+        not a semantic faithfulness judge. The added passages make retrieval easier
+        than raw FEVER evidence would. Each limit points to a concrete next step:
+        lock decoding seeds across the pair and add multi-seed and multi-corruption
+        repeats with hierarchical resampling, replace keyword checks with structured
+        FEVER-style labels and normalized entity or quantity scoring, adjudicate a
+        stratified sample with blinded humans or a validated entailment model, and
+        decompose answers into atomic claims so poison adoption can be separated from
+        unsupported generation. We also plan to repeat the sweep on a larger instruction-tuned
+        model and on a second corpus, to replace rule-based edits with model-generated
+        adversarial\\n- [5] K. Guu, K. Lee, Z. Tung, P. Pasupat, and M. Chang, 'REALM:
+        retrievalaugmented language model pre-training,' in Proc. Int. Conf. Machine
+        Learning (ICML) , 2020, pp. 3929-3938.\\n- [6] N. Reimers and I. Gurevych,
+        'Sentence-BERT: sentence embeddings using Siamese BERT-networks,' in Proc.
+        Conf. Empirical Methods in Natural Language Processing (EMNLP) , 2019, pp.
+        3982-3992.\\n- [7] J. Johnson, M. Douze, and H. J\xB4 egou, 'Billion-scale
+        similarity search with GPUs,' IEEE Trans. Big Data , vol. 7, no. 3, pp. 535-547,
+        2019.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"V.
+        CONCLUSION\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":83,\"page_no\":6,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"018160fc-c9ca-5110-9fdd-b7268185ecea\",\"version\":13,\"score\":0.43243995,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nWe sample 100 questions per dataset from
+        sorted common-cohort IDs using a fresh Python seed13 random generator; QASPER
+        spans 84 papers. Full-context identity and nominal-0.25 extraction, RECOMP,
+        and LLMLingua-2 contribute 800 unchanged saved answers, with 1,627 claims
+        and 1,890 citation markers. The prior DeBERTa values are the original scores
+        for these same sampled answers.\\nModel and decoding. We use google/t5_xxl_true_nli_mixture
+        (Honovich et al., 2022), revision aa6cfe1dd4 , with full revision and checkpoint
+        hashes in the manifest. This released mixture uses SNLI, MNLI, FEVER, SciTail,
+        PAWS, and VitaminC (Bowman et al., 2015; Williams et al., 2018; Thorne et
+        al., 2018; Khot et al., 2018; Zhang et al., 2019; Schuster et al., 2021),
+        rather than the original TRUE paper's ANLI recipe. MNLI and FEVER overlap
+        DeBERTa's training mixture. Inference uses Transformers 4.57.6, the slow T5
+        tokenizer, BF16, batch size four, and one NVIDIA B200. The prompt places compressed
+        text or source evidence after premise: and the unit or claim after hypothesis:
+        .\\nWe use an AutoAIS-style exact-one decision (Bohnet et al., 2022; Gao et
+        al., 2023): generate at most ten tokens deterministically, strip surrounding
+        whitespace, and count only 1 as entailment. Every other string scores zero;
+        these are binary decisions, not calibrated probabilities. Unlike our rule,
+        reference AutoAIS/ALCE code compares decoded strings without additional whitespace
+        normalization. We retain normalized nonbinary strings, but not every raw output,
+        so normalization's effect cannot be quantified from the cache.\\nEvidence
+        mappings. Fixed recovery preserves declared provenance and DeBERTa-recovered
+        source IDs while TRUE scores support. TRUE recovery reevaluates all top-10
+        lexical candidates for undeclared units, including DeBERTa-rejected candidates,
+        then scores with TRUE. Both retain the corrected precision gate. Fixed recovery
+        retains selection dependence; TRUE recovery reuses one judge. Neither removes
+        bounded-search errors or supplies human calibration.\\nRecorded amendments.
+        Astrict-decoding pilot stopped on a nonbinary output; a second stopped on
+        an overlong hypothesis. An input-only scan found five undeclared units exceeding
+        2,048 tokens (maximum hypothesis plus prompt: 2,988), motivating a uniform
+        4,096-token cap that preserves complete hypotheses and truncates only premises.
+        A later batch-eight run exhausted GPU memory. All interrupted attempts and
+        plans are preserved but excluded; the final batch-four run recomputes every
+        input in a fresh cache. These amendments preceded inspection of any aggregate
+        TRUE comparison report and left the sample, thresholds, and 24 comparisons
+        unchanged. The cap exceeds original TRUE's 2,048 and DeBERTa's 512 tokens,
+        so cross-evaluator differences do not isolate model family.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0029\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":151,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"ddc2250e-57d5-5638-82de-45315c1b4ee1\",\"version\":5,\"score\":0.42992577,\"payload\":{\"page_content\":\"In
+        RAG We Trust? Measuring Robustness of Retrieval-Augmented Generation Under
+        Document Poisoning\\nIliano Fasolino Department of Computer Science University
+        of Milan Milan, Italy\\nAbstract -Retrieval-augmented generation (RAG) grounds
+        a language model in retrieved documents, which reduces hallucination but creates
+        a new attack surface: if retrieved text is tampered with, the model may repeat
+        the falsehood. We study how much a small quantized model, Llama 3.1 8B, degrades
+        when a fraction of its retrieved context is poisoned. Three corruption strategies
+        are tested, entity swap, number swap, and negation, each applied to zero,
+        one, two, or three of the three retrieved passages, over a factorial sweep
+        of 588 runs on a fact-checking task built from FEVER. Accuracy falls from
+        77.9% on clean context to 43.5% when all three passages are corrupted. Entity
+        swap flips the largest share of answers that were correct on clean context.
+        Number-based corruption stays flat while poisoned passages are a minority
+        and jumps once they form a majority, a pattern we re-check with query-level
+        bootstrap intervals. The model rarely invents new falsehoods; its dominant
+        reaction is to abstain, and a lexical overlap proxy of unsupported generation
+        falls under attack rather than rising. The study is a small-scale measurement
+        with coarse automated labels; we treat the strategy contrasts as suggestive
+        until decoding is controlled and stronger adjudication is in place.\\na practitioner
+        running a small model on modest hardware is a concrete measurement: how far
+        does accuracy fall, which kind of corruption bites hardest, and does the model
+        fail loudly by fabricating or quietly by refusing.\\nIndex Terms -retrieval-augmented
+        generation, large language models, adversarial robustness, document poisoning,
+        fact verification\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"In
+        RAG We Trust? Measuring Robustness of Retrieval-Augmented Generation Under
+        Document Poisoning\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":1,\"page_no\":1,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"3bd19445-3295-5129-bcfc-4a1b72982267\",\"version\":5,\"score\":0.42566347,\"payload\":{\"page_content\":\"G.
+        Which Queries Break\\nFooled rates are uneven across questions. Figure 6 lists
+        the ten most fragile ones. Questions about a well-known person's biography
+        and about the landmark facts in our added passages top the list, because those
+        passages contain the richest set of swappable entities. Yes/no and location
+        questions are more exposed than open numeric ones, whose lower clean accuracy
+        leaves less room for a correct-to-wrong flip. The pattern is a reminder that
+        vulnerability depends on the fact being asked about, not only on the attack.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"G.
+        Which Queries Break\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":63,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"745af299-c95e-5500-8366-5362d8e17e13\",\"version\":5,\"score\":0.42356825,\"payload\":{\"page_content\":\"This
+        image consists of two line/bar charts comparing the effects of poisoned documents
+        on model behavior, plotted against \\\"Poisoned documents (out of 3 retrieved)\\\"
+        (0/3, 1/3, 2/3, 3/3) on the x-axis.\\n\\nPanel (a) is a line chart showing
+        \\\"Abstention rate (%)\\\" for four conditions: Entity swap (red), Number
+        swap (orange), Negation (purple), and Clean arm (green dashed baseline ~13%).
+        As poisoned documents increase, abstention rises sharply for Entity swap (up
+        to ~70%), while Number swap and Negation show moderate increases (up to ~42%),
+        and the Clean arm remains flat.\\n\\nPanel (b) is a grouped bar chart showing
+        \\\"Hallucination rate (%)\\\" for Clean arm (blue) versus Poisoned arm (red)
+        across the same x-axis categories, revealing that hallucination rates decrease
+        as poisoned documents increase for both arms, with the Poisoned arm dropping
+        from 26.5% to 12.2% and the Clean arm from 31.3% to 29.9%.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-005-03\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":66,\"page_no\":5,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-005-03-f1d4adf3f7b93682.png\"}}},{\"id\":\"da20828c-eedc-58d7-b055-485ddf2e5488\",\"version\":9,\"score\":0.42352563,\"payload\":{\"page_content\":\"A.3
+        Answerability audit of evaluation contexts\\nWe audited the exact rendered
+        contexts used for the final balanced evaluation subset (346 questions) using
+        GPT-4.1-mini. Given a question and its supplied documents, the judge classified
+        whether the documents contained the information needed to directly and substantially
+        answer the question as yes , partial , or no . We retained examples only when
+        the oracle context was judged yes or partial and the on-topic context was
+        judged no . Thus, the oracle condition contains answer-bearing evidence, while
+        the on-topic condition is topically related but does not directly support
+        the unsafe answer.\\nTable 8 reports the final audit outcomes. The random-control
+        condition was constructed from a benign, off-topic document pool rather than
+        independently re-judged by the LLM: all 346 randomcontrol contexts contain
+        only documents labelled none for answer support in the benchmark metadata
+        (1,012 documents in total).\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0029\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.3
+        Answerability audit of evaluation contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":14,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"5e78e312-eed9-5668-836e-0f69b54f3b37\",\"version\":5,\"score\":0.42297256,\"payload\":{\"page_content\":\"I.
+        INTRODUCTION\\nLarge language models answer questions fluently but carry two
+        well-known liabilities: their knowledge is frozen at training time, and they
+        sometimes state false facts with full confidence. Retrieval-augmented generation,
+        proposed by Lewis et al. [1], addresses both by fetching relevant documents
+        at query time and placing them in the prompt as evidence. The model is then
+        asked to answer from that evidence rather than from memory alone. This design
+        has become the default recipe for question answering over private or fast-moving
+        knowledge bases.\\nThe same design introduces a dependency that is easy to
+        overlook. A RAG answer is only as trustworthy as the documents it retrieves.
+        If an attacker can edit, inject, or otherwise corrupt even part of the retrieved
+        set, the grounding step that was meant to improve reliability becomes a channel
+        for misinformation. Shi et al. [3] showed that irrelevant context alone can
+        pull a model off track; corrupted but on-topic context is a stronger lever,
+        because it looks exactly like the evidence the model was told to trust. What
+        is still missing for We answer those three questions empirically. Our contribution
+        is threefold. First, we build a reproducible poisoning testbed around a 4-bit
+        Llama 3.1 8B model, a MiniLM retriever, and a FAISS index of nearly twenty
+        thousand FEVER evidence sentences. Second, we run a full factorial experiment,
+        three corruption strategies crossed with four poisoning levels over a fixed
+        query set, and report accuracy, a fooled rate, abstention, and a lexical-overlap
+        proxy of unsupported generation for every cell. Third, we characterise the
+        failure surface: entity corruption flips the most answers, numeric corruption
+        jumps once it reaches a majority of the context, and the model's default response
+        to contradiction is to abstain rather than to invent. Every point estimate
+        reported here comes from the same 588-run table. Where we interpret a jump
+        or a strategy ranking, we also report query-level bootstrap intervals and
+        paired tests recomputed from that table.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"I.
+        INTRODUCTION\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":6,\"page_no\":1,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"b9471911-87e0-56f1-b903-ce99862282fc\",\"version\":13,\"score\":0.421224,\"payload\":{\"page_content\":\"4.2
+        Statistical Analysis and Metric Audit\\nCommon cohorts and estimands. Primary
+        summaries and comparisons use the intersection of successful question IDs
+        across identity and all twenty compressed settings. Each question has equal
+        weight in citation precision, citation recall, answer quality, and evidence
+        F1; claims and citations are not pooled across questions. Undefined evidence
+        or recovery metrics remain undefined rather than becoming zeros. Verification-rate
+        means exclude answers with zero claims; paired verification comparisons exclude
+        a question if ei- ther member has zero claims. The analysis artifacts report
+        those exclusions and retain full-cohort descriptive means separately.\\nInference.
+        We use pointwise 95% percentile bootstrap intervals for each paired mean difference
+        (Dror et al., 2018), resampling 944 questions on ASQA and 271 papers on QASPER
+        with replacement. All retained questions from a sampled QASPER paper travel
+        together, and each replicate divides its total difference by the number of
+        sampled questions, preserving the questionweighted estimand. Every QASPER
+        contrast retains all 271 papers after metric-specific exclusions. Two-sided
+        randomization tests swap paired labels within questions on ASQA and jointly
+        within papers on QASPER. These tests assume label exchangeability within a
+        resampling unit under the null. Both procedures use 10,000 replicates and
+        seed 13, with independent random-number streams for bootstrap sampling and
+        randomization. Monte Carlo p -values use ( b + 1) / (10 , 000 + 1) , where
+        b counts randomizations at least as extreme as the observed absolute difference.
+        The initial plan specified 134 core contrasts and 10 recoverythreshold contrasts
+        before inspecting the revised inferential results. After that analysis and
+        a cachecoverage audit, we added four recovered-source versus summary-verification
+        contrasts at nominal 0.25 for RECOMP and LLMLingua-2 on both datasets. The
+        extension plan was recorded before running these four tests, and Holm adjustment
+        was recomputed over all 148 raw p -values. We denote Holm-adjusted values
+        by p H . All reported adjusted values use this expanded family; original effects,
+        intervals, and raw p -values are unchanged. This is a post hoc camera-ready
+        analysis, not a preregistration. Intervals are pointwise, not simultaneous;
+        statistical-support statements use p H < 0 . 05 . Failure to reject a difference
+        does not establish equivalence or preservation. All inference is conditional
+        on the fixed generator outputs, recovery procedure, and evaluator.\\nPrecision-code
+        audit. The manuscript's precision definition requires the concatenated cited
+        evidence to entail a claim before any individual citation receives credit.
+        A code audit found that the previous implementation could credit an individually
+        supporting citation even when joint entailment failed. A saved ASQA answer
+        reproduced this discrepancy, and a regression test now checks the required
+        gate through the evaluation pipeline.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Statistical Analysis and Metric Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":4,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"82bd2225-a596-5765-ae46-e533ca23520c\",\"version\":5,\"score\":0.42060745,\"payload\":{\"page_content\":\"F.
+        How the Model Fails\\nThe most useful result for a system designer is not
+        how often the model is wrong but how it is wrong. Two failures are possible
+        under attack. The model can accept the falsehood and state it, or it can notice
+        the conflict and decline. It could also invent a third answer grounded in
+        neither, which the hallucination proxy is meant to catch.\\nThe evidence points
+        to abstention as the dominant recorded failure mode. Averaged over all runs
+        the model abstains on 35.2% of poisoned queries, well above the 21.1% fooled
+        rate. Figure 4(a) shows abstention climbing with poisoning for every strategy
+        and reaching 69% for entity swap at full corruption. The lexical-overlap proxy
+        moves the other way. Figure 4(b) shows that low-overlap answers are more common
+        on the clean arm, near 29%, than on the poisoned arm, near 20%. Under this
+        proxy, corrupted context does not look like a surge of unsupported invention;
+        it looks like a surge of refusal. A fuller faithfulness taxonomy (entailment,
+        contradiction, poison adoption, unsupported generation) would be needed before
+        claiming that hallucination itself falls.\\nFig. 1. Accuracy as a function
+        of how many of the three retrieved passages are poisoned. Panel (a) shows
+        poisoned accuracy per strategy against the shared clean baseline; the clean
+        arm stays near 78% while every poisoned curve declines. Panel (b) shows the
+        drop relative to the clean arm, where entity swap opens the widest gap at
+        high poisoning.\\nFig. 2. Fooled rate for every strategy and poisoning level.
+        Colour runs from green (safe) to red (many answers flipped). The number-swap
+        row barely changes between zero and one poisoned passage, then rises steeply.\\nFigure
+        5 decomposes only those queries the model answered correctly on clean context,
+        so every bar starts from a fact the model knew. As poisoning grows, the green
+        'still correct' band shrinks and is replaced mostly by blue abstention, with
+        the red 'fooled' band growing more slowly. Negation is the most resilient:
+        even at full corruption a large share of originally correct answers survives,
+        which matches our expectation that an explicit 'never' is easier to distrust
+        than a silent swap.\\nFig. 3. Fooled rate by poisoning level. Entity swap
+        and negation grow steadily, whereas number swap (bold) stays flat through
+        one poisoned passage and then rises once poisoned passages become the majority.
+        Intervals for the numberswap jump are reported in the text.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"F.
+        How the Model Fails\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":53,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"42a63f01-9363-5584-b945-f23754d7697a\",\"version\":5,\"score\":0.41452953,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nTable I tracks the model as more of its context is
+        corrupted. The clean arm stays near 78% throughout, which confirms that the
+        query set itself is not drifting across rows. Poisoned accuracy still moves
+        for reasons other than poisoning alone: the 0 / 3 cell is already 69.4%, nine
+        points below the clean arm, before any passage is rewritten. From that residual
+        baseline the poisoned arm falls further to 63.9% at one corrupted passage
+        and to 43.5% when all three are corrupted. The fooled rate rises from 9.5%
+        at 0 / 3 to 34.0% at 3 / 3 , and abstention climbs from 21% to 52%. Attack
+        effects should be read against the 0 / 3 residual, not against a silent zero.\\nTABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n0 / 3, Clean acc. (%) = 78.2.
+        0 / 3, Poisoned acc. (%) = 69.4. 0 / 3, Fooled rate (%) = 9.5. 0 / 3, Abstain
+        rate (%) = 21.1. 1 / 3, Clean acc. (%) = 77.6. 1 / 3, Poisoned acc. (%) =
+        63.9. 1 / 3, Fooled rate (%) = 15.0. 1 / 3, Abstain rate (%) = 29.3. 2 / 3,
+        Clean acc. (%) = 78.2. 2 / 3, Poisoned acc. (%) = 53.1. 2 / 3, Fooled rate
+        (%) = 25.9. 2 / 3, Abstain rate (%) = 38.8. 3 / 3, Clean acc. (%) = 77.6.
+        3 / 3, Poisoned acc. (%) = 43.5. 3 / 3, Fooled rate (%) = 34.0. 3 / 3, Abstain
+        rate (%) = 51.7\\nTABLE II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS
+        (ALL STRATEGIES, 147 RUNS PER ROW).\\n\\n0 / 3, Fooled (%) = 9.5. 0 / 3, 95%
+        CI = [5 . 4 , 14 . 3]. 0 / 3, n = 147. 1 / 3, Fooled (%) = 15.0. 1 / 3, 95%
+        CI = [8 . 8 , 21 . 8]. 1 / 3, n = 147. 2 / 3, Fooled (%) = 25.9. 2 / 3, 95%
+        CI = [18 . 4 , 33 . 3]. 2 / 3, n = 147. 3 / 3, Fooled (%) = 34.0. 3 / 3, 95%
+        CI = [24 . 5 , 44 . 2]. 3 / 3, n = 147\\nFigure 1 plots the same trend per
+        strategy. The three curves separate clearly. Entity swap drives the steepest
+        fall, and by the full-poisoning level it sits below the other two. The right
+        panel, which shows the gap against the clean arm, makes the ordering explicit
+        and shows that no strategy is harmless once two of the three passages are
+        corrupted.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":35,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001336351}"
     headers:
       content-type:
       - application/json

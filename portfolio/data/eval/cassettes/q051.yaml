@@ -62,229 +62,872 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
+      string: "{\"result\":{\"points\":[{\"id\":\"793f9983-11fd-52a2-a32d-e1f14aff2a97\",\"version\":15,\"score\":0.6126888,\"payload\":{\"page_content\":\"Table
+        5: Each agent's attributable rate on REL-UNCITED minus the baseline's (DiD,
+        pp), with a 95% bootstrap CI and a Holm-adjusted p -value within each dataset.
+        Negative would mean the agent post-rationalizes less than its base. Bold marks
+        the only comparison with p &lt; 0 . 05 .\\n\\n| Dataset       | DiD      |
+        95% CI        |   Holm p |\\n|---------------|----------|---------------|----------|\\n|
+        Search-R1 vs. | baseline |               |          |\\n| NQ            |
+        - 1.2    | [ - 6.9, 4.2] |    1.000 |\\n| QAMPARI       | +4.3     | [ - 0.5,
+        9.7] |    0.267 |\\n| HAGRID        | - 0.9    | [ - 4.9, 3.2] |    1.000
+        |\\n| RAGTruth      | +1.3     | [ - 0.5, 3.0] |    0.334 |\\n| ReSearch vs.
+        \ | baseline |               |          |\\n| NQ            | +0.1     | [
+        - 3.9, 4.2] |    1.000 |\\n| QAMPARI       | - 1.6    | [ - 5.1, 2.3] |    0.415
+        |\\n| HAGRID        | - 1.2    | [ - 4.9, 2.5] |    1.000 |\\n| RAGTruth      |
+        +0.8     | [ - 0.7, 2.2] |    0.334 |\\n| R-Search vs.  | baseline |               |
+        \         |\\n| NQ            | +0.7     | [ - 4.6, 5.0] |    1.000 |\\n|
+        QAMPARI       | +3.1     | [ - 1.4, 7.3] |    0.324 |\\n| HAGRID        |
+        +3.8     | [ - 0.3, 8.0] |    0.234 |\\n| RAGTruth      | +3.0     | [1.2,
+        4.8]    |    0.002 |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":91,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        5: Each agent's attributable rate on REL-UNCITED minus the baseline's (DiD,
+        pp), with a 95% bootstrap CI and a Holm-adjusted p -value within each dataset.
+        Negative would mean the agent post-rationalizes less than its base. Bold marks
+        the only comparison with p &lt; 0 . 05 .\\n\\n| Dataset       | DiD      |
+        95% CI        |   Holm p |\\n|---------------|----------|---------------|----------|\\n|
+        Search-R1 vs. | baseline |               |          |\\n| NQ            |
+        - 1.2    | [ - 6.9, 4.2] |    1.000 |\\n| QAMPARI       | +4.3     | [ - 0.5,
+        9.7] |    0.267 |\\n| HAGRID        | - 0.9    | [ - 4.9, 3.2] |    1.000
+        |\\n| RAGTruth      | +1.3     | [ - 0.5, 3.0] |    0.334 |\\n| ReSearch vs.
+        \ | baseline |               |          |\\n| NQ            | +0.1     | [
+        - 3.9, 4.2] |    1.000 |\\n| QAMPARI       | - 1.6    | [ - 5.1, 2.3] |    0.415
+        |\\n| HAGRID        | - 1.2    | [ - 4.9, 2.5] |    1.000 |\\n| RAGTruth      |
+        +0.8     | [ - 0.7, 2.2] |    0.334 |\\n| R-Search vs.  | baseline |               |
+        \         |\\n| NQ            | +0.7     | [ - 4.6, 5.0] |    1.000 |\\n|
+        QAMPARI       | +3.1     | [ - 1.4, 7.3] |    0.324 |\\n| HAGRID        |
+        +3.8     | [ - 0.3, 8.0] |    0.234 |\\n| RAGTruth      | +3.0     | [1.2,
+        4.8]    |    0.002 |\"}}},{\"id\":\"8f73e85e-aa02-52f3-88da-9a0df08011e0\",\"version\":15,\"score\":0.5837168,\"payload\":{\"page_content\":\"5.3
+        RLVR does not make citations more faithful\\nTable 5: Each agent's attributable
+        rate on REL-UNCITED minus the baseline's (DiD, pp), with a 95% bootstrap CI
+        and a Holm-adjusted p -value within each dataset. Negative would mean the
+        agent post-rationalizes less than its base. Bold marks the only comparison
+        with p < 0 . 05 .\\n\\nSearch-R1 vs., DiD = baseline. Search-R1 vs., 95% CI
+        = . Search-R1 vs., Holm p = . NQ, DiD = - 1.2. NQ, 95% CI = [ - 6.9, 4.2].
+        NQ, Holm p = 1.000. QAMPARI, DiD = +4.3. QAMPARI, 95% CI = [ - 0.5, 9.7].
+        QAMPARI, Holm p = 0.267. HAGRID, DiD = - 0.9. HAGRID, 95% CI = [ - 4.9, 3.2].
+        HAGRID, Holm p = 1.000. RAGTruth, DiD = +1.3. RAGTruth, 95% CI = [ - 0.5,
+        3.0]. RAGTruth, Holm p = 0.334. ReSearch vs., DiD = baseline. ReSearch vs.,
+        95% CI = . ReSearch vs., Holm p = . NQ, DiD = +0.1. NQ, 95% CI = [ - 3.9,
+        4.2]. NQ, Holm p = 1.000. QAMPARI, DiD = - 1.6. QAMPARI, 95% CI = [ - 5.1,
+        2.3]. QAMPARI, Holm p = 0.415. HAGRID, DiD = - 1.2. HAGRID, 95% CI = [ - 4.9,
+        2.5]. HAGRID, Holm p = 1.000. RAGTruth, DiD = +0.8. RAGTruth, 95% CI = [ -
+        0.7, 2.2]. RAGTruth, Holm p = 0.334. R-Search vs., DiD = baseline. R-Search
+        vs., 95% CI = . R-Search vs., Holm p = . NQ, DiD = +0.7. NQ, 95% CI = [ -
+        4.6, 5.0]. NQ, Holm p = 1.000. QAMPARI, DiD = +3.1. QAMPARI, 95% CI = [ -
+        1.4, 7.3]. QAMPARI, Holm p = 0.324. HAGRID, DiD = +3.8. HAGRID, 95% CI = [
+        - 0.3, 8.0]. HAGRID, Holm p = 0.234. RAGTruth, DiD = +3.0. RAGTruth, 95% CI
+        = [1.2, 4.8]. RAGTruth, Holm p = 0.002\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.3
+        RLVR does not make citations more faithful\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":91,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"8a7bd97f-f051-5248-898b-faa5033a40d7\",\"version\":15,\"score\":0.53439605,\"payload\":{\"page_content\":\"D
+        Robustness Checks\\nTable 10: Robustness check 1: agent minus baseline on
+        the RANDOM variant (DiD, pp, claim-aligned), Holmadjusted p in parentheses.
+        No comparison reaches p < 0 . 05 .\\n\\nNQ, Search-R1 = - 1.9 (0.984). NQ,
+        ReSearch = - 1.8 (0.984). NQ, R-Search = - 0.4 (0.984). QAMPARI, Search-R1
+        = +1.3 (0.379). QAMPARI, ReSearch = +3.4 (0.114). QAMPARI, R-Search = +3.8
+        (0.114). HAGRID, Search-R1 = +1.0 (0.561). HAGRID, ReSearch = +3.0 (0.182).
+        HAGRID, R-Search = +4.2 (0.081). RAGTruth, Search-R1 = +0.8 (0.594). RAGTruth,
+        ReSearch = +0.2 (0.764). RAGTruth, R-Search = +1.8 (0.063)\\nTable 11: Robustness
+        check 2: agent minus baseline on REL-UNCITED under the cited-anywhere outcome
+        (DiD, pp), Holm-adjusted p in parentheses. No comparison reaches p < 0 . 05
+        . Under this outcome the baseline's own rate is 17.8%, 13.2%, 16.6%, and 7.1%
+        on the four datasets, and every interval still excludes zero.\\n\\nNQ, Search-R1
+        = - 2.5 (1.000). NQ, ReSearch = - 0.6 (1.000). NQ, R-Search = - 0.5 (1.000).
+        QAMPARI, Search-R1 = +6.6 (0.102). QAMPARI, ReSearch = - 1.7 (0.473). QAMPARI,
+        R-Search = +3.3 (0.460). HAGRID, Search-R1 = - 1.0 (0.665). HAGRID, ReSearch
+        = - 2.1 (0.586). HAGRID, R-Search = +3.1 (0.420). RAGTruth, Search-R1 = +3.4
+        (0.051). RAGTruth, ReSearch = +1.7 (0.224). RAGTruth, R-Search = +2.3 (0.224)\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0033\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"D
+        Robustness Checks\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":162,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"7ebff8fe-a43d-53fc-90cb-fdffb5a86519\",\"version\":15,\"score\":0.52038866,\"payload\":{\"page_content\":\"5.4
+        One agent drifts the wrong way\\nR-Search is the exception, and it leans worse
+        rather than better. Its DiD is positive on all four datasets (+0.7, +3.1,
+        +3.8, +3.0pp) and significant on RAGTruth, our largest cell, at +3.0pp with
+        a 95% CI of [1.2, 4.8] and a Holm-adjusted p of 0.002. That was the pre-registered
+        condition for claiming a model-specific effect, and it is met.\\nWe report
+        it with the caveats it deserves. On the RANDOM variant R-Search is again higher
+        on three of four datasets but significant on none, the closest p being 0.063.
+        Under the looser cited-anywhere outcome it dips slightly below the baseline
+        on NQ ( -0.5pp) and reaches significance nowhere (Appendix D). The direction
+        is consistent; the evidence for its size is not. What we can say is that no
+        agent improved, and the one that moved measurably moved the wrong way.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0021\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.4
+        One agent drifts the wrong way\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":96,\"page_no\":7,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"9e0c006f-57cc-5504-a551-4841921ff611\",\"version\":15,\"score\":0.51228034,\"payload\":{\"page_content\":\"Table
+        11: Robustness check 2: agent minus baseline on REL-UNCITED under the cited-anywhere
+        outcome (DiD, pp), Holm-adjusted p in parentheses. No comparison reaches p
+        &lt; 0 . 05 . Under this outcome the baseline's own rate is 17.8%, 13.2%,
+        16.6%, and 7.1% on the four datasets, and every interval still excludes zero.\\n\\n|
+        Dataset   | Search-R1     | ReSearch      | R-Search      |\\n|-----------|---------------|---------------|---------------|\\n|
+        NQ        | - 2.5 (1.000) | - 0.6 (1.000) | - 0.5 (1.000) |\\n| QAMPARI   |
+        +6.6 (0.102)  | - 1.7 (0.473) | +3.3 (0.460)  |\\n| HAGRID    | - 1.0 (0.665)
+        | - 2.1 (0.586) | +3.1 (0.420)  |\\n| RAGTruth  | +3.4 (0.051)  | +1.7 (0.224)
+        \ | +2.3 (0.224)  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":164,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        11: Robustness check 2: agent minus baseline on REL-UNCITED under the cited-anywhere
+        outcome (DiD, pp), Holm-adjusted p in parentheses. No comparison reaches p
+        &lt; 0 . 05 . Under this outcome the baseline's own rate is 17.8%, 13.2%,
+        16.6%, and 7.1% on the four datasets, and every interval still excludes zero.\\n\\n|
+        Dataset   | Search-R1     | ReSearch      | R-Search      |\\n|-----------|---------------|---------------|---------------|\\n|
+        NQ        | - 2.5 (1.000) | - 0.6 (1.000) | - 0.5 (1.000) |\\n| QAMPARI   |
+        +6.6 (0.102)  | - 1.7 (0.473) | +3.3 (0.460)  |\\n| HAGRID    | - 1.0 (0.665)
+        | - 2.1 (0.586) | +3.1 (0.420)  |\\n| RAGTruth  | +3.4 (0.051)  | +1.7 (0.224)
+        \ | +2.3 (0.224)  |\"}}},{\"id\":\"1ee63a5e-309f-50c0-bdb2-05e34413dcea\",\"version\":13,\"score\":0.4895612,\"payload\":{\"page_content\":\"Table
+        7: Planned comparisons 31-60 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206           | 95% CI
+        \                  |    p H |   n |\\n|------|--------|---------|---------|------------|-------------|--------------------------|--------|-----|\\n|
+        C031 | A      | RC/.25  | Id      | P g        | - 0 . 387   | [ - 0 . 421
+        , - 0 . 354] | 0.0148 | 944 |\\n| C032 | A      | RC/.1   | Id      | P g
+        \       | - 0 . 392   | [ - 0 . 424 , - 0 . 359] | 0.0148 | 944 |\\n| C033
+        | A      | RC/.05  | Id      | P g        | - 0 . 334   | [ - 0 . 370 , -
+        0 . 299] | 0.0148 | 944 |\\n| C034 | A      | LL/.5   | Id      | P g        |
+        - 0 . 353   | [ - 0 . 386 , - 0 . 320] | 0.0148 | 944 |\\n| C035 | A      |
+        LL/.25  | Id      | P g        | - 0 . 406   | [ - 0 . 438 , - 0 . 374] |
+        0.0148 | 944 |\\n| C036 | A      | LL/.1   | Id      | P g        | - 0 .
+        457   | [ - 0 . 488 , - 0 . 427] | 0.0148 | 944 |\\n| C037 | A      | LL/.05
+        \ | Id      | P g        | - 0 . 475   | [ - 0 . 504 , - 0 . 447] | 0.0148
+        | 944 |\\n| C038 | Q      | RR/.5   | Id      | P g        | - 0 . 130   |
+        [ - 0 . 165 , - 0 . 095] | 0.0148 | 976 |\\n| C039 | Q      | RR/.25  | Id
+        \     | P g        | 0 . 089     | [ - 0 . 124 , - 0 . 052] | 0.0148 | 976
+        |\\n| C040 | Q      | RR/.1   | Id      | P g        | - - 0 . 066 | [ - 0
+        . 104 , - 0 . 029] | 0.0280 | 976 |\\n| C041 | Q      | RR/.05  | Id      |
+        P g        | - 0 . 091   | [ - 0 . 128 , - 0 . 053] | 0.0148 | 976 |\\n| C042
+        | Q      | X/.5    | Id      | P g        | - 0 . 130   | [ - 0 . 159 , -
+        0 . 101] | 0.0148 | 976 |\\n| C043 | Q      | X/.25   | Id      | P g        |
+        - 0 . 050   | [ - 0 . 082 , - 0 . 019] | 0.0832 | 976 |\\n| C044 | Q      |
+        X/.1    | Id      | P g        | - 0 . 009   | [ - 0 . 041 , +0 . 024]  |
+        1.0000 | 976 |\\n| C045 | Q      | X/.05   | Id      | P g        | +0 . 009
+        \   | [ - 0 . 027 , +0 . 046]  | 1.0000 | 976 |\\n| C046 | Q      | ECR/.5
+        \ | Id      | P g        | - 0 . 067   | [ - 0 . 099 , - 0 . 035] | 0.0148
+        | 976 |\\n| C047 | Q      | ECR/.25 | Id      | P g        | - 0 . 020   |
+        [ - 0 . 050 , +0 . 011]  | 1.0000 | 976 |\\n| C048 | Q      | ECR/.1  | Id
+        \     | P g        | +0 . 016    | [ - 0 . 019 , +0 . 051]  | 1.0000 | 976
+        |\\n| C049 | Q      | ECR/.05 | Id      | P g        | +0 . 028    | [ - 0
+        . 010 , +0 . 064]  | 1.0000 | 976 |\\n| C050 | Q      | RC/.5   | Id      |
+        P g        | - 0 . 426   | [ - 0 . 455 , - 0 . 397] | 0.0148 | 976 |\\n| C051
+        | Q      | RC/.25  | Id      | P g        | - 0 . 425   | [ - 0 . 455 , -
+        0 . 396] | 0.0148 | 976 |\\n| C052 | Q      | RC/.1   | Id      | P g        |
+        - 0 . 426   | [ - 0 . 456 , - 0 . 397] | 0.0148 | 976 |\\n| C053 | Q      |
+        RC/.05  | Id      | P g        | - 0 . 425   | [ - 0 . 454 , - 0 . 396] |
+        0.0148 | 976 |\\n| C054 | Q      | LL/.5   | Id      | P g        | - 0 .
+        345   | [ - 0 . 381 , - 0 . 309] | 0.0148 | 976 |\\n| C055 | Q      | LL/.25
+        \ | Id      | P g        | - 0 . 372   | [ - 0 . 404 , - 0 . 338] | 0.0148
+        | 976 |\\n| C056 | Q      | LL/.1   | Id      | P g        | - 0 . 444   |
+        [ - 0 . 471 , - 0 . 416] | 0.0148 | 976 |\\n| C057 | Q      | LL/.05  | Id
+        \     | P g        | - 0 . 466   | [ - 0 . 493 , - 0 . 439] | 0.0148 | 976
+        |\\n| C058 | A      | RR/.25  | Id      | R g        | +0 . 074    | [+0 .
+        039 , +0 . 107]    | 0.0148 | 944 |\\n| C059 | A      | ECR/.5  | X/.5    |
+        P g        | +0 . 010    | [ - 0 . 018 , +0 . 038]  | 1.0000 | 944 |\\n| C060
+        | A      | ECR/.25 | X/.25   | P g        | - 0 . 006   | [ - 0 . 036 , +0
+        . 022]  | 1.0000 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":142,\"page_no\":16,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        7: Planned comparisons 31-60 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206           | 95% CI
+        \                  |    p H |   n |\\n|------|--------|---------|---------|------------|-------------|--------------------------|--------|-----|\\n|
+        C031 | A      | RC/.25  | Id      | P g        | - 0 . 387   | [ - 0 . 421
+        , - 0 . 354] | 0.0148 | 944 |\\n| C032 | A      | RC/.1   | Id      | P g
+        \       | - 0 . 392   | [ - 0 . 424 , - 0 . 359] | 0.0148 | 944 |\\n| C033
+        | A      | RC/.05  | Id      | P g        | - 0 . 334   | [ - 0 . 370 , -
+        0 . 299] | 0.0148 | 944 |\\n| C034 | A      | LL/.5   | Id      | P g        |
+        - 0 . 353   | [ - 0 . 386 , - 0 . 320] | 0.0148 | 944 |\\n| C035 | A      |
+        LL/.25  | Id      | P g        | - 0 . 406   | [ - 0 . 438 , - 0 . 374] |
+        0.0148 | 944 |\\n| C036 | A      | LL/.1   | Id      | P g        | - 0 .
+        457   | [ - 0 . 488 , - 0 . 427] | 0.0148 | 944 |\\n| C037 | A      | LL/.05
+        \ | Id      | P g        | - 0 . 475   | [ - 0 . 504 , - 0 . 447] | 0.0148
+        | 944 |\\n| C038 | Q      | RR/.5   | Id      | P g        | - 0 . 130   |
+        [ - 0 . 165 , - 0 . 095] | 0.0148 | 976 |\\n| C039 | Q      | RR/.25  | Id
+        \     | P g        | 0 . 089     | [ - 0 . 124 , - 0 . 052] | 0.0148 | 976
+        |\\n| C040 | Q      | RR/.1   | Id      | P g        | - - 0 . 066 | [ - 0
+        . 104 , - 0 . 029] | 0.0280 | 976 |\\n| C041 | Q      | RR/.05  | Id      |
+        P g        | - 0 . 091   | [ - 0 . 128 , - 0 . 053] | 0.0148 | 976 |\\n| C042
+        | Q      | X/.5    | Id      | P g        | - 0 . 130   | [ - 0 . 159 , -
+        0 . 101] | 0.0148 | 976 |\\n| C043 | Q      | X/.25   | Id      | P g        |
+        - 0 . 050   | [ - 0 . 082 , - 0 . 019] | 0.0832 | 976 |\\n| C044 | Q      |
+        X/.1    | Id      | P g        | - 0 . 009   | [ - 0 . 041 , +0 . 024]  |
+        1.0000 | 976 |\\n| C045 | Q      | X/.05   | Id      | P g        | +0 . 009
+        \   | [ - 0 . 027 , +0 . 046]  | 1.0000 | 976 |\\n| C046 | Q      | ECR/.5
+        \ | Id      | P g        | - 0 . 067   | [ - 0 . 099 , - 0 . 035] | 0.0148
+        | 976 |\\n| C047 | Q      | ECR/.25 | Id      | P g        | - 0 . 020   |
+        [ - 0 . 050 , +0 . 011]  | 1.0000 | 976 |\\n| C048 | Q      | ECR/.1  | Id
+        \     | P g        | +0 . 016    | [ - 0 . 019 , +0 . 051]  | 1.0000 | 976
+        |\\n| C049 | Q      | ECR/.05 | Id      | P g        | +0 . 028    | [ - 0
+        . 010 , +0 . 064]  | 1.0000 | 976 |\\n| C050 | Q      | RC/.5   | Id      |
+        P g        | - 0 . 426   | [ - 0 . 455 , - 0 . 397] | 0.0148 | 976 |\\n| C051
+        | Q      | RC/.25  | Id      | P g        | - 0 . 425   | [ - 0 . 455 , -
+        0 . 396] | 0.0148 | 976 |\\n| C052 | Q      | RC/.1   | Id      | P g        |
+        - 0 . 426   | [ - 0 . 456 , - 0 . 397] | 0.0148 | 976 |\\n| C053 | Q      |
+        RC/.05  | Id      | P g        | - 0 . 425   | [ - 0 . 454 , - 0 . 396] |
+        0.0148 | 976 |\\n| C054 | Q      | LL/.5   | Id      | P g        | - 0 .
+        345   | [ - 0 . 381 , - 0 . 309] | 0.0148 | 976 |\\n| C055 | Q      | LL/.25
+        \ | Id      | P g        | - 0 . 372   | [ - 0 . 404 , - 0 . 338] | 0.0148
+        | 976 |\\n| C056 | Q      | LL/.1   | Id      | P g        | - 0 . 444   |
+        [ - 0 . 471 , - 0 . 416] | 0.0148 | 976 |\\n| C057 | Q      | LL/.05  | Id
+        \     | P g        | - 0 . 466   | [ - 0 . 493 , - 0 . 439] | 0.0148 | 976
+        |\\n| C058 | A      | RR/.25  | Id      | R g        | +0 . 074    | [+0 .
+        039 , +0 . 107]    | 0.0148 | 944 |\\n| C059 | A      | ECR/.5  | X/.5    |
+        P g        | +0 . 010    | [ - 0 . 018 , +0 . 038]  | 1.0000 | 944 |\\n| C060
+        | A      | ECR/.25 | X/.25   | P g        | - 0 . 006   | [ - 0 . 036 , +0
+        . 022]  | 1.0000 | 944 |\"}}},{\"id\":\"2fd06dc3-5afd-5682-8352-59e602841c88\",\"version\":13,\"score\":0.48903272,\"payload\":{\"page_content\":\"Table
+        8: Planned comparisons 61-90 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C061 | A      | ECR/.1  | X/.1    | P g        | - 0 . 004 | [ - 0 . 029 ,
+        +0 . 021]  | 1.0000 | 944 |\\n| C062 | A      | ECR/.05 | X/.05   | P g        |
+        - 0 . 027 | [ - 0 . 049 , - 0 . 005] | 0.4158 | 944 |\\n| C063 | Q      |
+        ECR/.5  | X/.5    | P g        | +0 . 063  | [+0 . 033 , +0 . 092]    | 0.0148
+        | 976 |\\n| C064 | Q      | ECR/.25 | X/.25   | P g        | +0 . 030  | [+0
+        . 002 , +0 . 059]    | 1.0000 | 976 |\\n| C065 | Q      | ECR/.1  | X/.1    |
+        P g        | +0 . 025  | [ - 0 . 001 , +0 . 051]  | 1.0000 | 976 |\\n| C066
+        | Q      | ECR/.05 | X/.05   | P g        | +0 . 018  | [ - 0 . 009 , +0 .
+        046]  | 1.0000 | 976 |\\n| C067 | A      | LL/.25  | LL/.5   | P g        |
+        - 0 . 053 | [ - 0 . 076 , - 0 . 029] | 0.0148 | 944 |\\n| C068 | A      |
+        LL/.1   | LL/.25  | P g        | - 0 . 051 | [ - 0 . 073 , - 0 . 030] | 0.0148
+        | 944 |\\n| C069 | A      | LL/.05  | LL/.1   | P g        | - 0 . 018 | [
+        - 0 . 036 , - 0 . 001] | 1.0000 | 944 |\\n| C070 | Q      | LL/.25  | LL/.5
+        \  | P g        | - 0 . 027 | [ - 0 . 058 , +0 . 004]  | 1.0000 | 976 |\\n|
+        C071 | Q      | LL/.1   | LL/.25  | P g        | - 0 . 072 | [ - 0 . 096 ,
+        - 0 . 048] | 0.0148 | 976 |\\n| C072 | Q      | LL/.05  | LL/.1   | P g        |
+        - 0 . 022 | [ - 0 . 041 , - 0 . 005] | 0.3836 | 976 |\\n| C073 | A      |
+        RR/.25  | RR/.5   | P g        | +0 . 086  | [+0 . 053 , +0 . 117]    | 0.0148
+        | 944 |\\n| C074 | A      | RR/.25  | RR/.1   | P g        | +0 . 317  | [+0
+        . 280 , +0 . 354]    | 0.0148 | 944 |\\n| C075 | A      | RR/.25  | RR/.05
+        \ | P g        | +0 . 451  | [+0 . 415 , +0 . 487]    | 0.0148 | 944 |\\n|
+        C076 | A      | RR/.5   | Id      | EM         | - 0 . 039 | [ - 0 . 055 ,
+        - 0 . 023] | 0.0148 | 944 |\\n| C077 | A      | RR/.25  | Id      | EM         |
+        - 0 . 091 | [ - 0 . 108 , - 0 . 074] | 0.0148 | 944 |\\n| C078 | A      |
+        RR/.1   | Id      | EM         | - 0 . 153 | [ - 0 . 172 , - 0 . 134] | 0.0148
+        | 944 |\\n| C079 | A      | RR/.05  | Id      | EM         | - 0 . 229 | [
+        - 0 . 249 , - 0 . 209] | 0.0148 | 944 |\\n| C080 | A      | X/.5    | Id      |
+        EM         | - 0 . 029 | [ - 0 . 044 , - 0 . 014] | 0.0148 | 944 |\\n| C081
+        | A      | X/.25   | Id      | EM         | - 0 . 082 | [ - 0 . 100 , - 0
+        . 064] | 0.0148 | 944 |\\n| C082 | A      | X/.1    | Id      | EM         |
+        - 0 . 151 | [ - 0 . 170 , - 0 . 132] | 0.0148 | 944 |\\n| C083 | A      |
+        X/.05   | Id      | EM         | - 0 . 199 | [ - 0 . 219 , - 0 . 179] | 0.0148
+        | 944 |\\n| C084 | A      | ECR/.5  | Id      | EM         | - 0 . 029 | [
+        - 0 . 045 , - 0 . 014] | 0.0216 | 944 |\\n| C085 | A      | ECR/.25 | Id      |
+        EM         | - 0 . 075 | [ - 0 . 093 , - 0 . 057] | 0.0148 | 944 |\\n| C086
+        | A      | ECR/.1  | Id      | EM         | - 0 . 138 | [ - 0 . 157 , - 0
+        . 120] | 0.0148 | 944 |\\n| C087 | A      | ECR/.05 | Id      | EM         |
+        - 0 . 202 | [ - 0 . 222 , - 0 . 183] | 0.0148 | 944 |\\n| C088 | A      |
+        RC/.5   | Id      | EM         | - 0 . 054 | [ - 0 . 070 , - 0 . 039] | 0.0148
+        | 944 |\\n| C089 | A      | RC/.25  | Id      | EM         | - 0 . 054 | [
+        - 0 . 069 , - 0 . 039] | 0.0148 | 944 |\\n| C090 | A      | RC/.1   | Id      |
+        EM         | - 0 . 055 | [ - 0 . 070 , - 0 . 040] | 0.0148 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":144,\"page_no\":17,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        8: Planned comparisons 61-90 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C061 | A      | ECR/.1  | X/.1    | P g        | - 0 . 004 | [ - 0 . 029 ,
+        +0 . 021]  | 1.0000 | 944 |\\n| C062 | A      | ECR/.05 | X/.05   | P g        |
+        - 0 . 027 | [ - 0 . 049 , - 0 . 005] | 0.4158 | 944 |\\n| C063 | Q      |
+        ECR/.5  | X/.5    | P g        | +0 . 063  | [+0 . 033 , +0 . 092]    | 0.0148
+        | 976 |\\n| C064 | Q      | ECR/.25 | X/.25   | P g        | +0 . 030  | [+0
+        . 002 , +0 . 059]    | 1.0000 | 976 |\\n| C065 | Q      | ECR/.1  | X/.1    |
+        P g        | +0 . 025  | [ - 0 . 001 , +0 . 051]  | 1.0000 | 976 |\\n| C066
+        | Q      | ECR/.05 | X/.05   | P g        | +0 . 018  | [ - 0 . 009 , +0 .
+        046]  | 1.0000 | 976 |\\n| C067 | A      | LL/.25  | LL/.5   | P g        |
+        - 0 . 053 | [ - 0 . 076 , - 0 . 029] | 0.0148 | 944 |\\n| C068 | A      |
+        LL/.1   | LL/.25  | P g        | - 0 . 051 | [ - 0 . 073 , - 0 . 030] | 0.0148
+        | 944 |\\n| C069 | A      | LL/.05  | LL/.1   | P g        | - 0 . 018 | [
+        - 0 . 036 , - 0 . 001] | 1.0000 | 944 |\\n| C070 | Q      | LL/.25  | LL/.5
+        \  | P g        | - 0 . 027 | [ - 0 . 058 , +0 . 004]  | 1.0000 | 976 |\\n|
+        C071 | Q      | LL/.1   | LL/.25  | P g        | - 0 . 072 | [ - 0 . 096 ,
+        - 0 . 048] | 0.0148 | 976 |\\n| C072 | Q      | LL/.05  | LL/.1   | P g        |
+        - 0 . 022 | [ - 0 . 041 , - 0 . 005] | 0.3836 | 976 |\\n| C073 | A      |
+        RR/.25  | RR/.5   | P g        | +0 . 086  | [+0 . 053 , +0 . 117]    | 0.0148
+        | 944 |\\n| C074 | A      | RR/.25  | RR/.1   | P g        | +0 . 317  | [+0
+        . 280 , +0 . 354]    | 0.0148 | 944 |\\n| C075 | A      | RR/.25  | RR/.05
+        \ | P g        | +0 . 451  | [+0 . 415 , +0 . 487]    | 0.0148 | 944 |\\n|
+        C076 | A      | RR/.5   | Id      | EM         | - 0 . 039 | [ - 0 . 055 ,
+        - 0 . 023] | 0.0148 | 944 |\\n| C077 | A      | RR/.25  | Id      | EM         |
+        - 0 . 091 | [ - 0 . 108 , - 0 . 074] | 0.0148 | 944 |\\n| C078 | A      |
+        RR/.1   | Id      | EM         | - 0 . 153 | [ - 0 . 172 , - 0 . 134] | 0.0148
+        | 944 |\\n| C079 | A      | RR/.05  | Id      | EM         | - 0 . 229 | [
+        - 0 . 249 , - 0 . 209] | 0.0148 | 944 |\\n| C080 | A      | X/.5    | Id      |
+        EM         | - 0 . 029 | [ - 0 . 044 , - 0 . 014] | 0.0148 | 944 |\\n| C081
+        | A      | X/.25   | Id      | EM         | - 0 . 082 | [ - 0 . 100 , - 0
+        . 064] | 0.0148 | 944 |\\n| C082 | A      | X/.1    | Id      | EM         |
+        - 0 . 151 | [ - 0 . 170 , - 0 . 132] | 0.0148 | 944 |\\n| C083 | A      |
+        X/.05   | Id      | EM         | - 0 . 199 | [ - 0 . 219 , - 0 . 179] | 0.0148
+        | 944 |\\n| C084 | A      | ECR/.5  | Id      | EM         | - 0 . 029 | [
+        - 0 . 045 , - 0 . 014] | 0.0216 | 944 |\\n| C085 | A      | ECR/.25 | Id      |
+        EM         | - 0 . 075 | [ - 0 . 093 , - 0 . 057] | 0.0148 | 944 |\\n| C086
+        | A      | ECR/.1  | Id      | EM         | - 0 . 138 | [ - 0 . 157 , - 0
+        . 120] | 0.0148 | 944 |\\n| C087 | A      | ECR/.05 | Id      | EM         |
+        - 0 . 202 | [ - 0 . 222 , - 0 . 183] | 0.0148 | 944 |\\n| C088 | A      |
+        RC/.5   | Id      | EM         | - 0 . 054 | [ - 0 . 070 , - 0 . 039] | 0.0148
+        | 944 |\\n| C089 | A      | RC/.25  | Id      | EM         | - 0 . 054 | [
+        - 0 . 069 , - 0 . 039] | 0.0148 | 944 |\\n| C090 | A      | RC/.1   | Id      |
+        EM         | - 0 . 055 | [ - 0 . 070 , - 0 . 040] | 0.0148 | 944 |\"}}},{\"id\":\"ba4317e9-5661-521a-aa3d-706fc834f009\",\"version\":13,\"score\":0.48887953,\"payload\":{\"page_content\":\"Table
+        6: Planned comparisons 1-30 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C001 | A      | RC/.5   | RC/.5   | P e - P g  | +0 . 744  | [+0 . 715 , +0
+        . 771]    | 0.0148 | 944 |\\n| C002 | A      | RC/.25  | RC/.25  | P e - P
+        g  | +0 . 740  | [+0 . 711 , +0 . 767]    | 0.0148 | 944 |\\n| C003 | A      |
+        RC/.1   | RC/.1   | P e - P g  | +0 . 743  | [+0 . 715 , +0 . 770]    | 0.0148
+        | 944 |\\n| C004 | A      | RC/.05  | RC/.05  | P e - P g  | +0 . 621  | [+0
+        . 588 , +0 . 654]    | 0.0148 | 944 |\\n| C005 | A      | LL/.5   | LL/.5
+        \  | P e - P g  | +0 . 426  | [+0 . 394 , +0 . 458]    | 0.0148 | 944 |\\n|
+        C006 | A      | LL/.25  | LL/.25  | P e - P g  | +0 . 425  | [+0 . 391 , +0
+        . 458]    | 0.0148 | 944 |\\n| C007 | A      | LL/.1   | LL/.1   | P e - P
+        g  | +0 . 260  | [+0 . 229 , +0 . 291]    | 0.0148 | 944 |\\n| C008 | A      |
+        LL/.05  | LL/.05  | P e - P g  | +0 . 132  | [+0 . 108 , +0 . 156]    | 0.0148
+        | 944 |\\n| C009 | Q      | RC/.5   | RC/.5   | P e - P g  | +0 . 499  | [+0
+        . 464 , +0 . 534]    | 0.0148 | 976 |\\n| C010 | Q      | RC/.25  | RC/.25
+        \ | P e - P g  | +0 . 491  | [+0 . 457 , +0 . 525]    | 0.0148 | 976 |\\n|
+        C011 | Q      | RC/.1   | RC/.1   | P e - P g  | +0 . 492  | [+0 . 457 , +0
+        . 526]    | 0.0148 | 976 |\\n| C012 | Q      | RC/.05  | RC/.05  | P e - P
+        g  | +0 . 496  | [+0 . 462 , +0 . 531]    | 0.0148 | 976 |\\n| C013 | Q      |
+        LL/.5   | LL/.5   | P e - P g  | +0 . 360  | [+0 . 319 , +0 . 402]    | 0.0148
+        | 976 |\\n| C014 | Q      | LL/.25  | LL/.25  | P e - P g  | +0 . 309  | [+0
+        . 278 , +0 . 341]    | 0.0148 | 976 |\\n| C015 | Q      | LL/.1   | LL/.1
+        \  | P e - P g  | +0 . 388  | [+0 . 354 , +0 . 421]    | 0.0148 | 976 |\\n|
+        C016 | Q      | LL/.05  | LL/.05  | P e - P g  | +0 . 361  | [+0 . 329 , +0
+        . 395]    | 0.0148 | 976 |\\n| C017 | A      | RC/.25  | RC/.25  | R e - R
+        g  | +0 . 712  | [+0 . 684 , +0 . 740]    | 0.0148 | 944 |\\n| C018 | A      |
+        RR/.5   | Id      | P g        | +0 . 098  | [+0 . 066 , +0 . 131]    | 0.0148
+        | 944 |\\n| C019 | A      | RR/.25  | Id      | P g        | +0 . 184  | [+0
+        . 149 , +0 . 219]    | 0.0148 | 944 |\\n| C020 | A      | RR/.1   | Id      |
+        P g        | - 0 . 132 | [ - 0 . 170 , - 0 . 095] | 0.0148 | 944 |\\n| C021
+        | A      | RR/.05  | Id      | P g        | - 0 . 267 | [ - 0 . 303 , - 0
+        . 230] | 0.0148 | 944 |\\n| C022 | A      | X/.5    | Id      | P g        |
+        - 0 . 081 | [ - 0 . 116 , - 0 . 047] | 0.0148 | 944 |\\n| C023 | A      |
+        X/.25   | Id      | P g        | - 0 . 019 | [ - 0 . 053 , +0 . 016]  | 1.0000
+        | 944 |\\n| C024 | A      | X/.1    | Id      | P g        | - 0 . 023 | [
+        - 0 . 061 , +0 . 014]  | 1.0000 | 944 |\\n| C025 | A      | X/.05   | Id      |
+        P g        | - 0 . 091 | [ - 0 . 129 , - 0 . 053] | 0.0148 | 944 |\\n| C026
+        | A      | ECR/.5  | Id      | P g        | - 0 . 071 | [ - 0 . 105 , - 0
+        . 038] | 0.0148 | 944 |\\n| C027 | A      | ECR/.25 | Id      | P g        |
+        - 0 . 025 | [ - 0 . 061 , +0 . 010]  | 1.0000 | 944 |\\n| C028 | A      |
+        ECR/.1  | Id      | P g        | - 0 . 027 | [ - 0 . 064 , +0 . 010]  | 1.0000
+        | 944 |\\n| C029 | A      | ECR/.05 | Id      | P g        | - 0 . 118 | [
+        - 0 . 155 , - 0 . 080] | 0.0148 | 944 |\\n| C030 | A      | RC/.5   | Id      |
+        P g        | - 0 . 388 | [ - 0 . 421 , - 0 . 354] | 0.0148 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":140,\"page_no\":15,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        6: Planned comparisons 1-30 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C001 | A      | RC/.5   | RC/.5   | P e - P g  | +0 . 744  | [+0 . 715 , +0
+        . 771]    | 0.0148 | 944 |\\n| C002 | A      | RC/.25  | RC/.25  | P e - P
+        g  | +0 . 740  | [+0 . 711 , +0 . 767]    | 0.0148 | 944 |\\n| C003 | A      |
+        RC/.1   | RC/.1   | P e - P g  | +0 . 743  | [+0 . 715 , +0 . 770]    | 0.0148
+        | 944 |\\n| C004 | A      | RC/.05  | RC/.05  | P e - P g  | +0 . 621  | [+0
+        . 588 , +0 . 654]    | 0.0148 | 944 |\\n| C005 | A      | LL/.5   | LL/.5
+        \  | P e - P g  | +0 . 426  | [+0 . 394 , +0 . 458]    | 0.0148 | 944 |\\n|
+        C006 | A      | LL/.25  | LL/.25  | P e - P g  | +0 . 425  | [+0 . 391 , +0
+        . 458]    | 0.0148 | 944 |\\n| C007 | A      | LL/.1   | LL/.1   | P e - P
+        g  | +0 . 260  | [+0 . 229 , +0 . 291]    | 0.0148 | 944 |\\n| C008 | A      |
+        LL/.05  | LL/.05  | P e - P g  | +0 . 132  | [+0 . 108 , +0 . 156]    | 0.0148
+        | 944 |\\n| C009 | Q      | RC/.5   | RC/.5   | P e - P g  | +0 . 499  | [+0
+        . 464 , +0 . 534]    | 0.0148 | 976 |\\n| C010 | Q      | RC/.25  | RC/.25
+        \ | P e - P g  | +0 . 491  | [+0 . 457 , +0 . 525]    | 0.0148 | 976 |\\n|
+        C011 | Q      | RC/.1   | RC/.1   | P e - P g  | +0 . 492  | [+0 . 457 , +0
+        . 526]    | 0.0148 | 976 |\\n| C012 | Q      | RC/.05  | RC/.05  | P e - P
+        g  | +0 . 496  | [+0 . 462 , +0 . 531]    | 0.0148 | 976 |\\n| C013 | Q      |
+        LL/.5   | LL/.5   | P e - P g  | +0 . 360  | [+0 . 319 , +0 . 402]    | 0.0148
+        | 976 |\\n| C014 | Q      | LL/.25  | LL/.25  | P e - P g  | +0 . 309  | [+0
+        . 278 , +0 . 341]    | 0.0148 | 976 |\\n| C015 | Q      | LL/.1   | LL/.1
+        \  | P e - P g  | +0 . 388  | [+0 . 354 , +0 . 421]    | 0.0148 | 976 |\\n|
+        C016 | Q      | LL/.05  | LL/.05  | P e - P g  | +0 . 361  | [+0 . 329 , +0
+        . 395]    | 0.0148 | 976 |\\n| C017 | A      | RC/.25  | RC/.25  | R e - R
+        g  | +0 . 712  | [+0 . 684 , +0 . 740]    | 0.0148 | 944 |\\n| C018 | A      |
+        RR/.5   | Id      | P g        | +0 . 098  | [+0 . 066 , +0 . 131]    | 0.0148
+        | 944 |\\n| C019 | A      | RR/.25  | Id      | P g        | +0 . 184  | [+0
+        . 149 , +0 . 219]    | 0.0148 | 944 |\\n| C020 | A      | RR/.1   | Id      |
+        P g        | - 0 . 132 | [ - 0 . 170 , - 0 . 095] | 0.0148 | 944 |\\n| C021
+        | A      | RR/.05  | Id      | P g        | - 0 . 267 | [ - 0 . 303 , - 0
+        . 230] | 0.0148 | 944 |\\n| C022 | A      | X/.5    | Id      | P g        |
+        - 0 . 081 | [ - 0 . 116 , - 0 . 047] | 0.0148 | 944 |\\n| C023 | A      |
+        X/.25   | Id      | P g        | - 0 . 019 | [ - 0 . 053 , +0 . 016]  | 1.0000
+        | 944 |\\n| C024 | A      | X/.1    | Id      | P g        | - 0 . 023 | [
+        - 0 . 061 , +0 . 014]  | 1.0000 | 944 |\\n| C025 | A      | X/.05   | Id      |
+        P g        | - 0 . 091 | [ - 0 . 129 , - 0 . 053] | 0.0148 | 944 |\\n| C026
+        | A      | ECR/.5  | Id      | P g        | - 0 . 071 | [ - 0 . 105 , - 0
+        . 038] | 0.0148 | 944 |\\n| C027 | A      | ECR/.25 | Id      | P g        |
+        - 0 . 025 | [ - 0 . 061 , +0 . 010]  | 1.0000 | 944 |\\n| C028 | A      |
+        ECR/.1  | Id      | P g        | - 0 . 027 | [ - 0 . 064 , +0 . 010]  | 1.0000
+        | 944 |\\n| C029 | A      | ECR/.05 | Id      | P g        | - 0 . 118 | [
+        - 0 . 155 , - 0 . 080] | 0.0148 | 944 |\\n| C030 | A      | RC/.5   | Id      |
+        P g        | - 0 . 388 | [ - 0 . 421 , - 0 . 354] | 0.0148 | 944 |\"}}},{\"id\":\"95678d23-079e-555a-8826-a99320030e64\",\"version\":15,\"score\":0.4877771,\"payload\":{\"page_content\":\"Table
+        10: Robustness check 1: agent minus baseline on the RANDOM variant (DiD, pp,
+        claim-aligned), Holmadjusted p in parentheses. No comparison reaches p &lt;
+        0 . 05 .\\n\\n| Dataset   | Search-R1     | ReSearch      | R-Search      |\\n|-----------|---------------|---------------|---------------|\\n|
+        NQ        | - 1.9 (0.984) | - 1.8 (0.984) | - 0.4 (0.984) |\\n| QAMPARI   |
+        +1.3 (0.379)  | +3.4 (0.114)  | +3.8 (0.114)  |\\n| HAGRID    | +1.0 (0.561)
+        \ | +3.0 (0.182)  | +4.2 (0.081)  |\\n| RAGTruth  | +0.8 (0.594)  | +0.2 (0.764)
+        \ | +1.8 (0.063)  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":162,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        10: Robustness check 1: agent minus baseline on the RANDOM variant (DiD, pp,
+        claim-aligned), Holmadjusted p in parentheses. No comparison reaches p &lt;
+        0 . 05 .\\n\\n| Dataset   | Search-R1     | ReSearch      | R-Search      |\\n|-----------|---------------|---------------|---------------|\\n|
+        NQ        | - 1.9 (0.984) | - 1.8 (0.984) | - 0.4 (0.984) |\\n| QAMPARI   |
+        +1.3 (0.379)  | +3.4 (0.114)  | +3.8 (0.114)  |\\n| HAGRID    | +1.0 (0.561)
+        \ | +3.0 (0.182)  | +4.2 (0.081)  |\\n| RAGTruth  | +0.8 (0.594)  | +0.2 (0.764)
+        \ | +1.8 (0.063)  |\"}}},{\"id\":\"d388f2c2-1fb5-5bd9-a82e-3216563eccab\",\"version\":13,\"score\":0.48463276,\"payload\":{\"page_content\":\"Table
+        9: Planned comparisons 91-120 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206          | 95% CI
+        \                    |    p H |   n |\\n|------|--------|---------|---------|------------|------------|----------------------------|--------|-----|\\n|
+        C091 | A      | RC/.05  | Id      | EM         | - 0 . 067  | [ - 0 . 084
+        , - 0 . 051]   | 0.0148 | 944 |\\n| C092 | A      | LL/.5   | Id      | EM
+        \        | - 0 . 041  | [ - 0 . 055 , - 0 . 026]   | 0.0148 | 944 |\\n| C093
+        | A      | LL/.25  | Id      | EM         | - 0 . 101  | [ - 0 . 118 , - 0
+        . 083]   | 0.0148 | 944 |\\n| C094 | A      | LL/.1   | Id      | EM         |
+        - 0 . 184  | [ - 0 . 203 , - 0 . 165]   | 0.0148 | 944 |\\n| C095 | A      |
+        LL/.05  | Id      | EM         | - 0 . 227  | [ - 0 . 248 , - 0 . 207]   |
+        0.0148 | 944 |\\n| C096 | A      | RR/.25  | RR/.5   | EM         | - 0 .
+        052  | [ - 0 . 064 , - 0 . 040]   | 0.0148 | 944 |\\n| C097 | A      | RR/.1
+        \  | RR/.25  | EM         | - 0 . 062  | [ - 0 . 077 , - 0 . 046]   | 0.0148
+        | 944 |\\n| C098 | A      | RR/.05  | RR/.1   | EM         | - 0 . 076  |
+        [ - 0 . 092 , - 0 . 060]   | 0.0148 | 944 |\\n| C099 | A      | X/.25   |
+        X/.5    | EM         | - 0 . 053  | [ - 0 . 068 , - 0 . 037]   | 0.0148 |
+        944 |\\n| C100 | A      | X/.1    | X/.25   | EM         | - 0 . 069  | [
+        - 0 . 084 , - 0 . 055]   | 0.0148 | 944 |\\n| C101 | A      | X/.05   | X/.1
+        \   | EM         | - 0 . 048  | [ - 0 . 062 , - 0 . 034]   | 0.0148 | 944
+        |\\n| C102 | A      | ECR/.25 | ECR/.5  | EM         | - 0 . 046  | [ - 0
+        . 060 , - 0 . 032]   | 0.0148 | 944 |\\n| C103 | A      | ECR/.1  | ECR/.25
+        | EM         | - 0 . 064  | [ - 0 . 079 , - 0 . 048]   | 0.0148 | 944 |\\n|
+        C104 | A      | ECR/.05 | ECR/.1  | EM         | - 0 . 064  | [ - 0 . 079
+        , - 0 . 049]   | 0.0148 | 944 |\\n| C105 | A      | RC/.25  | RC/.5   | EM
+        \        | +0 . 000   | [ - 0 . 002 , +0 . 002]    | 1.0000 | 944 |\\n| C106
+        | A      | RC/.1   | RC/.25  | EM         | - 0 . 001  | [ - 0 . 006 , +0
+        . 004]    | 1.0000 | 944 |\\n| C107 | A      | RC/.05  | RC/.1   | EM         |
+        - 0 . 012  | [ - 0 . 022 , - 0 . 003]   | 0.3030 | 944 |\\n| C108 | A      |
+        LL/.25  | LL/.5   | EM         | - 0 . 060  | [ - 0 . 076 , - 0 . 045]   |
+        0.0148 | 944 |\\n| C109 | A      | LL/.1   | LL/.25  | EM         | - 0 .
+        083  | [ - 0 . 100 , - 0 . 067]   | 0.0148 | 944 |\\n| C110 | A      | LL/.05
+        \ | LL/.1   | EM         | - 0 . 043  | [ - 0 . 057 , - 0 . 030]   | 0.0148
+        | 944 |\\n| C111 | Q      | ECR/.5  | X/.5    | EF1        | - 0 . 0007 |
+        [ - 0 . 0011 , - 0 . 0002] | 0.0374 | 976 |\\n| C112 | Q      | ECR/.25 |
+        X/.25   | EF1        | - 0 . 0018 | [ - 0 . 0025 , - 0 . 0012] | 0.0148 |
+        976 |\\n| C113 | Q      | ECR/.1  | X/.1    | EF1        | - 0 . 0022 | [
+        - 0 . 0035 , - 0 . 0010] | 0.0148 | 976 |\\n| C114 | Q      | ECR/.05 | X/.05
+        \  | EF1        | - 0 . 0030 | [ - 0 . 0046 , - 0 . 0012] | 0.0185 | 976 |\\n|
+        C115 | Q      | X/.25   | X/.5    | EF1        | +0 . 0199  | [+0 . 0170 ,
+        +0 . 0227]    | 0.0148 | 976 |\\n| C116 | Q      | X/.1    | X/.25   | EF1
+        \       | +0 . 0389  | [+0 . 0343 , +0 . 0435]    | 0.0148 | 976 |\\n| C117
+        | Q      | X/.05   | X/.1    | EF1        | +0 . 0289  | [+0 . 0231 , +0 .
+        0346]    | 0.0148 | 976 |\\n| C118 | Q      | ECR/.25 | ECR/.5  | EF1        |
+        +0 . 0187  | [+0 . 0160 , +0 . 0214]    | 0.0148 | 976 |\\n| C119 | Q      |
+        ECR/.1  | ECR/.25 | EF1        | +0 . 0385  | [+0 . 0339 , +0 . 0430]    |
+        0.0148 | 976 |\\n| C120 | Q      | ECR/.05 | ECR/.1  | EF1        | +0 . 0281
+        \ | [+0 . 0222 , +0 . 0340]    | 0.0148 | 976 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":146,\"page_no\":18,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        9: Planned comparisons 91-120 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206          | 95% CI
+        \                    |    p H |   n |\\n|------|--------|---------|---------|------------|------------|----------------------------|--------|-----|\\n|
+        C091 | A      | RC/.05  | Id      | EM         | - 0 . 067  | [ - 0 . 084
+        , - 0 . 051]   | 0.0148 | 944 |\\n| C092 | A      | LL/.5   | Id      | EM
+        \        | - 0 . 041  | [ - 0 . 055 , - 0 . 026]   | 0.0148 | 944 |\\n| C093
+        | A      | LL/.25  | Id      | EM         | - 0 . 101  | [ - 0 . 118 , - 0
+        . 083]   | 0.0148 | 944 |\\n| C094 | A      | LL/.1   | Id      | EM         |
+        - 0 . 184  | [ - 0 . 203 , - 0 . 165]   | 0.0148 | 944 |\\n| C095 | A      |
+        LL/.05  | Id      | EM         | - 0 . 227  | [ - 0 . 248 , - 0 . 207]   |
+        0.0148 | 944 |\\n| C096 | A      | RR/.25  | RR/.5   | EM         | - 0 .
+        052  | [ - 0 . 064 , - 0 . 040]   | 0.0148 | 944 |\\n| C097 | A      | RR/.1
+        \  | RR/.25  | EM         | - 0 . 062  | [ - 0 . 077 , - 0 . 046]   | 0.0148
+        | 944 |\\n| C098 | A      | RR/.05  | RR/.1   | EM         | - 0 . 076  |
+        [ - 0 . 092 , - 0 . 060]   | 0.0148 | 944 |\\n| C099 | A      | X/.25   |
+        X/.5    | EM         | - 0 . 053  | [ - 0 . 068 , - 0 . 037]   | 0.0148 |
+        944 |\\n| C100 | A      | X/.1    | X/.25   | EM         | - 0 . 069  | [
+        - 0 . 084 , - 0 . 055]   | 0.0148 | 944 |\\n| C101 | A      | X/.05   | X/.1
+        \   | EM         | - 0 . 048  | [ - 0 . 062 , - 0 . 034]   | 0.0148 | 944
+        |\\n| C102 | A      | ECR/.25 | ECR/.5  | EM         | - 0 . 046  | [ - 0
+        . 060 , - 0 . 032]   | 0.0148 | 944 |\\n| C103 | A      | ECR/.1  | ECR/.25
+        | EM         | - 0 . 064  | [ - 0 . 079 , - 0 . 048]   | 0.0148 | 944 |\\n|
+        C104 | A      | ECR/.05 | ECR/.1  | EM         | - 0 . 064  | [ - 0 . 079
+        , - 0 . 049]   | 0.0148 | 944 |\\n| C105 | A      | RC/.25  | RC/.5   | EM
+        \        | +0 . 000   | [ - 0 . 002 , +0 . 002]    | 1.0000 | 944 |\\n| C106
+        | A      | RC/.1   | RC/.25  | EM         | - 0 . 001  | [ - 0 . 006 , +0
+        . 004]    | 1.0000 | 944 |\\n| C107 | A      | RC/.05  | RC/.1   | EM         |
+        - 0 . 012  | [ - 0 . 022 , - 0 . 003]   | 0.3030 | 944 |\\n| C108 | A      |
+        LL/.25  | LL/.5   | EM         | - 0 . 060  | [ - 0 . 076 , - 0 . 045]   |
+        0.0148 | 944 |\\n| C109 | A      | LL/.1   | LL/.25  | EM         | - 0 .
+        083  | [ - 0 . 100 , - 0 . 067]   | 0.0148 | 944 |\\n| C110 | A      | LL/.05
+        \ | LL/.1   | EM         | - 0 . 043  | [ - 0 . 057 , - 0 . 030]   | 0.0148
+        | 944 |\\n| C111 | Q      | ECR/.5  | X/.5    | EF1        | - 0 . 0007 |
+        [ - 0 . 0011 , - 0 . 0002] | 0.0374 | 976 |\\n| C112 | Q      | ECR/.25 |
+        X/.25   | EF1        | - 0 . 0018 | [ - 0 . 0025 , - 0 . 0012] | 0.0148 |
+        976 |\\n| C113 | Q      | ECR/.1  | X/.1    | EF1        | - 0 . 0022 | [
+        - 0 . 0035 , - 0 . 0010] | 0.0148 | 976 |\\n| C114 | Q      | ECR/.05 | X/.05
+        \  | EF1        | - 0 . 0030 | [ - 0 . 0046 , - 0 . 0012] | 0.0185 | 976 |\\n|
+        C115 | Q      | X/.25   | X/.5    | EF1        | +0 . 0199  | [+0 . 0170 ,
+        +0 . 0227]    | 0.0148 | 976 |\\n| C116 | Q      | X/.1    | X/.25   | EF1
+        \       | +0 . 0389  | [+0 . 0343 , +0 . 0435]    | 0.0148 | 976 |\\n| C117
+        | Q      | X/.05   | X/.1    | EF1        | +0 . 0289  | [+0 . 0231 , +0 .
+        0346]    | 0.0148 | 976 |\\n| C118 | Q      | ECR/.25 | ECR/.5  | EF1        |
+        +0 . 0187  | [+0 . 0160 , +0 . 0214]    | 0.0148 | 976 |\\n| C119 | Q      |
+        ECR/.1  | ECR/.25 | EF1        | +0 . 0385  | [+0 . 0339 , +0 . 0430]    |
+        0.0148 | 976 |\\n| C120 | Q      | ECR/.05 | ECR/.1  | EF1        | +0 . 0281
+        \ | [+0 . 0222 , +0 . 0340]    | 0.0148 | 976 |\"}}},{\"id\":\"095dcd36-25a3-5d73-a076-09c6c245e655\",\"version\":13,\"score\":0.48111162,\"payload\":{\"page_content\":\"Table
+        10: Planned comparisons 121-148 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right     | Endpoint   | \u2206            | 95%
+        CI                     |    p H |   n |\\n|------|--------|---------|-----------|------------|--------------|----------------------------|--------|-----|\\n|
+        C121 | Q      | RR/.25  | RR/.5     | EF1        | 0 . 0162     | [ - 0 .
+        0225 , - 0 . 0097] | 0.0148 | 976 |\\n| C122 | Q      | RR/.1   | RR/.25    |
+        EF1        | - - 0 . 0194 | [ - 0 . 0275 , - 0 . 0112] | 0.0148 | 976 |\\n|
+        C123 | Q      | RR/.05  | RR/.1     | EF1        | - 0 . 0084   | [ - 0 .
+        0171 , +0 . 0008]  | 1.0000 | 976 |\\n| C124 | A      | LL/.25  | LL/.5     |
+        Rec        | - 0 . 156    | [ - 0 . 194 , - 0 . 117]   | 0.0148 | 944 |\\n|
+        C125 | A      | LL/.1   | LL/.25    | Rec        | - 0 . 153    | [ - 0 .
+        192 , - 0 . 114]   | 0.0148 | 944 |\\n| C126 | A      | LL/.05  | LL/.1     |
+        Rec        | - 0 . 050    | [ - 0 . 086 , - 0 . 015]   | 0.2418 | 944 |\\n|
+        C127 | A      | Id      | Id        | U s - U m  | - 0 . 002    | [ - 0 .
+        007 , +0 . 002]    | 1.0000 | 944 |\\n| C128 | A      | RR/.25  | RR/.25    |
+        U s - U m  | - 0 . 003    | [ - 0 . 008 , +0 . 002]    | 1.0000 | 944 |\\n|
+        C129 | A      | X/.25   | X/.25     | U s - U m  | +0 . 000     | [ - 0 .
+        002 , +0 . 001]    | 1.0000 | 944 |\\n| C130 | A      | ECR/.25 | ECR/.25
+        \  | U s - U m  | +0 . 009     | [+0 . 002 , +0 . 016]      | 0.3045 | 944
+        |\\n| C131 | Q      | Id      | Id        | U s - U m  | - 0 . 001    | [
+        - 0 . 005 , +0 . 003]    | 1.0000 | 976 |\\n| C132 | Q      | RR/.25  | RR/.25
+        \   | U s - U m  | - 0 . 002    | [ - 0 . 006 , +0 . 001]    | 1.0000 | 976
+        |\\n| C133 | Q      | X/.25   | X/.25     | U s - U m  | - 0 . 008    | [
+        - 0 . 014 , - 0 . 003]   | 0.0627 | 976 |\\n| C134 | Q      | ECR/.25 | ECR/.25
+        \  | U s - U m  | - 0 . 001    | [ - 0 . 007 , +0 . 004]    | 1.0000 | 976
+        |\\n| C135 | A      | RC/.25  | RC/.25/.3 | P e - P g  | +0 . 714     | [+0
+        . 685 , +0 . 743]      | 0.0148 | 944 |\\n| C136 | A      | RC/.25  | RC/.25/.4
+        | P e - P g  | +0 . 730     | [+0 . 701 , +0 . 758]      | 0.0148 | 944 |\\n|
+        C137 | A      | RC/.25  | RC/.25/.6 | P e - P g  | +0 . 753     | [+0 . 726
+        , +0 . 780]      | 0.0148 | 944 |\\n| C138 | A      | RC/.25  | RC/.25/.7
+        | P e - P g  | +0 . 766     | [+0 . 739 , +0 . 792]      | 0.0148 | 944 |\\n|
+        C139 | A      | RC/.25  | RC/.25/.8 | P e - P g  | +0 . 779     | [+0 . 752
+        , +0 . 805]      | 0.0148 | 944 |\\n| C140 | A      | LL/.25  | LL/.25/.3
+        | P e - P g  | +0 . 372     | [+0 . 338 , +0 . 406]      | 0.0148 | 944 |\\n|
+        C141 | A      | LL/.25  | LL/.25/.4 | P e - P g  | +0 . 400     | [+0 . 367
+        , +0 . 433]      | 0.0148 | 944 |\\n| C142 | A      | LL/.25  | LL/.25/.6
+        | P e - P g  | +0 . 449     | [+0 . 415 , +0 . 481]      | 0.0148 | 944 |\\n|
+        C143 | A      | LL/.25  | LL/.25/.7 | P e - P g  | +0 . 474     | [+0 . 441
+        , +0 . 506]      | 0.0148 | 944 |\\n| C144 | A      | LL/.25  | LL/.25/.8
+        | P e - P g  | +0 . 488     | [+0 . 455 , +0 . 520]      | 0.0148 | 944 |\\n|
+        C145 | A      | RC/.25  | RC/.25    | U r - U m  | +0 . 712     | [+0 . 683
+        , +0 . 739]      | 0.0148 | 944 |\\n| C146 | A      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 394     | [+0 . 362 , +0 . 426]      | 0.0148 | 944 |\\n|
+        C147 | Q      | RC/.25  | RC/.25    | U r - U m  | +0 . 450     | [+0 . 417
+        , +0 . 483]      | 0.0148 | 974 |\\n| C148 | Q      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 253     | [+0 . 225 , +0 . 282]      | 0.0148 | 976 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":148,\"page_no\":18,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        10: Planned comparisons 121-148 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right     | Endpoint   | \u2206            | 95%
+        CI                     |    p H |   n |\\n|------|--------|---------|-----------|------------|--------------|----------------------------|--------|-----|\\n|
+        C121 | Q      | RR/.25  | RR/.5     | EF1        | 0 . 0162     | [ - 0 .
+        0225 , - 0 . 0097] | 0.0148 | 976 |\\n| C122 | Q      | RR/.1   | RR/.25    |
+        EF1        | - - 0 . 0194 | [ - 0 . 0275 , - 0 . 0112] | 0.0148 | 976 |\\n|
+        C123 | Q      | RR/.05  | RR/.1     | EF1        | - 0 . 0084   | [ - 0 .
+        0171 , +0 . 0008]  | 1.0000 | 976 |\\n| C124 | A      | LL/.25  | LL/.5     |
+        Rec        | - 0 . 156    | [ - 0 . 194 , - 0 . 117]   | 0.0148 | 944 |\\n|
+        C125 | A      | LL/.1   | LL/.25    | Rec        | - 0 . 153    | [ - 0 .
+        192 , - 0 . 114]   | 0.0148 | 944 |\\n| C126 | A      | LL/.05  | LL/.1     |
+        Rec        | - 0 . 050    | [ - 0 . 086 , - 0 . 015]   | 0.2418 | 944 |\\n|
+        C127 | A      | Id      | Id        | U s - U m  | - 0 . 002    | [ - 0 .
+        007 , +0 . 002]    | 1.0000 | 944 |\\n| C128 | A      | RR/.25  | RR/.25    |
+        U s - U m  | - 0 . 003    | [ - 0 . 008 , +0 . 002]    | 1.0000 | 944 |\\n|
+        C129 | A      | X/.25   | X/.25     | U s - U m  | +0 . 000     | [ - 0 .
+        002 , +0 . 001]    | 1.0000 | 944 |\\n| C130 | A      | ECR/.25 | ECR/.25
+        \  | U s - U m  | +0 . 009     | [+0 . 002 , +0 . 016]      | 0.3045 | 944
+        |\\n| C131 | Q      | Id      | Id        | U s - U m  | - 0 . 001    | [
+        - 0 . 005 , +0 . 003]    | 1.0000 | 976 |\\n| C132 | Q      | RR/.25  | RR/.25
+        \   | U s - U m  | - 0 . 002    | [ - 0 . 006 , +0 . 001]    | 1.0000 | 976
+        |\\n| C133 | Q      | X/.25   | X/.25     | U s - U m  | - 0 . 008    | [
+        - 0 . 014 , - 0 . 003]   | 0.0627 | 976 |\\n| C134 | Q      | ECR/.25 | ECR/.25
+        \  | U s - U m  | - 0 . 001    | [ - 0 . 007 , +0 . 004]    | 1.0000 | 976
+        |\\n| C135 | A      | RC/.25  | RC/.25/.3 | P e - P g  | +0 . 714     | [+0
+        . 685 , +0 . 743]      | 0.0148 | 944 |\\n| C136 | A      | RC/.25  | RC/.25/.4
+        | P e - P g  | +0 . 730     | [+0 . 701 , +0 . 758]      | 0.0148 | 944 |\\n|
+        C137 | A      | RC/.25  | RC/.25/.6 | P e - P g  | +0 . 753     | [+0 . 726
+        , +0 . 780]      | 0.0148 | 944 |\\n| C138 | A      | RC/.25  | RC/.25/.7
+        | P e - P g  | +0 . 766     | [+0 . 739 , +0 . 792]      | 0.0148 | 944 |\\n|
+        C139 | A      | RC/.25  | RC/.25/.8 | P e - P g  | +0 . 779     | [+0 . 752
+        , +0 . 805]      | 0.0148 | 944 |\\n| C140 | A      | LL/.25  | LL/.25/.3
+        | P e - P g  | +0 . 372     | [+0 . 338 , +0 . 406]      | 0.0148 | 944 |\\n|
+        C141 | A      | LL/.25  | LL/.25/.4 | P e - P g  | +0 . 400     | [+0 . 367
+        , +0 . 433]      | 0.0148 | 944 |\\n| C142 | A      | LL/.25  | LL/.25/.6
+        | P e - P g  | +0 . 449     | [+0 . 415 , +0 . 481]      | 0.0148 | 944 |\\n|
+        C143 | A      | LL/.25  | LL/.25/.7 | P e - P g  | +0 . 474     | [+0 . 441
+        , +0 . 506]      | 0.0148 | 944 |\\n| C144 | A      | LL/.25  | LL/.25/.8
+        | P e - P g  | +0 . 488     | [+0 . 455 , +0 . 520]      | 0.0148 | 944 |\\n|
+        C145 | A      | RC/.25  | RC/.25    | U r - U m  | +0 . 712     | [+0 . 683
+        , +0 . 739]      | 0.0148 | 944 |\\n| C146 | A      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 394     | [+0 . 362 , +0 . 426]      | 0.0148 | 944 |\\n|
+        C147 | Q      | RC/.25  | RC/.25    | U r - U m  | +0 . 450     | [+0 . 417
+        , +0 . 483]      | 0.0148 | 974 |\\n| C148 | Q      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 253     | [+0 . 225 , +0 . 282]      | 0.0148 | 976 |\"}}},{\"id\":\"e4436797-5f26-59c3-bfc0-b0f7fceb5006\",\"version\":13,\"score\":0.453803,\"payload\":{\"page_content\":\"Table
+        12: All 24 planned TRUE robustness contrasts, separate from the original 148-test
+        analysis. D/F/T : prior DeBERTa/TRUE fixed/TRUE recovery; n/k : questions/clusters.
+        \u2206 : left-minus-right mean difference; p H : Holmadjusted within this
+        24-test family. 10,000 replicates, seed 13. Other notation follows Appendix
+        B.\\n\\n| ID   | Data   | Method   | View   | Endpoint   | \u2206         |
+        95% CI                   |    p H |   n |   k |\\n|------|--------|----------|--------|------------|-----------|--------------------------|--------|-----|-----|\\n|
+        T01  | A      | RC       | F      | P e - P g  | +0 . 650  | [+0 . 550 , +0
+        . 750]    | 0.0024 | 100 | 100 |\\n| T02  | A      | RC       | F      | R
+        e - R g  | +0 . 640  | [+0 . 540 , +0 . 735]    | 0.0024 | 100 | 100 |\\n|
+        T03  | A      | LL       | F      | P e - P g  | +0 . 392  | [+0 . 290 , +0
+        . 495]    | 0.0024 | 100 | 100 |\\n| T04  | A      | LL       | F      | R
+        e - R g  | +0 . 367  | [+0 . 273 , +0 . 463]    | 0.0024 | 100 | 100 |\\n|
+        T05  | Q      | RC       | F      | P e - P g  | +0 . 430  | [+0 . 326 , +0
+        . 530]    | 0.0024 | 100 |  84 |\\n| T06  | Q      | RC       | F      | R
+        e - R g  | +0 . 425  | [+0 . 320 , +0 . 525]    | 0.0024 | 100 |  84 |\\n|
+        T07  | Q      | LL       | F      | P e - P g  | +0 . 311  | [+0 . 234 , +0
+        . 390]    | 0.0024 | 100 |  84 |\\n| T08  | Q      | LL       | F      | R
+        e - R g  | +0 . 233  | [+0 . 176 , +0 . 293]    | 0.0024 | 100 |  84 |\\n|
+        T09  | A      | RC       | T      | P e - P g  | +0 . 640  | [+0 . 540 , +0
+        . 740]    | 0.0024 | 100 | 100 |\\n| T10  | A      | RC       | T      | R
+        e - R g  | +0 . 637  | [+0 . 540 , +0 . 730]    | 0.0024 | 100 | 100 |\\n|
+        T11  | A      | LL       | T      | P e - P g  | +0 . 405  | [+0 . 312 , +0
+        . 502]    | 0.0024 | 100 | 100 |\\n| T12  | A      | LL       | T      | R
+        e - R g  | +0 . 375  | [+0 . 287 , +0 . 468]    | 0.0024 | 100 | 100 |\\n|
+        T13  | Q      | RC       | T      | P e - P g  | +0 . 410  | [+0 . 309 , +0
+        . 505]    | 0.0024 | 100 |  84 |\\n| T14  | Q      | RC       | T      | R
+        e - R g  | +0 . 405  | [+0 . 303 , +0 . 505]    | 0.0024 | 100 |  84 |\\n|
+        T15  | Q      | LL       | T      | P e - P g  | +0 . 368  | [+0 . 286 , +0
+        . 452]    | 0.0024 | 100 |  84 |\\n| T16  | Q      | LL       | T      | R
+        e - R g  | +0 . 263  | [+0 . 204 , +0 . 325]    | 0.0024 | 100 |  84 |\\n|
+        T17  | A      | Id       | F - D  | P g        | +0 . 096  | [+0 . 011 , +0
+        . 185]    | 0.2376 | 100 | 100 |\\n| T18  | A      | X        | F - D  | P
+        g        | +0 . 095  | [+0 . 024 , +0 . 168]    | 0.0880 | 100 | 100 |\\n|
+        T19  | A      | RC       | F - D  | P g        | +0 . 040  | [ - 0 . 010 ,
+        +0 . 100]  | 0.8810 | 100 | 100 |\\n| T20  | A      | LL       | F - D  |
+        P g        | - 0 . 047 | [ - 0 . 097 , +0 . 000]  | 0.6299 | 100 | 100 |\\n|
+        T21  | Q      | Id       | F - D  | P g        | +0 . 010  | [ - 0 . 074 ,
+        +0 . 098]  | 0.9887 | 100 |  84 |\\n| T22  | Q      | X        | F - D  |
+        P g        | - 0 . 070 | [ - 0 . 134 , - 0 . 008] | 0.1827 | 100 |  84 |\\n|
+        T23  | Q      | RC       | F - D  | P g        | - 0 . 010 | [ - 0 . 025 ,
+        +0 . 000]  | 0.9887 | 100 |  84 |\\n| T24  | Q      | LL       | F - D  |
+        P g        | - 0 . 042 | [ - 0 . 095 , +0 . 011]  | 0.6299 | 100 |  84 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":20,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        12: All 24 planned TRUE robustness contrasts, separate from the original 148-test
+        analysis. D/F/T : prior DeBERTa/TRUE fixed/TRUE recovery; n/k : questions/clusters.
+        \u2206 : left-minus-right mean difference; p H : Holmadjusted within this
+        24-test family. 10,000 replicates, seed 13. Other notation follows Appendix
+        B.\\n\\n| ID   | Data   | Method   | View   | Endpoint   | \u2206         |
+        95% CI                   |    p H |   n |   k |\\n|------|--------|----------|--------|------------|-----------|--------------------------|--------|-----|-----|\\n|
+        T01  | A      | RC       | F      | P e - P g  | +0 . 650  | [+0 . 550 , +0
+        . 750]    | 0.0024 | 100 | 100 |\\n| T02  | A      | RC       | F      | R
+        e - R g  | +0 . 640  | [+0 . 540 , +0 . 735]    | 0.0024 | 100 | 100 |\\n|
+        T03  | A      | LL       | F      | P e - P g  | +0 . 392  | [+0 . 290 , +0
+        . 495]    | 0.0024 | 100 | 100 |\\n| T04  | A      | LL       | F      | R
+        e - R g  | +0 . 367  | [+0 . 273 , +0 . 463]    | 0.0024 | 100 | 100 |\\n|
+        T05  | Q      | RC       | F      | P e - P g  | +0 . 430  | [+0 . 326 , +0
+        . 530]    | 0.0024 | 100 |  84 |\\n| T06  | Q      | RC       | F      | R
+        e - R g  | +0 . 425  | [+0 . 320 , +0 . 525]    | 0.0024 | 100 |  84 |\\n|
+        T07  | Q      | LL       | F      | P e - P g  | +0 . 311  | [+0 . 234 , +0
+        . 390]    | 0.0024 | 100 |  84 |\\n| T08  | Q      | LL       | F      | R
+        e - R g  | +0 . 233  | [+0 . 176 , +0 . 293]    | 0.0024 | 100 |  84 |\\n|
+        T09  | A      | RC       | T      | P e - P g  | +0 . 640  | [+0 . 540 , +0
+        . 740]    | 0.0024 | 100 | 100 |\\n| T10  | A      | RC       | T      | R
+        e - R g  | +0 . 637  | [+0 . 540 , +0 . 730]    | 0.0024 | 100 | 100 |\\n|
+        T11  | A      | LL       | T      | P e - P g  | +0 . 405  | [+0 . 312 , +0
+        . 502]    | 0.0024 | 100 | 100 |\\n| T12  | A      | LL       | T      | R
+        e - R g  | +0 . 375  | [+0 . 287 , +0 . 468]    | 0.0024 | 100 | 100 |\\n|
+        T13  | Q      | RC       | T      | P e - P g  | +0 . 410  | [+0 . 309 , +0
+        . 505]    | 0.0024 | 100 |  84 |\\n| T14  | Q      | RC       | T      | R
+        e - R g  | +0 . 405  | [+0 . 303 , +0 . 505]    | 0.0024 | 100 |  84 |\\n|
+        T15  | Q      | LL       | T      | P e - P g  | +0 . 368  | [+0 . 286 , +0
+        . 452]    | 0.0024 | 100 |  84 |\\n| T16  | Q      | LL       | T      | R
+        e - R g  | +0 . 263  | [+0 . 204 , +0 . 325]    | 0.0024 | 100 |  84 |\\n|
+        T17  | A      | Id       | F - D  | P g        | +0 . 096  | [+0 . 011 , +0
+        . 185]    | 0.2376 | 100 | 100 |\\n| T18  | A      | X        | F - D  | P
+        g        | +0 . 095  | [+0 . 024 , +0 . 168]    | 0.0880 | 100 | 100 |\\n|
+        T19  | A      | RC       | F - D  | P g        | +0 . 040  | [ - 0 . 010 ,
+        +0 . 100]  | 0.8810 | 100 | 100 |\\n| T20  | A      | LL       | F - D  |
+        P g        | - 0 . 047 | [ - 0 . 097 , +0 . 000]  | 0.6299 | 100 | 100 |\\n|
+        T21  | Q      | Id       | F - D  | P g        | +0 . 010  | [ - 0 . 074 ,
+        +0 . 098]  | 0.9887 | 100 |  84 |\\n| T22  | Q      | X        | F - D  |
+        P g        | - 0 . 070 | [ - 0 . 134 , - 0 . 008] | 0.1827 | 100 |  84 |\\n|
+        T23  | Q      | RC       | F - D  | P g        | - 0 . 010 | [ - 0 . 025 ,
+        +0 . 000]  | 0.9887 | 100 |  84 |\\n| T24  | Q      | LL       | F - D  |
+        P g        | - 0 . 042 | [ - 0 . 095 , +0 . 011]  | 0.6299 | 100 |  84 |\"}}},{\"id\":\"758ba1b6-9f9b-548f-a2e0-33cad7ab2eb8\",\"version\":15,\"score\":0.4514474,\"payload\":{\"page_content\":\"D
+        Robustness Checks\\nThese tables support Section 5. Table 8 covers the RANDOM
+        control for all models, Table 9 shows CITED-OTHER under the claim-aligned
+        outcome, and Tables 10 and 11 repeat the agent comparison under the two checks
+        discussed in Section 5.4.\\nNQ, Baseline = +10.8. NQ, Search-R1 = +8.9. NQ,
+        ReSearch = +9.0. NQ, R-Search = +10.3. QAMPARI, Baseline = +4.4. QAMPARI,
+        Search-R1 = +5.7. QAMPARI, ReSearch = +7.8. QAMPARI, R-Search = +8.2. HAGRID,
+        Baseline = +7.6. HAGRID, Search-R1 = +8.6. HAGRID, ReSearch = +10.6. HAGRID,
+        R-Search = +11.9. RAGTruth, Baseline = +2.1. RAGTruth, Search-R1 = +2.9. RAGTruth,
+        ReSearch = +2.3. RAGTruth, R-Search = +3.9\\nTable 8: Attributable rate on
+        RANDOM (pp, claimaligned) for all models. n is the same as in Table 4. The
+        control rate is 0 in 7 of the 16 cells and 0.1-0.9% in the rest.\\nNQ, Planted
+        = 9/69. NQ, Control = 0/69. NQ, Attr. = +13.0. NQ, 95% CI = [5.5, 22.5]. QAMPARI,
+        Planted = 16/123. QAMPARI, Control = 0/123. QAMPARI, Attr. = +13.0. QAMPARI,
+        95% CI = [7.3, 19.7]. HAGRID, Planted = 12/61. HAGRID, Control = 0/61. HAGRID,
+        Attr. = +19.7. HAGRID, 95% CI = [10.8, 31.3]. RAGTruth, Planted = 67/623.
+        RAGTruth, Control = 1/623. RAGTruth, Attr. = +10.6. RAGTruth, 95% CI = [7.9,
+        13.5]\\nTable 9: CITED-OTHER for the baseline under the claimaligned outcome
+        (pp). Unlike the cited-anywhere outcome in Table 3, this one shows post-rationalization.
+        Only RAGTruth has enough question clusters for a reliable interval.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0032\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"D
+        Robustness Checks\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":157,\"page_no\":10,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"dddac35f-5d4b-5ded-8013-36c20a4708fe\",\"version\":15,\"score\":0.40918612,\"payload\":{\"page_content\":\"5.3
+        RLVR does not make citations more faithful\\nIt does not. Search-R1 moves
+        by -1.2, +4.3, -0.9, and +1.3pp across the four datasets; ReSearch by +0.1,
+        -1.6, -1.2, and +0.8pp. Both wander around zero with no pattern, every interval
+        covers zero, and the smallest Holm-adjusted p -value in either row is 0.267,
+        nowhere near signif- icance. Set that against our detection bound: with 80%
+        power at about 7pp, an improvement of that size would have been hard to miss,
+        and nothing close to it appears. Training these agents to produce verifiably
+        correct answers moved their citation faithfulness by an amount we cannot distinguish
+        from nothing.\\nThat result is less surprising once you look at what the reward
+        measures. RLVR compares the final answer with a reference and pays out accordingly;
+        R-Search also rewards steps along its search trajectory. No term anywhere
+        in these objectives asks whether the citation attached to a sentence is the
+        passage that produced it. Citing the wrong passage is free, so the behavior
+        the agents inherit from Qwen2.5-7B-Instruct rides through training untouched.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.3
+        RLVR does not make citations more faithful\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":93,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"b9471911-87e0-56f1-b903-ce99862282fc\",\"version\":13,\"score\":0.40736163,\"payload\":{\"page_content\":\"4.2
+        Statistical Analysis and Metric Audit\\nCommon cohorts and estimands. Primary
+        summaries and comparisons use the intersection of successful question IDs
+        across identity and all twenty compressed settings. Each question has equal
+        weight in citation precision, citation recall, answer quality, and evidence
+        F1; claims and citations are not pooled across questions. Undefined evidence
+        or recovery metrics remain undefined rather than becoming zeros. Verification-rate
+        means exclude answers with zero claims; paired verification comparisons exclude
+        a question if ei- ther member has zero claims. The analysis artifacts report
+        those exclusions and retain full-cohort descriptive means separately.\\nInference.
+        We use pointwise 95% percentile bootstrap intervals for each paired mean difference
+        (Dror et al., 2018), resampling 944 questions on ASQA and 271 papers on QASPER
+        with replacement. All retained questions from a sampled QASPER paper travel
+        together, and each replicate divides its total difference by the number of
+        sampled questions, preserving the questionweighted estimand. Every QASPER
+        contrast retains all 271 papers after metric-specific exclusions. Two-sided
+        randomization tests swap paired labels within questions on ASQA and jointly
+        within papers on QASPER. These tests assume label exchangeability within a
+        resampling unit under the null. Both procedures use 10,000 replicates and
+        seed 13, with independent random-number streams for bootstrap sampling and
+        randomization. Monte Carlo p -values use ( b + 1) / (10 , 000 + 1) , where
+        b counts randomizations at least as extreme as the observed absolute difference.
+        The initial plan specified 134 core contrasts and 10 recoverythreshold contrasts
+        before inspecting the revised inferential results. After that analysis and
+        a cachecoverage audit, we added four recovered-source versus summary-verification
+        contrasts at nominal 0.25 for RECOMP and LLMLingua-2 on both datasets. The
+        extension plan was recorded before running these four tests, and Holm adjustment
+        was recomputed over all 148 raw p -values. We denote Holm-adjusted values
+        by p H . All reported adjusted values use this expanded family; original effects,
+        intervals, and raw p -values are unchanged. This is a post hoc camera-ready
+        analysis, not a preregistration. Intervals are pointwise, not simultaneous;
+        statistical-support statements use p H < 0 . 05 . Failure to reject a difference
+        does not establish equivalence or preservation. All inference is conditional
+        on the fixed generator outputs, recovery procedure, and evaluator.\\nPrecision-code
+        audit. The manuscript's precision definition requires the concatenated cited
+        evidence to entail a claim before any individual citation receives credit.
+        A code audit found that the previous implementation could credit an individually
+        supporting citation even when joint entailment failed. A saved ASQA answer
+        reproduced this discrepancy, and a regression test now checks the required
+        gate through the evaluation pipeline.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Statistical Analysis and Metric Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":4,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.40219575,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"639092db-6051-5321-b9f0-5cb9d12a74da\",\"version\":15,\"score\":0.3994593,\"payload\":{\"page_content\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\"}}},{\"id\":\"1b6efed0-8026-5a1b-897c-993603f6de43\",\"version\":15,\"score\":0.3990667,\"payload\":{\"page_content\":\"5.2
+        Post-rationalization is common\\nTable 4 gives the attributable rate on REL-UNCITED
+        for every model and dataset. Start with the baseline column: 14.0% on NQ,
+        9.1% on QAMPARI, 14.8% on HAGRID, 2.9% on RAGTruth, with confidence intervals
+        of [10.4, 17.8], [6.2, 12.0], [11.8, 18.2] and [1.8, 3.9] that all sit clear
+        of zero. This clears the bar we set in advance, at least 8pp with an interval
+        excluding zero on three of four datasets. On the Wikipedia-based datasets
+        that rate means roughly one cited sentence in seven points at a passage whose
+        only tie to the claim is four words we pasted in. Pooling across datasets
+        gives 10.7%. 1\\nTable 4: How often each model follows the planted span: attributable
+        rate on REL-UNCITED in %, with cited records over all records below. The control
+        is 0 in every cell, so these equal the raw rates. Baseline 95% CIs: NQ [10.4,
+        17.8], QAMPARI [6.2, 12.0], HAGRID [11.8, 18.2], RAGTruth [1.8, 3.9].\\n\\nNQ,
+        Baseline = 14.0 52/371. NQ, Search-R1 = 12.8 36/281. NQ, ReSearch = 14.1 50/355.
+        NQ, R-Search = 14.7 57/387. QAMPARI, Baseline = 9.1 29/319. QAMPARI, Search-R1
+        = 13.4 38/283. QAMPARI, ReSearch = 7.5 25/332. QAMPARI, R-Search = 12.2 43/352.
+        HAGRID, Baseline = 14.8 64/433. HAGRID, Search-R1 = 13.8 53/383. HAGRID, ReSearch
+        = 13.6 59/434. HAGRID, R-Search = 18.6 80/430. RAGTruth, Baseline = 2.9 25/864.
+        RAGTruth, Search-R1 = 4.1 29/699. RAGTruth, ReSearch = 3.6 30/823. RAGTruth,
+        R-Search = 5.9 52/879\\nNow read across the rows. On NQ the four models land
+        at 14.0, 12.8, 14.1, and 14.7%. On HAGRID, 14.8, 13.8, 13.6, and 18.6%. On
+        RAGTruth, 2.9, 4.1, 3.6, and 5.9%. The agents track their base model, not
+        each other's training recipes, and all sixteen cells sit far above zero. Post-rationalization
+        is not something RL introduced; it is already there in the instruction-tuned
+        model and it survives everything done on top.\\n1 Pooling was not part of
+        our pre-registered plan, so treat this number as exploratory.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.2
+        Post-rationalization is common\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":83,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1a2e8a35-8a1f-56b6-8b90-46f4355a654e\",\"version\":15,\"score\":0.3988095,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nTable 3: What the no-planting control changes,
+        for the baseline model. Planted and Control are cited records over all records
+        ( k/n ); Attr. is the attributable rate in pp (Eq. 1). For CITED-OTHER the
+        control is 100%, and the attributable rate is negative (all 95% CIs exclude
+        0).\\n\\nREL-UNCITED (claim-aligned), Planted = REL-UNCITED (claim-aligned).
+        REL-UNCITED (claim-aligned), Control = REL-UNCITED (claim-aligned). REL-UNCITED
+        (claim-aligned), Attr. = REL-UNCITED (claim-aligned). NQ, Planted = 52/371.
+        NQ, Control = 0/371. NQ, Attr. = +14.0. QAMPARI, Planted = 29/319. QAMPARI,
+        Control = 0/319. QAMPARI, Attr. = +9.1. HAGRID, Planted = 64/433. HAGRID,
+        Control = 0/433. HAGRID, Attr. = +14.8. RAGTruth, Planted = 25/864. RAGTruth,
+        Control = 0/864. RAGTruth, Attr. = +2.9. RANDOM (claim-aligned), Planted =
+        RANDOM (claim-aligned). RANDOM (claim-aligned), Control = RANDOM (claim-aligned).
+        RANDOM (claim-aligned), Attr. = RANDOM (claim-aligned). NQ, Planted = 40/371.
+        NQ, Control = 0/371. NQ, Attr. = +10.8. QAMPARI, Planted = 14/319. QAMPARI,
+        Control = 0/319. QAMPARI, Attr. = +4.4. HAGRID, Planted = 37/433. HAGRID,
+        Control = 4/433. HAGRID, Attr. = +7.6. RAGTruth, Planted = 19/864. RAGTruth,
+        Control = 1/864. RAGTruth, Attr. = +2.1. CITED-OTHER (cited-anywhere), Planted
+        = CITED-OTHER (cited-anywhere). CITED-OTHER (cited-anywhere), Control = CITED-OTHER
+        (cited-anywhere). CITED-OTHER (cited-anywhere), Attr. = CITED-OTHER (cited-anywhere).
+        NQ, Planted = 58/69. NQ, Control = 69/69. NQ, Attr. = - 15.9. QAMPARI, Planted
+        = 97/123. QAMPARI, Control = 123/123. QAMPARI, Attr. = - 21.1. HAGRID, Planted
+        = 50/61. HAGRID, Control = 61/61. HAGRID, Attr. = - 18.0. RAGTruth, Planted
+        = 558/623. RAGTruth, Control = 623/623. RAGTruth, Attr. = - 10.4\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":76,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"dec2d78a-c8ba-509b-9409-5f44d1c07f13\",\"version\":15,\"score\":0.39202398,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nLeakage drove the dataset choice. NQ is where the original
+        probe ran, so we keep it for comparability, but Search-R1 trained on NQ's
+        training split and we say so plainly. QAMPARI, HAGRID, and RAGTruth were not
+        used to train any of the three agents, so on those datasets no gap can be
+        waved away as familiarity with the data. They also sidestep a retrieval quirk
+        in NQ: for 186 of 499 NQquestions (37.3%), all five passages come from one
+        document, which leaves the model almost no choice about what to cite. The
+        other three datasets have no such questions.\\nPrompt and generation. One
+        prompt does all the work, byte-identical across models and across the clean
+        and doctored runs. It tells the model to answer using only the numbered passages,
+        to close every sentence with exactly one citation such as [2], and to reply
+        'I don't know' when the passages fall short. Decoding is greedy, capped at
+        300 new tokens. When any sentence of an answer breaks the one-citation rule
+        we drop the whole answer rather than salvage the compliant half, because a
+        partly rescued answer reintroduces the claim-to-citation ambiguity the format
+        exists to prevent. Models differ sharply in how often they abstain, from 15%
+        to 52% of questions; Appendix C takes that apart. The full prompt is in Appendix
+        A.\\nReading our numbers. Three statistical choices shape every result, and
+        each has a plain reason behind it.\\nWe resample questions, not claims. A
+        single question yields up to seven claims that share one context and one generated
+        answer, so treating claims as independent would make our intervals look tighter
+        than they are. We use a cluster bootstrap instead: draw whole questions with
+        replacement 2,000 times, recompute the planted and control conditions on the
+        same draw so the pairing survives, and read off the 2.5th and 97.5th percentiles.
+        Every 95% confidence interval in this paper is that band, the range of effects
+        our data are consistent with.\\nWe compare each agent against its own base.
+        Post-rationalization is common in the baseline, so reporting that an agent
+        post-rationalizes tells us nothing about RL. The question is whether an agent
+        diverges from the model it was trained from. That calls for a difference-in-differences:
+        take the plantversus-control difference within a model (Equation 1), then
+        difference those differences across models,\\n<!-- formula-not-decoded -->\\nNegative
+        says RLVR made citations more faithful, positive says it made them worse,
+        and zero says training left this behavior alone. Within each dataset we test
+        all three agents against the baseline and correct the three comparisons with
+        the Holm method, so that running three tests does not manufacture a significant
+        one.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":64,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001217755}"
     headers:
       content-type:
       - application/json

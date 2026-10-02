@@ -6,9 +6,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/exists
   response:
     body:
-      string: !!binary |
-        KLUv/QBYwQEAeyJyZXN1bHQiOnsiZXhpc3RzIjp0cnVlfSwic3RhdHVzIjoib2siLCJ0aW1lIjo0
-        LjY5OGUtNn0=
+      string: '{"result":{"exists":true},"status":"ok","time":4.698e-6}'
     headers:
       content-type:
       - application/json
@@ -22,48 +20,10 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag
   response:
     body:
-      string: !!binary |
-        KLUv/QBYDRAApqFbIFBp4gZ4hkbQCtl3bbkfQ0jkZWYgUdCNGZGfLoyqqqoGUQBRAFMAq7gZ/FzR
-        ZrNKNwGHw3CuC+rKObN0mVw5V6jENnRToEyhfIMQOPSqltwc572vIWTXGukCkypoWnVzhIZOFxRT
-        nbSbr6pT/JxfZ/OV816P1V0JCKtDGjcR41ovcXMchvNGz3VCbwYM5wwZvMjNsijnyi4TvtHn+jxl
-        W41MEIFVwm0NtNqseBtCbeUYrVEmcJvqRGol6m4M504P2FtMLhG+WZZruCpbHa5kpFQkD4jzA4aN
-        ViiTXMm4WdI+7NWFukTgHCnjyoXTXoUIv5VIkjFlN2u9xV4vE5pWMWTvoVzcHACOpK1L06K8MnHO
-        KRWrUCHZzXGk1QJLAEEAAnE4jgPgOFem+jhHWrG6rpzr05eA2pmSd7M812ZBCBzOe3O1kZV5co3R
-        UISfa9JozM505TwpRC0BZGfKVnblPJkiiLE3X8LNYjhPym2hOSAggocO7+RzgKi7nCoysBICFQbo
-        tqXcAN5s5zfBLEsEBHMB66DjARh+bgpCz2wJTKPhBXY35Y5rB8HKAfoLgDYAqgzaH/i7DEAOLAfQ
-        yhMvAzQCFGYIKOCR5DwtNoDADW7d5Hu/BUA5N5yhB20IyBDi+P3mPsXxvVNjEi4A30Ede8AzbPic
-        G94gUuXdi/kE
+      string: '{"result":{"status":"green","optimizer_status":"ok","indexed_vectors_count":0,"points_count":253,"segments_count":8,"config":{"params":{"vectors":{"":{"size":1024,"distance":"Cosine"}},"shard_number":1,"replication_factor":1,"write_consistency_factor":1,"on_disk_payload":true,"sparse_vectors":{}},"hnsw_config":{"m":16,"ef_construct":100,"full_scan_threshold":10000,"max_indexing_threads":0,"on_disk":false},"optimizer_config":{"deleted_threshold":0.2,"vacuum_min_vector_number":1000,"default_segment_number":0,"max_segment_size":null,"memmap_threshold":null,"indexing_threshold":10000,"flush_interval_sec":5,"max_optimization_threads":null,"prevent_unoptimized":null},"wal_config":{"wal_capacity_mb":32,"wal_segments_ahead":0,"wal_retain_closed":1},"quantization_config":null},"payload_schema":{"metadata.doc_id":{"data_type":"keyword","params":{"type":"keyword","is_tenant":false},"points":253},"metadata.tenant_id":{"data_type":"keyword","params":{"type":"keyword","is_tenant":true},"points":253}},"update_queue":{"length":0}},"status":"ok","time":0.000233474}'
     headers:
       content-type:
       - application/json
-    status:
-      code: 200
-      message: OK
-- request:
-    body: ''
-    headers: {}
-    method: HEAD
-    uri: https://huggingface.co/voyageai/voyage-4/resolve/main/tokenizer.json
-  response:
-    body:
-      string: ''
-    headers:
-      content-type:
-      - text/plain; charset=utf-8
-    status:
-      code: 307
-      message: Temporary Redirect
-- request:
-    body: ''
-    headers: {}
-    method: HEAD
-    uri: https://huggingface.co/api/resolve-cache/models/voyageai/voyage-4/44f3b2ae4ddf33403ed4dd66bec3fa48ff7dbbf9/tokenizer.json
-  response:
-    body:
-      string: ''
-    headers:
-      content-type:
-      - text/plain; charset=utf-8
     status:
       code: 200
       message: OK
@@ -94,9 +54,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
   response:
     body:
-      string: !!binary |
-        KLUv/QBYZQIAksQQGJC1OqJU0jQBiU3kEXLXyaZjRsQ7n/9cArGUoTCEkBmkflfqkwM4Hm2vYouP
-        693r0+7EGD1KRoBTn7aMD/Wtntt2GAEAksaEAg==
+      string: '{"result":{"operation_id":22,"status":"completed"},"status":"ok","time":0.003728411}'
     headers:
       content-type:
       - application/json
@@ -112,9 +70,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
   response:
     body:
-      string: !!binary |
-        KLUv/QBYZQIAksQQGJC1OqJU0jQBiU3kEXLXCbUis+WZr/9YAtGUwhiByAxSvyv1yQEcj7ZXscXH
-        9e71aXdSBj1KRoBTn7aMD/Wtntt2GAEAksaEAg==
+      string: '{"result":{"operation_id":24,"status":"completed"},"status":"ok","time":0.003188648}'
     headers:
       content-type:
       - application/json
@@ -128,9 +84,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/exists
   response:
     body:
-      string: !!binary |
-        KLUv/QBYwQEAeyJyZXN1bHQiOnsiZXhpc3RzIjp0cnVlfSwic3RhdHVzIjoib2siLCJ0aW1lIjoz
-        LjA3NmUtNn0=
+      string: '{"result":{"exists":true},"status":"ok","time":3.076e-6}'
     headers:
       content-type:
       - application/json
@@ -144,17 +98,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag
   response:
     body:
-      string: !!binary |
-        KLUv/QBYJRAAhmFbIGBpqgOw+H2klKilVC9ZZEJSchQNhltrGNE4BEQAAOoCUQBRAFIAC7qCo29i
-        bbjUTYBxDOi7sK6gw6ZPkyvoiXWwSzcD2xILbw4Io3m55OagN0eXEj7XaRNSrcIqXjc/cPl2YbXV
-        ibs5777E0WFsbXgFvVmE+64E+5BO1gSTsXjcnGNA7xRfH3sjYEBvqYCM3CyLgr7waQJvNr5GV+rY
-        QpM8gEslu0Xibbggu5Tb6ylcJz2S3WpNiyX7bgzobw1a5FRPEXizLF8O2vuSqULpImoc0A1aLnol
-        TZSp4mZRHLN5E/YlCPS0MJkmvG1eicDIjkRb23bDWORsFvVYxatlizFpwo0BcNT2slXLQqYHOlSa
-        4JUK2m7OUcwhMAuBgRA4GOccgIO+bfVBRzrBy66gb9yIkNuqknizJKfMckAY6EvCZa6eUyz24Oib
-        LDq1VV1BVyublbcBtFVpb7uCrm2RBLNZI8LNYkBXCx1LySs6ICCCZhLaAeR5gKhcjppDEQgAp2io
-        hraS78aAA+EwzgnM2SIg2AWcgy4PwPi5KQs9IyUwGo0usLspf1y7BKsM0F8A1AFQZ9D+wN9lAPLA
-        NoBWnngfoBOgaIagAh5JztdiAwjccOsG3xtbAIxzQxl6og0hGUI4ftfcpzg+dmpchAvEd9DGHuwM
-        Gz7mhjeI5PLuRXkC
+      string: '{"result":{"status":"green","optimizer_status":"ok","indexed_vectors_count":0,"points_count":253,"segments_count":8,"config":{"params":{"vectors":{"":{"size":1024,"distance":"Cosine"}},"shard_number":1,"replication_factor":1,"write_consistency_factor":1,"on_disk_payload":true,"sparse_vectors":{}},"hnsw_config":{"m":16,"ef_construct":100,"full_scan_threshold":10000,"max_indexing_threads":0,"on_disk":false},"optimizer_config":{"deleted_threshold":0.2,"vacuum_min_vector_number":1000,"default_segment_number":0,"max_segment_size":null,"memmap_threshold":null,"indexing_threshold":10000,"flush_interval_sec":5,"max_optimization_threads":null,"prevent_unoptimized":null},"wal_config":{"wal_capacity_mb":32,"wal_segments_ahead":0,"wal_retain_closed":1},"quantization_config":null},"payload_schema":{"metadata.tenant_id":{"data_type":"keyword","params":{"type":"keyword","is_tenant":true},"points":253},"metadata.doc_id":{"data_type":"keyword","params":{"type":"keyword","is_tenant":false},"points":253}},"update_queue":{"length":0}},"status":"ok","time":0.000236529}'
     headers:
       content-type:
       - application/json
@@ -188,9 +132,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
   response:
     body:
-      string: !!binary |
-        KLUv/QBYbQIAkgQRGIC1OktRnlaxQpn8LgNTJ/jH7u81VTQJI/M4yEDFEUxg9NtWvxzA82p7mWuc
-        XA9jp4YvxKBXCwnw6vTW8aW+WYT7LgMBAJLGhAI=
+      string: '{"result":{"operation_id":26,"status":"completed"},"status":"ok","time":0.013748439}'
     headers:
       content-type:
       - application/json
@@ -206,9 +148,7 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/index?wait=true
   response:
     body:
-      string: !!binary |
-        KLUv/QBYTQIAkgQQFpBXB6JQhqbbbyK3+/8ia23kzoxdVwLRkGIKKZlA6nel/jjB8Wh7FVs8XO9e
-        n3YfAdGjJBSc+rRlfKhv9dy2wwEAksaEAg==
+      string: '{"result":{"operation_id":28,"status":"completed"},"status":"ok","time":0.003234324}'
     headers:
       content-type:
       - application/json

@@ -60,277 +60,449 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        BzpFO2X1FaIt17s5e2MUY73QkRFSrw==
+      string: "{\"result\":{\"points\":[{\"id\":\"85179e08-8e6f-59a9-ae44-68205f2042e1\",\"version\":5,\"score\":0.5806562,\"payload\":{\"page_content\":\"V.
+        CONCLUSION\\nWe measured how a 4-bit Llama 3.1 8B model behaves when its retrieved
+        context is poisoned, across three corruption strategies and four poisoning
+        levels in a 588-run sweep. Accuracy falls from 77.9% to 43.5% as corruption
+        goes from none to total. Entity swap flips the most answers. Numeric corruption
+        shows a majority-leaning jump once two of three passages are poisoned, with
+        a bootstrap interval on that jump that excludes zero but remains wide. The
+        model's main recorded response to attack is to abstain rather than to state
+        a wrong answer, and the lexical-overlap proxy of unsupported generation falls
+        under poisoning rather than rising.\\nThe study has clear limits. It covers
+        one small quantized model on a compact query set with rule-based corruption,
+        so the absolute numbers should not be read as universal. Retrieval is shared
+        across the pair, but decoding is not locked (temperature 0.1, two independent
+        generations), and the 0 / 3 residual shows that background pair noise is non-trivial.
+        Keyword matching is a weak correctness criterion, and the overlap proxy is
+        not a semantic faithfulness judge. The added passages make retrieval easier
+        than raw FEVER evidence would. Each limit points to a concrete next step:
+        lock decoding seeds across the pair and add multi-seed and multi-corruption
+        repeats with hierarchical resampling, replace keyword checks with structured
+        FEVER-style labels and normalized entity or quantity scoring, adjudicate a
+        stratified sample with blinded humans or a validated entailment model, and
+        decompose answers into atomic claims so poison adoption can be separated from
+        unsupported generation. We also plan to repeat the sweep on a larger instruction-tuned
+        model and on a second corpus, to replace rule-based edits with model-generated
+        adversarial\\n- [5] K. Guu, K. Lee, Z. Tung, P. Pasupat, and M. Chang, 'REALM:
+        retrievalaugmented language model pre-training,' in Proc. Int. Conf. Machine
+        Learning (ICML) , 2020, pp. 3929-3938.\\n- [6] N. Reimers and I. Gurevych,
+        'Sentence-BERT: sentence embeddings using Siamese BERT-networks,' in Proc.
+        Conf. Empirical Methods in Natural Language Processing (EMNLP) , 2019, pp.
+        3982-3992.\\n- [7] J. Johnson, M. Douze, and H. J\xB4 egou, 'Billion-scale
+        similarity search with GPUs,' IEEE Trans. Big Data , vol. 7, no. 3, pp. 535-547,
+        2019.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"V.
+        CONCLUSION\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":83,\"page_no\":6,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"328797f4-1778-57fe-bd4a-a334aaaa1cbb\",\"version\":5,\"score\":0.5682439,\"payload\":{\"page_content\":\"H.
+        Relation to Prior Work\\nOur findings extend the RAG picture drawn by Lewis
+        et al. [1] from the cooperative case to an adversarial one: retrieval that
+        lifts accuracy on clean corpora becomes a liability on corrupted ones. Where
+        Shi et al. [3] showed that off-topic context distracts a model, we show that
+        on-topic but false context does more, because it wears the appearance of the
+        evidence the model was told to trust. The abstention-overfabrication pattern
+        we measure is an empirical answer, for a small quantized model, to how such
+        a system fails when the context is corrupted rather than merely irrelevant.
+        The retrieval-integrated pre-training of Guu et al. [5] shares the grounding
+        assumption our attack targets. Zhou et al. [4] warn that evaluation can leak
+        into training and inflate scores; we keep the FEVER-derived query set fixed
+        and report every cell from the same 588-run table so strategy comparisons
+        are not an artifact of shifting test items.\\nFig. 4. Failure behaviour across
+        poisoning levels. Panel (a): abstention rises with poisoning for every strategy,
+        most steeply for entity swap. Panel (b): the lexical-overlap proxy of unsupported
+        generation is higher on the clean arm than the poisoned arm for all three
+        strategies.\\nFig. 5. Outcome of queries that were correct on clean context,
+        split by strategy and poisoning level. Green is still correct, blue is abstained,
+        red is fooled. The lost green area is absorbed mainly by abstention, and negation
+        retains the most correct answers.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0015\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"H.
+        Relation to Prior Work\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":65,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"c1237ebd-a093-556d-8a55-7d9ad3f70eae\",\"version\":9,\"score\":0.56525147,\"payload\":{\"page_content\":\"References\\n-
+        Fatemeh Nazary, Yashar Deldjoo, and Tommaso di Noia. 2025. Poison-rag: Adversarial
+        data poisoning attacks on retrieval-augmented generation in recommender systems.
+        In European Conference on Information Retrieval , pages 239-251. Springer.\\n-
+        Chanhee Park, Hyeonseok Moon, Chanjun Park, and Heuiseok Lim. 2025. MIRAGE:
+        A metric-intensive\\nbenchmark for retrieval-augmented generation evaluation.
+        In Findings of the Association for Computational Linguistics: NAACL 2025 ,
+        pages 2883-2900.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0024\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":115,\"page_no\":11,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"5e78e312-eed9-5668-836e-0f69b54f3b37\",\"version\":5,\"score\":0.5444735,\"payload\":{\"page_content\":\"I.
+        INTRODUCTION\\nLarge language models answer questions fluently but carry two
+        well-known liabilities: their knowledge is frozen at training time, and they
+        sometimes state false facts with full confidence. Retrieval-augmented generation,
+        proposed by Lewis et al. [1], addresses both by fetching relevant documents
+        at query time and placing them in the prompt as evidence. The model is then
+        asked to answer from that evidence rather than from memory alone. This design
+        has become the default recipe for question answering over private or fast-moving
+        knowledge bases.\\nThe same design introduces a dependency that is easy to
+        overlook. A RAG answer is only as trustworthy as the documents it retrieves.
+        If an attacker can edit, inject, or otherwise corrupt even part of the retrieved
+        set, the grounding step that was meant to improve reliability becomes a channel
+        for misinformation. Shi et al. [3] showed that irrelevant context alone can
+        pull a model off track; corrupted but on-topic context is a stronger lever,
+        because it looks exactly like the evidence the model was told to trust. What
+        is still missing for We answer those three questions empirically. Our contribution
+        is threefold. First, we build a reproducible poisoning testbed around a 4-bit
+        Llama 3.1 8B model, a MiniLM retriever, and a FAISS index of nearly twenty
+        thousand FEVER evidence sentences. Second, we run a full factorial experiment,
+        three corruption strategies crossed with four poisoning levels over a fixed
+        query set, and report accuracy, a fooled rate, abstention, and a lexical-overlap
+        proxy of unsupported generation for every cell. Third, we characterise the
+        failure surface: entity corruption flips the most answers, numeric corruption
+        jumps once it reaches a majority of the context, and the model's default response
+        to contradiction is to abstain rather than to invent. Every point estimate
+        reported here comes from the same 588-run table. Where we interpret a jump
+        or a strategy ranking, we also report query-level bootstrap intervals and
+        paired tests recomputed from that table.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"I.
+        INTRODUCTION\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":6,\"page_no\":1,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"ddc2250e-57d5-5638-82de-45315c1b4ee1\",\"version\":5,\"score\":0.5308477,\"payload\":{\"page_content\":\"In
+        RAG We Trust? Measuring Robustness of Retrieval-Augmented Generation Under
+        Document Poisoning\\nIliano Fasolino Department of Computer Science University
+        of Milan Milan, Italy\\nAbstract -Retrieval-augmented generation (RAG) grounds
+        a language model in retrieved documents, which reduces hallucination but creates
+        a new attack surface: if retrieved text is tampered with, the model may repeat
+        the falsehood. We study how much a small quantized model, Llama 3.1 8B, degrades
+        when a fraction of its retrieved context is poisoned. Three corruption strategies
+        are tested, entity swap, number swap, and negation, each applied to zero,
+        one, two, or three of the three retrieved passages, over a factorial sweep
+        of 588 runs on a fact-checking task built from FEVER. Accuracy falls from
+        77.9% on clean context to 43.5% when all three passages are corrupted. Entity
+        swap flips the largest share of answers that were correct on clean context.
+        Number-based corruption stays flat while poisoned passages are a minority
+        and jumps once they form a majority, a pattern we re-check with query-level
+        bootstrap intervals. The model rarely invents new falsehoods; its dominant
+        reaction is to abstain, and a lexical overlap proxy of unsupported generation
+        falls under attack rather than rising. The study is a small-scale measurement
+        with coarse automated labels; we treat the strategy contrasts as suggestive
+        until decoding is controlled and stronger adjudication is in place.\\na practitioner
+        running a small model on modest hardware is a concrete measurement: how far
+        does accuracy fall, which kind of corruption bites hardest, and does the model
+        fail loudly by fabricating or quietly by refusing.\\nIndex Terms -retrieval-augmented
+        generation, large language models, adversarial robustness, document poisoning,
+        fact verification\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"In
+        RAG We Trust? Measuring Robustness of Retrieval-Augmented Generation Under
+        Document Poisoning\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":1,\"page_no\":1,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"23e17e81-fbad-51dc-a1c1-07373bb5e64e\",\"version\":5,\"score\":0.5263846,\"payload\":{\"page_content\":\"C.
+        Poisoning Level\\nThe poisoning level is the number of the three retrieved
+        passages that are corrupted before generation. We sweep all four values, from
+        none to all three:\\n<!-- formula-not-decoded -->\\nAt 0 / 3 the passages
+        are left untouched, giving a withincondition baseline. At 3 / 3 every passage
+        the model sees has been rewritten. The passages to corrupt are chosen at random
+        among the three, which lets a single clean passage sit anywhere in the ordering.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Poisoning Level\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":21,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a716a2fa-3025-5ba0-944d-aa1ad9714cc9\",\"version\":5,\"score\":0.5138253,\"payload\":{\"page_content\":\"REFERENCES\\n-
+        [1] P. Lewis et al. , 'Retrieval-augmented generation for knowledge-intensive
+        NLP tasks,' in Advances in Neural Information Processing Systems , vol. 33,
+        2020, pp. 9459-9474.\\n- [2] J. Thorne, A. Vlachos, C. Christodoulopoulos,
+        and A. Mittal, 'FEVER: a large-scale dataset for fact extraction and verification,'
+        in Proc. Conf. North American Chapter of the Association for Computational
+        Linguistics (NAACL-HLT) , 2018, pp. 809-819.\\n- [3] F. Shi et al. , 'Large
+        language models can be easily distracted by irrelevant context,' in Proc.
+        Int. Conf. Machine Learning (ICML) , 2023, pp. 31210-31227.\\n- [4] K. Zhou
+        et al. , 'Don't make your LLM an evaluation benchmark cheater,' arXiv preprint
+        arXiv:2311.01964, 2023.\\nFooled rate across all conditions (%)\\nFig. 6.
+        The ten queries with the highest fooled rate across all conditions. Biographical
+        and landmark questions dominate because the passages that answer them carry
+        many swappable entities.\\nserve as a cheap early warning of a poisoned store.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"REFERENCES\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":75,\"page_no\":6,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"13523f7b-4211-57d9-9d42-8d571a5e5b4a\",\"version\":9,\"score\":0.5005944,\"payload\":{\"page_content\":\"References\\n-
+        Tinghao Xie, Xiangyu Qi, Yi Zeng, Yangsibo Huang, Udari Madhushani Sehwag,
+        Kaixuan Huang, Luxi He, Boyi Wei, Dacheng Li, Ying Sheng, and 1 others. 2025.
+        SORRY-Bench: Systematically evaluating large language model safety refusal.
+        In The Thirteenth International Conference on Learning Representations .\\n-
+        Cheng Yu, Benedikt Stroebl, Diyi Yang, and Orestis Papakyriakopoulos. 2025.
+        Information retrieval induced safety degradation in AI agents. arXiv preprint
+        arXiv:2505.14215 .\\n- Shenglai Zeng, Jiankun Zhang, Pengfei He, Yiding Liu,
+        Yue Xing, Han Xu, Jie Ren, Yi Chang, Shuaiqiang Wang, Dawei Yin, and 1 others.
+        2024a. The good and the bad: Exploring privacy issues in retrievalaugmented
+        generation (rag). In Findings of the Association for Computational Linguistics:
+        ACL 2024 , pages 4505-4524.\\n- Wenjun Zeng, Yuchi Liu, Ryan Mullins, Ludovic
+        Peran, Joe Fernandez, Hamza Harkous, Karthik Narasimhan, Drew Proud, Piyush
+        Kumar, Bhaktipriya Radharapu, and 1 others. 2024b. ShieldGemma: Generative
+        AI content moderation based on Gemma. arXiv preprint arXiv:2407.21772 .\\n-
+        Qiusi Zhan, Angeline Budiman-Chan, Abdelrahman Zayed, Xingzhi Guo, Daniel
+        Kang, and Joo-Kyung Kim. 2026. Safesearch: Do not trade safety for utility
+        in LLM search agents. In Findings of the Association for Computational Linguistics:
+        EACL 2026 , pages 2800-2815.\\nBaolei Zhang, Yuxi Chen, Zhuqing Liu, Lihai
+        Nie, Tong Li, Zheli Liu, and Minghong Fang. 2025. Practical poisoning attacks
+        against retrieval-augmented generation. arXiv preprint arXiv:2504.03957 .\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":128,\"page_no\":12,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"fdef7d6e-6f33-507f-b2bf-e72cdaf10ddb\",\"version\":9,\"score\":0.49648386,\"payload\":{\"page_content\":\"Kathleen
+        C. Fraser\\nFaculty of Engineering University of Ottawa Ottawa, Canada kathleen.fraser@uottawa.ca\\nFigure
+        1: The four conditions in RAG-Safety-Bench allow for detailed safety evaluation
+        of RAG-enabled systems.\\ntrustworthiness and accuracy by reducing hallucinations,
+        relative to non-RAG LLMs (Shuster et al., 2021). For these reasons, conventional
+        wisdom would suggest that RAG-based LLMs should be safer than non-RAG models,
+        with the primary security risk being data poisoning attacks on the RAG corpus.
+        In the absence of poisoned data, there would be little reason to suspect a
+        RAG system would output more harmful content than its base LLM component.\\nHowever,
+        this assumption has been upended by recent work from An et al. (2025), who
+        presented compelling evidence that when LLMs are enabled with RAG they are
+        generally less safe than when relying on their parametric knowledge, even
+        when the retrieved documents are benign. In the current work, we contribute
+        to the understanding of this newly-identified problem by disentangling the
+        notions of safety and capability through a new RAG-specific safety benchmark,
+        RAG-SafetyBench. Furthermore, we take a closer look at what it means for documents
+        and outputs to be 'unsafe,' to support more detailed analysis of the problematic
+        case where safe RAGdocuments appear to lead to unsafe outputs.\\nRAG systems
+        are challenging to evaluate because they are composed of multiple components,
+        each of which contributes to the overall end-to-end performance of the system
+        (Wampler et al., 2025). In particular, the retrieval quality can have a major
+        impact on the quality of the output. The MIRAGE benchmark (Park et al., 2025)
+        enables the evaluation of RAG systems while controlling for retrieval quality
+        by providing sets of relevant and irrelevant oracle documents.\\nWe modify
+        and extend this style of evaluation to safety evaluation in the RAG setting.
+        Our RAGSafety-Bench benchmark consists of a set of unsafe English queries
+        and three sets of documents (Figure 1): in the oracle setting, the unsafe
+        answer is available in the document set. This setting could represent a data-poisoning
+        attack - however, since we sourced all of our data from Wikipedia, it also
+        represents the more common case that the data is believed to be generally
+        benign but has not been meticulously curated. In the on-topic setting, the
+        documents are relevant to the topic of the query but do not explicitly contain
+        the unsafe answer. In the random setting, randomly-selected documents on safe
+        topics are provided.\\nThis testing framework allows us to answer several
+        key open research questions relating to the safety of RAG systems:\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Kathleen
+        C. Fraser\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":8,\"page_no\":1,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"c27ff7ae-8539-5208-bbf9-5776425c60ee\",\"version\":15,\"score\":0.49597743,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nTable 2: Models (top) and datasets (bottom). All four
+        models share the Qwen2.5-7B-Instruct base. Passages is the number of roughly
+        100-token chunks in each retrieval index.\\n\\nBaseline, Training on top of
+        the base = none (Qwen2.5-7B-Instruct). Search-R1, Training on top of the base
+        = RLVR with PPO. ReSearch, Training on top of the base = RLVR with GRPO. R-Search,
+        Training on top of the base = RLVR with GRPO\\nNQ, Questions = 499. NQ, Passages
+        = 40,791. NQ, Source = Wikipedia. QAMPARI, Questions = 500. QAMPARI, Passages
+        = 44,879. QAMPARI, Source = Wikipedia. HAGRID, Questions = 500. HAGRID, Passages
+        = 8,986. HAGRID, Source = Wikipedia. RAGTruth, Questions = 500. RAGTruth,
+        Passages = 6,981. RAGTruth, Source = Web\\nModels. Our comparison rests on
+        a single design choice: every model in Table 2 starts from the same weights.
+        The baseline is Qwen2.5-7BInstruct (Qwen Team, 2024); Search-R1 (Jin et al.,
+        2025), ReSearch (Chen et al., 2025), and R-Search (Zhao et al., 2025) are
+        open-weight agents trained from that exact checkpoint with RLVR. Whatever
+        separates an agent from the baseline is therefore training, not architecture,
+        tokenizer, or pretraining data.\\nFixed-context evaluation. We disable agentinitiated
+        retrieval and give every model the same five passages retrieved externally
+        with BM25. This is an intentional control: our question is whether RLVR-trained
+        agents differ in citation attribution when the available evidence is held
+        constant. Allowing agents to retrieve would introduce differences in search
+        policy and evidence selection, making those effects inseparable from citation
+        behavior.\\nDatasets. We use four question-answering datasets: NQ from KILT
+        (Petroni et al., 2021; Kwiatkowski et al., 2019), QAMPARI from ALCE (Gao et
+        al., 2023; Amouyal et al., 2023), HA- GRID (Kamalloo et al., 2023), and the
+        questionanswering portion of RAGTruth (Niu et al., 2024), sampling 500 questions
+        from each (499 for NQ). For each dataset we chunk the corpus into roughly
+        100-token passages and retrieve the top five per question with BM25 (Robertson
+        and Zaragoza, 2009).\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"376db314-03f8-550f-b3ca-a6811171d657\",\"version\":5,\"score\":0.49596277,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nOne detail in Table I needs to be read carefully. The
+        0 / 3 row still shows a fooled rate near 10% and an accuracy about 9 points
+        below the clean arm, even though no passage is rewritten and both answers
+        see the same retrieved list. That residual is therefore not a retrieval mismatch.
+        It comes from decoding noise under temperature 0.1 across two independent
+        generations, plus a strict keyword matcher that can disagree on near-paraphrases.
+        Recomputing from the 588-run table, clean and poisoned answers are identical
+        in only 76.9% of the 0 / 3 runs. The residual is large relative to some attack
+        increments (the rise from 9.5% to 15.0% fooled between 0 / 3 and 1 / 3 is
+        5.5 points), so strategy contrasts at light poisoning should be read as suggestive
+        until decoding is controlled (fixed seeds, repeated draws) and labels are
+        less brittle. We therefore read the clean-arm column, not the 0 / 3 poisoned
+        cell, as the true no-attack baseline.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":41,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"3b9dd4cf-7c9d-5a88-b06f-a100567f4a63\",\"version\":5,\"score\":0.48907006,\"payload\":{\"page_content\":\"A.
+        Setting\\nAll runs use the corpus of 19,597 FEVER dev evidence sentences plus
+        the ten added passages, the MiniLM retriever, and the quantized Llama 3.1
+        8B generator described above, with k = 3 and temperature 0.1 held fixed. The
+        dataset comes from the FEVER benchmark of Thorne et al. [2], which pairs claims
+        with Wikipedia evidence and is a standard resource for fact verification.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"A.
+        Setting\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":33,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"42a63f01-9363-5584-b945-f23754d7697a\",\"version\":5,\"score\":0.4812094,\"payload\":{\"page_content\":\"B.
+        Accuracy Degradation\\nTable I tracks the model as more of its context is
+        corrupted. The clean arm stays near 78% throughout, which confirms that the
+        query set itself is not drifting across rows. Poisoned accuracy still moves
+        for reasons other than poisoning alone: the 0 / 3 cell is already 69.4%, nine
+        points below the clean arm, before any passage is rewritten. From that residual
+        baseline the poisoned arm falls further to 63.9% at one corrupted passage
+        and to 43.5% when all three are corrupted. The fooled rate rises from 9.5%
+        at 0 / 3 to 34.0% at 3 / 3 , and abstention climbs from 21% to 52%. Attack
+        effects should be read against the 0 / 3 residual, not against a silent zero.\\nTABLE
+        I ACCURACY AND FAILURE BEHAVIOUR BY POISONING LEVEL, AVERAGED OVER ALL THREE
+        STRATEGIES. EACH LEVEL AGGREGATES 147 RUNS.\\n\\n0 / 3, Clean acc. (%) = 78.2.
+        0 / 3, Poisoned acc. (%) = 69.4. 0 / 3, Fooled rate (%) = 9.5. 0 / 3, Abstain
+        rate (%) = 21.1. 1 / 3, Clean acc. (%) = 77.6. 1 / 3, Poisoned acc. (%) =
+        63.9. 1 / 3, Fooled rate (%) = 15.0. 1 / 3, Abstain rate (%) = 29.3. 2 / 3,
+        Clean acc. (%) = 78.2. 2 / 3, Poisoned acc. (%) = 53.1. 2 / 3, Fooled rate
+        (%) = 25.9. 2 / 3, Abstain rate (%) = 38.8. 3 / 3, Clean acc. (%) = 77.6.
+        3 / 3, Poisoned acc. (%) = 43.5. 3 / 3, Fooled rate (%) = 34.0. 3 / 3, Abstain
+        rate (%) = 51.7\\nTABLE II FOOLED RATE WITH QUERY-LEVEL BOOTSTRAP 95% INTERVALS
+        (ALL STRATEGIES, 147 RUNS PER ROW).\\n\\n0 / 3, Fooled (%) = 9.5. 0 / 3, 95%
+        CI = [5 . 4 , 14 . 3]. 0 / 3, n = 147. 1 / 3, Fooled (%) = 15.0. 1 / 3, 95%
+        CI = [8 . 8 , 21 . 8]. 1 / 3, n = 147. 2 / 3, Fooled (%) = 25.9. 2 / 3, 95%
+        CI = [18 . 4 , 33 . 3]. 2 / 3, n = 147. 3 / 3, Fooled (%) = 34.0. 3 / 3, 95%
+        CI = [24 . 5 , 44 . 2]. 3 / 3, n = 147\\nFigure 1 plots the same trend per
+        strategy. The three curves separate clearly. Entity swap drives the steepest
+        fall, and by the full-poisoning level it sits below the other two. The right
+        panel, which shows the gap against the clean arm, makes the ordering explicit
+        and shows that no strategy is harmless once two of the three passages are
+        corrupted.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Accuracy Degradation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":35,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a547c741-df3f-5865-9981-52ca7db687c7\",\"version\":9,\"score\":0.48075724,\"payload\":{\"page_content\":\"References\\nBang
+        An, Shiyue Zhang, and Mark Dredze. 2025. RAG LLMs are not safer: A safety
+        analysis of retrievalaugmented generation for large language models. In Proceedings
+        of the 2025 Conference of the Nations of the Americas Chapter of the Association
+        for Computational Linguistics: Human Language Technologies (Volume 1: Long
+        Papers) , pages 5444-5474.\\nCem Anil, Esin Durmus, Nina Panickssery, Mrinank
+        Sharma, Joe Benton, Sandipan Kundu, Joshua Batson, Meg Tong, Jesse Mu, Daniel
+        Ford, and 1 others. 2024. Many-shot jailbreaking. Advances in Neural Information
+        Processing Systems , 37:129696-129742.\\nParishad BehnamGhader, Nicholas Meade,
+        and Siva Reddy. 2025. Exploiting instruction-following retrievers for malicious
+        information retrieval. In Findings of the Association for Computational Linguistics:
+        ACL 2025 , pages 12962-12980.\\nFederico Bianchi, Mirac Suzgun, Giuseppe Attanasio,
+        Paul R\xF6ttger, Dan Jurafsky, Tatsunori Hashimoto, and James Zou. 2023. Safety-tuned
+        llamas: Lessons from improving the safety of large language models that follow
+        instructions. arXiv preprint arXiv:2309.07875 .\\nWenqi Fan, Yujuan Ding,
+        Liangbo Ning, Shijie Wang, Hengyun Li, Dawei Yin, Tat-Seng Chua, and Qing
+        Li. 2024. A survey on RAG meeting LLMS: Towards retrieval-augmented large
+        language models. In Proceedings of the 30th ACM SIGKDD conference on knowledge
+        discovery and data mining , pages 64916501.\\nFaeze Ghorbanpour and Alexander
+        Fraser. 2025. Evaluating the sensitivity of LLMs to harmful contents in long
+        input. arXiv preprint arXiv:2510.05864 .\\nShaona Ghosh, Heather Frase, Adina
+        Williams, Sarah Luger, Paul R\xF6ttger, Fazl Barez, Sean McGregor, Kenneth
+        Fricklas, Mala Kumar, Kurt Bollacker, and 1 others. 2025. AILuminate: Introducing
+        v1.0 of the AI risk and reliability benchmark from MLCommons. arXiv preprint
+        arXiv:2503.05731 .\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0022\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":100,\"page_no\":10,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"a0ce46ce-16e2-53f9-b82c-0a975e84f980\",\"version\":7,\"score\":0.4800228,\"payload\":{\"page_content\":\"Experiments
+        and Results\\nKILT-SCR. Weconstruct KILT-SCR as a large-candidatepool resource
+        with training and evaluation splits. Its training split is derived from the
+        training sets of Natural Questions (Kwiatkowski et al. 2019), HotpotQA (Yang
+        et al. 2018), and TriviaQA (Joshi et al. 2017). The evaluation split contains
+        examples from the evaluation sets of these three datasets, together with PopQA
+        (Mallen et al. 2023), ASQA (Stelmakh et al. 2022), and BioASQ (Krithara et
+        al. 2023; Tsatsaronis et al. 2015). For every query, we retrieve a fixed pool
+        of 25 passages from KILT-100w (Petroni et al. 2021) using BAAI/bge-large-en-v1.5
+        (Xiao et al. 2024).\\nFor each training query, we score candidates with cross-encoder/ms-marco-MiniLM-L6-v2
+        (Bajaj et al. 2018) and provide the ten highest-scoring passages to Mistral-7B-Instruct-v0.2
+        (Jiang et al. 2023a) to generate answer targets. We retain only instances
+        for which a goldanswer alias occurs both in at least one retrieved passage
+        and in the generated target, yielding 196,916 examples; teacher scores are
+        globally standardized over this split. In contrast, we apply no answer-support
+        or teacher-target filtering to KILTSCR evaluation split, which contains 2,000
+        examples each from Natural Questions, HotpotQA, TriviaQA, and PopQA, 948 from
+        ASQA, and 1,609 from BioASQ. At evaluation time, the learned reranker scores
+        the fixed candidate pool before answer generation.\\nExperimental Setup. AdaMem
+        uses a Llama-3.2-1BInstruct (Grattafiori et al. 2024) compressor and a Mistral-7B-Instruct-v0.2
+        decoder adapted with LoRA (Hu et al. 2022). We first pretrain the compressor
+        and AdaMem projection module on two million examples sampled from EleutherAI/SmolLM2-135M-10B
+        (Allal et al. 2025), using autoencoding and language-modeling objectives.
+        We then perform query-dependent fine-tuning on maxoul/pisco_finetuning_data
+        (Louis, D\xE9jean, and Clinchant 2025), following the OSCAR training setup.
+        Finally, we train on KILT-SCR with the joint answergeneration and reranker-distillation
+        objectives. For all experiments, we report Substring Match as the primary
+        evaluation metric. We provide additional LLM-as-a-judge metrics in the Supplementary
+        Material.\\nFigure 3: Match (%) versus retrieval depth. AdaMem benefits from
+        deeper retrieval more consistently than OSCAR, particularly under stronger
+        compression.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Experiments
+        and Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":47,\"page_no\":4,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"88c1d775-10f5-5d8f-a4f1-648fafc67511\",\"version\":5,\"score\":0.47900927,\"payload\":{\"page_content\":\"This
+        is a pair of line charts (two-panel plot) illustrating the effect of poisoned
+        retrieved documents on question-answering accuracy for three perturbation
+        types: Entity swap, Number swap, and Negation.\\n\\nPanel (a) shows \\\"Accuracy
+        under poisoning,\\\" plotting Accuracy (%) against the number of poisoned
+        documents out of 3 retrieved (0/3, 1/3, 2/3, 3/3). A dashed green \\\"Clean
+        arm\\\" baseline stays flat around 78%, while all three perturbation conditions
+        decline from roughly 65-72% at 0/3 poisoned documents down to about 41-48%
+        at 3/3 poisoned documents.\\n\\nPanel (b) shows \\\"Drop vs. clean arm,\\\"
+        plotting the accuracy drop in percentage points against the same poisoned
+        document ratios, with all three lines starting near 0-10 pp at 0/3 and rising
+        to approximately 31-37 pp drop at 3/3 poisoned documents, with Entity swap
+        showing the steepest degradation.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-fig-004-00\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":55,\"page_no\":4,\"filename\":\"2609.09243v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead/figures/fig-004-00-f42f83d4b19d14d8.png\"}}},{\"id\":\"1a47c984-4df1-592f-8378-066f0c299d47\",\"version\":5,\"score\":0.4734535,\"payload\":{\"page_content\":\"C.
+        Uncertainty on the Existing Runs\\nWe do not invent new generations for this
+        revision. We reanalyse the same table with a query-level bootstrap: resample
+        the 49 indexed query slots with replacement (37 distinct texts), keep every
+        run tied to a drawn slot, recompute the fooled rate, and repeat 10 , 000 times
+        with a fixed seed to obtain percentile 95% intervals. Exact McNemar tests
+        on discordant clean/poisoned correctness pairs are reported as a secondary
+        check; effect sizes and intervals remain primary.\\nTable II shows that the
+        climb with poisoning level remains after accounting for query resampling,
+        while neighbouring levels overlap. The comparison that matters for the numeric
+        pattern is isolated next.\\nTABLE III BEHAVIOUR BY STRATEGY, AVERAGED OVER
+        ALL FOUR POISONING LEVELS. EACH STRATEGY AGGREGATES 196 RUNS.\\n\\nEntity
+        swap, Clean acc. (%) = 78.1. Entity swap, Poisoned acc. (%) = 54.6. Entity
+        swap, Fooled rate (%) = 23.5. Entity swap, Abstain rate (%) = 43.4. Number
+        swap, Clean acc. (%) = 77.6. Number swap, Poisoned acc. (%) = 57.7. Number
+        swap, Fooled rate (%) = 20.4. Number swap, Abstain rate (%) = 30.1. Negation,
+        Clean acc. (%) = 78.1. Negation, Poisoned acc. (%) = 60.2. Negation, Fooled
+        rate (%) = 19.4. Negation, Abstain rate (%) = 32.1\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Uncertainty on the Existing Runs\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"c288bfae-4bca-5c10-89d5-76c5b522433d\",\"version\":5,\"score\":0.47126,\"payload\":{\"page_content\":\"B.
+        Poisoning Strategies\\nDocument poisoning here means rewriting a retrieved
+        passage so that it states something false while remaining fluent and on-topic.
+        The rewrite happens after retrieval and before the prompt is built, so the
+        retriever itself is never attacked; only the evidence handed to the model
+        is altered. Three strategies are implemented, each targeting a different class
+        of fact.\\nEntity swap replaces named entities with plausible alternatives
+        of the same type. 'The Eiffel Tower is located in Paris, France' becomes 'The
+        Eiffel Tower is located in Madrid, Spain.' Grammar and register are untouched,
+        so nothing flags the sentence as suspicious except the fact itself.\\nNumber
+        swap perturbs a numeric value to a nearby wrong one, for example turning 'over
+        13,000 miles' into 'over 3,000 miles.' A language model has no internal arithmetic
+        check for such a claim and tends to echo whatever figure the context provides.\\nNegation
+        inserts a negation that flips the truth value of a statement, so 'Barack Obama
+        was the 44th President' becomes 'Barack Obama was never the 44th President.'
+        The word 'never' is a strong lexical signal, and we expected the model to
+        treat it with more suspicion than a silent entity substitution.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"B.
+        Poisoning Strategies\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":16,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"cafdccb5-b9ec-5415-b61c-83903fbcbcf6\",\"version\":9,\"score\":0.4684193,\"payload\":{\"page_content\":\"2
+        Related Work\\nRetrieval-augmented generation Enabling LLMs to consult a database
+        of trusted documents through retrieval-augmented generation (RAG) has many
+        benefits: it reduces hallucination, allows companies to inject proprietary
+        knowledge/documents into the system, supports the rapid update of information
+        without retraining, and can enable source attribution (Lewis et al., 2020;
+        Shuster et al., 2021; Fan et al., 2024). However, it also exposes new attack
+        surfaces. Most research on the safety and security of RAG systems has focused
+        on the security of the knowledge base: data poisoning attacks involve the
+        injection of malicious (mis)information into the document store (Tan et al.,
+        2024; Nazary et al., 2025; Zhang et al., 2025), and data extraction attacks
+        aim to recover sensitive or private information from the documents through
+        a RAG interface (Zeng et al., 2024a; Qi et al., 2024; Vonderhaar et al., 2025).
+        However, the safety of RAG systems in non-adversarial settings has been less
+        studied. An et al. (2025) were the first to highlight that RAG systems can
+        output more harmful responses than non-RAG LLMs, even in the absence of any
+        malicious intervention. Other work considers the related problem of safety
+        degradation in AI agents that have been enabled with information retrieval
+        or search capabilities (Yu et al., 2025; BehnamGhader et al., 2025; Zhan et
+        al., 2026). Previous work measures the safety of the entire RAG system, but
+        the information content and safety of the retrieved documents is an uncontrolled
+        variable. Our work takes the next step towards a more scientific understanding
+        of these observed phenomena by systematically altering one variable at a time
+        (no retrieval, random retrieval, on-topic retrieval, exact-answer retrieval)
+        to observe the effect on the safety of the LLM responses.\\nLong-context safety
+        The retrieval of harmful documents is one factor in the observed safety decline
+        in RAG models. However, the literature suggests that another factor may be
+        a behavioural shift induced by the inclusion of extended context. In fact,
+        Yu et al. (2025) claim that 'safety degradation is largely independent of
+        retrieved context itself.' An et al. (2025) found that 94.7% of the retrieved
+        documents in their study were safe, and therefore could not account for the
+        much larger increase in unsafe responses. They hypothesize that the retrieved
+        texts, though benign themselves, can trigger the recall of unsafe information
+        from the model's parametric knowledge. Other work has shown that LLMs are
+        less capable of identifying harmful content in long contexts (Ghorbanpour
+        and Fraser, 2025) and are more likely to answer harmful questions in long-context
+        settings (Anil et al., 2024; Lu et al., 2025; Huang et al., 2025). In some
+        cases, the model can drift away from its default 'helpful assistant' persona
+        even when the context itself is not harmful (e.g. a therapy conversation)\\n(Lu
+        et al., 2026). Therefore, in this study we design our benchmark to test the
+        'harmful documents' and 'long context' explanations separately.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"2
+        Related Work\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":24,\"page_no\":2,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"65fbf110-28b3-5ace-9e69-6ef2e1ba641f\",\"version\":9,\"score\":0.46797714,\"payload\":{\"page_content\":\"References\\n-
+        Zhenting Qi, Hanlin Zhang, Eric P Xing, Sham M Kakade, and Himabindu Lakkaraju.
+        2024. Follow my instruction and spill the beans: Scalable data extraction
+        from retrieval-augmented generation systems. In ICLR 2024 Workshop on Navigating
+        and Addressing Data Problems for Foundation Models .\\n- Mark Russinovich,
+        Ahmed Salem, and Ronen Eldan. 2025. Great, now write an article about that:
+        The crescendo { Multi-Turn }{ LLM } jailbreak attack. In 34th USENIX Security
+        Symposium (USENIX Security 25) , pages 2421-2440.\\n- Kurt Shuster, Spencer
+        Poff, Moya Chen, Douwe Kiela, and Jason Weston. 2021. Retrieval augmentation
+        reduces hallucination in conversation. In Findings of the Association for
+        Computational Linguistics: EMNLP 2021 , pages 3784-3803.\\n- Hao Sun, Zhexin
+        Zhang, Jiawen Deng, Jiale Cheng, and Minlie Huang. 2023. Safety assessment
+        of Chinese large language models. arXiv preprint arXiv:2304.10436 .\\n- Zhen
+        Tan, Chengshuai Zhao, Raha Moraffah, Yifan Li, Song Wang, Jundong Li, Tianlong
+        Chen, and Huan Liu. 2024. Glue pizza and eat rocks-exploiting vulnerabilities
+        in retrieval-augmented generative models. In Proceedings of the 2024 Conference
+        on Empirical Methods in Natural Language Processing , pages 1610-1626.\\n-
+        Bertie Vidgen, Nino Scherrer, Hannah Rose Kirk, Rebecca Qian, Anand Kannappan,
+        Scott A Hale, and Paul R\xF6ttger. 2023. SimpleSafetyTests: A test suite for
+        identifying critical safety risks in large language models. arXiv preprint
+        arXiv:2311.08370 .\\n- Lynn Vonderhaar, Daniel Machado, and Omar Ochoa. 2025.
+        Surveying the RAG attack surface and defenses: Protecting sensitive company
+        data. In 2025 IEEE International Conference on Artificial Intelligence Testing
+        (AITest) , pages 69-76. IEEE.\\n- Dean Wampler, Dave Nielson, and Alireza
+        Seddighi. 2025. Engineering the RAG stack: A comprehensive review of the architecture
+        and trust frameworks for retrieval-augmented generation systems. arXiv preprint
+        arXiv:2601.05264 .\\n- Wenxuan Wang, Zhaopeng Tu, Chang Chen, Youliang Yuan,
+        Jen-tse Huang, Wenxiang Jiao, and Michael Lyu. 2024a. All languages matter:
+        On the multilingual safety of LLMs. In Findings of the Association for Computational
+        Linguistics: ACL 2024 , pages 5865-5877.\\n- Yuxia Wang, Haonan Li, Xudong
+        Han, Preslav Nakov, and Timothy Baldwin. 2024b. Do-not-answer: Evaluating
+        safeguards in llms. In Findings of the Association for Computational Linguistics:
+        EACL 2024 , pages 896-911.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0025\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":118,\"page_no\":11,\"filename\":\"2609.11758v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001318097}"
     headers:
       content-type:
       - application/json

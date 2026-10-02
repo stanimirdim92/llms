@@ -60,212 +60,397 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
+      string: "{\"result\":{\"points\":[{\"id\":\"29e8e366-e004-5ec5-a118-24ebb0fbdb4b\",\"version\":11,\"score\":0.55702156,\"payload\":{\"page_content\":\"4.4
+        Ablation Study\\nTo validate the contribution of each component in GraMRAG,
+        we conduct ablation studies across all benchmarks. As shown in Table 2, the
+        three components exhibit clear progressive complementarity: long-horizon reasoning
+        enables sustained multiround retrieval across extended cross-modal rea- soning
+        trajectories; the multimodal memory graph demonstrates that formalizing reasoning
+        as a dynamic DAG effectively mitigates state blindness and suppresses redundant
+        retrieval; and replacing the standard sparse-reward method Group Relative
+        Policy Optimization (GRPO) (Shao et al., 2024) with TAPO delivers a further
+        improvement, directly confirming the critical role of topology-guided credit
+        assignment in fine-grained policy optimization. The complete model achieves
+        an average score of 53.5%, an improvement of over 9 points above the baseline,
+        comprehensively validating the necessity and complementarity of each component.\\nFigure
+        5: Analysis of retrieval performance.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.4
+        Ablation Study\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":82,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"59b10c60-8266-549b-8b5b-acd5d67bb1ee\",\"version\":11,\"score\":0.5324904,\"payload\":{\"page_content\":\"4.2
+        Implementation Details\\n2025) as the agent backbones. We use Qwen3Max (Yang
+        et al., 2025) as the reward model to evaluate the quality and relevance of
+        generated responses. Training is divided into two stages. In the SFT stage,
+        we employ LlamaFactory (Zheng et al., 2024) with LoRA (Hu et al., 2022) of
+        rank 32 to fine-tune the language model while keeping the vision tower and
+        multimodal projector frozen. Training spans 3 epochs with a batch size of
+        8 and gradient accumulation steps of 8, a learning rate of 1.0e-4, and a cosine
+        learning rate scheduler. In the RL stage, we use rLLM (Tan et al., 2025) with
+        the TAPO objective, an actor learning rate of 1.0e-6, a total of 2 training
+        epochs, 8 agent groups, and a batch size of 32. All experiments are conducted
+        on 8 NVIDIA H100 GPUs.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0015\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Implementation Details\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":75,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"44adc6eb-b72d-5aed-987b-f34107b3a12b\",\"version\":11,\"score\":0.5324266,\"payload\":{\"page_content\":\"Graph-Structured
+        Trajectory Decomposition.\\nwhere \u03C9 g,i ( \u03B8 ) is the probability
+        ratio of segment s ( i ) g under the current and old policies; n g denotes
+        the number of segments in the g -th rollout. The (1 -\u03C8 g,i ) factor selectively
+        gates gradient contributions based on the topological analysis of the memory
+        graph: in positive trajectories, topological dead-end steps are masked to
+        prevent their gradients from reinforcing redundant exploration; in negative
+        trajectories, valuable retrieval steps are masked to prevent their gradients
+        from penalizing effective retrieval behavior. Through this design, TAPO achieves
+        precise step-level credit assignment across the entire multi-step reasoning
+        trajectory, significantly outperforming conventional sparsereward methods
+        that rely solely on terminal outcome signals.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Graph-Structured
+        Trajectory Decomposition.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":67,\"page_no\":6,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"99611404-0473-5fdf-85ca-fe9e952d6372\",\"version\":11,\"score\":0.5319912,\"payload\":{\"page_content\":\"Graph-Structured
+        Trajectory Decomposition.\\nWe ground the reinforcement learning framework
+        in the memory graph structure defined in Section 3.2. At each reasoning step
+        t , the policy model \u03C0 \u03B8 receives the graph-serialized context:\\n<!--
+        formula-not-decoded -->\\nwhere s sys is the system instruction and H t =
+        Serialize( G t -1 ) is the graph-linearized memory context. The policy model
+        produces an reasoning segment that corresponds precisely to the construction
+        of a single memory graph node n t :\\n<!-- formula-not-decoded -->\\nwhere
+        \u03B6 t denotes the chain-of-thought reasoning preceding action A t , and
+        O t is the environmental observation returned by the external tools. The terminal
+        segment takes the form s ans = ( C ans , \u03B6 ans , a out ) . A complete
+        rollout trajectory decomposes into an ordered sequence of segments \u03A8
+        = { s 1 , s 2 , . . . , s T v + T t , s ans } . This nodebased decomposition
+        establishes a direct structural correspondence between policy gradient signals
+        and graph topology: each gradient signal maps precisely to a specific graph
+        node, providing the basis for the topology-driven credit assignment.\\nTopology-Driven
+        Credit Assignment. For each rollout, we assign a binary outcome reward r \u2208
+        { 0 , 1 } based on whether a out matches the groundtruth answer a true . We
+        then exploit the DAG topology of G T to perform targeted gradient masking
+        under two distinct scenarios as illustrated in Figure 4(b). Given a correct
+        rollout ( r = 1 ), we identify the critical reasoning path \u03C1 \u2217 by
+        traversing G T backwards from n ans to n root along the directed edges. Nodes
+        absent from \u03C1 \u2217 constitute topological dead ends, namely exploratory
+        steps that contribute no causal evidence to the correct answer. Propagating
+        positive reward signals to these nodes would erroneously reinforce aimless
+        exploration, so we suppress their gradient contributions. Given an incorrect
+        rollout ( r = 0 ), we identify the set of epistemically valuable nodes N val
+        \u2286 V T . For n vis-type nodes, a node n t is designated as valuable when
+        the Hit judgment s t stored within \u03C3 t records s t = 1 , confirming that
+        the visual retrieval successfully located semantically relevant content. For
+        n txt-type nodes, a dedicated relevance evaluator further determines whether
+        the textual evidence retrieved at step t is directly relevant to the query.
+        Excluding N val from the negative policy gradient update prevents the model
+        from being penalized from performing demonstrably productive retrievals on
+        trajectories that ultimately fail due to shortcomings in other reasoning steps.\\nFigure
+        4: Overview of Topology-Aware Policy Optimization.\\nIntegrating both scenarios,
+        we define the gradient mask \u03C8 t \u2208 { 0 , 1 } for segment s t as:\\n<!--
+        formula-not-decoded -->\\nwhere I ( \xB7 ) is the indicator function; \u03C8
+        t = 1 suppresses the gradient contribution of segment s t during the policy
+        update, while \u03C8 t = 0 permits normal gradient update. The TAPO objective
+        is defined as:\\n<!-- formula-not-decoded -->\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Graph-Structured
+        Trajectory Decomposition.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":55,\"page_no\":5,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"1df13bef-a99e-5d3a-830d-9ec4a48104ba\",\"version\":15,\"score\":0.5217036,\"payload\":{\"page_content\":\"Table
+        2: Models (top) and datasets (bottom). All four models share the Qwen2.5-7B-Instruct
+        base. Passages is the number of roughly 100-token chunks in each retrieval
+        index.\\n\\n| Model     | Training on top of the base   |\\n|-----------|-------------------------------|\\n|
+        Baseline  | none (Qwen2.5-7B-Instruct)    |\\n| Search-R1 | RLVR with PPO
+        \                |\\n| ReSearch  | RLVR with GRPO                |\\n| R-Search
+        \ | RLVR with GRPO                |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        2: Models (top) and datasets (bottom). All four models share the Qwen2.5-7B-Instruct
+        base. Passages is the number of roughly 100-token chunks in each retrieval
+        index.\\n\\n| Model     | Training on top of the base   |\\n|-----------|-------------------------------|\\n|
+        Baseline  | none (Qwen2.5-7B-Instruct)    |\\n| Search-R1 | RLVR with PPO
+        \                |\\n| ReSearch  | RLVR with GRPO                |\\n| R-Search
+        \ | RLVR with GRPO                |\"}}},{\"id\":\"742b541b-4522-504f-94e1-f5b91676f2be\",\"version\":11,\"score\":0.5164232,\"payload\":{\"page_content\":\"This
+        is a schematic diagram illustrating a reinforcement learning framework for
+        training multimodal/retrieval-based models, divided into two panels. Panel
+        (a) shows the overall \\\"Reinforcement Learning Framework with Topology-Aware
+        Policy Optimization,\\\" depicting a pipeline where user queries and images
+        flow through a Rollout Module (Policy Model generating trajectories H1-H6
+        via interaction with an External Environment), then through Reference and
+        Reward Models to compute rewards (r1-r6) and group-computed advantages (A1-A6),
+        with a Graph Pruning module using a Memory Graph and KL divergence to produce
+        gradient masks (m1-m6) that modulate the final gradient. Panel (b) illustrates
+        \\\"Credit Assignment via Graph Pruning\\\" using two tree-structured graphs
+        (Positive Sample and Negative Sample) rooted at a query node Q leading to
+        an answer node A, showing how dead-end nodes (orange, meaningless for optimization)
+        are pruned as false positives/negatives while valuable retrieval nodes (green)
+        are preserved to avoid penalizing useful paths, with masked gradients indicated
+        at specific steps.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-fig-006-03\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":61,\"page_no\":6,\"filename\":\"2609.14066v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946/figures/fig-006-03-ccd597b84dbeb0e8.png\"}}},{\"id\":\"fe156681-1b2b-5d34-8147-50db5e25bc7a\",\"version\":11,\"score\":0.50499403,\"payload\":{\"page_content\":\"Retrieval
+        quality depends on reasoning depth.\\nHigh-quality answer generation in complex
+        multimodal tasks depends on sustaining precise multiround retrieval across
+        a long reasoning horizon. Traditional memory paradigms cause agents to progressively
+        lose track of historical retrieval paths and accumulate redundant searches
+        that severely constrain effective reasoning depth. GraMRAG addresses this
+        by transferring the iterative planning capability into the multimodal domain
+        via the vision-text bridged reasoning paradigm, supporting trajectories spanning
+        tens of steps; the multimodal memory graph further encodes action-observation
+        dependencies explicitly, directing each retrieval attempt precisely toward
+        unexplored evidence space. As shown in Figure 5, this design yields substantially
+        higher hit rate across all three task categories, directly validating the
+        decisive role of long-horizon reasoning depth in determining retrieval quality.\\nGraph
+        memory mitigates state blindness. The dynamic DAG representation of the multimodal
+        memory graph explicitly encodes actionobservation dependencies as directed
+        edges, enabling each agent to efficiently access the complete historical reasoning
+        trajectory and effectively mitigating state blindness. As shown in Table 2,
+        replacing iterative summarization-based memory with the multimodal memory
+        graph yields a 3.3point performance improvement, validating that the multimodal
+        memory graph effectively mitigates state blindness and suppresses redundant
+        retrieval, confirming the necessity of structured memory in long-horizon multimodal
+        reasoning.\\nFigure 6: Analysis of training efficiency.\\nGraph pruning accelerates
+        training convergence. As demonstrated in Figure 6, TAPO achieves faster convergence
+        throughout training compared to the baseline Group Sequence Policy Optimization
+        (GSPO) (Zheng et al., 2025), indicating that topology-guided graph pruning
+        drives the model toward faster convergence by supplying cleaner credit assignment
+        signals. This yields two critical insights into agentic reinforcement learning:
+        first, optimization stability fundamentally depends on ensuring correct positive
+        gradient signals while eliminating ambiguous updates from negative trajectories;
+        second, the quality of rollout samples, specifically their preference alignment,
+        is more decisive for performance than simply scaling up the training set.
+        By simultaneously masking dead-end nodes in positive trajectories and preserving
+        valuable nodes in negative ones, TAPO achieves finegrained step-level credit
+        assignment rather than coarse terminal-reward-level optimization.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Retrieval
+        quality depends on reasoning depth.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":87,\"page_no\":8,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"c85f63c4-62ea-58c1-848a-69de7fecc12c\",\"version\":11,\"score\":0.49745917,\"payload\":{\"page_content\":\"3.3
+        Topology-Aware Policy Optimization\\nAs illustrated in Figure 4, we propose
+        TopologyAware Policy Optimization (TAPO) to address the systematic credit
+        assignment problem in sparse reward reinforcement learning training, leveraging
+        the topological structure of the memory graph to perform selective gradient
+        masking that simultaneously rectifies both forms of bias across positive and
+        negative trajectories with step-level precision.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"3.3
+        Topology-Aware Policy Optimization\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":53,\"page_no\":5,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"59092d56-3cbb-5656-86ca-e3d7ae515254\",\"version\":11,\"score\":0.49198782,\"payload\":{\"page_content\":\"1
+        Introduction\\nTo address the mentioned limitations, we propose GraMRAG, a
+        novel graph memory-guided multi-agent RAG framework. First, to bridge the
+        long-horizon reasoning gap, we introduce a visiontext bridged reasoning paradigm
+        that orchestrates multi-scale entity cropping with a ReAct-style visual toolchain,
+        seamlessly transferring the iterative planning capability of text-only deep
+        research models into the multimodal domain to enable longhorizon cross-modal
+        reasoning trajectories. Second, to overcome state blindness and context expansion
+        in linear memory paradigms, we construct a multimodal memory graph that formalizes
+        the reasoning process as a dynamic directed acyclic graph (DAG), explicitly
+        encoding agent actions and multimodal observations with their temporal and
+        logical dependencies to mitigate redundant retrieval and state blindness.
+        Third, to tackle the credit assignment problem from coarse terminal rewards,
+        we introduce a Topology-Aware Policy Optimization (TAPO) algorithm that leverages
+        the graph topology to identify critical reasoning paths and perform targeted
+        node pruning, precisely masking false positive and false negative nodes during
+        policy updates to enable fine-grained credit assignment across multi-step
+        reasoning.\\nOur contributions are summarized as follows:\\n- We introduce
+        a vision-text bridged reasoning paradigm that unifies multi-scale entity cropping
+        with a ReAct-style visual toolchain, enabling long-horizon cross-modal reasoning.\\n-
+        Weconstruct a multimodal memory graph that formalizes agent reasoning as a
+        dynamic DAG to systematically mitigate state blindness and redundant retrieval.\\n-
+        We develop a TAPO algorithm leveraging graph topology for critical path identification
+        and node pruning, enabling fine-grained credit assignment across multi-step
+        reasoning.\\n- We conduct extensive experiments on challenging multimodal
+        benchmarks to evaluate our approach, demonstrating state-of-the-art performance
+        over existing baselines.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"1
+        Introduction\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":13,\"page_no\":2,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"c27ff7ae-8539-5208-bbf9-5776425c60ee\",\"version\":15,\"score\":0.4918289,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nTable 2: Models (top) and datasets (bottom). All four
+        models share the Qwen2.5-7B-Instruct base. Passages is the number of roughly
+        100-token chunks in each retrieval index.\\n\\nBaseline, Training on top of
+        the base = none (Qwen2.5-7B-Instruct). Search-R1, Training on top of the base
+        = RLVR with PPO. ReSearch, Training on top of the base = RLVR with GRPO. R-Search,
+        Training on top of the base = RLVR with GRPO\\nNQ, Questions = 499. NQ, Passages
+        = 40,791. NQ, Source = Wikipedia. QAMPARI, Questions = 500. QAMPARI, Passages
+        = 44,879. QAMPARI, Source = Wikipedia. HAGRID, Questions = 500. HAGRID, Passages
+        = 8,986. HAGRID, Source = Wikipedia. RAGTruth, Questions = 500. RAGTruth,
+        Passages = 6,981. RAGTruth, Source = Web\\nModels. Our comparison rests on
+        a single design choice: every model in Table 2 starts from the same weights.
+        The baseline is Qwen2.5-7BInstruct (Qwen Team, 2024); Search-R1 (Jin et al.,
+        2025), ReSearch (Chen et al., 2025), and R-Search (Zhao et al., 2025) are
+        open-weight agents trained from that exact checkpoint with RLVR. Whatever
+        separates an agent from the baseline is therefore training, not architecture,
+        tokenizer, or pretraining data.\\nFixed-context evaluation. We disable agentinitiated
+        retrieval and give every model the same five passages retrieved externally
+        with BM25. This is an intentional control: our question is whether RLVR-trained
+        agents differ in citation attribution when the available evidence is held
+        constant. Allowing agents to retrieve would introduce differences in search
+        policy and evidence selection, making those effects inseparable from citation
+        behavior.\\nDatasets. We use four question-answering datasets: NQ from KILT
+        (Petroni et al., 2021; Kwiatkowski et al., 2019), QAMPARI from ALCE (Gao et
+        al., 2023; Amouyal et al., 2023), HA- GRID (Kamalloo et al., 2023), and the
+        questionanswering portion of RAGTruth (Niu et al., 2024), sampling 500 questions
+        from each (499 for NQ). For each dataset we chunk the corpus into roughly
+        100-token passages and retrieve the top five per question with BM25 (Robertson
+        and Zaragoza, 2009).\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"bf47f12f-a99d-51f3-a4b7-0239164f75cc\",\"version\":11,\"score\":0.49077225,\"payload\":{\"page_content\":\"1
+        Introduction\\n'Never memorize something that you can look up.'\\n-Albert
+        Einstein\\nRetrieval-Augmented Generation (RAG) extends the knowledge boundaries
+        of Multimodal Large Language Models (MLLMs) by retrieving relevant information
+        from external knowledge bases (Wang, 2026; Fan et al., 2026; Hu et al., 2026).
+        Recent advances in MLLMs have convincingly demonstrated that multimodal agentic
+        RAG systems are capable of efficient retrieval and reasoning over large-scale
+        corpora comprising interleaved textual and visual content (Zhang et al., 2026;
+        Guan et al., 2025). MLLM-based multi-agent architectures, leveraging specialized
+        collaboration among components, exhibit superior performance over single-agent
+        frameworks on complex multimodal RAG tasks (Zhou et al., 2026; Chang et al.,
+        2025; Xu et al., 2025b).\\n\u2020 Corresponding author.\\nFigure 1: Comparison
+        between our GraMRAG and existing multi-agent RAG systems.\\nHowever, existing
+        multi-agent RAG systems face three key limitations. First, the average number
+        of retrieval rounds in current systems remains limited, predisposing agents
+        to prematurely terminate exploration and settle for partially available evidence
+        on complex tasks (Jiang et al., 2025; Wu et al., 2025a; Team et al., 2025).
+        This fundamentally impedes the transfer of the long-horizon planning capability
+        from text-based deep research to multimodal scenarios, rendering these systems
+        inadequate for tens of iterative reasoning steps demanded by real-world deep
+        research. Second, prevailing linear or iterative summarization-based memory
+        structures (Yao et al., 2022; Zhou et al., 2025; Xu et al., 2025a; Wu et al.,
+        2025b), lacking explicit modeling of agent reasoning states, are prone to
+        context expands and state blindness as interaction rounds accumulate, resulting
+        in repetitive queries and redundant retrieval in multi-hop tasks. Third, conventional
+        outcome-based sparse rewards coarsely propagate terminal-state signals across
+        entire trajectories (Huang et al., 2026; Zhou et al., 2025), causing effective
+        retrieval steps to be erroneously penalized in negative samples while redundant
+        operations are undeservedly rewarded in positive ones, preventing fine-grained
+        credit assignment across multi-step reasoning.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0002\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"1
+        Introduction\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":6,\"page_no\":1,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"14b3c578-4e77-5a0b-ac67-ffd3bc81acab\",\"version\":11,\"score\":0.49013466,\"payload\":{\"page_content\":\"4.3
+        Comparison with State-of-the-Art Methods\\nWe compare GraMRAG against representative
+        baselines: ReAct (Yao et al., 2022) iteratively invokes external retrieval
+        tools in a think-then-act paradigm; Vanilla RAG uses the original question
+        as a query and performs direct MLLM inference over retrieved results; UniversalRAG
+        (Yeo et al., 2025) formulates cross-modal retrieval as a unified routing problem;
+        VideoRAG (Jeong et al., 2025) extracts significant visual information via
+        key-frame selection; MemAgent (Yu et al., 2025) manages context by sequentially
+        feeding search results to the model; Mem1 (Zhou et al., 2025) dynamically
+        compresses agent memory through a cyclical retrievalthen-memorization process;
+        and VimRAG (Wang et al., 2026) models reasoning process to manage large-scale
+        multimodal contexts.\\nAs presented in Table 1, linear history accumula- tion
+        paradigms such as ReAct rapidly exhaust the context window under the heavy
+        token overhead of visual data; task-specific methods including VideoRAG and
+        UniversalRAG exhibit limited generalizability due to fixed inference pipelines;
+        and summarization-based memory paradigms such as MemAgent and Mem1, lacking
+        explicit modeling of agent reasoning states, progressively lose track of historical
+        retrieval paths as interaction rounds accumulate; and VimRAG models the reasoning
+        process but lacks long-horizon reasoning capability. Our GraMRAG achieves
+        consistently state-of-theart performance across all benchmarks, achieving
+        overall average scores of 48.5% and 53.5% under the Qwen3-VL-4B-Instruct and
+        Qwen3-VL8B-Instruct settings respectively, validating the effectiveness of
+        formalizing the multi-step reasoning process as a dynamic DAG with topologydriven
+        fine-grained credit assignment for multimodal knowledge-intensive reasoning
+        tasks.\\nTable 2: Ablation study across all benchmarks.\\n\\n\u2713 \u2713
+        \u2713 \u2713 \u2713, Memory Iterative = \u2713 \u2713. \u2713 \u2713 \u2713
+        \u2713 \u2713, Paradigm Graph = \u2713 \u2713 \u2713. \u2713 \u2713 \u2713
+        \u2713 \u2713, Policy GRPO = \u2713. \u2713 \u2713 \u2713 \u2713 \u2713, Optimization
+        TAPO = \u2713. \u2713 \u2713 \u2713 \u2713 \u2713, Acc = 43.8 44.2 47.5 49.3
+        53.5\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.3
+        Comparison with State-of-the-Art Methods\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":77,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"34398301-0f24-57b5-94e6-3333ef2e3881\",\"version\":11,\"score\":0.4777607,\"payload\":{\"page_content\":\"4.1
+        Datasets and Evaluation Metrics\\nWe evaluate GraMRAG on a comprehensive set
+        of benchmarks covering diverse task categories: general text benchmarks including
+        HotpotQA (Yang et al., 2018) and SQuAD (Rajpurkar et al., 2016); image and
+        visual document benchmarks including ViDoSeek (Wang et al., 2025a), SlideVQA
+        (Tanaka et al., 2023) and MMLongBench (Ma et al., 2024); large-scale long-context
+        video corpus benchmarks including LVBench (Wang et al., 2025b), WikiHowQA
+        and SyntheticQA (Jeong et al., 2025), and XVBench (Wang et al., 2026). We
+        employ a unified binary model-based metric (0 or 1) across all tasks, where
+        a reward model performs semantic matching between the generated and reference
+        answers to ensure consistent and fair evaluation.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        Datasets and Evaluation Metrics\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":70,\"page_no\":6,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"3b2d300c-347f-5d60-a199-038a9f89c567\",\"version\":11,\"score\":0.47539908,\"payload\":{\"page_content\":\"6
+        Conclusion\\nIn this paper, we introduce GraMRAG, a novel graph memory-guided
+        multi-agent RAG framework for complex multimodal long-horizon reasoning tasks.
+        Our approach integrates three key innovations: a vision-text bridged reasoning
+        paradigm that unifies multi-scale entity cropping with a ReActstyle visual
+        toolchain for long-horizon cross-modal reasoning; multimodal memory graph
+        construction that formalizes agent reasoning as a dynamic directed acyclic
+        graph (DAG) to fundamentally mit- igate state blindness and suppress redundant
+        retrieval; and Topology-Aware Policy Optimization (TAPO) algorithm that leverages
+        graph topology for fine-grained credit assignment across multi-step reasoning
+        trajectories. Extensive experiments on diverse multimodal benchmarks demonstrate
+        that our method consistently outperforms existing baselines and achieves state-of-the-art
+        performance. Future work will investigate the scalability of the proposed
+        framework to larger architectures and broader multimodal scenarios.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":93,\"page_no\":8,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"9f01c60b-8756-5216-9043-6ef622c232e8\",\"version\":11,\"score\":0.47239405,\"payload\":{\"page_content\":\"References\\n-
+        Woongyeong Yeo, Kangsan Kim, Soyeong Jeong, Jinheon Baek, and Sung Ju Hwang.
+        2025. Universalrag: Retrieval-augmented generation over corpora of diverse
+        modalities and granularities. arXiv preprint arXiv:2504.20734 .\\n- Hongli
+        Yu, Tinghong Chen, Jiangtao Feng, Jiangjie Chen, Weinan Dai, Qiying Yu, Ya-Qin
+        Zhang, WeiYing Ma, Jingjing Liu, Mingxuan Wang, and 1 others. 2025. Memagent:
+        Reshaping long-context llm with multi-conv rl-based memory agent. arXiv preprint
+        arXiv:2507.02259 .\\n- Taolin Zhang, Dongyang Li, Qizhou Chen, Chengyu Wang,
+        and Xiaofeng He. 2025a. Belle: A bi-level multi-agent reasoning framework
+        for multi-hop question answering. In Proceedings of the 63rd Annual Meeting
+        of the Association for Computational Linguistics (Volume 1: Long Papers) ,
+        pages 4184-4202.\\n- Wenchuan Zhang, Jingru Guo, Hengzhe Zhang, Penghao Zhang,
+        Jie Chen, Shuwan Zhang, Zhang Zhang, Yuhao Yi, and Hong Bu. 2026. Patho-agenticrag:
+        towards multimodal agentic retrieval-augmented generation for pathology vlms
+        via reinforcement learning. In Proceedings of the AAAI Conference on Artificial
+        Intelligence , volume 40, pages 29921-29929.\\n- Zeyu Zhang, Quanyu Dai, Xiaohe
+        Bo, Chen Ma, Rui Li, Xu Chen, Jieming Zhu, Zhenhua Dong, and Ji-Rong Wen.
+        2025b. A survey on the memory mechanism of large language model-based agents.
+        ACM Transactions on Information Systems , 43(6):1-47.\\n- Chujie Zheng, Shixuan
+        Liu, Mingze Li, Xiong-Hui Chen, Bowen Yu, Chang Gao, Kai Dang, Yuqiong Liu,
+        Rui Men, An Yang, and 1 others. 2025. Group sequence policy optimization.
+        arXiv preprint arXiv:2507.18071 .\\n- Yaowei Zheng, Richong Zhang, Junhao
+        Zhang, Yanhan Ye, and Zheyan Luo. 2024. Llamafactory: Unified efficient fine-tuning
+        of 100+ language models. In Proceedings of the 62nd annual meeting of the
+        association for computational linguistics (volume 3: system demonstrations)
+        , pages 400-410.\\n- Yuxiang Zhou, Jichang Li, Yanhao Zhang, Haonan Lu, and
+        Guanbin Li. 2026. Mobile-agent-rag: Driving smart multi-agent coordination
+        with contextual knowledge empowerment for long-horizon mobile automation.
+        In Proceedings of the AAAI Conference on Artificial Intelligence , volume
+        40, pages 2993929947.\\n- Zijian Zhou, Ao Qu, Zhaoxuan Wu, Sunghwan Kim, Alok
+        Prakash, Daniela Rus, Jinhua Zhao, Bryan Kian Hsiang Low, and Paul Pu Liang.
+        2025. Mem1: Learning to synergize memory and reasoning for efficient long-horizon
+        agents. arXiv preprint arXiv:2506.15841 .\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":11,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"c6bdb44b-e7a8-522a-bd16-3817a31ebc87\",\"version\":11,\"score\":0.46932676,\"payload\":{\"page_content\":\"2.2
+        Memory Structures of Agent Systems\\nThe memory architectures of existing
+        agent systems can broadly be categorized into two paradigms (Zhang et al.,
+        2025b; Ye et al., 2025): the history accumulation paradigm, exemplified by
+        ReAct (Yao et al., 2022), which linearly concatenates all interaction records,
+        and the iterative summarization paradigm, exemplified by Mem1 (Zhou et al.,
+        2025), which controls context length by compressing observations. However,
+        as the number of interaction rounds grows, both paradigms cause agents to
+        progressively lose track of historical retrieval paths, a phenomenon we term
+        state blindness, which in turn induces redundant queries and repetitive retrieval
+        in multi-hop tasks. To address this issue, we construct a multimodal memory
+        graph that formalizes the reasoning process as a dynamic DAG, explicitly encoding
+        the temporal and logical dependencies between actions and observations, thereby
+        effectively mitigating state blindness and redundant retrieval.\\nFigure 2:
+        Overview of the GraMRAG framework.\\ngenerate the next search context, producing
+        the visual reasoning trajectory:\\n<!-- formula-not-decoded -->\\nwhere R
+        t denotes the chain-of-thought reasoning generated prior to action A v t ,
+        and T v is the total number of visual retrieval steps.\\nFollowing each visual
+        retrieval action, an independent Hit/No Hit Judge evaluates the observation
+        O v t obtained at the current step, conditioned on the original image I and
+        query q , outputs a binary acceptance signal:\\n<!-- formula-not-decoded -->\\nWhen
+        s t = 1 (Hit), the retrieval is considered successful, meaning the retrieved
+        content is semantically consistent with the query entity, and O v t is added
+        into the accumulated valid evidence pool:\\n<!-- formula-not-decoded -->\\nWhen
+        s t = 0 (No Hit), the retrieval is considered unsuccessful, triggering the
+        Visual Explorer to recrop at a finer spatial granularity or to reformulate
+        the search query before initiating a new retrieval attempt. The visual exploration
+        phase terminates\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"2.2
+        Memory Structures of Agent Systems\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":23,\"page_no\":2,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"757b6130-5a2b-595f-8618-6aa892c368c8\",\"version\":15,\"score\":0.4578911,\"payload\":{\"page_content\":\"B
+        Model Checkpoints\\nTable 6: Checkpoints used. The Search-R1 name is split
+        over two lines.\\n\\nBaseline Search-R1 ReSearch R-Search, Hugging Face checkpoint
+        = Qwen/Qwen2.5-7B-Instruct PeterJinGo/SearchR1-nq_hotpotqa_ train-qwen2.5-7b-it-em-ppo
+        agentrl/ReSearch-Qwen-7B-Instruct qingfei1/R-Search-7b-grpo\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0031\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Model Checkpoints\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":148,\"page_no\":10,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"64973db2-0bb2-5864-92a6-eeb8550fe9c8\",\"version\":11,\"score\":0.45527935,\"payload\":{\"page_content\":\"This
+        is a schematic diagram comparing two multi-agent Retrieval-Augmented Generation
+        (RAG) architectures. The left panel, labeled \\\"Traditional Multi-Agent RAG,\\\"
+        shows multiple agent icons connected in a circular workflow around a linear
+        memory structure (depicted as stacked horizontal bars). The right panel, labeled
+        \\\"Our GraMRAG,\\\" shows agents arranged around a graph-based memory structure
+        (depicted as interconnected nodes in a network) rather than linear memory.
+        The diagram conveys that the proposed GraMRAG method replaces traditional
+        linear/sequential memory storage with a graph-structured memory to better
+        organize and retrieve information among collaborating agents.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-fig-001-00\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":10,\"page_no\":1,\"filename\":\"2609.14066v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946/figures/fig-001-00-c21043f6116d1568.png\"}}},{\"id\":\"2f8dbf34-66f8-5662-b6a3-96cc23a6af0f\",\"version\":15,\"score\":0.45073938,\"payload\":{\"page_content\":\"Table
+        6: Checkpoints used. The Search-R1 name is split over two lines.\\n\\n| Model
+        \                               | Hugging Face checkpoint                                                                                                                          |\\n|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|\\n|
+        Baseline Search-R1 ReSearch R-Search | Qwen/Qwen2.5-7B-Instruct PeterJinGo/SearchR1-nq_hotpotqa_
+        train-qwen2.5-7b-it-em-ppo agentrl/ReSearch-Qwen-7B-Instruct qingfei1/R-Search-7b-grpo
+        |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":148,\"page_no\":10,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        6: Checkpoints used. The Search-R1 name is split over two lines.\\n\\n| Model
+        \                               | Hugging Face checkpoint                                                                                                                          |\\n|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|\\n|
+        Baseline Search-R1 ReSearch R-Search | Qwen/Qwen2.5-7B-Instruct PeterJinGo/SearchR1-nq_hotpotqa_
+        train-qwen2.5-7b-it-em-ppo agentrl/ReSearch-Qwen-7B-Instruct qingfei1/R-Search-7b-grpo
+        |\"}}},{\"id\":\"4cdda0fd-2332-5c20-991e-bb1d16fdd99e\",\"version\":11,\"score\":0.45004612,\"payload\":{\"page_content\":\"Abstract\\nAlthough
+        existing multi-agent RetrievalAugmented Generation (RAG) systems have demonstrated
+        promise on complex multimodal reasoning tasks, they remain fundamentally limited
+        in reasoning depth and memory structure, suffering from inadequate retrieval
+        and state blindness when answering knowledge-intensive questions. To address
+        these limitations, we propose GraMRAG, a graph memory-guided multi-agent RAG
+        framework that integrates a dynamic multimodal memory graph to enable stable,
+        multi-step multimodal reasoning. We introduce a visiontext bridged reasoning
+        paradigm that unifies multi-scale entity cropping with a ReAct-style visual
+        toolchain, enhancing the long-horizon cross-modal reasoning capability. We
+        further construct a multimodal memory graph that formalizes agent reasoning
+        as a dynamic directed acyclic graph (DAG), explicitly modeling action-observation
+        dependencies to mitigate state blindness and suppress redundant retrieval.
+        Moreover, we propose Topology-Aware Policy Optimization (TAPO) that leverages
+        graph topology for critical path identification and targeted node pruning,
+        enabling fine-grained credit assignment across multi-step reasoning trajectories.
+        Extensive experiments on challenging multimodal benchmarks demonstrate that
+        our approach consistently outperforms existing baselines and achieves state-of-the-art
+        performance on complex long-horizon reasoning tasks.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Abstract\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":4,\"page_no\":1,\"filename\":\"2609.14066v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001244}"
     headers:
       content-type:
       - application/json

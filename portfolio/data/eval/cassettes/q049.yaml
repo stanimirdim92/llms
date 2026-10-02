@@ -60,211 +60,570 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
+      string: "{\"result\":{\"points\":[{\"id\":\"d64d7f73-0548-5368-bd37-370e5c8fa2a5\",\"version\":15,\"score\":0.48108187,\"payload\":{\"page_content\":\"3.3
+        The no-planting control\\nWallat et al. (2025) report raw planted rates. A
+        raw rate answers 'how often does the model cite the doctored passage?' What
+        we need is 'how much of that did the plant cause?' The two come apart whenever
+        editing the context does anything on its own, and a raw rate quietly credits
+        the plant with all of it.\\nThe fix is to run the same context with the span
+        removed and subtract:\\n<!-- formula-not-decoded -->\\nRead Equation 1 as
+        a before-and-after over the same records. The first term counts how often
+        the model takes the bait; the second counts how often it would have cited
+        that passage anyway; the difference is what the plant actually bought.\\nWhat
+        makes this control unusual is that we could derive two of its three values
+        before spending a single GPU-hour, just by reading how each variant is built.\\nREL-UNCITED:
+        the control is 0 by construction. Planting here only appends words to a passage
+        already sitting in the context. Delete them and the context is byte-for-byte
+        the clean one; with an identical prompt and greedy decoding, the control run
+        reproduces the clean answer exactly. That clean answer, by the very rule that
+        selected this passage, did not cite it for this claim. The control rate is
+        therefore 0 as a matter of definition rather than measurement, and the raw
+        rate already is the attributable rate. We verified the byte-for-byte claim
+        on all 10,720 records of the two appending variants; 6 score above zero, all
+        from RAGTruth answers that repeat an identical sentence.\\nCITED-OTHER: the
+        control is 100%, so a raw rate is an illusion. This variant plants in a passage
+        the clean answer already cites for some other sentence. Under the cited-anywhere
+        outcome we are then asking whether a passage that was cited stays cited, and
+        it does, by selection. A raw rate here describes our sampling rule, not the
+        model's behavior, which is exactly why the attributable rate turns negative
+        in Section 5.1.\\nRANDOM: the control has to be measured. Here we swap an
+        uncited slot for a passage drawn from a different question, then plant in
+        it. Two things change at once, the passage and the span, and no amount of
+        reasoning tells us how often a model cites an out-of-place passage on its
+        own. This is the one variant that needed fresh runs: 16 GPU jobs, roughly
+        10 GPU-hours, and 7,625 control records, each paired with its planted twin.
+        The answer came back small. With no plant, models cite the foreign passage
+        in 17 of 7,625 records, or 0.2%.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"3.3
+        The no-planting control\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":49,\"page_no\":3,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1fbf3cf4-5c6c-5d9c-b831-fc0202204d74\",\"version\":15,\"score\":0.45293334,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nTable 3 sets the planted and control rates side
+        by side for the baseline model, and the three variants could hardly behave
+        more differently.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":75,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1a2e8a35-8a1f-56b6-8b90-46f4355a654e\",\"version\":15,\"score\":0.426622,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nTable 3: What the no-planting control changes,
+        for the baseline model. Planted and Control are cited records over all records
+        ( k/n ); Attr. is the attributable rate in pp (Eq. 1). For CITED-OTHER the
+        control is 100%, and the attributable rate is negative (all 95% CIs exclude
+        0).\\n\\nREL-UNCITED (claim-aligned), Planted = REL-UNCITED (claim-aligned).
+        REL-UNCITED (claim-aligned), Control = REL-UNCITED (claim-aligned). REL-UNCITED
+        (claim-aligned), Attr. = REL-UNCITED (claim-aligned). NQ, Planted = 52/371.
+        NQ, Control = 0/371. NQ, Attr. = +14.0. QAMPARI, Planted = 29/319. QAMPARI,
+        Control = 0/319. QAMPARI, Attr. = +9.1. HAGRID, Planted = 64/433. HAGRID,
+        Control = 0/433. HAGRID, Attr. = +14.8. RAGTruth, Planted = 25/864. RAGTruth,
+        Control = 0/864. RAGTruth, Attr. = +2.9. RANDOM (claim-aligned), Planted =
+        RANDOM (claim-aligned). RANDOM (claim-aligned), Control = RANDOM (claim-aligned).
+        RANDOM (claim-aligned), Attr. = RANDOM (claim-aligned). NQ, Planted = 40/371.
+        NQ, Control = 0/371. NQ, Attr. = +10.8. QAMPARI, Planted = 14/319. QAMPARI,
+        Control = 0/319. QAMPARI, Attr. = +4.4. HAGRID, Planted = 37/433. HAGRID,
+        Control = 4/433. HAGRID, Attr. = +7.6. RAGTruth, Planted = 19/864. RAGTruth,
+        Control = 1/864. RAGTruth, Attr. = +2.1. CITED-OTHER (cited-anywhere), Planted
+        = CITED-OTHER (cited-anywhere). CITED-OTHER (cited-anywhere), Control = CITED-OTHER
+        (cited-anywhere). CITED-OTHER (cited-anywhere), Attr. = CITED-OTHER (cited-anywhere).
+        NQ, Planted = 58/69. NQ, Control = 69/69. NQ, Attr. = - 15.9. QAMPARI, Planted
+        = 97/123. QAMPARI, Control = 123/123. QAMPARI, Attr. = - 21.1. HAGRID, Planted
+        = 50/61. HAGRID, Control = 61/61. HAGRID, Attr. = - 18.0. RAGTruth, Planted
+        = 558/623. RAGTruth, Control = 623/623. RAGTruth, Attr. = - 10.4\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":76,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"f1443a9b-2d48-5f8e-a011-694affd873dd\",\"version\":15,\"score\":0.4105312,\"payload\":{\"page_content\":\"Table
+        3: What the no-planting control changes, for the baseline model. Planted and
+        Control are cited records over all records ( k/n ); Attr. is the attributable
+        rate in pp (Eq. 1). For CITED-OTHER the control is 100%, and the attributable
+        rate is negative (all 95% CIs exclude 0).\\n\\n| Dataset                      |
+        Planted                      | Control                      | Attr.                        |\\n|------------------------------|------------------------------|------------------------------|------------------------------|\\n|
+        REL-UNCITED (claim-aligned)  | REL-UNCITED (claim-aligned)  | REL-UNCITED
+        (claim-aligned)  | REL-UNCITED (claim-aligned)  |\\n| NQ                           |
+        52/371                       | 0/371                        | +14.0                        |\\n|
+        QAMPARI                      | 29/319                       | 0/319                        |
+        +9.1                         |\\n| HAGRID                       | 64/433                       |
+        0/433                        | +14.8                        |\\n| RAGTruth
+        \                    | 25/864                       | 0/864                        |
+        +2.9                         |\\n| RANDOM (claim-aligned)       | RANDOM (claim-aligned)
+        \      | RANDOM (claim-aligned)       | RANDOM (claim-aligned)       |\\n|
+        NQ                           | 40/371                       | 0/371                        |
+        +10.8                        |\\n| QAMPARI                      | 14/319                       |
+        0/319                        | +4.4                         |\\n| HAGRID                       |
+        37/433                       | 4/433                        | +7.6                         |\\n|
+        RAGTruth                     | 19/864                       | 1/864                        |
+        +2.1                         |\\n| CITED-OTHER (cited-anywhere) | CITED-OTHER
+        (cited-anywhere) | CITED-OTHER (cited-anywhere) | CITED-OTHER (cited-anywhere)
+        |\\n| NQ                           | 58/69                        | 69/69
+        \                       | - 15.9                       |\\n| QAMPARI                      |
+        97/123                       | 123/123                      | - 21.1                       |\\n|
+        HAGRID                       | 50/61                        | 61/61                        |
+        - 18.0                       |\\n| RAGTruth                     | 558/623
+        \                     | 623/623                      | - 10.4                       |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":76,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        3: What the no-planting control changes, for the baseline model. Planted and
+        Control are cited records over all records ( k/n ); Attr. is the attributable
+        rate in pp (Eq. 1). For CITED-OTHER the control is 100%, and the attributable
+        rate is negative (all 95% CIs exclude 0).\\n\\n| Dataset                      |
+        Planted                      | Control                      | Attr.                        |\\n|------------------------------|------------------------------|------------------------------|------------------------------|\\n|
+        REL-UNCITED (claim-aligned)  | REL-UNCITED (claim-aligned)  | REL-UNCITED
+        (claim-aligned)  | REL-UNCITED (claim-aligned)  |\\n| NQ                           |
+        52/371                       | 0/371                        | +14.0                        |\\n|
+        QAMPARI                      | 29/319                       | 0/319                        |
+        +9.1                         |\\n| HAGRID                       | 64/433                       |
+        0/433                        | +14.8                        |\\n| RAGTruth
+        \                    | 25/864                       | 0/864                        |
+        +2.9                         |\\n| RANDOM (claim-aligned)       | RANDOM (claim-aligned)
+        \      | RANDOM (claim-aligned)       | RANDOM (claim-aligned)       |\\n|
+        NQ                           | 40/371                       | 0/371                        |
+        +10.8                        |\\n| QAMPARI                      | 14/319                       |
+        0/319                        | +4.4                         |\\n| HAGRID                       |
+        37/433                       | 4/433                        | +7.6                         |\\n|
+        RAGTruth                     | 19/864                       | 1/864                        |
+        +2.1                         |\\n| CITED-OTHER (cited-anywhere) | CITED-OTHER
+        (cited-anywhere) | CITED-OTHER (cited-anywhere) | CITED-OTHER (cited-anywhere)
+        |\\n| NQ                           | 58/69                        | 69/69
+        \                       | - 15.9                       |\\n| QAMPARI                      |
+        97/123                       | 123/123                      | - 21.1                       |\\n|
+        HAGRID                       | 50/61                        | 61/61                        |
+        - 18.0                       |\\n| RAGTruth                     | 558/623
+        \                     | 623/623                      | - 10.4                       |\"}}},{\"id\":\"d6bfc4cc-f7d3-52b0-bda9-ff9f46064420\",\"version\":15,\"score\":0.409568,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nREL-UNCITED: the raw rate survives untouched. Read
+        the top block: 52 of 371 NQ claims follow the plant, and 0 of those same 371
+        records cite the doctored passage when we take the span away. The control
+        column is 0/ n on all four datasets, which is what Section 3.3 predicted,
+        because removing four appended words restores the clean context exactly and
+        the clean answer never cited that passage for that claim. Prediction and measurement
+        agree, so +14.0pp on NQ is not a raw rate that needs an asterisk; it is the
+        attributable effect.\\nRANDOM: the control is real but tiny. Swapping in a
+        passage from an unrelated question does occasionally earn a citation on its
+        own, as the 4/433 on HAGRID and 1/864 on RAGTruth show, but the effect is
+        small: 0.2% pooled across the 7,625 control records, with 7 of 16 model-dataset
+        cells at exactly zero and the rest between 0.1% and 0.9% (Appendix D). Between
+        83% and 100% of each raw rate survives as attributable, 97% on average. The
+        confound we built this control to catch turned out to be genuine and negligible,
+        which is worth knowing precisely because we could not have assumed it.\\nCITED-OTHER:
+        the raw rate lies, and the control catches it. The bottom block is the reason
+        we care about all this. Planted rates run from 78.9% to 89.6%, many times
+        the REL-UNCITED rates, and any paper could report them as evidence of rampant
+        post-rationalization. The control column explains them away: 69/69, 123/123,
+        61/61, 623/623. Every single control record cites the doctored passage, because
+        this variant selects a passage the clean answer already cited elsewhere. Subtract,
+        and the attributable effect is negative on all four datasets, from -10.4pp
+        to -21.1pp, with intervals that exclude zero. A raw rate of 79-90% here measures
+        our sampling rule and nothing else. Under the stricter claim-aligned outcome
+        the same records do show genuine post-rationalization, +10.6 to +19.7pp (Appendix
+        D), though only RAGTruth has enough questions to pin it down.\\nThe moral
+        generalizes past this probe: whenever a measurement edits an input and counts
+        how often the output changes, report the unedited baseline, and demonstrate
+        rather than assume that it is zero.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0015\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":78,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"639092db-6051-5321-b9f0-5cb9d12a74da\",\"version\":15,\"score\":0.34845245,\"payload\":{\"page_content\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\"}}},{\"id\":\"498df909-da4e-5815-96b6-2b719234be0e\",\"version\":15,\"score\":0.29519844,\"payload\":{\"page_content\":\"|
+        Variant     | Where the span is planted                                                        |\\n|-------------|----------------------------------------------------------------------------------|\\n|
+        REL-UNCITED | A retrieved passage that the answer did not cite.                                |\\n|
+        CITED-OTHER | Apassage the answer already cites, but for a different sentence.
+        \                |\\n| RANDOM      | An uncited slot, after replacing its
+        passage with one from a different question. |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":42,\"page_no\":3,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"|
+        Variant     | Where the span is planted                                                        |\\n|-------------|----------------------------------------------------------------------------------|\\n|
+        REL-UNCITED | A retrieved passage that the answer did not cite.                                |\\n|
+        CITED-OTHER | Apassage the answer already cites, but for a different sentence.
+        \                |\\n| RANDOM      | An uncited slot, after replacing its
+        passage with one from a different question. |\"}}},{\"id\":\"7027e267-6a58-5909-aa35-88bb46b10e9d\",\"version\":15,\"score\":0.27675796,\"payload\":{\"page_content\":\"5.3
+        RLVR does not make citations more faithful\\nRaw rates alone cannot answer
+        the RL question, since a model could post-rationalize heavily and still be
+        no worse than the model it came from. Table 5 therefore reports the difference-indifferences:
+        each agent's attributable rate minus its base model's, on the same dataset.
+        If RLVR taught these agents anything about grounding, this column would run
+        negative.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.3
+        RLVR does not make citations more faithful\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":90,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"dec2d78a-c8ba-509b-9409-5f44d1c07f13\",\"version\":15,\"score\":0.27637365,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nLeakage drove the dataset choice. NQ is where the original
+        probe ran, so we keep it for comparability, but Search-R1 trained on NQ's
+        training split and we say so plainly. QAMPARI, HAGRID, and RAGTruth were not
+        used to train any of the three agents, so on those datasets no gap can be
+        waved away as familiarity with the data. They also sidestep a retrieval quirk
+        in NQ: for 186 of 499 NQquestions (37.3%), all five passages come from one
+        document, which leaves the model almost no choice about what to cite. The
+        other three datasets have no such questions.\\nPrompt and generation. One
+        prompt does all the work, byte-identical across models and across the clean
+        and doctored runs. It tells the model to answer using only the numbered passages,
+        to close every sentence with exactly one citation such as [2], and to reply
+        'I don't know' when the passages fall short. Decoding is greedy, capped at
+        300 new tokens. When any sentence of an answer breaks the one-citation rule
+        we drop the whole answer rather than salvage the compliant half, because a
+        partly rescued answer reintroduces the claim-to-citation ambiguity the format
+        exists to prevent. Models differ sharply in how often they abstain, from 15%
+        to 52% of questions; Appendix C takes that apart. The full prompt is in Appendix
+        A.\\nReading our numbers. Three statistical choices shape every result, and
+        each has a plain reason behind it.\\nWe resample questions, not claims. A
+        single question yields up to seven claims that share one context and one generated
+        answer, so treating claims as independent would make our intervals look tighter
+        than they are. We use a cluster bootstrap instead: draw whole questions with
+        replacement 2,000 times, recompute the planted and control conditions on the
+        same draw so the pairing survives, and read off the 2.5th and 97.5th percentiles.
+        Every 95% confidence interval in this paper is that band, the range of effects
+        our data are consistent with.\\nWe compare each agent against its own base.
+        Post-rationalization is common in the baseline, so reporting that an agent
+        post-rationalizes tells us nothing about RL. The question is whether an agent
+        diverges from the model it was trained from. That calls for a difference-in-differences:
+        take the plantversus-control difference within a model (Equation 1), then
+        difference those differences across models,\\n<!-- formula-not-decoded -->\\nNegative
+        says RLVR made citations more faithful, positive says it made them worse,
+        and zero says training left this behavior alone. Within each dataset we test
+        all three agents against the baseline and correct the three comparisons with
+        the Holm method, so that running three tests does not manufacture a significant
+        one.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":64,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"c5b0c05c-2e66-5f5c-a0f2-124748f30408\",\"version\":15,\"score\":0.2630593,\"payload\":{\"page_content\":\"Answer
+        (after planting):\\n- A no-planting control as an improvement to the existing
+        methodology , to get a more accurate idea about post-rationalization.\\n-
+        The first controlled measurement of postrationalization in RLVR search agents
+        , holding the base model, retrieval corpus, prompt, and scorer fixed across
+        four datasets.\\n- Evidence that answer-only rewards leave citation faithfulness
+        exactly where they found it , with a stated detection bound, plus a concrete
+        proposal for folding attribution into the reward.\\n- A full reproduction
+        on free-tier hardware , replacing the 104B Command R+ model of the original
+        study with an open 7B model on two T4s.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Answer
+        (after planting):\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":26,\"page_no\":2,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1b6efed0-8026-5a1b-897c-993603f6de43\",\"version\":15,\"score\":0.25846726,\"payload\":{\"page_content\":\"5.2
+        Post-rationalization is common\\nTable 4 gives the attributable rate on REL-UNCITED
+        for every model and dataset. Start with the baseline column: 14.0% on NQ,
+        9.1% on QAMPARI, 14.8% on HAGRID, 2.9% on RAGTruth, with confidence intervals
+        of [10.4, 17.8], [6.2, 12.0], [11.8, 18.2] and [1.8, 3.9] that all sit clear
+        of zero. This clears the bar we set in advance, at least 8pp with an interval
+        excluding zero on three of four datasets. On the Wikipedia-based datasets
+        that rate means roughly one cited sentence in seven points at a passage whose
+        only tie to the claim is four words we pasted in. Pooling across datasets
+        gives 10.7%. 1\\nTable 4: How often each model follows the planted span: attributable
+        rate on REL-UNCITED in %, with cited records over all records below. The control
+        is 0 in every cell, so these equal the raw rates. Baseline 95% CIs: NQ [10.4,
+        17.8], QAMPARI [6.2, 12.0], HAGRID [11.8, 18.2], RAGTruth [1.8, 3.9].\\n\\nNQ,
+        Baseline = 14.0 52/371. NQ, Search-R1 = 12.8 36/281. NQ, ReSearch = 14.1 50/355.
+        NQ, R-Search = 14.7 57/387. QAMPARI, Baseline = 9.1 29/319. QAMPARI, Search-R1
+        = 13.4 38/283. QAMPARI, ReSearch = 7.5 25/332. QAMPARI, R-Search = 12.2 43/352.
+        HAGRID, Baseline = 14.8 64/433. HAGRID, Search-R1 = 13.8 53/383. HAGRID, ReSearch
+        = 13.6 59/434. HAGRID, R-Search = 18.6 80/430. RAGTruth, Baseline = 2.9 25/864.
+        RAGTruth, Search-R1 = 4.1 29/699. RAGTruth, ReSearch = 3.6 30/823. RAGTruth,
+        R-Search = 5.9 52/879\\nNow read across the rows. On NQ the four models land
+        at 14.0, 12.8, 14.1, and 14.7%. On HAGRID, 14.8, 13.8, 13.6, and 18.6%. On
+        RAGTruth, 2.9, 4.1, 3.6, and 5.9%. The agents track their base model, not
+        each other's training recipes, and all sixteen cells sit far above zero. Post-rationalization
+        is not something RL introduced; it is already there in the instruction-tuned
+        model and it survives everything done on top.\\n1 Pooling was not part of
+        our pre-registered plan, so treat this number as exploratory.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.2
+        Post-rationalization is common\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":83,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"8c166fb5-399b-59e9-a610-789ac782c808\",\"version\":15,\"score\":0.25750443,\"payload\":{\"page_content\":\"3.2
+        What counts as citing the planted passage\\nThe re-run answer may be worded
+        differently, so we first locate the sentence that best matches the original
+        claim by word overlap (Jaccard similarity of at least 0.3), then ask whether
+        that sentence cites the doctored passage. This is our claim-aligned outcome,
+        and the pairing carries the weight: it asks whether the model cited the planted
+        passage for the claim we planted into , not whether the marker turns up loose
+        somewhere in the answer. We keep the looser cited-anywhere outcome as a sensitivity
+        check, and Section 5.1 shows how much slack it introduces.\\nWe score every
+        record, with no filtering on whether the planted span reappears in the new
+        answer. The original probe conditions on exactly that, and our control shows
+        why it should not: with nothing planted at all, those four words come back
+        in 60-74% of answers, simply because the model wrote them in the first place.
+        Span recovery tells us the model repeated itself, not that our plant did anything.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"3.2
+        What counts as citing the planted passage\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":46,\"page_no\":3,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"f5a9caf9-6efb-5456-85d5-a98735962450\",\"version\":15,\"score\":0.25313026,\"payload\":{\"page_content\":\"3.1
+        The planting probe\\nWe follow the probe of Wallat et al. (2025), which runs
+        in three steps.\\n1. Answer. The model answers a question from five retrieved
+        passages. Every sentence ends with exactly one citation, so each sentence
+        and its marker form one claim .\\n2. Plant. We lift a short span out of the
+        claim and append it to a passage the model did not cite for that claim, then
+        re-run the same model on the doctored context with the same prompt.\\n3. Check.
+        We ask whether the model now cites the doctored passage for that claim.\\nThe
+        logic is a swap test. The doctored passage shares nothing with the claim except
+        the words we pasted into it, and the passage the model originally cited never
+        leaves the context. A model that reads for meaning has no reason to move.
+        A model that matches surface strings has every reason to, and when it moves,
+        its citation was never evidence of where the answer came from.\\nTable 1 lists
+        the three variants, which differ only in which passage receives the span.
+        REL-UNCITED plants in a passage the retriever returned and the model ignored,
+        the situation a deployed system meets constantly, and it is our main measure.\\nREL-UNCITED,
+        Where the span is planted = A retrieved passage that the answer did not cite..
+        CITED-OTHER, Where the span is planted = Apassage the answer already cites,
+        but for a different sentence.. RANDOM, Where the span is planted = An uncited
+        slot, after replacing its passage with one from a different question.\\nTable
+        1: The three probe variants. Each changes exactly one of the five retrieved
+        passages, and the passage that genuinely supports the claim stays in the context.
+        RELUNCITED is our main measure.\\nChoosing the span. The original probe leaned
+        on Command R+, which marks the exact words it grounds on. Qwen2.5 offers no
+        such markup, so we need a rule, and we keep it blunt and deterministic: the
+        four consecutive words of the claim with the most characters. This decision
+        was influenced by Wallat et al. (2025). We played around with 2-4 words for
+        the span and choosing four words minimized bias.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"3.1
+        The planting probe\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":2,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"a9d96eb0-e563-5a4a-be72-fdfa293a765e\",\"version\":15,\"score\":0.24722318,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nWe know what size of effect we could have caught. Our
+        sample sizes give 80% power to detect a difference of roughly 7 percentage
+        points (pp). Plainly: had RLVR moved post-rationalization by 7pp or more in
+        either direction, this design would almost certainly have caught it. Shifts
+        of a couple of points stay inside our blind spot, which is why we report a
+        bounded null rather than a flat absence of effect. We fixed the primary outcome
+        and the family of corrected comparisons in writing before the scorer ran.\\nCompute.
+        Everything ran on Kaggle's free tier, two T4s or a single P100 per session:
+        48 GPU jobs yielding 36,690 scored records across four models, four datasets,
+        three variants, and both conditions. The original study used a 104B model;
+        the controlled version of the same measurement fits on hardware anyone can
+        get for free, and that is the part we would most like other groups to borrow.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"e4f212a2-fbfb-51f3-8efa-31d1e740f21a\",\"version\":15,\"score\":0.24352044,\"payload\":{\"page_content\":\"7
+        Conclusion\\nWe asked whether training RAG search agents for correct answers
+        also teaches them to cite honestly under fixed-context inference. We find
+        no detectable improvement. Getting to that answer meant repairing the measurement
+        first: we reproduced the planting probe of Wallat et al. (2025) on an open
+        7B model, added the no-planting control it lacked, and showed that the control
+        is 0 by construction for the main variant, 100% for another, and a small measured
+        quantity for the third. With that in hand, post-rationalization turns out
+        to be common in an instruction-tuned model, roughly one cited sentence in
+        seven on Wikipedia-based questions, and three RLVR agents trained from that
+        model reproduce its rate, with one landing slightly worse. Faithful citation
+        is not a side effect of answer accuracy. It has to be rewarded, measured,
+        and reported on its own, and the probe we describe here is cheap enough to
+        do all three inside an existing training loop.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0024\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"7
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":106,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"88b6c469-ceb4-5829-8847-b818918c18b3\",\"version\":15,\"score\":0.24139252,\"payload\":{\"page_content\":\"Table
+        4: How often each model follows the planted span: attributable rate on REL-UNCITED
+        in %, with cited records over all records below. The control is 0 in every
+        cell, so these equal the raw rates. Baseline 95% CIs: NQ [10.4, 17.8], QAMPARI
+        [6.2, 12.0], HAGRID [11.8, 18.2], RAGTruth [1.8, 3.9].\\n\\n| Dataset   |
+        Baseline    | Search-R1   | ReSearch    | R-Search    |\\n|-----------|-------------|-------------|-------------|-------------|\\n|
+        NQ        | 14.0 52/371 | 12.8 36/281 | 14.1 50/355 | 14.7 57/387 |\\n| QAMPARI
+        \  | 9.1 29/319  | 13.4 38/283 | 7.5 25/332  | 12.2 43/352 |\\n| HAGRID    |
+        14.8 64/433 | 13.8 53/383 | 13.6 59/434 | 18.6 80/430 |\\n| RAGTruth  | 2.9
+        25/864  | 4.1 29/699  | 3.6 30/823  | 5.9 52/879  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":84,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        4: How often each model follows the planted span: attributable rate on REL-UNCITED
+        in %, with cited records over all records below. The control is 0 in every
+        cell, so these equal the raw rates. Baseline 95% CIs: NQ [10.4, 17.8], QAMPARI
+        [6.2, 12.0], HAGRID [11.8, 18.2], RAGTruth [1.8, 3.9].\\n\\n| Dataset   |
+        Baseline    | Search-R1   | ReSearch    | R-Search    |\\n|-----------|-------------|-------------|-------------|-------------|\\n|
+        NQ        | 14.0 52/371 | 12.8 36/281 | 14.1 50/355 | 14.7 57/387 |\\n| QAMPARI
+        \  | 9.1 29/319  | 13.4 38/283 | 7.5 25/332  | 12.2 43/352 |\\n| HAGRID    |
+        14.8 64/433 | 13.8 53/383 | 13.6 59/434 | 18.6 80/430 |\\n| RAGTruth  | 2.9
+        25/864  | 4.1 29/699  | 3.6 30/823  | 5.9 52/879  |\"}}},{\"id\":\"31e140e8-eee1-5598-ac2a-c944a55e0cb0\",\"version\":15,\"score\":0.2411137,\"payload\":{\"page_content\":\"Limitations\\nEvaluation
+        format differs from training. The RLVR agents were trained to search, read,
+        and answer across multiple turns in their own tagged format, whereas our evaluation
+        supplies five fixed passages and requests a single citation-bearing response.
+        This was necessary for the controlled attribution comparison, but it may affect
+        how the agents behave: for example, an agent that would normally issue another
+        query may instead abstain. The large differences in abstention and format
+        compliance are consistent with this possibility, although our data cannot
+        establish the mechanism. An interactive evaluation would be needed to determine
+        whether the attribution effect differs in the agents' native search setting.\\nWe
+        cannot isolate RL itself. Each agent differs from the baseline in three ways
+        at once: it was fine-tuned at all, fine-tuned on retrieval data, and fine-tuned
+        with reinforcement learning. Without an arm fine-tuned on the same data without
+        RL, our comparison is associational. This is the single most valuable addition
+        a follow-up could make.\\nSearch-R1 saw NQ in training. It was trained on
+        NQ's training split and we evaluate it on KILTNQ. QAMPARI, HAGRID, and RAGTruth
+        are clean for all three agents, and R-Search's pattern is in fact strongest
+        away from NQ, but we have not quantified the overlap.\\nThe span always lands
+        at the end of the passage. Any positional bias in how models pick citations
+        is therefore mixed in with the effect of the plant. Randomizing the injection
+        point is the obvious next experiment.\\nCITED-OTHER is underpowered outside
+        RAGTruth. NQ, QAMPARI, and HAGRID yield only 13-43 question clusters for this
+        variant, too few for intervals we would defend. RAGTruth alone is large enough.\\nWhat
+        a flag means. Our scorer is deterministic string matching, so each flag is
+        exactly reproducible: the model cited the doctored passage for the aligned
+        claim. Reading that as postrationalization is an interpretation we inherit
+        from Wallat et al. (2025), and a competing reading exists. After planting,
+        the claim's words genuinely sit in the doctored passage, so citing it could
+        be scored as obedience to 'answer from the passages' rather than as unfaithfulness.
+        Hand-checking a sample of flagged cases would settle how often each reading
+        applies, and we have not done it.\\nScope. Three RLVR agents from one line
+        of work, one base model, English only, one prompt, one decoding setting. Citation
+        behavior may well shift with the prompt, so our numbers describe this setup
+        until someone varies it.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0025\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":108,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"ef8edc2c-79a5-5f25-9f6f-1c192ea8484d\",\"version\":15,\"score\":0.24002698,\"payload\":{\"page_content\":\"Ethics
+        Statement\\nThis work uses only publicly released models and datasets. It
+        involves no human subjects and no personal data. The planted spans are taken
+        from the models' own answers and are used only in offline evaluation. The
+        work describes a way that citations in RAG systems can mislead readers, with
+        the aim of making that failure measurable; it does not provide a method for
+        attacking deployed systems. Because RLVR training is in wide use, we have
+        tried to state the limits of our null result clearly so that it is not read
+        as a stronger claim than the data support.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Ethics
+        Statement\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":116,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"ba4317e9-5661-521a-aa3d-706fc834f009\",\"version\":13,\"score\":0.23712355,\"payload\":{\"page_content\":\"Table
+        6: Planned comparisons 1-30 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C001 | A      | RC/.5   | RC/.5   | P e - P g  | +0 . 744  | [+0 . 715 , +0
+        . 771]    | 0.0148 | 944 |\\n| C002 | A      | RC/.25  | RC/.25  | P e - P
+        g  | +0 . 740  | [+0 . 711 , +0 . 767]    | 0.0148 | 944 |\\n| C003 | A      |
+        RC/.1   | RC/.1   | P e - P g  | +0 . 743  | [+0 . 715 , +0 . 770]    | 0.0148
+        | 944 |\\n| C004 | A      | RC/.05  | RC/.05  | P e - P g  | +0 . 621  | [+0
+        . 588 , +0 . 654]    | 0.0148 | 944 |\\n| C005 | A      | LL/.5   | LL/.5
+        \  | P e - P g  | +0 . 426  | [+0 . 394 , +0 . 458]    | 0.0148 | 944 |\\n|
+        C006 | A      | LL/.25  | LL/.25  | P e - P g  | +0 . 425  | [+0 . 391 , +0
+        . 458]    | 0.0148 | 944 |\\n| C007 | A      | LL/.1   | LL/.1   | P e - P
+        g  | +0 . 260  | [+0 . 229 , +0 . 291]    | 0.0148 | 944 |\\n| C008 | A      |
+        LL/.05  | LL/.05  | P e - P g  | +0 . 132  | [+0 . 108 , +0 . 156]    | 0.0148
+        | 944 |\\n| C009 | Q      | RC/.5   | RC/.5   | P e - P g  | +0 . 499  | [+0
+        . 464 , +0 . 534]    | 0.0148 | 976 |\\n| C010 | Q      | RC/.25  | RC/.25
+        \ | P e - P g  | +0 . 491  | [+0 . 457 , +0 . 525]    | 0.0148 | 976 |\\n|
+        C011 | Q      | RC/.1   | RC/.1   | P e - P g  | +0 . 492  | [+0 . 457 , +0
+        . 526]    | 0.0148 | 976 |\\n| C012 | Q      | RC/.05  | RC/.05  | P e - P
+        g  | +0 . 496  | [+0 . 462 , +0 . 531]    | 0.0148 | 976 |\\n| C013 | Q      |
+        LL/.5   | LL/.5   | P e - P g  | +0 . 360  | [+0 . 319 , +0 . 402]    | 0.0148
+        | 976 |\\n| C014 | Q      | LL/.25  | LL/.25  | P e - P g  | +0 . 309  | [+0
+        . 278 , +0 . 341]    | 0.0148 | 976 |\\n| C015 | Q      | LL/.1   | LL/.1
+        \  | P e - P g  | +0 . 388  | [+0 . 354 , +0 . 421]    | 0.0148 | 976 |\\n|
+        C016 | Q      | LL/.05  | LL/.05  | P e - P g  | +0 . 361  | [+0 . 329 , +0
+        . 395]    | 0.0148 | 976 |\\n| C017 | A      | RC/.25  | RC/.25  | R e - R
+        g  | +0 . 712  | [+0 . 684 , +0 . 740]    | 0.0148 | 944 |\\n| C018 | A      |
+        RR/.5   | Id      | P g        | +0 . 098  | [+0 . 066 , +0 . 131]    | 0.0148
+        | 944 |\\n| C019 | A      | RR/.25  | Id      | P g        | +0 . 184  | [+0
+        . 149 , +0 . 219]    | 0.0148 | 944 |\\n| C020 | A      | RR/.1   | Id      |
+        P g        | - 0 . 132 | [ - 0 . 170 , - 0 . 095] | 0.0148 | 944 |\\n| C021
+        | A      | RR/.05  | Id      | P g        | - 0 . 267 | [ - 0 . 303 , - 0
+        . 230] | 0.0148 | 944 |\\n| C022 | A      | X/.5    | Id      | P g        |
+        - 0 . 081 | [ - 0 . 116 , - 0 . 047] | 0.0148 | 944 |\\n| C023 | A      |
+        X/.25   | Id      | P g        | - 0 . 019 | [ - 0 . 053 , +0 . 016]  | 1.0000
+        | 944 |\\n| C024 | A      | X/.1    | Id      | P g        | - 0 . 023 | [
+        - 0 . 061 , +0 . 014]  | 1.0000 | 944 |\\n| C025 | A      | X/.05   | Id      |
+        P g        | - 0 . 091 | [ - 0 . 129 , - 0 . 053] | 0.0148 | 944 |\\n| C026
+        | A      | ECR/.5  | Id      | P g        | - 0 . 071 | [ - 0 . 105 , - 0
+        . 038] | 0.0148 | 944 |\\n| C027 | A      | ECR/.25 | Id      | P g        |
+        - 0 . 025 | [ - 0 . 061 , +0 . 010]  | 1.0000 | 944 |\\n| C028 | A      |
+        ECR/.1  | Id      | P g        | - 0 . 027 | [ - 0 . 064 , +0 . 010]  | 1.0000
+        | 944 |\\n| C029 | A      | ECR/.05 | Id      | P g        | - 0 . 118 | [
+        - 0 . 155 , - 0 . 080] | 0.0148 | 944 |\\n| C030 | A      | RC/.5   | Id      |
+        P g        | - 0 . 388 | [ - 0 . 421 , - 0 . 354] | 0.0148 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":140,\"page_no\":15,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        6: Planned comparisons 1-30 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C001 | A      | RC/.5   | RC/.5   | P e - P g  | +0 . 744  | [+0 . 715 , +0
+        . 771]    | 0.0148 | 944 |\\n| C002 | A      | RC/.25  | RC/.25  | P e - P
+        g  | +0 . 740  | [+0 . 711 , +0 . 767]    | 0.0148 | 944 |\\n| C003 | A      |
+        RC/.1   | RC/.1   | P e - P g  | +0 . 743  | [+0 . 715 , +0 . 770]    | 0.0148
+        | 944 |\\n| C004 | A      | RC/.05  | RC/.05  | P e - P g  | +0 . 621  | [+0
+        . 588 , +0 . 654]    | 0.0148 | 944 |\\n| C005 | A      | LL/.5   | LL/.5
+        \  | P e - P g  | +0 . 426  | [+0 . 394 , +0 . 458]    | 0.0148 | 944 |\\n|
+        C006 | A      | LL/.25  | LL/.25  | P e - P g  | +0 . 425  | [+0 . 391 , +0
+        . 458]    | 0.0148 | 944 |\\n| C007 | A      | LL/.1   | LL/.1   | P e - P
+        g  | +0 . 260  | [+0 . 229 , +0 . 291]    | 0.0148 | 944 |\\n| C008 | A      |
+        LL/.05  | LL/.05  | P e - P g  | +0 . 132  | [+0 . 108 , +0 . 156]    | 0.0148
+        | 944 |\\n| C009 | Q      | RC/.5   | RC/.5   | P e - P g  | +0 . 499  | [+0
+        . 464 , +0 . 534]    | 0.0148 | 976 |\\n| C010 | Q      | RC/.25  | RC/.25
+        \ | P e - P g  | +0 . 491  | [+0 . 457 , +0 . 525]    | 0.0148 | 976 |\\n|
+        C011 | Q      | RC/.1   | RC/.1   | P e - P g  | +0 . 492  | [+0 . 457 , +0
+        . 526]    | 0.0148 | 976 |\\n| C012 | Q      | RC/.05  | RC/.05  | P e - P
+        g  | +0 . 496  | [+0 . 462 , +0 . 531]    | 0.0148 | 976 |\\n| C013 | Q      |
+        LL/.5   | LL/.5   | P e - P g  | +0 . 360  | [+0 . 319 , +0 . 402]    | 0.0148
+        | 976 |\\n| C014 | Q      | LL/.25  | LL/.25  | P e - P g  | +0 . 309  | [+0
+        . 278 , +0 . 341]    | 0.0148 | 976 |\\n| C015 | Q      | LL/.1   | LL/.1
+        \  | P e - P g  | +0 . 388  | [+0 . 354 , +0 . 421]    | 0.0148 | 976 |\\n|
+        C016 | Q      | LL/.05  | LL/.05  | P e - P g  | +0 . 361  | [+0 . 329 , +0
+        . 395]    | 0.0148 | 976 |\\n| C017 | A      | RC/.25  | RC/.25  | R e - R
+        g  | +0 . 712  | [+0 . 684 , +0 . 740]    | 0.0148 | 944 |\\n| C018 | A      |
+        RR/.5   | Id      | P g        | +0 . 098  | [+0 . 066 , +0 . 131]    | 0.0148
+        | 944 |\\n| C019 | A      | RR/.25  | Id      | P g        | +0 . 184  | [+0
+        . 149 , +0 . 219]    | 0.0148 | 944 |\\n| C020 | A      | RR/.1   | Id      |
+        P g        | - 0 . 132 | [ - 0 . 170 , - 0 . 095] | 0.0148 | 944 |\\n| C021
+        | A      | RR/.05  | Id      | P g        | - 0 . 267 | [ - 0 . 303 , - 0
+        . 230] | 0.0148 | 944 |\\n| C022 | A      | X/.5    | Id      | P g        |
+        - 0 . 081 | [ - 0 . 116 , - 0 . 047] | 0.0148 | 944 |\\n| C023 | A      |
+        X/.25   | Id      | P g        | - 0 . 019 | [ - 0 . 053 , +0 . 016]  | 1.0000
+        | 944 |\\n| C024 | A      | X/.1    | Id      | P g        | - 0 . 023 | [
+        - 0 . 061 , +0 . 014]  | 1.0000 | 944 |\\n| C025 | A      | X/.05   | Id      |
+        P g        | - 0 . 091 | [ - 0 . 129 , - 0 . 053] | 0.0148 | 944 |\\n| C026
+        | A      | ECR/.5  | Id      | P g        | - 0 . 071 | [ - 0 . 105 , - 0
+        . 038] | 0.0148 | 944 |\\n| C027 | A      | ECR/.25 | Id      | P g        |
+        - 0 . 025 | [ - 0 . 061 , +0 . 010]  | 1.0000 | 944 |\\n| C028 | A      |
+        ECR/.1  | Id      | P g        | - 0 . 027 | [ - 0 . 064 , +0 . 010]  | 1.0000
+        | 944 |\\n| C029 | A      | ECR/.05 | Id      | P g        | - 0 . 118 | [
+        - 0 . 155 , - 0 . 080] | 0.0148 | 944 |\\n| C030 | A      | RC/.5   | Id      |
+        P g        | - 0 . 388 | [ - 0 . 421 , - 0 . 354] | 0.0148 | 944 |\"}}},{\"id\":\"1ee63a5e-309f-50c0-bdb2-05e34413dcea\",\"version\":13,\"score\":0.23657499,\"payload\":{\"page_content\":\"Table
+        7: Planned comparisons 31-60 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206           | 95% CI
+        \                  |    p H |   n |\\n|------|--------|---------|---------|------------|-------------|--------------------------|--------|-----|\\n|
+        C031 | A      | RC/.25  | Id      | P g        | - 0 . 387   | [ - 0 . 421
+        , - 0 . 354] | 0.0148 | 944 |\\n| C032 | A      | RC/.1   | Id      | P g
+        \       | - 0 . 392   | [ - 0 . 424 , - 0 . 359] | 0.0148 | 944 |\\n| C033
+        | A      | RC/.05  | Id      | P g        | - 0 . 334   | [ - 0 . 370 , -
+        0 . 299] | 0.0148 | 944 |\\n| C034 | A      | LL/.5   | Id      | P g        |
+        - 0 . 353   | [ - 0 . 386 , - 0 . 320] | 0.0148 | 944 |\\n| C035 | A      |
+        LL/.25  | Id      | P g        | - 0 . 406   | [ - 0 . 438 , - 0 . 374] |
+        0.0148 | 944 |\\n| C036 | A      | LL/.1   | Id      | P g        | - 0 .
+        457   | [ - 0 . 488 , - 0 . 427] | 0.0148 | 944 |\\n| C037 | A      | LL/.05
+        \ | Id      | P g        | - 0 . 475   | [ - 0 . 504 , - 0 . 447] | 0.0148
+        | 944 |\\n| C038 | Q      | RR/.5   | Id      | P g        | - 0 . 130   |
+        [ - 0 . 165 , - 0 . 095] | 0.0148 | 976 |\\n| C039 | Q      | RR/.25  | Id
+        \     | P g        | 0 . 089     | [ - 0 . 124 , - 0 . 052] | 0.0148 | 976
+        |\\n| C040 | Q      | RR/.1   | Id      | P g        | - - 0 . 066 | [ - 0
+        . 104 , - 0 . 029] | 0.0280 | 976 |\\n| C041 | Q      | RR/.05  | Id      |
+        P g        | - 0 . 091   | [ - 0 . 128 , - 0 . 053] | 0.0148 | 976 |\\n| C042
+        | Q      | X/.5    | Id      | P g        | - 0 . 130   | [ - 0 . 159 , -
+        0 . 101] | 0.0148 | 976 |\\n| C043 | Q      | X/.25   | Id      | P g        |
+        - 0 . 050   | [ - 0 . 082 , - 0 . 019] | 0.0832 | 976 |\\n| C044 | Q      |
+        X/.1    | Id      | P g        | - 0 . 009   | [ - 0 . 041 , +0 . 024]  |
+        1.0000 | 976 |\\n| C045 | Q      | X/.05   | Id      | P g        | +0 . 009
+        \   | [ - 0 . 027 , +0 . 046]  | 1.0000 | 976 |\\n| C046 | Q      | ECR/.5
+        \ | Id      | P g        | - 0 . 067   | [ - 0 . 099 , - 0 . 035] | 0.0148
+        | 976 |\\n| C047 | Q      | ECR/.25 | Id      | P g        | - 0 . 020   |
+        [ - 0 . 050 , +0 . 011]  | 1.0000 | 976 |\\n| C048 | Q      | ECR/.1  | Id
+        \     | P g        | +0 . 016    | [ - 0 . 019 , +0 . 051]  | 1.0000 | 976
+        |\\n| C049 | Q      | ECR/.05 | Id      | P g        | +0 . 028    | [ - 0
+        . 010 , +0 . 064]  | 1.0000 | 976 |\\n| C050 | Q      | RC/.5   | Id      |
+        P g        | - 0 . 426   | [ - 0 . 455 , - 0 . 397] | 0.0148 | 976 |\\n| C051
+        | Q      | RC/.25  | Id      | P g        | - 0 . 425   | [ - 0 . 455 , -
+        0 . 396] | 0.0148 | 976 |\\n| C052 | Q      | RC/.1   | Id      | P g        |
+        - 0 . 426   | [ - 0 . 456 , - 0 . 397] | 0.0148 | 976 |\\n| C053 | Q      |
+        RC/.05  | Id      | P g        | - 0 . 425   | [ - 0 . 454 , - 0 . 396] |
+        0.0148 | 976 |\\n| C054 | Q      | LL/.5   | Id      | P g        | - 0 .
+        345   | [ - 0 . 381 , - 0 . 309] | 0.0148 | 976 |\\n| C055 | Q      | LL/.25
+        \ | Id      | P g        | - 0 . 372   | [ - 0 . 404 , - 0 . 338] | 0.0148
+        | 976 |\\n| C056 | Q      | LL/.1   | Id      | P g        | - 0 . 444   |
+        [ - 0 . 471 , - 0 . 416] | 0.0148 | 976 |\\n| C057 | Q      | LL/.05  | Id
+        \     | P g        | - 0 . 466   | [ - 0 . 493 , - 0 . 439] | 0.0148 | 976
+        |\\n| C058 | A      | RR/.25  | Id      | R g        | +0 . 074    | [+0 .
+        039 , +0 . 107]    | 0.0148 | 944 |\\n| C059 | A      | ECR/.5  | X/.5    |
+        P g        | +0 . 010    | [ - 0 . 018 , +0 . 038]  | 1.0000 | 944 |\\n| C060
+        | A      | ECR/.25 | X/.25   | P g        | - 0 . 006   | [ - 0 . 036 , +0
+        . 022]  | 1.0000 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":142,\"page_no\":16,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        7: Planned comparisons 31-60 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206           | 95% CI
+        \                  |    p H |   n |\\n|------|--------|---------|---------|------------|-------------|--------------------------|--------|-----|\\n|
+        C031 | A      | RC/.25  | Id      | P g        | - 0 . 387   | [ - 0 . 421
+        , - 0 . 354] | 0.0148 | 944 |\\n| C032 | A      | RC/.1   | Id      | P g
+        \       | - 0 . 392   | [ - 0 . 424 , - 0 . 359] | 0.0148 | 944 |\\n| C033
+        | A      | RC/.05  | Id      | P g        | - 0 . 334   | [ - 0 . 370 , -
+        0 . 299] | 0.0148 | 944 |\\n| C034 | A      | LL/.5   | Id      | P g        |
+        - 0 . 353   | [ - 0 . 386 , - 0 . 320] | 0.0148 | 944 |\\n| C035 | A      |
+        LL/.25  | Id      | P g        | - 0 . 406   | [ - 0 . 438 , - 0 . 374] |
+        0.0148 | 944 |\\n| C036 | A      | LL/.1   | Id      | P g        | - 0 .
+        457   | [ - 0 . 488 , - 0 . 427] | 0.0148 | 944 |\\n| C037 | A      | LL/.05
+        \ | Id      | P g        | - 0 . 475   | [ - 0 . 504 , - 0 . 447] | 0.0148
+        | 944 |\\n| C038 | Q      | RR/.5   | Id      | P g        | - 0 . 130   |
+        [ - 0 . 165 , - 0 . 095] | 0.0148 | 976 |\\n| C039 | Q      | RR/.25  | Id
+        \     | P g        | 0 . 089     | [ - 0 . 124 , - 0 . 052] | 0.0148 | 976
+        |\\n| C040 | Q      | RR/.1   | Id      | P g        | - - 0 . 066 | [ - 0
+        . 104 , - 0 . 029] | 0.0280 | 976 |\\n| C041 | Q      | RR/.05  | Id      |
+        P g        | - 0 . 091   | [ - 0 . 128 , - 0 . 053] | 0.0148 | 976 |\\n| C042
+        | Q      | X/.5    | Id      | P g        | - 0 . 130   | [ - 0 . 159 , -
+        0 . 101] | 0.0148 | 976 |\\n| C043 | Q      | X/.25   | Id      | P g        |
+        - 0 . 050   | [ - 0 . 082 , - 0 . 019] | 0.0832 | 976 |\\n| C044 | Q      |
+        X/.1    | Id      | P g        | - 0 . 009   | [ - 0 . 041 , +0 . 024]  |
+        1.0000 | 976 |\\n| C045 | Q      | X/.05   | Id      | P g        | +0 . 009
+        \   | [ - 0 . 027 , +0 . 046]  | 1.0000 | 976 |\\n| C046 | Q      | ECR/.5
+        \ | Id      | P g        | - 0 . 067   | [ - 0 . 099 , - 0 . 035] | 0.0148
+        | 976 |\\n| C047 | Q      | ECR/.25 | Id      | P g        | - 0 . 020   |
+        [ - 0 . 050 , +0 . 011]  | 1.0000 | 976 |\\n| C048 | Q      | ECR/.1  | Id
+        \     | P g        | +0 . 016    | [ - 0 . 019 , +0 . 051]  | 1.0000 | 976
+        |\\n| C049 | Q      | ECR/.05 | Id      | P g        | +0 . 028    | [ - 0
+        . 010 , +0 . 064]  | 1.0000 | 976 |\\n| C050 | Q      | RC/.5   | Id      |
+        P g        | - 0 . 426   | [ - 0 . 455 , - 0 . 397] | 0.0148 | 976 |\\n| C051
+        | Q      | RC/.25  | Id      | P g        | - 0 . 425   | [ - 0 . 455 , -
+        0 . 396] | 0.0148 | 976 |\\n| C052 | Q      | RC/.1   | Id      | P g        |
+        - 0 . 426   | [ - 0 . 456 , - 0 . 397] | 0.0148 | 976 |\\n| C053 | Q      |
+        RC/.05  | Id      | P g        | - 0 . 425   | [ - 0 . 454 , - 0 . 396] |
+        0.0148 | 976 |\\n| C054 | Q      | LL/.5   | Id      | P g        | - 0 .
+        345   | [ - 0 . 381 , - 0 . 309] | 0.0148 | 976 |\\n| C055 | Q      | LL/.25
+        \ | Id      | P g        | - 0 . 372   | [ - 0 . 404 , - 0 . 338] | 0.0148
+        | 976 |\\n| C056 | Q      | LL/.1   | Id      | P g        | - 0 . 444   |
+        [ - 0 . 471 , - 0 . 416] | 0.0148 | 976 |\\n| C057 | Q      | LL/.05  | Id
+        \     | P g        | - 0 . 466   | [ - 0 . 493 , - 0 . 439] | 0.0148 | 976
+        |\\n| C058 | A      | RR/.25  | Id      | R g        | +0 . 074    | [+0 .
+        039 , +0 . 107]    | 0.0148 | 944 |\\n| C059 | A      | ECR/.5  | X/.5    |
+        P g        | +0 . 010    | [ - 0 . 018 , +0 . 038]  | 1.0000 | 944 |\\n| C060
+        | A      | ECR/.25 | X/.25   | P g        | - 0 . 006   | [ - 0 . 036 , +0
+        . 022]  | 1.0000 | 944 |\"}}}]},\"status\":\"ok\",\"time\":0.000704435}"
     headers:
       content-type:
       - application/json

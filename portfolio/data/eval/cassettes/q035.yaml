@@ -60,234 +60,406 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        BHoF
+      string: "{\"result\":{\"points\":[{\"id\":\"120938a4-ad79-5874-8c81-2df716aecec8\",\"version\":11,\"score\":0.5698885,\"payload\":{\"page_content\":\"7
+        Limitations\\nAlthough GraMRAG achieves significant performance improvements
+        on complex multimodal multi-step reasoning tasks, the multi-agent collaboration
+        framework introduces some inference overhead compared to traditional RAG approaches.
+        Notably, such a trade-off is generally acceptable in deep research scenarios
+        where users prioritize reasoning accuracy over response speed. Nevertheless,
+        it may hinder direct deployment in resourceconstrained environments. Therefore,
+        optimizing the interaction strategy among agents and designing more efficient
+        lightweight graph memory mechanisms constitute key directions for future work.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"7
+        Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":95,\"page_no\":9,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"710d0b17-8e1f-59b5-a11b-1ab94cc0c2b1\",\"version\":9,\"score\":0.48329175,\"payload\":{\"page_content\":\"Limitations\\nThe
+        current findings must be interpreted with the following limitations in mind.
+        RAG-Safety-Bench is English-only, considers only one document source (Wikipedia),
+        and covers a non-exhaustive set of possible harm categories. Further work
+        is required to understand how retrieval-enabled LLMs behave in languages other
+        than English and in multiple use contexts. The current study highlighted how
+        assessments of safety can be subjective; clearly, the type of potentially
+        dangerous information that can be returned to a trained intelligence officer
+        versus a layperson versus a schoolchild are very different and such use cases
+        must be assessed separately.\\nBy design, our benchmark does not evaluate
+        the impact of the retriever in the RAG system. However, and end-to-end evaluation
+        would also need to assess interactions between retriever ranking, query reformulation,
+        and generator safety. Our benchmark also represents a simplified view of RAG
+        methodology, while production RAG systems would likely include additional
+        safety components, such as system-level safety instructions and input/output
+        filters.\\nOur testing suite of models included only opensource models, and
+        relatively small models due to computing resource constraints. Again, real-world
+        RAG deployments will likely use much larger commercial models. We note that
+        our RAG-SafetyBench benchmark can be used to evaluate such models, and that
+        our reason for not doing so was to avoid being banned for Terms-of-Service
+        violations. We encourage researchers with internal access to such models to
+        use our benchmark and publish the results.\\nOur methodology for benchmark
+        generation and automated assessment relies heavily on the Claude family of
+        models from Anthropic. While we did conduct human evaluations to validate
+        Claude's performance, a more robust (though expensive) methodology could combine
+        multiple strong LLM judges in an ensemble. Furthermore, we evaluate on a single
+        run of the benchmark, but due to the stochastic nature of LLM generation,
+        the results might differ across multiple runs.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":88,\"page_no\":9,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"bf47f12f-a99d-51f3-a4b7-0239164f75cc\",\"version\":11,\"score\":0.46360192,\"payload\":{\"page_content\":\"1
+        Introduction\\n'Never memorize something that you can look up.'\\n-Albert
+        Einstein\\nRetrieval-Augmented Generation (RAG) extends the knowledge boundaries
+        of Multimodal Large Language Models (MLLMs) by retrieving relevant information
+        from external knowledge bases (Wang, 2026; Fan et al., 2026; Hu et al., 2026).
+        Recent advances in MLLMs have convincingly demonstrated that multimodal agentic
+        RAG systems are capable of efficient retrieval and reasoning over large-scale
+        corpora comprising interleaved textual and visual content (Zhang et al., 2026;
+        Guan et al., 2025). MLLM-based multi-agent architectures, leveraging specialized
+        collaboration among components, exhibit superior performance over single-agent
+        frameworks on complex multimodal RAG tasks (Zhou et al., 2026; Chang et al.,
+        2025; Xu et al., 2025b).\\n\u2020 Corresponding author.\\nFigure 1: Comparison
+        between our GraMRAG and existing multi-agent RAG systems.\\nHowever, existing
+        multi-agent RAG systems face three key limitations. First, the average number
+        of retrieval rounds in current systems remains limited, predisposing agents
+        to prematurely terminate exploration and settle for partially available evidence
+        on complex tasks (Jiang et al., 2025; Wu et al., 2025a; Team et al., 2025).
+        This fundamentally impedes the transfer of the long-horizon planning capability
+        from text-based deep research to multimodal scenarios, rendering these systems
+        inadequate for tens of iterative reasoning steps demanded by real-world deep
+        research. Second, prevailing linear or iterative summarization-based memory
+        structures (Yao et al., 2022; Zhou et al., 2025; Xu et al., 2025a; Wu et al.,
+        2025b), lacking explicit modeling of agent reasoning states, are prone to
+        context expands and state blindness as interaction rounds accumulate, resulting
+        in repetitive queries and redundant retrieval in multi-hop tasks. Third, conventional
+        outcome-based sparse rewards coarsely propagate terminal-state signals across
+        entire trajectories (Huang et al., 2026; Zhou et al., 2025), causing effective
+        retrieval steps to be erroneously penalized in negative samples while redundant
+        operations are undeservedly rewarded in positive ones, preventing fine-grained
+        credit assignment across multi-step reasoning.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0002\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"1
+        Introduction\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":6,\"page_no\":1,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"fab5fc9c-48c2-5309-be84-9c8b53e8d8df\",\"version\":13,\"score\":0.45546514,\"payload\":{\"page_content\":\"9
+        Limitations\\nEvaluator dependence. Primary scores use DeBERTa-v3-base, trained
+        on MNLI, FEVER, and ANLI, at \u03C4 = 0 . 5 , without human calibration. Using
+        the same model to select recovered spans and score support can reinforce systematic
+        errors; the resulting scores are evaluator-dependent estimates, not validated
+        rates of source support or factual correctness. This dependence also limits
+        conclusions about method rankings and the size of emitted-grounded gaps. The
+        200-question TRUE audit checks a second scoring family, but fixed recovery
+        retains DeBERTa selection and TRUE recovery reuses one judge. Different input
+        windows and nonbinary decoder outputs further limit numerical comparison.
+        Human source-level calibration remains necessary (Rashkin et al., 2023).\\nSingle
+        generator. All results use Qwen2.5-7BInstruct with greedy decoding. Frontier
+        shapes may differ across model families and scales; a second-family replication
+        is planned.\\nDataset coverage. We evaluate two English datasets (ASQA and
+        QASPER) with distinct retrieval granularities, but this does not cover multilingual
+        settings, open-web retrieval, or longercontext regimes.\\nRe-attribution hyperparameters.
+        The top-10 lexical candidate pool can miss semantically matching snippets,
+        and requiring one snippet to entail a unit can miss support distributed across
+        snippets. Consequently, a failed recovery does not establish that the source
+        contains no support. Table 3 varies the recovery threshold while holding the
+        scoring threshold fixed; it does not validate the evaluator or test candidate-pool
+        size, retrieval strategy, or multi-snippet recovery.\\nVerification scope.
+        Declared-span verification rejects claims lacking declared evidence by construction,
+        even if support could be recovered. Its 1 . 00 unsupported rate for no-provenance
+        runs is a provenance-availability diagnostic, not a calibrated hallucination
+        rate. Recovered-source verification is reported at nominal 0.25 for the two
+        no-provenance methods and remains dependent on the same bounded recovery procedure
+        and evaluator.\\nResidual error rows. Only identity fails on 4 ASQA and 29
+        QASPER questions; every primary setting is evaluated on the resulting common
+        successful subset. This pairing prevents comparisons from using different
+        questions, but conditions results on identity success and omits those difficult
+        cases. Sampling intervals condition on the fixed generated outputs and evaluator;
+        they do not include systematic NLI error or variation across generation runs.\\nNominal
+        versus achieved budgets. Abstractive compressors do not reliably hit nominal
+        token budgets; RECOMP often produces much less context than requested. We
+        report achieved compression ratios, but comparisons at a shared nominal budget
+        do not establish performance at matched achieved context sizes.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"9
+        Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":78,\"page_no\":9,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"31e140e8-eee1-5598-ac2a-c944a55e0cb0\",\"version\":15,\"score\":0.43818578,\"payload\":{\"page_content\":\"Limitations\\nEvaluation
+        format differs from training. The RLVR agents were trained to search, read,
+        and answer across multiple turns in their own tagged format, whereas our evaluation
+        supplies five fixed passages and requests a single citation-bearing response.
+        This was necessary for the controlled attribution comparison, but it may affect
+        how the agents behave: for example, an agent that would normally issue another
+        query may instead abstain. The large differences in abstention and format
+        compliance are consistent with this possibility, although our data cannot
+        establish the mechanism. An interactive evaluation would be needed to determine
+        whether the attribution effect differs in the agents' native search setting.\\nWe
+        cannot isolate RL itself. Each agent differs from the baseline in three ways
+        at once: it was fine-tuned at all, fine-tuned on retrieval data, and fine-tuned
+        with reinforcement learning. Without an arm fine-tuned on the same data without
+        RL, our comparison is associational. This is the single most valuable addition
+        a follow-up could make.\\nSearch-R1 saw NQ in training. It was trained on
+        NQ's training split and we evaluate it on KILTNQ. QAMPARI, HAGRID, and RAGTruth
+        are clean for all three agents, and R-Search's pattern is in fact strongest
+        away from NQ, but we have not quantified the overlap.\\nThe span always lands
+        at the end of the passage. Any positional bias in how models pick citations
+        is therefore mixed in with the effect of the plant. Randomizing the injection
+        point is the obvious next experiment.\\nCITED-OTHER is underpowered outside
+        RAGTruth. NQ, QAMPARI, and HAGRID yield only 13-43 question clusters for this
+        variant, too few for intervals we would defend. RAGTruth alone is large enough.\\nWhat
+        a flag means. Our scorer is deterministic string matching, so each flag is
+        exactly reproducible: the model cited the doctored passage for the aligned
+        claim. Reading that as postrationalization is an interpretation we inherit
+        from Wallat et al. (2025), and a competing reading exists. After planting,
+        the claim's words genuinely sit in the doctored passage, so citing it could
+        be scored as obedience to 'answer from the passages' rather than as unfaithfulness.
+        Hand-checking a sample of flagged cases would settle how often each reading
+        applies, and we have not done it.\\nScope. Three RLVR agents from one line
+        of work, one base model, English only, one prompt, one decoding setting. Citation
+        behavior may well shift with the prompt, so our numbers describe this setup
+        until someone varies it.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0025\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":108,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"ef8edc2c-79a5-5f25-9f6f-1c192ea8484d\",\"version\":15,\"score\":0.391429,\"payload\":{\"page_content\":\"Ethics
+        Statement\\nThis work uses only publicly released models and datasets. It
+        involves no human subjects and no personal data. The planted spans are taken
+        from the models' own answers and are used only in offline evaluation. The
+        work describes a way that citations in RAG systems can mislead readers, with
+        the aim of making that failure measurable; it does not provide a method for
+        attacking deployed systems. Because RLVR training is in wide use, we have
+        tried to state the limits of our null result clearly so that it is not read
+        as a stronger claim than the data support.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Ethics
+        Statement\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":116,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"782c601e-59f2-57aa-8028-dd975b9eb179\",\"version\":15,\"score\":0.3899358,\"payload\":{\"page_content\":\"5.2
+        Post-rationalization is common\\nRAGTruth stands apart, two to five times
+        lower than the rest for every model. Prompt, scorer, and citation format are
+        identical across datasets, so the gap belongs to the data. Its passages are
+        web text rather than Wikipedia and its answers run longer, and we cannot say
+        from four datasets which of those matters. The practical reading is that postrationalization
+        rates are domain-dependent, so a single-corpus number should not be quoted
+        as a property of a model.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.2
+        Post-rationalization is common\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":88,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"59092d56-3cbb-5656-86ca-e3d7ae515254\",\"version\":11,\"score\":0.3854227,\"payload\":{\"page_content\":\"1
+        Introduction\\nTo address the mentioned limitations, we propose GraMRAG, a
+        novel graph memory-guided multi-agent RAG framework. First, to bridge the
+        long-horizon reasoning gap, we introduce a visiontext bridged reasoning paradigm
+        that orchestrates multi-scale entity cropping with a ReAct-style visual toolchain,
+        seamlessly transferring the iterative planning capability of text-only deep
+        research models into the multimodal domain to enable longhorizon cross-modal
+        reasoning trajectories. Second, to overcome state blindness and context expansion
+        in linear memory paradigms, we construct a multimodal memory graph that formalizes
+        the reasoning process as a dynamic directed acyclic graph (DAG), explicitly
+        encoding agent actions and multimodal observations with their temporal and
+        logical dependencies to mitigate redundant retrieval and state blindness.
+        Third, to tackle the credit assignment problem from coarse terminal rewards,
+        we introduce a Topology-Aware Policy Optimization (TAPO) algorithm that leverages
+        the graph topology to identify critical reasoning paths and perform targeted
+        node pruning, precisely masking false positive and false negative nodes during
+        policy updates to enable fine-grained credit assignment across multi-step
+        reasoning.\\nOur contributions are summarized as follows:\\n- We introduce
+        a vision-text bridged reasoning paradigm that unifies multi-scale entity cropping
+        with a ReAct-style visual toolchain, enabling long-horizon cross-modal reasoning.\\n-
+        Weconstruct a multimodal memory graph that formalizes agent reasoning as a
+        dynamic DAG to systematically mitigate state blindness and redundant retrieval.\\n-
+        We develop a TAPO algorithm leveraging graph topology for critical path identification
+        and node pruning, enabling fine-grained credit assignment across multi-step
+        reasoning.\\n- We conduct extensive experiments on challenging multimodal
+        benchmarks to evaluate our approach, demonstrating state-of-the-art performance
+        over existing baselines.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"1
+        Introduction\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":13,\"page_no\":2,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"14b3c578-4e77-5a0b-ac67-ffd3bc81acab\",\"version\":11,\"score\":0.37721795,\"payload\":{\"page_content\":\"4.3
+        Comparison with State-of-the-Art Methods\\nWe compare GraMRAG against representative
+        baselines: ReAct (Yao et al., 2022) iteratively invokes external retrieval
+        tools in a think-then-act paradigm; Vanilla RAG uses the original question
+        as a query and performs direct MLLM inference over retrieved results; UniversalRAG
+        (Yeo et al., 2025) formulates cross-modal retrieval as a unified routing problem;
+        VideoRAG (Jeong et al., 2025) extracts significant visual information via
+        key-frame selection; MemAgent (Yu et al., 2025) manages context by sequentially
+        feeding search results to the model; Mem1 (Zhou et al., 2025) dynamically
+        compresses agent memory through a cyclical retrievalthen-memorization process;
+        and VimRAG (Wang et al., 2026) models reasoning process to manage large-scale
+        multimodal contexts.\\nAs presented in Table 1, linear history accumula- tion
+        paradigms such as ReAct rapidly exhaust the context window under the heavy
+        token overhead of visual data; task-specific methods including VideoRAG and
+        UniversalRAG exhibit limited generalizability due to fixed inference pipelines;
+        and summarization-based memory paradigms such as MemAgent and Mem1, lacking
+        explicit modeling of agent reasoning states, progressively lose track of historical
+        retrieval paths as interaction rounds accumulate; and VimRAG models the reasoning
+        process but lacks long-horizon reasoning capability. Our GraMRAG achieves
+        consistently state-of-theart performance across all benchmarks, achieving
+        overall average scores of 48.5% and 53.5% under the Qwen3-VL-4B-Instruct and
+        Qwen3-VL8B-Instruct settings respectively, validating the effectiveness of
+        formalizing the multi-step reasoning process as a dynamic DAG with topologydriven
+        fine-grained credit assignment for multimodal knowledge-intensive reasoning
+        tasks.\\nTable 2: Ablation study across all benchmarks.\\n\\n\u2713 \u2713
+        \u2713 \u2713 \u2713, Memory Iterative = \u2713 \u2713. \u2713 \u2713 \u2713
+        \u2713 \u2713, Paradigm Graph = \u2713 \u2713 \u2713. \u2713 \u2713 \u2713
+        \u2713 \u2713, Policy GRPO = \u2713. \u2713 \u2713 \u2713 \u2713 \u2713, Optimization
+        TAPO = \u2713. \u2713 \u2713 \u2713 \u2713 \u2713, Acc = 43.8 44.2 47.5 49.3
+        53.5\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.3
+        Comparison with State-of-the-Art Methods\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":77,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"29e8e366-e004-5ec5-a118-24ebb0fbdb4b\",\"version\":11,\"score\":0.37218186,\"payload\":{\"page_content\":\"4.4
+        Ablation Study\\nTo validate the contribution of each component in GraMRAG,
+        we conduct ablation studies across all benchmarks. As shown in Table 2, the
+        three components exhibit clear progressive complementarity: long-horizon reasoning
+        enables sustained multiround retrieval across extended cross-modal rea- soning
+        trajectories; the multimodal memory graph demonstrates that formalizing reasoning
+        as a dynamic DAG effectively mitigates state blindness and suppresses redundant
+        retrieval; and replacing the standard sparse-reward method Group Relative
+        Policy Optimization (GRPO) (Shao et al., 2024) with TAPO delivers a further
+        improvement, directly confirming the critical role of topology-guided credit
+        assignment in fine-grained policy optimization. The complete model achieves
+        an average score of 53.5%, an improvement of over 9 points above the baseline,
+        comprehensively validating the necessity and complementarity of each component.\\nFigure
+        5: Analysis of retrieval performance.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.4
+        Ablation Study\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":82,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"fe156681-1b2b-5d34-8147-50db5e25bc7a\",\"version\":11,\"score\":0.3695495,\"payload\":{\"page_content\":\"Retrieval
+        quality depends on reasoning depth.\\nHigh-quality answer generation in complex
+        multimodal tasks depends on sustaining precise multiround retrieval across
+        a long reasoning horizon. Traditional memory paradigms cause agents to progressively
+        lose track of historical retrieval paths and accumulate redundant searches
+        that severely constrain effective reasoning depth. GraMRAG addresses this
+        by transferring the iterative planning capability into the multimodal domain
+        via the vision-text bridged reasoning paradigm, supporting trajectories spanning
+        tens of steps; the multimodal memory graph further encodes action-observation
+        dependencies explicitly, directing each retrieval attempt precisely toward
+        unexplored evidence space. As shown in Figure 5, this design yields substantially
+        higher hit rate across all three task categories, directly validating the
+        decisive role of long-horizon reasoning depth in determining retrieval quality.\\nGraph
+        memory mitigates state blindness. The dynamic DAG representation of the multimodal
+        memory graph explicitly encodes actionobservation dependencies as directed
+        edges, enabling each agent to efficiently access the complete historical reasoning
+        trajectory and effectively mitigating state blindness. As shown in Table 2,
+        replacing iterative summarization-based memory with the multimodal memory
+        graph yields a 3.3point performance improvement, validating that the multimodal
+        memory graph effectively mitigates state blindness and suppresses redundant
+        retrieval, confirming the necessity of structured memory in long-horizon multimodal
+        reasoning.\\nFigure 6: Analysis of training efficiency.\\nGraph pruning accelerates
+        training convergence. As demonstrated in Figure 6, TAPO achieves faster convergence
+        throughout training compared to the baseline Group Sequence Policy Optimization
+        (GSPO) (Zheng et al., 2025), indicating that topology-guided graph pruning
+        drives the model toward faster convergence by supplying cleaner credit assignment
+        signals. This yields two critical insights into agentic reinforcement learning:
+        first, optimization stability fundamentally depends on ensuring correct positive
+        gradient signals while eliminating ambiguous updates from negative trajectories;
+        second, the quality of rollout samples, specifically their preference alignment,
+        is more decisive for performance than simply scaling up the training set.
+        By simultaneously masking dead-end nodes in positive trajectories and preserving
+        valuable nodes in negative ones, TAPO achieves finegrained step-level credit
+        assignment rather than coarse terminal-reward-level optimization.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Retrieval
+        quality depends on reasoning depth.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":87,\"page_no\":8,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"c6bdb44b-e7a8-522a-bd16-3817a31ebc87\",\"version\":11,\"score\":0.36351034,\"payload\":{\"page_content\":\"2.2
+        Memory Structures of Agent Systems\\nThe memory architectures of existing
+        agent systems can broadly be categorized into two paradigms (Zhang et al.,
+        2025b; Ye et al., 2025): the history accumulation paradigm, exemplified by
+        ReAct (Yao et al., 2022), which linearly concatenates all interaction records,
+        and the iterative summarization paradigm, exemplified by Mem1 (Zhou et al.,
+        2025), which controls context length by compressing observations. However,
+        as the number of interaction rounds grows, both paradigms cause agents to
+        progressively lose track of historical retrieval paths, a phenomenon we term
+        state blindness, which in turn induces redundant queries and repetitive retrieval
+        in multi-hop tasks. To address this issue, we construct a multimodal memory
+        graph that formalizes the reasoning process as a dynamic DAG, explicitly encoding
+        the temporal and logical dependencies between actions and observations, thereby
+        effectively mitigating state blindness and redundant retrieval.\\nFigure 2:
+        Overview of the GraMRAG framework.\\ngenerate the next search context, producing
+        the visual reasoning trajectory:\\n<!-- formula-not-decoded -->\\nwhere R
+        t denotes the chain-of-thought reasoning generated prior to action A v t ,
+        and T v is the total number of visual retrieval steps.\\nFollowing each visual
+        retrieval action, an independent Hit/No Hit Judge evaluates the observation
+        O v t obtained at the current step, conditioned on the original image I and
+        query q , outputs a binary acceptance signal:\\n<!-- formula-not-decoded -->\\nWhen
+        s t = 1 (Hit), the retrieval is considered successful, meaning the retrieved
+        content is semantically consistent with the query entity, and O v t is added
+        into the accumulated valid evidence pool:\\n<!-- formula-not-decoded -->\\nWhen
+        s t = 0 (No Hit), the retrieval is considered unsuccessful, triggering the
+        Visual Explorer to recrop at a finer spatial granularity or to reformulate
+        the search query before initiating a new retrieval attempt. The visual exploration
+        phase terminates\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"2.2
+        Memory Structures of Agent Systems\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":23,\"page_no\":2,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"4cdda0fd-2332-5c20-991e-bb1d16fdd99e\",\"version\":11,\"score\":0.357927,\"payload\":{\"page_content\":\"Abstract\\nAlthough
+        existing multi-agent RetrievalAugmented Generation (RAG) systems have demonstrated
+        promise on complex multimodal reasoning tasks, they remain fundamentally limited
+        in reasoning depth and memory structure, suffering from inadequate retrieval
+        and state blindness when answering knowledge-intensive questions. To address
+        these limitations, we propose GraMRAG, a graph memory-guided multi-agent RAG
+        framework that integrates a dynamic multimodal memory graph to enable stable,
+        multi-step multimodal reasoning. We introduce a visiontext bridged reasoning
+        paradigm that unifies multi-scale entity cropping with a ReAct-style visual
+        toolchain, enhancing the long-horizon cross-modal reasoning capability. We
+        further construct a multimodal memory graph that formalizes agent reasoning
+        as a dynamic directed acyclic graph (DAG), explicitly modeling action-observation
+        dependencies to mitigate state blindness and suppress redundant retrieval.
+        Moreover, we propose Topology-Aware Policy Optimization (TAPO) that leverages
+        graph topology for critical path identification and targeted node pruning,
+        enabling fine-grained credit assignment across multi-step reasoning trajectories.
+        Extensive experiments on challenging multimodal benchmarks demonstrate that
+        our approach consistently outperforms existing baselines and achieves state-of-the-art
+        performance on complex long-horizon reasoning tasks.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Abstract\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":4,\"page_no\":1,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"3b2d300c-347f-5d60-a199-038a9f89c567\",\"version\":11,\"score\":0.35642517,\"payload\":{\"page_content\":\"6
+        Conclusion\\nIn this paper, we introduce GraMRAG, a novel graph memory-guided
+        multi-agent RAG framework for complex multimodal long-horizon reasoning tasks.
+        Our approach integrates three key innovations: a vision-text bridged reasoning
+        paradigm that unifies multi-scale entity cropping with a ReActstyle visual
+        toolchain for long-horizon cross-modal reasoning; multimodal memory graph
+        construction that formalizes agent reasoning as a dynamic directed acyclic
+        graph (DAG) to fundamentally mit- igate state blindness and suppress redundant
+        retrieval; and Topology-Aware Policy Optimization (TAPO) algorithm that leverages
+        graph topology for fine-grained credit assignment across multi-step reasoning
+        trajectories. Extensive experiments on diverse multimodal benchmarks demonstrate
+        that our method consistently outperforms existing baselines and achieves state-of-the-art
+        performance. Future work will investigate the scalability of the proposed
+        framework to larger architectures and broader multimodal scenarios.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":93,\"page_no\":8,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"20fd44c5-f345-560a-92d1-524ad6c48da6\",\"version\":9,\"score\":0.35334566,\"payload\":{\"page_content\":\"6
+        Conclusion\\nWe introduce RAG-Safety-Bench with the goal of disentangling
+        the effects of RAG on LLM safety by cleanly separating four retrieval conditions.
+        Across five open-source models, our results show that the most interesting
+        failure mode is model-specific: for Qwen-2.5-7B, on-topic but answer-free
+        documents elicited more harmful responses than the non-RAG baseline, consistent
+        with the hypothesis that topicrelevant context can surface harmful information
+        from parametric memory.\\nMore generally, our findings confirm that nonRAG
+        safety evaluations do not transfer to RAG deployments. Our initial results
+        from the benchmark only evaluate the baked-in safety guardrails of the base
+        model. However, in a production system, responsible AI practitioners should
+        provide end-toend safety measures including (when warranted): corpus curation,
+        input prompt filtering, retrievalside filtering, output filtering, and system
+        prompt safety instructions, among other possible mitigations. Thus an important
+        use case for our benchmark is also to evaluate the impact of safety interventions
+        at different points in the multi-component RAG pipeline. Our results also
+        indicate the need to choose an automated safety evaluator which is closely
+        aligned with the safety concerns relevant to the particular application, and
+        where possible to deploy multiple safety judges, as well as appropriate human
+        oversight.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":85,\"page_no\":9,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"cb1f3719-a71b-5525-9090-cd85efec6e80\",\"version\":9,\"score\":0.34918523,\"payload\":{\"page_content\":\"4.1
+        R1: Capability in safe and unsafe contexts\\nWehypothesized (H1) that models
+        which demonstrated higher benign RAG capability would also demonstrate higher
+        unsafe RAG capability; however, this is not supported by the 'Unsafe capability'
+        data. In fact, the accuracies under the BenignOracle and Unsafe-Oracle conditions
+        are negatively correlated (Pearson r = -0 . 70 ). This may indicate that the
+        larger and more capable models also have better safety guardrails when they
+        are presented with unsafe queries. However, all models are, in general, more
+        likely to provide a correct response to the harmful question when the response
+        is available in the documents, suggesting that guardrails still need to be
+        improved to specifically handle the RAG setting.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        R1: Capability in safe and unsafe contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":49,\"page_no\":5,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"adcb4b3d-d208-561d-857a-7faede832e07\",\"version\":9,\"score\":0.34700176,\"payload\":{\"page_content\":\"5
+        Discussion\\nThe core question which motivates this work is whether safe documents
+        lead to unsafe RAG generations. One possible explanation for the prior observations
+        of unsafe responses in RAG systems is that the incorporation of any long context
+        into an LLM can have the effect of shifting its behavior away from the basic,
+        short-context regime where most of its safety training took place. However,
+        our experiments do not support the conclusion that long context alone is a
+        driver of unsafe behavior in RAG systems, with the 'random' condition leading
+        to the safest responses, partially through an increase in refusals due to
+        lack of information.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"5
+        Discussion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":77,\"page_no\":8,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"7027e267-6a58-5909-aa35-88bb46b10e9d\",\"version\":15,\"score\":0.34294742,\"payload\":{\"page_content\":\"5.3
+        RLVR does not make citations more faithful\\nRaw rates alone cannot answer
+        the RL question, since a model could post-rationalize heavily and still be
+        no worse than the model it came from. Table 5 therefore reports the difference-indifferences:
+        each agent's attributable rate minus its base model's, on the same dataset.
+        If RLVR taught these agents anything about grounding, this column would run
+        negative.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.3
+        RLVR does not make citations more faithful\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":90,\"page_no\":6,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"ef5c3de6-6874-543c-896e-2eae86e74072\",\"version\":7,\"score\":0.34138882,\"payload\":{\"page_content\":\"Conclusion\\nKuratov,
+        Y.; Arkhipov, M.; Bulatov, A.; and Burtsev, M. 2025. Cramming 1568 tokens
+        into a single vector and back again: Exploring the limits of embedding space
+        capacity. In Proceedings of the 63rd Annual Meeting of the Association for
+        Computational Linguistics (Volume 1: Long Papers) , 19323-19339.\\nKwiatkowski,
+        T.; Palomaki, J.; Redfield, O.; Collins, M.; Parikh, A.; Alberti, C.; Epstein,
+        D.; Polosukhin, I.; Devlin, J.; Lee, K.; Toutanova, K.; Jones, L.; Kelcey,
+        M.; Chang, M.-W.; Dai, A. M.; Uszkoreit, J.; Le, Q.; and Petrov, S. 2019.
+        Natural Questions: A Benchmark for Question Answering Research. Transactions
+        of the Association for Computational Linguistics , 7: 452-466.\\nLevy, S.;
+        Mazor, N.; Shalmon, L.; Hassid, M.; and Stanovsky, G. 2025. More Documents,
+        Same Length: Isolating the Challenge of Multiple Documents in RAG. In Christodoulopoulos,
+        C.; Chakraborty, T.; Rose, C.; and Peng, V., eds., Findings of the Association
+        for Computational Linguistics: EMNLP 2025 , 19539-19547. Suzhou, China: Association
+        for Computational Linguistics. ISBN 979-8-89176-335-7.\\nLewis, P.; Perez,
+        E.; Piktus, A.; Petroni, F.; Karpukhin, V.; Goyal, N.; K\xFCttler, H.; Lewis,
+        M.; Yih, W.-t.; Rockt\xE4schel, T.; Riedel, S.; and Kiela, D. 2020. Retrieval-Augmented
+        Generation for Knowledge-Intensive NLP Tasks. In Larochelle, H.; Ranzato,
+        M.; Hadsell, R.; Balcan, M. F.; and Lin, H., eds., Advances in Neural Information
+        Processing Systems , volume 33, 9459-9474. Curran Associates, Inc.\\nLi, X.;
+        and Ouyang, J. 2025. How Does Knowledge Selection Help Retrieval Augmented
+        Generation? In Christodoulopoulos, C.; Chakraborty, T.; Rose, C.; and Peng,
+        V., eds., Findings of the Association for Computational Linguistics: EMNLP
+        2025 , 4104-4121. Suzhou, China: Association for Computational Linguistics.
+        ISBN 979-8-89176-335-7.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":104,\"page_no\":8,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"dbf223b7-edf9-5b4e-bd22-6a7d85e09e50\",\"version\":9,\"score\":0.33990455,\"payload\":{\"page_content\":\"3.1
+        Benign capability\\nTo test the general capability of each of the models in
+        our study we use the MIRAGE benchmark (Park et al., 2025). This benchmark
+        was designed to test RAG model capabilities under different settings: Oracle
+        contexts provide a best-case setting in which the answer-bearing evidence
+        is available, while mixed contexts introduce distractors while retaining a
+        capped amount of answer-bearing evidence. In the current study, we use a subset
+        of 1000 queries from MIRAGE, under the two settings, to evaluate general RAG
+        capability.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"3.1
+        Benign capability\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":30,\"page_no\":3,\"filename\":\"2609.11758v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001031645}"
     headers:
       content-type:
       - application/json

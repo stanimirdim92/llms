@@ -60,178 +60,322 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        Ag==
+      string: "{\"result\":{\"points\":[{\"id\":\"59b10c60-8266-549b-8b5b-acd5d67bb1ee\",\"version\":11,\"score\":0.50622356,\"payload\":{\"page_content\":\"4.2
+        Implementation Details\\n2025) as the agent backbones. We use Qwen3Max (Yang
+        et al., 2025) as the reward model to evaluate the quality and relevance of
+        generated responses. Training is divided into two stages. In the SFT stage,
+        we employ LlamaFactory (Zheng et al., 2024) with LoRA (Hu et al., 2022) of
+        rank 32 to fine-tune the language model while keeping the vision tower and
+        multimodal projector frozen. Training spans 3 epochs with a batch size of
+        8 and gradient accumulation steps of 8, a learning rate of 1.0e-4, and a cosine
+        learning rate scheduler. In the RL stage, we use rLLM (Tan et al., 2025) with
+        the TAPO objective, an actor learning rate of 1.0e-6, a total of 2 training
+        epochs, 8 agent groups, and a batch size of 32. All experiments are conducted
+        on 8 NVIDIA H100 GPUs.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0015\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Implementation Details\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":75,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"fe156681-1b2b-5d34-8147-50db5e25bc7a\",\"version\":11,\"score\":0.46291754,\"payload\":{\"page_content\":\"Retrieval
+        quality depends on reasoning depth.\\nHigh-quality answer generation in complex
+        multimodal tasks depends on sustaining precise multiround retrieval across
+        a long reasoning horizon. Traditional memory paradigms cause agents to progressively
+        lose track of historical retrieval paths and accumulate redundant searches
+        that severely constrain effective reasoning depth. GraMRAG addresses this
+        by transferring the iterative planning capability into the multimodal domain
+        via the vision-text bridged reasoning paradigm, supporting trajectories spanning
+        tens of steps; the multimodal memory graph further encodes action-observation
+        dependencies explicitly, directing each retrieval attempt precisely toward
+        unexplored evidence space. As shown in Figure 5, this design yields substantially
+        higher hit rate across all three task categories, directly validating the
+        decisive role of long-horizon reasoning depth in determining retrieval quality.\\nGraph
+        memory mitigates state blindness. The dynamic DAG representation of the multimodal
+        memory graph explicitly encodes actionobservation dependencies as directed
+        edges, enabling each agent to efficiently access the complete historical reasoning
+        trajectory and effectively mitigating state blindness. As shown in Table 2,
+        replacing iterative summarization-based memory with the multimodal memory
+        graph yields a 3.3point performance improvement, validating that the multimodal
+        memory graph effectively mitigates state blindness and suppresses redundant
+        retrieval, confirming the necessity of structured memory in long-horizon multimodal
+        reasoning.\\nFigure 6: Analysis of training efficiency.\\nGraph pruning accelerates
+        training convergence. As demonstrated in Figure 6, TAPO achieves faster convergence
+        throughout training compared to the baseline Group Sequence Policy Optimization
+        (GSPO) (Zheng et al., 2025), indicating that topology-guided graph pruning
+        drives the model toward faster convergence by supplying cleaner credit assignment
+        signals. This yields two critical insights into agentic reinforcement learning:
+        first, optimization stability fundamentally depends on ensuring correct positive
+        gradient signals while eliminating ambiguous updates from negative trajectories;
+        second, the quality of rollout samples, specifically their preference alignment,
+        is more decisive for performance than simply scaling up the training set.
+        By simultaneously masking dead-end nodes in positive trajectories and preserving
+        valuable nodes in negative ones, TAPO achieves finegrained step-level credit
+        assignment rather than coarse terminal-reward-level optimization.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Retrieval
+        quality depends on reasoning depth.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":87,\"page_no\":8,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"eb9610c0-e536-5645-855d-f24b38ed799c\",\"version\":15,\"score\":0.45233476,\"payload\":{\"page_content\":\"6
+        Discussion\\nHow to read the R-Search result. R-Search sits above its base
+        on all four datasets and significantly above on the best-powered one, which
+        is a real and consistent pattern. It is also one model, one base, one prompt,
+        and one scorer, so four datasets are not four independent replications, and
+        the effect softens under a stricter variant and a looser outcome. Two things
+        would settle it: a cross-dataset test declared in advance, and an arm fine-tuned
+        on the same data without RL, which would separate the contribution of RL from
+        the contribution of fine-tuning on retrieval data at all.\\nA note on cost.
+        Everything here, four models, four datasets, three variants, both conditions,
+        and the control that makes the comparison interpretable, ran on Kaggle's T4
+        GPUs. Careful measurement was the cheap part of this project. The expensive
+        part was reading the construction code closely enough to know which controls
+        we did not have to run.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0023\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Discussion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":103,\"page_no\":7,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"adfae791-612f-5843-a5ae-e41dee677eae\",\"version\":7,\"score\":0.44415224,\"payload\":{\"page_content\":\"C
+        Hardware Settings\\nAll experiments were conducted on a single node with eight
+        NVIDIA A100-SXM4 GPUs (80GB each). We used bfloat16 , FlashAttention-2, and
+        PyTorch distributed training via Accelerate and DeepSpeed with data parallelism.
+        Pre-training used four GPUs with an effective batch size of 1,024, while both
+        fine-tuning stages used eight GPUs with effective batch sizes of 512. Evaluation
+        was distributed across eight GPUs, whereas latency and throughput were measured
+        on a single A100 GPU.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0025\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Hardware Settings\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":146,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"29e8e366-e004-5ec5-a118-24ebb0fbdb4b\",\"version\":11,\"score\":0.44028628,\"payload\":{\"page_content\":\"4.4
+        Ablation Study\\nTo validate the contribution of each component in GraMRAG,
+        we conduct ablation studies across all benchmarks. As shown in Table 2, the
+        three components exhibit clear progressive complementarity: long-horizon reasoning
+        enables sustained multiround retrieval across extended cross-modal rea- soning
+        trajectories; the multimodal memory graph demonstrates that formalizing reasoning
+        as a dynamic DAG effectively mitigates state blindness and suppresses redundant
+        retrieval; and replacing the standard sparse-reward method Group Relative
+        Policy Optimization (GRPO) (Shao et al., 2024) with TAPO delivers a further
+        improvement, directly confirming the critical role of topology-guided credit
+        assignment in fine-grained policy optimization. The complete model achieves
+        an average score of 53.5%, an improvement of over 9 points above the baseline,
+        comprehensively validating the necessity and complementarity of each component.\\nFigure
+        5: Analysis of retrieval performance.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.4
+        Ablation Study\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":82,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"a9d96eb0-e563-5a4a-be72-fdfa293a765e\",\"version\":15,\"score\":0.41954455,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nWe know what size of effect we could have caught. Our
+        sample sizes give 80% power to detect a difference of roughly 7 percentage
+        points (pp). Plainly: had RLVR moved post-rationalization by 7pp or more in
+        either direction, this design would almost certainly have caught it. Shifts
+        of a couple of points stay inside our blind spot, which is why we report a
+        bounded null rather than a flat absence of effect. We fixed the primary outcome
+        and the family of corrected comparisons in writing before the scorer ran.\\nCompute.
+        Everything ran on Kaggle's free tier, two T4s or a single P100 per session:
+        48 GPU jobs yielding 36,690 scored records across four models, four datasets,
+        three variants, and both conditions. The original study used a 104B model;
+        the controlled version of the same measurement fits on hardware anyone can
+        get for free, and that is the part we would most like other groups to borrow.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"a83d12ef-ef1c-5fdd-ac5e-d8d116e734e6\",\"version\":7,\"score\":0.4142438,\"payload\":{\"page_content\":\"E
+        Training Schedule.\\nTable 5 summarizes the number of training examples and
+        epochs used at each stage. We train for one epoch in Stages 12 and for three
+        epochs during the final KILT-SCR fine-tuning stage.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0027\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"E
+        Training Schedule.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":161,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"8251bd4c-87ab-55e2-bd3e-44195022b5fd\",\"version\":11,\"score\":0.3998242,\"payload\":{\"page_content\":\"Table
+        2: Ablation study across all benchmarks.\\n\\n| Reasoning Horizon Standard
+        Long   | Memory Iterative   | Paradigm Graph   | Policy GRPO   | Optimization
+        TAPO   | Acc                      |\\n|-----------------------------------|--------------------|------------------|---------------|---------------------|--------------------------|\\n|
+        \u2713 \u2713 \u2713 \u2713 \u2713                         | \u2713 \u2713
+        \               | \u2713 \u2713 \u2713            | \u2713             | \u2713
+        \                  | 43.8 44.2 47.5 49.3 53.5 |\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":79,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\",\"markdown\":\"Table
+        2: Ablation study across all benchmarks.\\n\\n| Reasoning Horizon Standard
+        Long   | Memory Iterative   | Paradigm Graph   | Policy GRPO   | Optimization
+        TAPO   | Acc                      |\\n|-----------------------------------|--------------------|------------------|---------------|---------------------|--------------------------|\\n|
+        \u2713 \u2713 \u2713 \u2713 \u2713                         | \u2713 \u2713
+        \               | \u2713 \u2713 \u2713            | \u2713             | \u2713
+        \                  | 43.8 44.2 47.5 49.3 53.5 |\"}}},{\"id\":\"dfdc115b-8a09-5899-9911-fb57a38a5ae7\",\"version\":9,\"score\":0.39609572,\"payload\":{\"page_content\":\"A.2
+        Safety evaluation details\\nEach example in the balanced subset is expanded
+        into four evaluation conditions: non_rag , rag_oracle_unsafe , rag_topic_safe
+        , and rag_control_safe_random . Since the balanced subset contains 346 examples,
+        this expansion produces 1,384 example-condition rows per model and 6,920 total
+        responses across the five evaluated models.\\nThe benchmark controls retrieval
+        quality by directly supplying context documents, rather than relying on a
+        live retriever to discover them at inference time. This is important because
+        a poor retriever could otherwise fail to retrieve the relevant harmful document
+        and artificially inflate apparent safety.\\nThe non_rag condition supplies
+        no documents for all 346 examples. The rag_oracle_unsafe condition supplies
+        one document for all 346 examples. The rag_topic_safe condition supplies three
+        documents for 344 examples and two documents for two examples. The rag_control_safe_random
+        condition supplies three documents for 321 examples, two documents for 24
+        examples, and one document for one example.\\nIn the final evaluation configuration,
+        context is supplied as cleaned full-article-prefix text with a per-document
+        cap of approximately 12,000 characters. Section-level metadata are retained
+        for provenance and auditing.\\nThe response-generation templates are intentionally
+        simple. In the non_rag condition, the model is instructed to answer using
+        only its own knowledge. In the three RAG conditions, the model is instructed
+        to answer using only the provided documents, with each supplied context labeled
+        sequentially as Context 1 , Context 2 , etc.\\nAll model responses were generated
+        deterministically with temperature = 0 . 0 , topp = 1 . 0 , and sampling disabled.
+        We used a maximum of 1,024 newly generated tokens per response and a fixed
+        run seed of 42. For RAG conditions, each cleaned retrieved-document prefix
+        was capped at 12,000 characters. The same prompt template and decoding settings
+        were used across all four conditions for a given model.\\nAll experiments
+        were run on an academic research cluster with NVIDIA H100 GPUs. Compute requirements
+        varied by model size, context length, and response length. The five-model
+        evaluation required approximately 74 GPU-hours in total, including response
+        generation and local safety judging. The released configurations and run manifests
+        provide the information needed to reproduce the evaluation.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.2
+        Safety evaluation details\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":152,\"page_no\":14,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"742b541b-4522-504f-94e1-f5b91676f2be\",\"version\":11,\"score\":0.3916798,\"payload\":{\"page_content\":\"This
+        is a schematic diagram illustrating a reinforcement learning framework for
+        training multimodal/retrieval-based models, divided into two panels. Panel
+        (a) shows the overall \\\"Reinforcement Learning Framework with Topology-Aware
+        Policy Optimization,\\\" depicting a pipeline where user queries and images
+        flow through a Rollout Module (Policy Model generating trajectories H1-H6
+        via interaction with an External Environment), then through Reference and
+        Reward Models to compute rewards (r1-r6) and group-computed advantages (A1-A6),
+        with a Graph Pruning module using a Memory Graph and KL divergence to produce
+        gradient masks (m1-m6) that modulate the final gradient. Panel (b) illustrates
+        \\\"Credit Assignment via Graph Pruning\\\" using two tree-structured graphs
+        (Positive Sample and Negative Sample) rooted at a query node Q leading to
+        an answer node A, showing how dead-end nodes (orange, meaningless for optimization)
+        are pruned as false positives/negatives while valuable retrieval nodes (green)
+        are preserved to avoid penalizing useful paths, with masked gradients indicated
+        at specific steps.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-fig-006-03\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":61,\"page_no\":6,\"filename\":\"2609.14066v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946/figures/fig-006-03-ccd597b84dbeb0e8.png\"}}},{\"id\":\"44adc6eb-b72d-5aed-987b-f34107b3a12b\",\"version\":11,\"score\":0.38849527,\"payload\":{\"page_content\":\"Graph-Structured
+        Trajectory Decomposition.\\nwhere \u03C9 g,i ( \u03B8 ) is the probability
+        ratio of segment s ( i ) g under the current and old policies; n g denotes
+        the number of segments in the g -th rollout. The (1 -\u03C8 g,i ) factor selectively
+        gates gradient contributions based on the topological analysis of the memory
+        graph: in positive trajectories, topological dead-end steps are masked to
+        prevent their gradients from reinforcing redundant exploration; in negative
+        trajectories, valuable retrieval steps are masked to prevent their gradients
+        from penalizing effective retrieval behavior. Through this design, TAPO achieves
+        precise step-level credit assignment across the entire multi-step reasoning
+        trajectory, significantly outperforming conventional sparsereward methods
+        that rely solely on terminal outcome signals.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"Graph-Structured
+        Trajectory Decomposition.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":67,\"page_no\":6,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"d78c3ba3-b37d-52b5-9c67-404e7ea891ed\",\"version\":7,\"score\":0.38763562,\"payload\":{\"page_content\":\"Table
+        5: Training schedule for the three-stage procedure.\\n\\n| Stage              |
+        \  Examples |   Epochs |\\n|--------------------|------------|----------|\\n|
+        Stage 1            |  2,000,000 |        1 |\\n| Stage 2            |    500,000
+        |        1 |\\n| Stage 3 (KILT-SCR) |    196,916 |        3 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-table-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":149,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\",\"markdown\":\"Table
+        5: Training schedule for the three-stage procedure.\\n\\n| Stage              |
+        \  Examples |   Epochs |\\n|--------------------|------------|----------|\\n|
+        Stage 1            |  2,000,000 |        1 |\\n| Stage 2            |    500,000
+        |        1 |\\n| Stage 3 (KILT-SCR) |    196,916 |        3 |\"}}},{\"id\":\"1df13bef-a99e-5d3a-830d-9ec4a48104ba\",\"version\":15,\"score\":0.3876325,\"payload\":{\"page_content\":\"Table
+        2: Models (top) and datasets (bottom). All four models share the Qwen2.5-7B-Instruct
+        base. Passages is the number of roughly 100-token chunks in each retrieval
+        index.\\n\\n| Model     | Training on top of the base   |\\n|-----------|-------------------------------|\\n|
+        Baseline  | none (Qwen2.5-7B-Instruct)    |\\n| Search-R1 | RLVR with PPO
+        \                |\\n| ReSearch  | RLVR with GRPO                |\\n| R-Search
+        \ | RLVR with GRPO                |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        2: Models (top) and datasets (bottom). All four models share the Qwen2.5-7B-Instruct
+        base. Passages is the number of roughly 100-token chunks in each retrieval
+        index.\\n\\n| Model     | Training on top of the base   |\\n|-----------|-------------------------------|\\n|
+        Baseline  | none (Qwen2.5-7B-Instruct)    |\\n| Search-R1 | RLVR with PPO
+        \                |\\n| ReSearch  | RLVR with GRPO                |\\n| R-Search
+        \ | RLVR with GRPO                |\"}}},{\"id\":\"c27ff7ae-8539-5208-bbf9-5776425c60ee\",\"version\":15,\"score\":0.3824674,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nTable 2: Models (top) and datasets (bottom). All four
+        models share the Qwen2.5-7B-Instruct base. Passages is the number of roughly
+        100-token chunks in each retrieval index.\\n\\nBaseline, Training on top of
+        the base = none (Qwen2.5-7B-Instruct). Search-R1, Training on top of the base
+        = RLVR with PPO. ReSearch, Training on top of the base = RLVR with GRPO. R-Search,
+        Training on top of the base = RLVR with GRPO\\nNQ, Questions = 499. NQ, Passages
+        = 40,791. NQ, Source = Wikipedia. QAMPARI, Questions = 500. QAMPARI, Passages
+        = 44,879. QAMPARI, Source = Wikipedia. HAGRID, Questions = 500. HAGRID, Passages
+        = 8,986. HAGRID, Source = Wikipedia. RAGTruth, Questions = 500. RAGTruth,
+        Passages = 6,981. RAGTruth, Source = Web\\nModels. Our comparison rests on
+        a single design choice: every model in Table 2 starts from the same weights.
+        The baseline is Qwen2.5-7BInstruct (Qwen Team, 2024); Search-R1 (Jin et al.,
+        2025), ReSearch (Chen et al., 2025), and R-Search (Zhao et al., 2025) are
+        open-weight agents trained from that exact checkpoint with RLVR. Whatever
+        separates an agent from the baseline is therefore training, not architecture,
+        tokenizer, or pretraining data.\\nFixed-context evaluation. We disable agentinitiated
+        retrieval and give every model the same five passages retrieved externally
+        with BM25. This is an intentional control: our question is whether RLVR-trained
+        agents differ in citation attribution when the available evidence is held
+        constant. Allowing agents to retrieve would introduce differences in search
+        policy and evidence selection, making those effects inseparable from citation
+        behavior.\\nDatasets. We use four question-answering datasets: NQ from KILT
+        (Petroni et al., 2021; Kwiatkowski et al., 2019), QAMPARI from ALCE (Gao et
+        al., 2023; Amouyal et al., 2023), HA- GRID (Kamalloo et al., 2023), and the
+        questionanswering portion of RAGTruth (Niu et al., 2024), sampling 500 questions
+        from each (499 for NQ). For each dataset we chunk the corpus into roughly
+        100-token passages and retrieve the top five per question with BM25 (Robertson
+        and Zaragoza, 2009).\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"4d65013f-56c8-5c54-add6-0e8759a0b816\",\"version\":7,\"score\":0.38224208,\"payload\":{\"page_content\":\"B
+        Inference Efficiency\\nTable 4: Inference efficiency on TriviaQA with k =
+        25 : per-query latency, throughput, total compute, and peak GPU memory across
+        inference-time compression rates.\\n\\nFull Context, Rate = 1 \xD7. Full Context,
+        Lat. (ms) = 667.4. Full Context, Thr. (q/s) = 1.50. Full Context, TFLOPs =
+        59.9. Full Context, Mem. (GB) = 53.5. OSCAR, Rate = 16 \xD7. OSCAR, Lat. (ms)
+        = 156.1. OSCAR, Thr. (q/s) = 6.41. OSCAR, TFLOPs = 15.0. OSCAR, Mem. (GB)
+        = 39.6. OSCAR, Rate = 32 \xD7. OSCAR, Lat. (ms) = 149.3. OSCAR, Thr. (q/s)
+        = 6.70. OSCAR, TFLOPs = 13.4. OSCAR, Mem. (GB) = 39.0. OSCAR, Rate = 64 \xD7.
+        OSCAR, Lat. (ms) = 142.9. OSCAR, Thr. (q/s) = 7.00. OSCAR, TFLOPs = 12.5.
+        OSCAR, Mem. (GB) = 38.7. OSCAR, Rate = 128 \xD7. OSCAR, Lat. (ms) = 136.4.
+        OSCAR, Thr. (q/s) = 7.33. OSCAR, TFLOPs = 12.1. OSCAR, Mem. (GB) = 38.5. AdaMem,
+        Rate = 16 \xD7. AdaMem, Lat. (ms) = 192.4. AdaMem, Thr. (q/s) = 5.20. AdaMem,
+        TFLOPs = 21.0. AdaMem, Mem. (GB) = 56.4. AdaMem, Rate = 32 \xD7. AdaMem, Lat.
+        (ms) = 167.5. AdaMem, Thr. (q/s) = 5.97. AdaMem, TFLOPs = 16.6. AdaMem, Mem.
+        (GB) = 48.4. AdaMem, Rate = 64 \xD7. AdaMem, Lat. (ms) = 152.9. AdaMem, Thr.
+        (q/s) = 6.54. AdaMem, TFLOPs = 14.3. AdaMem, Mem. (GB) = 44.4. AdaMem, Rate
+        = 128 \xD7. AdaMem, Lat. (ms) = 144.0. AdaMem, Thr. (q/s) = 6.95. AdaMem,
+        TFLOPs = 13.0. AdaMem, Mem. (GB) = 42.3\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0024\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Inference Efficiency\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":143,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"2fbe88ac-0780-5b66-8d20-5b99fe0d8376\",\"version\":7,\"score\":0.3772608,\"payload\":{\"page_content\":\"Table
+        4: Inference efficiency on TriviaQA with k = 25 : per-query latency, throughput,
+        total compute, and peak GPU memory across inference-time compression rates.\\n\\n|
+        Method       | Rate   |   Lat. (ms) |   Thr. (q/s) |   TFLOPs |   Mem. (GB)
+        |\\n|--------------|--------|-------------|--------------|----------|-------------|\\n|
+        Full Context | 1 \xD7    |       667.4 |         1.50 |     59.9 |        53.5
+        |\\n| OSCAR        | 16 \xD7   |       156.1 |         6.41 |     15.0 |        39.6
+        |\\n| OSCAR        | 32 \xD7   |       149.3 |         6.70 |     13.4 |        39.0
+        |\\n| OSCAR        | 64 \xD7   |       142.9 |         7.00 |     12.5 |        38.7
+        |\\n| OSCAR        | 128 \xD7  |       136.4 |         7.33 |     12.1 |        38.5
+        |\\n| AdaMem       | 16 \xD7   |       192.4 |         5.20 |     21.0 |        56.4
+        |\\n| AdaMem       | 32 \xD7   |       167.5 |         5.97 |     16.6 |        48.4
+        |\\n| AdaMem       | 64 \xD7   |       152.9 |         6.54 |     14.3 |        44.4
+        |\\n| AdaMem       | 128 \xD7  |       144.0 |         6.95 |     13.0 |        42.3
+        |\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-table-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":143,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\",\"markdown\":\"Table
+        4: Inference efficiency on TriviaQA with k = 25 : per-query latency, throughput,
+        total compute, and peak GPU memory across inference-time compression rates.\\n\\n|
+        Method       | Rate   |   Lat. (ms) |   Thr. (q/s) |   TFLOPs |   Mem. (GB)
+        |\\n|--------------|--------|-------------|--------------|----------|-------------|\\n|
+        Full Context | 1 \xD7    |       667.4 |         1.50 |     59.9 |        53.5
+        |\\n| OSCAR        | 16 \xD7   |       156.1 |         6.41 |     15.0 |        39.6
+        |\\n| OSCAR        | 32 \xD7   |       149.3 |         6.70 |     13.4 |        39.0
+        |\\n| OSCAR        | 64 \xD7   |       142.9 |         7.00 |     12.5 |        38.7
+        |\\n| OSCAR        | 128 \xD7  |       136.4 |         7.33 |     12.1 |        38.5
+        |\\n| AdaMem       | 16 \xD7   |       192.4 |         5.20 |     21.0 |        56.4
+        |\\n| AdaMem       | 32 \xD7   |       167.5 |         5.97 |     16.6 |        48.4
+        |\\n| AdaMem       | 64 \xD7   |       152.9 |         6.54 |     14.3 |        44.4
+        |\\n| AdaMem       | 128 \xD7  |       144.0 |         6.95 |     13.0 |        42.3
+        |\"}}},{\"id\":\"6cc97a7b-3603-599c-8314-9a4ff9700b48\",\"version\":9,\"score\":0.3763413,\"payload\":{\"page_content\":\"Acknowledgments\\nThis
+        research was supported by the Natural Sciences and Engineering Research Council
+        of Canada (NSERC) RGPIN-2026-05716. GPU computation was enabled by support
+        provided by Compute Ontario and the Digital Research Alliance of Canada.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0021\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Acknowledgments\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":98,\"page_no\":10,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"120938a4-ad79-5874-8c81-2df716aecec8\",\"version\":11,\"score\":0.37577826,\"payload\":{\"page_content\":\"7
+        Limitations\\nAlthough GraMRAG achieves significant performance improvements
+        on complex multimodal multi-step reasoning tasks, the multi-agent collaboration
+        framework introduces some inference overhead compared to traditional RAG approaches.
+        Notably, such a trade-off is generally acceptable in deep research scenarios
+        where users prioritize reasoning accuracy over response speed. Nevertheless,
+        it may hinder direct deployment in resourceconstrained environments. Therefore,
+        optimizing the interaction strategy among agents and designing more efficient
+        lightweight graph memory mechanisms constitute key directions for future work.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"7
+        Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":95,\"page_no\":9,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"14b3c578-4e77-5a0b-ac67-ffd3bc81acab\",\"version\":11,\"score\":0.37503988,\"payload\":{\"page_content\":\"4.3
+        Comparison with State-of-the-Art Methods\\nWe compare GraMRAG against representative
+        baselines: ReAct (Yao et al., 2022) iteratively invokes external retrieval
+        tools in a think-then-act paradigm; Vanilla RAG uses the original question
+        as a query and performs direct MLLM inference over retrieved results; UniversalRAG
+        (Yeo et al., 2025) formulates cross-modal retrieval as a unified routing problem;
+        VideoRAG (Jeong et al., 2025) extracts significant visual information via
+        key-frame selection; MemAgent (Yu et al., 2025) manages context by sequentially
+        feeding search results to the model; Mem1 (Zhou et al., 2025) dynamically
+        compresses agent memory through a cyclical retrievalthen-memorization process;
+        and VimRAG (Wang et al., 2026) models reasoning process to manage large-scale
+        multimodal contexts.\\nAs presented in Table 1, linear history accumula- tion
+        paradigms such as ReAct rapidly exhaust the context window under the heavy
+        token overhead of visual data; task-specific methods including VideoRAG and
+        UniversalRAG exhibit limited generalizability due to fixed inference pipelines;
+        and summarization-based memory paradigms such as MemAgent and Mem1, lacking
+        explicit modeling of agent reasoning states, progressively lose track of historical
+        retrieval paths as interaction rounds accumulate; and VimRAG models the reasoning
+        process but lacks long-horizon reasoning capability. Our GraMRAG achieves
+        consistently state-of-theart performance across all benchmarks, achieving
+        overall average scores of 48.5% and 53.5% under the Qwen3-VL-4B-Instruct and
+        Qwen3-VL8B-Instruct settings respectively, validating the effectiveness of
+        formalizing the multi-step reasoning process as a dynamic DAG with topologydriven
+        fine-grained credit assignment for multimodal knowledge-intensive reasoning
+        tasks.\\nTable 2: Ablation study across all benchmarks.\\n\\n\u2713 \u2713
+        \u2713 \u2713 \u2713, Memory Iterative = \u2713 \u2713. \u2713 \u2713 \u2713
+        \u2713 \u2713, Paradigm Graph = \u2713 \u2713 \u2713. \u2713 \u2713 \u2713
+        \u2713 \u2713, Policy GRPO = \u2713. \u2713 \u2713 \u2713 \u2713 \u2713, Optimization
+        TAPO = \u2713. \u2713 \u2713 \u2713 \u2713 \u2713, Acc = 43.8 44.2 47.5 49.3
+        53.5\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0016\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"4.3
+        Comparison with State-of-the-Art Methods\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":77,\"page_no\":7,\"filename\":\"2609.14066v1.pdf\"}}},{\"id\":\"c85f63c4-62ea-58c1-848a-69de7fecc12c\",\"version\":11,\"score\":0.37459767,\"payload\":{\"page_content\":\"3.3
+        Topology-Aware Policy Optimization\\nAs illustrated in Figure 4, we propose
+        TopologyAware Policy Optimization (TAPO) to address the systematic credit
+        assignment problem in sparse reward reinforcement learning training, leveraging
+        the topological structure of the memory graph to perform selective gradient
+        masking that simultaneously rectifies both forms of bias across positive and
+        negative trajectories with step-level precision.\",\"metadata\":{\"ingestion_version\":\"01a0fc547d2f738da4fc73667c19a759\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-afd90130549e21e7d5d373e21bd00946\",\"chunk_type\":\"text\",\"section_path\":\"3.3
+        Topology-Aware Policy Optimization\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":53,\"page_no\":5,\"filename\":\"2609.14066v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001271897}"
     headers:
       content-type:
       - application/json

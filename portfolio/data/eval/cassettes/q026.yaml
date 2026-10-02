@@ -61,255 +61,459 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        KLUv/QBYhbgB+jnSYUQgSWaiDgAMAGYgIEAAgiEkUAEBrit/9J/svYyspI247RO5m0Q/6qcyDyJk
-        wzOUh6oO1v8wH2BGtmbEtXyiZiEVYABwLsgFAwYaBhDuQw6TNL/ksy2DGZs9jtZS+O5o+HqbL3BN
-        k/XJmS9nvsB5bnUnaxlXByuFDbP5OMZGWyyu8pM7yZsGp1ubNwmY/nFka2Py+MGHfNCYcDyODXkk
-        ttxk3WalDU9hkkH6SGyuUcu4Xnnbut7mh5zap4RbeV6h+EInV7dzMXeGYRKneSRy3QxmyKlp2ror
-        k7XvsQohz4AXT03h6GCdqzym+0dhsjngdUW0xcItncaRkAqp0MMtY1wq+5Rh1LSN0tfmuZq257rx
-        avhIjAsdvGCdG7crm4u99j448pT1Ee51phAypdS+tbdOqWXwFJ5CrOILZ7A2fN1njNVTyA8Yv2/J
-        k7PNyfeawY6GkRiJEeuRCuNuEjzug+GsPE+jnBhzM8w1Wwt9/IBMW2qU5xmnSiQKkfMKRD1Jc8ot
-        IZWgh11Dii/P5OudF6/3wkFNVr6W9nbB0e2UF46dT+7YedGy7yBrw9UymKm10T92vXGthhl8zC1E
-        W9AIt/KLVL6W4s7SaKKnkp5q4o2WenaKrEtpmqpSqoqKlIpZSrGipnHvepBTMQ7zSMxbbpzTvGgf
-        KNonmphiCXIgapeda5rqQdVV7cO8iXmcqbIgZ7qc6nkwpoQsazxfN0k52yjPx1Xb5uTa8L2X9AmN
-        kTlqmXTbfGTygz+5XnsMCt8rnJAnFCY0eMtH9n0pY2y9xgyhDL7ErbJys+PS1Dx583h7ObrvHQ3d
-        9uTUjrnlJ7S3eYqKvsChP0ACf/4ACUR+sKRQatDBdWelWIWQCKVyNvgyGUJ7H+N2aRu9rGc6uV7K
-        +uZ6ScquuTbTBx/8CYgHIBwcsvNMt3VsXdY/fm/PkyGnz9Fw8kO6U3Yspasdc3Aq2ZRXwzdXfOGo
-        SdYyuNFd9gLKkU06ynXfE+pkvKNh92r0SXUNK4XvPPfTc8knlOHkTYI7GmI4xpxS3V6voNOGW5lu
-        cR98xiragoEFQqIgaXrcNTHXRlfkPJdiOVwpk8RYrDj3cFNdVbKABSxg4Xra0jyeiHmcpWIkZ8Fh
-        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
-        G6w3AS1PSPybnv8XOLG1Cz1wlvqrpVeN/gE=
+      string: "{\"result\":{\"points\":[{\"id\":\"a9d96eb0-e563-5a4a-be72-fdfa293a765e\",\"version\":15,\"score\":0.45931435,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nWe know what size of effect we could have caught. Our
+        sample sizes give 80% power to detect a difference of roughly 7 percentage
+        points (pp). Plainly: had RLVR moved post-rationalization by 7pp or more in
+        either direction, this design would almost certainly have caught it. Shifts
+        of a couple of points stay inside our blind spot, which is why we report a
+        bounded null rather than a flat absence of effect. We fixed the primary outcome
+        and the family of corrected comparisons in writing before the scorer ran.\\nCompute.
+        Everything ran on Kaggle's free tier, two T4s or a single P100 per session:
+        48 GPU jobs yielding 36,690 scored records across four models, four datasets,
+        three variants, and both conditions. The original study used a 104B model;
+        the controlled version of the same measurement fits on hardware anyone can
+        get for free, and that is the part we would most like other groups to borrow.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"9f91e3cc-eb63-5067-9e2b-f325f5af07fc\",\"version\":5,\"score\":0.45376486,\"payload\":{\"page_content\":\"E.
+        Experimental Design\\nThe evaluation set contains 49 fact-checking queries,
+        of which 37 are distinct, spanning locations, dates and counts, yes/no claims,
+        and people. Ten information-rich passages covering the queried facts were
+        added to the index because raw FEVER evidence sentences are often too terse
+        to support a full answer. Crossing the query set with three strategies and
+        four poisoning levels yields 49 \xD7 3 \xD7 4 = 588 runs, each producing a
+        clean and a poisoned answer for 1 , 176 generations in total. Because a full
+        sweep takes roughly a day on CPU, results are written to disk after every
+        run and a checkpoint records completed cells, so an interrupted sweep resumes
+        without repeating work.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"E.
+        Experimental Design\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":30,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"dfdc115b-8a09-5899-9911-fb57a38a5ae7\",\"version\":9,\"score\":0.4369351,\"payload\":{\"page_content\":\"A.2
+        Safety evaluation details\\nEach example in the balanced subset is expanded
+        into four evaluation conditions: non_rag , rag_oracle_unsafe , rag_topic_safe
+        , and rag_control_safe_random . Since the balanced subset contains 346 examples,
+        this expansion produces 1,384 example-condition rows per model and 6,920 total
+        responses across the five evaluated models.\\nThe benchmark controls retrieval
+        quality by directly supplying context documents, rather than relying on a
+        live retriever to discover them at inference time. This is important because
+        a poor retriever could otherwise fail to retrieve the relevant harmful document
+        and artificially inflate apparent safety.\\nThe non_rag condition supplies
+        no documents for all 346 examples. The rag_oracle_unsafe condition supplies
+        one document for all 346 examples. The rag_topic_safe condition supplies three
+        documents for 344 examples and two documents for two examples. The rag_control_safe_random
+        condition supplies three documents for 321 examples, two documents for 24
+        examples, and one document for one example.\\nIn the final evaluation configuration,
+        context is supplied as cleaned full-article-prefix text with a per-document
+        cap of approximately 12,000 characters. Section-level metadata are retained
+        for provenance and auditing.\\nThe response-generation templates are intentionally
+        simple. In the non_rag condition, the model is instructed to answer using
+        only its own knowledge. In the three RAG conditions, the model is instructed
+        to answer using only the provided documents, with each supplied context labeled
+        sequentially as Context 1 , Context 2 , etc.\\nAll model responses were generated
+        deterministically with temperature = 0 . 0 , topp = 1 . 0 , and sampling disabled.
+        We used a maximum of 1,024 newly generated tokens per response and a fixed
+        run seed of 42. For RAG conditions, each cleaned retrieved-document prefix
+        was capped at 12,000 characters. The same prompt template and decoding settings
+        were used across all four conditions for a given model.\\nAll experiments
+        were run on an academic research cluster with NVIDIA H100 GPUs. Compute requirements
+        varied by model size, context length, and response length. The five-model
+        evaluation required approximately 74 GPU-hours in total, including response
+        generation and local safety judging. The released configurations and run manifests
+        provide the information needed to reproduce the evaluation.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.2
+        Safety evaluation details\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":152,\"page_no\":14,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"da20828c-eedc-58d7-b055-485ddf2e5488\",\"version\":9,\"score\":0.40428668,\"payload\":{\"page_content\":\"A.3
+        Answerability audit of evaluation contexts\\nWe audited the exact rendered
+        contexts used for the final balanced evaluation subset (346 questions) using
+        GPT-4.1-mini. Given a question and its supplied documents, the judge classified
+        whether the documents contained the information needed to directly and substantially
+        answer the question as yes , partial , or no . We retained examples only when
+        the oracle context was judged yes or partial and the on-topic context was
+        judged no . Thus, the oracle condition contains answer-bearing evidence, while
+        the on-topic condition is topically related but does not directly support
+        the unsafe answer.\\nTable 8 reports the final audit outcomes. The random-control
+        condition was constructed from a benign, off-topic document pool rather than
+        independently re-judged by the LLM: all 346 randomcontrol contexts contain
+        only documents labelled none for answer support in the benchmark metadata
+        (1,012 documents in total).\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0029\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.3
+        Answerability audit of evaluation contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":14,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"a3d2f6a7-82ce-5245-a8ed-2520c9e5da50\",\"version\":13,\"score\":0.4007039,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nInference and diagnostics. The separate
+        24-test family uses pointwise 95% bootstrap intervals and two-sided randomization
+        tests, each with 10,000 replicates and seed 13, question resampling on ASQA
+        and paper clustering on QASPER, with question-weighted means and Holm adjustment.
+        The original 148-test analysis is unchanged. Tables 11-12 report precision
+        means and all planned contrasts. All 16 emitted-grounded gaps remain positive
+        after adjustment; the eight cross-evaluator precision differences remain unresolved,
+        which does not establish equivalence. ECR and other budgets are outside this
+        audit.\\nThe run scored 6,015 unique pairs in 419 seconds of model inference
+        (430 seconds including bookkeeping; setup and excluded attempts are additional).
+        Four inputs required truncation, with maximum pre-truncation length 47,440
+        tokens. After normalization, 122 pairs (2.03%) produced nonbinary strings,
+        including 103 empty strings; assigning zero does not establish reliable nonentailment.
+        These are pair counts, not fractions of questions affected; the full histogram
+        accompanies the cache. Recovery can disagree substantially: QASPER LLMLingua-2
+        has 50.3% agreement over 1,000 candidate decisions and mean recovery rates
+        of 0.84 for DeBERTa versus 0.38 for TRUE. These descriptive results support
+        sensitivity analysis, not accuracy against human judgments.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0030\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":156,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"b23e9f67-cdcc-54fe-a4f0-6c338b605762\",\"version\":7,\"score\":0.37336516,\"payload\":{\"page_content\":\"D
+        Judge Metrics\\nWe use Substring Match as the primary metric because it is
+        deterministic and consistent with standard open-domain QA evaluation. However,
+        it can overestimate answer quality when a model lists multiple candidate answers:
+        the prediction receives full credit whenever it contains a gold-answer alias
+        as a substring, even if the response is ambiguous, unsupported, or includes
+        incorrect alternatives. We therefore additionally report LLM-as-a-judge scores,
+        which evaluate the correctness of the generated answer in the context of the
+        question and reference answer. The judge assigns a score of 1 for a correct
+        answer, 0.5 for a partially correct answer, and 0 for a wrong answer; we report
+        the mean score as a percentage. This complementary evaluation penalizes answer
+        enumeration and verifies that improvements in Match correspond to genuinely
+        correct answers rather than increased lexical overlap with the reference.\\nTable
+        5: Training schedule for the three-stage procedure.\\n\\nStage 1, Examples
+        = 2,000,000. Stage 1, Epochs = 1. Stage 2, Examples = 500,000. Stage 2, Epochs
+        = 1. Stage 3 (KILT-SCR), Examples = 196,916. Stage 3 (KILT-SCR), Epochs =
+        3\\nFor each example, we provide the judge with the question, the reference
+        answer, and the model prediction. We use the following prompt:\\nSystem prompt:
+        You are an evaluation tool. Answer with one of: 1: Correct, 0.5: Partially
+        correct, 0: Wrong.\\nUser prompt: Here is a question, a golden answer, and
+        an AI-generated answer. Can you judge whether the AIgenerated answer is correct
+        according to the question and golden answer? Simply answer with one of: 1:
+        Correct, 0.5: Partially correct, 0: Wrong.\\nQuestion:\\n{question}\\nGolden
+        answer:\\n{answer}\\nGenerated answer: {prediction}\\nFigure 7 corroborates
+        the Match-based robustness trends. At the training-time compression rate of
+        16 \xD7 , AdaMem matches or exceeds OSCAR across all three benchmarks, improving
+        by 1.8 points on TriviaQA and 2.4 points on NQ, while the methods are effectively
+        tied on HotpotQA. The advantage grows under stronger inference-time compression.
+        At 64 \xD7 , AdaMem exceeds OSCAR by 6.1 points on TriviaQA and NQ, and by
+        7.1 points on HotpotQA. In contrast to OSCAR, AdaMem remains stable as the
+        memory budget shrinks: its judge score decreases by only 0.9, 3.3, and 1.4
+        points from 16 \xD7 to 64 \xD7 on TriviaQA, NQ, and HotpotQA, respectively,
+        compared with drops of 5.2, 7.0, and 8.7 points for OSCAR. These results show
+        that relevance-aware allocation preserves answer-critical information under
+        severe compression, rather than merely improving lexical overlap with reference
+        answers.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"D
+        Judge Metrics\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":148,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"a0ce46ce-16e2-53f9-b82c-0a975e84f980\",\"version\":7,\"score\":0.37171957,\"payload\":{\"page_content\":\"Experiments
+        and Results\\nKILT-SCR. Weconstruct KILT-SCR as a large-candidatepool resource
+        with training and evaluation splits. Its training split is derived from the
+        training sets of Natural Questions (Kwiatkowski et al. 2019), HotpotQA (Yang
+        et al. 2018), and TriviaQA (Joshi et al. 2017). The evaluation split contains
+        examples from the evaluation sets of these three datasets, together with PopQA
+        (Mallen et al. 2023), ASQA (Stelmakh et al. 2022), and BioASQ (Krithara et
+        al. 2023; Tsatsaronis et al. 2015). For every query, we retrieve a fixed pool
+        of 25 passages from KILT-100w (Petroni et al. 2021) using BAAI/bge-large-en-v1.5
+        (Xiao et al. 2024).\\nFor each training query, we score candidates with cross-encoder/ms-marco-MiniLM-L6-v2
+        (Bajaj et al. 2018) and provide the ten highest-scoring passages to Mistral-7B-Instruct-v0.2
+        (Jiang et al. 2023a) to generate answer targets. We retain only instances
+        for which a goldanswer alias occurs both in at least one retrieved passage
+        and in the generated target, yielding 196,916 examples; teacher scores are
+        globally standardized over this split. In contrast, we apply no answer-support
+        or teacher-target filtering to KILTSCR evaluation split, which contains 2,000
+        examples each from Natural Questions, HotpotQA, TriviaQA, and PopQA, 948 from
+        ASQA, and 1,609 from BioASQ. At evaluation time, the learned reranker scores
+        the fixed candidate pool before answer generation.\\nExperimental Setup. AdaMem
+        uses a Llama-3.2-1BInstruct (Grattafiori et al. 2024) compressor and a Mistral-7B-Instruct-v0.2
+        decoder adapted with LoRA (Hu et al. 2022). We first pretrain the compressor
+        and AdaMem projection module on two million examples sampled from EleutherAI/SmolLM2-135M-10B
+        (Allal et al. 2025), using autoencoding and language-modeling objectives.
+        We then perform query-dependent fine-tuning on maxoul/pisco_finetuning_data
+        (Louis, D\xE9jean, and Clinchant 2025), following the OSCAR training setup.
+        Finally, we train on KILT-SCR with the joint answergeneration and reranker-distillation
+        objectives. For all experiments, we report Substring Match as the primary
+        evaluation metric. We provide additional LLM-as-a-judge metrics in the Supplementary
+        Material.\\nFigure 3: Match (%) versus retrieval depth. AdaMem benefits from
+        deeper retrieval more consistently than OSCAR, particularly under stronger
+        compression.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Experiments
+        and Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":47,\"page_no\":4,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"66d80fd0-4e39-5c16-9d1d-c4dc7964f4ed\",\"version\":13,\"score\":0.36874402,\"payload\":{\"page_content\":\"4.1
+        Experimental Setup\\nQASPER context and token counts. The context contains
+        the supplied paper's abstract and all full-text paragraphs, sentence-segmented
+        for compression; no topk retrieval truncation is applied. On the 976 common
+        questions, full-source token counts have mean 4,672, median 4,557, and range
+        897-11,418. At nominal 0.25, RECOMP's mean compressed context is 60.3 tokens
+        and its mean complete generator input is 125.4 tokens. The reported achieved
+        fraction, 0.01525, is the mean of per-question context/full-source ratios,
+        not the ratio of these token means. At nominal 0.50, this gap between nominal
+        and achieved fractions is about 32.8-fold.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":34,\"page_no\":4,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"d78c3ba3-b37d-52b5-9c67-404e7ea891ed\",\"version\":7,\"score\":0.36626384,\"payload\":{\"page_content\":\"Table
+        5: Training schedule for the three-stage procedure.\\n\\n| Stage              |
+        \  Examples |   Epochs |\\n|--------------------|------------|----------|\\n|
+        Stage 1            |  2,000,000 |        1 |\\n| Stage 2            |    500,000
+        |        1 |\\n| Stage 3 (KILT-SCR) |    196,916 |        3 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-table-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":149,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\",\"markdown\":\"Table
+        5: Training schedule for the three-stage procedure.\\n\\n| Stage              |
+        \  Examples |   Epochs |\\n|--------------------|------------|----------|\\n|
+        Stage 1            |  2,000,000 |        1 |\\n| Stage 2            |    500,000
+        |        1 |\\n| Stage 3 (KILT-SCR) |    196,916 |        3 |\"}}},{\"id\":\"018160fc-c9ca-5110-9fdd-b7268185ecea\",\"version\":13,\"score\":0.35925663,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nWe sample 100 questions per dataset from
+        sorted common-cohort IDs using a fresh Python seed13 random generator; QASPER
+        spans 84 papers. Full-context identity and nominal-0.25 extraction, RECOMP,
+        and LLMLingua-2 contribute 800 unchanged saved answers, with 1,627 claims
+        and 1,890 citation markers. The prior DeBERTa values are the original scores
+        for these same sampled answers.\\nModel and decoding. We use google/t5_xxl_true_nli_mixture
+        (Honovich et al., 2022), revision aa6cfe1dd4 , with full revision and checkpoint
+        hashes in the manifest. This released mixture uses SNLI, MNLI, FEVER, SciTail,
+        PAWS, and VitaminC (Bowman et al., 2015; Williams et al., 2018; Thorne et
+        al., 2018; Khot et al., 2018; Zhang et al., 2019; Schuster et al., 2021),
+        rather than the original TRUE paper's ANLI recipe. MNLI and FEVER overlap
+        DeBERTa's training mixture. Inference uses Transformers 4.57.6, the slow T5
+        tokenizer, BF16, batch size four, and one NVIDIA B200. The prompt places compressed
+        text or source evidence after premise: and the unit or claim after hypothesis:
+        .\\nWe use an AutoAIS-style exact-one decision (Bohnet et al., 2022; Gao et
+        al., 2023): generate at most ten tokens deterministically, strip surrounding
+        whitespace, and count only 1 as entailment. Every other string scores zero;
+        these are binary decisions, not calibrated probabilities. Unlike our rule,
+        reference AutoAIS/ALCE code compares decoded strings without additional whitespace
+        normalization. We retain normalized nonbinary strings, but not every raw output,
+        so normalization's effect cannot be quantified from the cache.\\nEvidence
+        mappings. Fixed recovery preserves declared provenance and DeBERTa-recovered
+        source IDs while TRUE scores support. TRUE recovery reevaluates all top-10
+        lexical candidates for undeclared units, including DeBERTa-rejected candidates,
+        then scores with TRUE. Both retain the corrected precision gate. Fixed recovery
+        retains selection dependence; TRUE recovery reuses one judge. Neither removes
+        bounded-search errors or supplies human calibration.\\nRecorded amendments.
+        Astrict-decoding pilot stopped on a nonbinary output; a second stopped on
+        an overlong hypothesis. An input-only scan found five undeclared units exceeding
+        2,048 tokens (maximum hypothesis plus prompt: 2,988), motivating a uniform
+        4,096-token cap that preserves complete hypotheses and truncates only premises.
+        A later batch-eight run exhausted GPU memory. All interrupted attempts and
+        plans are preserved but excluded; the final batch-four run recomputes every
+        input in a fresh cache. These amendments preceded inspection of any aggregate
+        TRUE comparison report and left the sample, thresholds, and 24 comparisons
+        unchanged. The cap exceeds original TRUE's 2,048 and DeBERTa's 512 tokens,
+        so cross-evaluator differences do not isolate model family.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0029\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":151,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"340b2e6d-d891-585d-afa5-c177ec29a394\",\"version\":9,\"score\":0.35811675,\"payload\":{\"page_content\":\"A.1
+        RAG-Safety-Bench benchmark creation\\nRAG-Safety-Bench was constructed from
+        Wikipedia-based source material using a semiautomated pipeline. We first defined
+        a taxonomy of harmful user requests by adapting the MLCommons AILuminate hazard
+        taxonomy to the RAG question-answering setting. The final taxonomy contains
+        20 subcategories spanning violent crimes, sex-related crimes, nonviolent crimes,
+        hate, indiscriminate weapons, and self-harm (Table 2). As described in the
+        main paper, several categories from the original taxonomy were excluded because
+        they were not appropriate for a public Wikipedia-based QA benchmark, including
+        privacy/identification, direct harmful content generation, intellectual property,
+        and specialized advice.\\nFor each harm subcategory, we identified one or
+        more relevant Wikipedia categories or documents likely to contain harmful
+        answer-bearing information. We then used Claude Sonnet-4.5 to generate candidate
+        harmful questions whose answers could be grounded in those documents. In addition
+        to the question itself, the generation stage also produced supporting metadata
+        for review, including severity, naturalness notes, answerability justification,
+        source-document identifiers, and a short gold reference summary of the harmful
+        answer. This gold reference is stored in the field expected_unsafe_answer_summary
+        . The prompt used with Claude Sonnet-4.5 to generate candidate unsafe questions
+        from Wikipedia articles is shown in Table 5.\\nThe released benchmark contains
+        two versions. The Full version contains 987 harmful questions, distributed
+        unevenly across the 20 subcategories. The Balanced version, used in the experiments
+        in this paper, subsamples toward a uniform target of 20 examples per subcategory
+        where available. Some subcategories contain fewer than 20 viable examples,
+        so the final balanced subset contains 346 unique examples in total (Table
+        2).\\nEach released benchmark row contains a query plus the metadata needed
+        to instantiate one controlled evaluation condition. Important fields include:\\n-
+        example_id , original_example_id , and row_uid : stable identifiers linking
+        conditionspecific rows to the underlying benchmark question;\\n- question
+        and expected_unsafe_answer_summary : the harmful user query and its reference
+        answer summary;\\n- harm_category , harm_topic_family , taxonomy_family ,
+        taxonomy_subcategory , topic , and topic_slug : harm-taxonomy metadata;\\n-
+        gold_doc_id and gold_doc_title : provenance for the source document underlying
+        the oracle condition;\\n- condition , doc_count , and docs : the evaluation
+        condition and its model-facing document contexts;\\n- strict_audit_labels
+        : final oracle answerability and on-topic non-answerability audit outcomes;
+        and\\n- runtime_context_cap , context_ablation , final_freeze_version , source_run_id
+        , and source_builder_mode : runtime and dataset provenance metadata.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0027\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.1
+        RAG-Safety-Bench benchmark creation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":136,\"page_no\":12,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"b9471911-87e0-56f1-b903-ce99862282fc\",\"version\":13,\"score\":0.34404218,\"payload\":{\"page_content\":\"4.2
+        Statistical Analysis and Metric Audit\\nCommon cohorts and estimands. Primary
+        summaries and comparisons use the intersection of successful question IDs
+        across identity and all twenty compressed settings. Each question has equal
+        weight in citation precision, citation recall, answer quality, and evidence
+        F1; claims and citations are not pooled across questions. Undefined evidence
+        or recovery metrics remain undefined rather than becoming zeros. Verification-rate
+        means exclude answers with zero claims; paired verification comparisons exclude
+        a question if ei- ther member has zero claims. The analysis artifacts report
+        those exclusions and retain full-cohort descriptive means separately.\\nInference.
+        We use pointwise 95% percentile bootstrap intervals for each paired mean difference
+        (Dror et al., 2018), resampling 944 questions on ASQA and 271 papers on QASPER
+        with replacement. All retained questions from a sampled QASPER paper travel
+        together, and each replicate divides its total difference by the number of
+        sampled questions, preserving the questionweighted estimand. Every QASPER
+        contrast retains all 271 papers after metric-specific exclusions. Two-sided
+        randomization tests swap paired labels within questions on ASQA and jointly
+        within papers on QASPER. These tests assume label exchangeability within a
+        resampling unit under the null. Both procedures use 10,000 replicates and
+        seed 13, with independent random-number streams for bootstrap sampling and
+        randomization. Monte Carlo p -values use ( b + 1) / (10 , 000 + 1) , where
+        b counts randomizations at least as extreme as the observed absolute difference.
+        The initial plan specified 134 core contrasts and 10 recoverythreshold contrasts
+        before inspecting the revised inferential results. After that analysis and
+        a cachecoverage audit, we added four recovered-source versus summary-verification
+        contrasts at nominal 0.25 for RECOMP and LLMLingua-2 on both datasets. The
+        extension plan was recorded before running these four tests, and Holm adjustment
+        was recomputed over all 148 raw p -values. We denote Holm-adjusted values
+        by p H . All reported adjusted values use this expanded family; original effects,
+        intervals, and raw p -values are unchanged. This is a post hoc camera-ready
+        analysis, not a preregistration. Intervals are pointwise, not simultaneous;
+        statistical-support statements use p H < 0 . 05 . Failure to reject a difference
+        does not establish equivalence or preservation. All inference is conditional
+        on the fixed generator outputs, recovery procedure, and evaluator.\\nPrecision-code
+        audit. The manuscript's precision definition requires the concatenated cited
+        evidence to entail a claim before any individual citation receives credit.
+        A code audit found that the previous implementation could credit an individually
+        supporting citation even when joint entailment failed. A saved ASQA answer
+        reproduced this discrepancy, and a regression test now checks the required
+        gate through the evaluation pipeline.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Statistical Analysis and Metric Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":4,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.34260964,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"1a47c984-4df1-592f-8378-066f0c299d47\",\"version\":5,\"score\":0.32868046,\"payload\":{\"page_content\":\"C.
+        Uncertainty on the Existing Runs\\nWe do not invent new generations for this
+        revision. We reanalyse the same table with a query-level bootstrap: resample
+        the 49 indexed query slots with replacement (37 distinct texts), keep every
+        run tied to a drawn slot, recompute the fooled rate, and repeat 10 , 000 times
+        with a fixed seed to obtain percentile 95% intervals. Exact McNemar tests
+        on discordant clean/poisoned correctness pairs are reported as a secondary
+        check; effect sizes and intervals remain primary.\\nTable II shows that the
+        climb with poisoning level remains after accounting for query resampling,
+        while neighbouring levels overlap. The comparison that matters for the numeric
+        pattern is isolated next.\\nTABLE III BEHAVIOUR BY STRATEGY, AVERAGED OVER
+        ALL FOUR POISONING LEVELS. EACH STRATEGY AGGREGATES 196 RUNS.\\n\\nEntity
+        swap, Clean acc. (%) = 78.1. Entity swap, Poisoned acc. (%) = 54.6. Entity
+        swap, Fooled rate (%) = 23.5. Entity swap, Abstain rate (%) = 43.4. Number
+        swap, Clean acc. (%) = 77.6. Number swap, Poisoned acc. (%) = 57.7. Number
+        swap, Fooled rate (%) = 20.4. Number swap, Abstain rate (%) = 30.1. Negation,
+        Clean acc. (%) = 78.1. Negation, Poisoned acc. (%) = 60.2. Negation, Fooled
+        rate (%) = 19.4. Negation, Abstain rate (%) = 32.1\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"C.
+        Uncertainty on the Existing Runs\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":3,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"a83d12ef-ef1c-5fdd-ac5e-d8d116e734e6\",\"version\":7,\"score\":0.32712448,\"payload\":{\"page_content\":\"E
+        Training Schedule.\\nTable 5 summarizes the number of training examples and
+        epochs used at each stage. We train for one epoch in Stages 12 and for three
+        epochs during the final KILT-SCR fine-tuning stage.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0027\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"E
+        Training Schedule.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":161,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"79722859-0ac6-5155-9a22-c1bba51824ef\",\"version\":13,\"score\":0.3260306,\"payload\":{\"page_content\":\"7
+        Discussion\\nWhat laundering looks like. Consider an ASQA example under RECOMP
+        at nominal budget 0.25. Asked 'How many state parks are there in Virginia?'
+        , the generator answers 'There are 34 state parks in Virginia [1]' , while
+        Document [1] states 'Virginia has 34 state parks and 17 state forests . .
+        . ' . The citation receives full emitted precision, but Document [1] is the
+        compressor's summary with no declared source link. In another example, the
+        answer 'The man who killed [them] is not mentioned in the retrieved documents
+        [1]' cites a summary containing that same assertion of absence. Both illustrate
+        consistency with intermediate text without a declared path to source evidence;
+        neither example alone establishes an independently verified hallucination.\\nImplications
+        for practice. Five operational recommendations follow from this evaluation
+        setup. (1) Verify against source spans: consistency with compressor output
+        does not establish support from locatable evidence. Report whether spans are
+        declared or recovered and how support is judged. (2) Report achieved compression:
+        nominal fractions overstate achieved context size by up to 32.8fold here (Section
+        4.1). (3) Include verification in cost reporting: report generator and verifier
+        input lengths together, while identifying which other costs remain unmeasured
+        (Table 2). Zero declaredspan cost can mean that no evidence reached the verifier.
+        (4) Evaluate post-hoc recovery explicitly: missed recovery can reflect search
+        errors or missing support (Section 6). (5) Document citable-unit granularity:
+        comparisons differ in their source units as well as their datasets. Controlled
+        ablations are needed to isolate the effect of unit size.\\nWhat dominating
+        the frontier would require. Future compressors should merge redundant evidence
+        while retaining validated source links and accounting for verification cost.
+        ECR's limited measured gains motivate independent calibration and replication
+        before claiming general improvements.\\nFailure modes and excluded examples.
+        All 33 failures occur in identity runs: 4 budget-check failures on ASQA, and
+        15 budget-check plus 14 prompt-overflow failures on QASPER. No compressed
+        run fails on these examples. Primary comparisons exclude the same failed question
+        IDs from every setting, so their estimand is performance conditional on identity
+        success.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"7
+        Discussion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":8,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"eb9610c0-e536-5645-855d-f24b38ed799c\",\"version\":15,\"score\":0.32569048,\"payload\":{\"page_content\":\"6
+        Discussion\\nHow to read the R-Search result. R-Search sits above its base
+        on all four datasets and significantly above on the best-powered one, which
+        is a real and consistent pattern. It is also one model, one base, one prompt,
+        and one scorer, so four datasets are not four independent replications, and
+        the effect softens under a stricter variant and a looser outcome. Two things
+        would settle it: a cross-dataset test declared in advance, and an arm fine-tuned
+        on the same data without RL, which would separate the contribution of RL from
+        the contribution of fine-tuning on retrieval data at all.\\nA note on cost.
+        Everything here, four models, four datasets, three variants, both conditions,
+        and the control that makes the comparison interpretable, ran on Kaggle's T4
+        GPUs. Careful measurement was the cheap part of this project. The expensive
+        part was reading the construction code closely enough to know which controls
+        we did not have to run.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0023\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Discussion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":103,\"page_no\":7,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"ab994fb4-9f67-574a-b284-e60c2a071567\",\"version\":9,\"score\":0.32228166,\"payload\":{\"page_content\":\"Table
+        2: The taxonomy of harms covered in RAGSafety-Bench. The number of realistic,
+        dangerous queries that could be generated from Wikipedia articles varied across
+        subcategories: the column 'Full' indicates the total of queries available
+        for each category, the column 'Balanced' indicates the number of queries in
+        each subcategory after sub-sampling to avoid topic bias.\\n\\n| Category       |
+        Subcategory          |   Full |   Balanced |\\n|----------------|----------------------|--------|------------|\\n|
+        Violent        | Assault/battery      |     33 |         20 |\\n| crimes         |
+        Abuse                |     47 |         20 |\\n|                | Kidnapping
+        \          |     17 |         17 |\\n|                | Murder               |
+        \    23 |         20 |\\n|                | Terrorism            |     28
+        |         20 |\\n| Sex-related    | Sexual harassment    |     18 |         16
+        |\\n| crimes         | Sexual assault       |     15 |         12 |\\n| Nonviolent
+        \    | Fraud/scam           |     63 |         20 |\\n| crimes         | Financial
+        crimes     |     20 |         20 |\\n|                | Property crimes      |
+        \    34 |         20 |\\n|                | Cyber-attacks        |    135
+        |         20 |\\n|                | Drug-related crimes  |     16 |         16
+        |\\n| Hate           | Hate speech          |     21 |         20 |\\n|                |
+        Hate crimes          |     13 |         13 |\\n| Indiscriminate | Chemical
+        weapons     |     76 |         20 |\\n| weapons        | Biological weapons
+        \  |      8 |          5 |\\n|                | Radiological weapons |      7
+        |          7 |\\n|                | Explosives           |    304 |         20
+        |\\n| Self-harm      | Suicide              |     75 |         20 |\\n|                |
+        Self-harm            |     34 |         20 |\\n| TOTAL          |                      |
+        \   987 |        346 |\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-table-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":46,\"page_no\":5,\"filename\":\"2609.11758v1.pdf\",\"markdown\":\"Table
+        2: The taxonomy of harms covered in RAGSafety-Bench. The number of realistic,
+        dangerous queries that could be generated from Wikipedia articles varied across
+        subcategories: the column 'Full' indicates the total of queries available
+        for each category, the column 'Balanced' indicates the number of queries in
+        each subcategory after sub-sampling to avoid topic bias.\\n\\n| Category       |
+        Subcategory          |   Full |   Balanced |\\n|----------------|----------------------|--------|------------|\\n|
+        Violent        | Assault/battery      |     33 |         20 |\\n| crimes         |
+        Abuse                |     47 |         20 |\\n|                | Kidnapping
+        \          |     17 |         17 |\\n|                | Murder               |
+        \    23 |         20 |\\n|                | Terrorism            |     28
+        |         20 |\\n| Sex-related    | Sexual harassment    |     18 |         16
+        |\\n| crimes         | Sexual assault       |     15 |         12 |\\n| Nonviolent
+        \    | Fraud/scam           |     63 |         20 |\\n| crimes         | Financial
+        crimes     |     20 |         20 |\\n|                | Property crimes      |
+        \    34 |         20 |\\n|                | Cyber-attacks        |    135
+        |         20 |\\n|                | Drug-related crimes  |     16 |         16
+        |\\n| Hate           | Hate speech          |     21 |         20 |\\n|                |
+        Hate crimes          |     13 |         13 |\\n| Indiscriminate | Chemical
+        weapons     |     76 |         20 |\\n| weapons        | Biological weapons
+        \  |      8 |          5 |\\n|                | Radiological weapons |      7
+        |          7 |\\n|                | Explosives           |    304 |         20
+        |\\n| Self-harm      | Suicide              |     75 |         20 |\\n|                |
+        Self-harm            |     34 |         20 |\\n| TOTAL          |                      |
+        \   987 |        346 |\"}}},{\"id\":\"23dc756c-0b5b-5246-a06f-c22d257662e2\",\"version\":9,\"score\":0.3193239,\"payload\":{\"page_content\":\"Table
+        8: Answerability of document contexts for the final balanced subset ( n =
+        346 ). Oracle and on-topic contexts were audited with GPT-4.1mini. \u2020
+        Random-control values reflect construction-time answer\\\\_support=none labels
+        rather than a separate LLM audit.\\n\\n| Condition        | Yes         |
+        Partial     | No / none    |\\n|------------------|-------------|-------------|--------------|\\n|
+        Oracle unsafe    | 200 (57.8%) | 146 (42.2%) | 0 (0.0%)     |\\n| On-topic
+        safe    | 0 (0.0%)    | 0 (0.0%)    | 346 (100.0%) |\\n| Random control \u2020
+        | 0 (0.0%)    | 0 (0.0%)    | 346 (100.0%) |\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-table-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":169,\"page_no\":15,\"filename\":\"2609.11758v1.pdf\",\"markdown\":\"Table
+        8: Answerability of document contexts for the final balanced subset ( n =
+        346 ). Oracle and on-topic contexts were audited with GPT-4.1mini. \u2020
+        Random-control values reflect construction-time answer\\\\_support=none labels
+        rather than a separate LLM audit.\\n\\n| Condition        | Yes         |
+        Partial     | No / none    |\\n|------------------|-------------|-------------|--------------|\\n|
+        Oracle unsafe    | 200 (57.8%) | 146 (42.2%) | 0 (0.0%)     |\\n| On-topic
+        safe    | 0 (0.0%)    | 0 (0.0%)    | 346 (100.0%) |\\n| Random control \u2020
+        | 0 (0.0%)    | 0 (0.0%)    | 346 (100.0%) |\"}}},{\"id\":\"3b9dd4cf-7c9d-5a88-b06f-a100567f4a63\",\"version\":5,\"score\":0.319171,\"payload\":{\"page_content\":\"A.
+        Setting\\nAll runs use the corpus of 19,597 FEVER dev evidence sentences plus
+        the ten added passages, the MiniLM retriever, and the quantized Llama 3.1
+        8B generator described above, with k = 3 and temperature 0.1 held fixed. The
+        dataset comes from the FEVER benchmark of Thorne et al. [2], which pairs claims
+        with Wikipedia evidence and is a standard resource for fact verification.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"A.
+        Setting\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":33,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.00078334}"
     headers:
       content-type:
       - application/json

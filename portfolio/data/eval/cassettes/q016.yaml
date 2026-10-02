@@ -60,254 +60,461 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        KLUv/QBYlbYBKhSuXE3wbqZNB8zAq75uivhKlZE9Fd7DlkOtVRyqX8Y2w/Bt27usyW6LdLsRubuK
-        uEMRHxEjNGNCdHR0aJiNDs3+v5+aKKiNGm7cSpFNZBMaAoEFuQW7BZdYLYNfuawUFuDPI0LLmVwX
-        c6aTLzzvqFsFZ6Xw0eXIsyd7wJTP1V/cGlN5PLtSnqfw0EEwgRB9dfzjyVWyk5t1ltCy9o81DUaX
-        tePqmIMYBh5TghGebHc5tyrhNTd73K0DlteFP4/JhBK9MTrZQrZYYxePmCKU6JRCxmrcMHdxyd00
-        cJRghDfPSjCCc767xB88HeyCWPNwHIPDY/ZUwozCH2ffXCdfZLt1lFowGXPLNWpzMTr5tZPsUNrT
-        /XGMkMK/ZcxJSB8xK2c7V8s4tP4BxGSs8tU1dmuOhFiFHLwuzzr54iph1tN6Jso+Uzj3tCd7EFFn
-        a9pGH+NmnbHq6mZv+LJUXpDSzbYJsQ5/MhFma52zPdedLPni9wrpsdrVbEcdrWtk+jcX+5MZkECI
-        fwBxupcNKeWpZe2ezbag3N5QhhfXnRHuhaf2xlTH87TCDMYn2/HFn6n9A4hZJTvZzpH9TI0rWfs+
-        Zif3wpHn49aulYzWs0q+bCkXu6gt+V2DDI5aBmm11eRL/3HtjmvwAcQvgNcyNosrce0NRw06Caf2
-        COdeTqsKWshUbyqdMIM/mI6xrVPmSUkkEwgVWUjiHEW5txLLsSZXORLpUc6DXsRx0lRtZJI0IIAA
-        QsN62hNdICiSpIcCRaRGpcHZSo7QajRQVGm0bCgpqjQy+EnIgEbTqHIl10bTwOpqjmmjadQMro1K
-        g7VMdf0aTQOSIMipGVydRz1I4iiIVS0FYYlzkxXZyS1lcpVFQRQnilCWqqp9b1JJIpKdKEhiMVVF
-        KLvQRhADMOSGuUbToEQojiSR9aAXcdFOJkiSTNRkMlHOgjaCGgyQDSvlS8LGB5XG1n1bOWs0jWer
-        sNJqu/gz4fAYCooJ93DMPUgcBSOcvsgw84ijYAQJdpKxN4fPTL4wCkbIJlzgdbnwkjuvzTC3roRV
-        wp2VVniBdS+WsiWcXCX8k0vhs40zIIEQh8/o3gMhhHDe9fRJvqyT7Z6J1cFZ6Sm81XwJyvAhcdzq
-        LTY9bx1AuT3+AcSEQ8c2H0Cc55ZxxXCLhxBCiNNDYAWnz8j97Az+/OF4JC3PnFw3VtpZ1dY9zuUH
-        JUHSn7iv/EvXnRsGx2dbEm6d7R8/uXX1ulXna278vppNq33mLc+4l8vxkpB+X8HcRl9hBbEMfiZW
-        kG4btVerL/7wBVbHHqr+JaGEe82tjtHd4I8rdkHGnLFK+UEnYbvHhEKJHJfboTvGbSveZGJkDLf6
-        vySsO1nrT7iW1lNjCS1+r/ARbm5Necq5VZ6/JMQolDCD71ZnkBYBOM4fv3b8nNrS2bhls607DgAC
-        IC2UL7FpXay+6ZtMjEsxPa/WtO3izytIy4PpyNUfe5CJK0/Zwcbc39wnt9I3pj6iyq3daYWXffok
-        a/x4i3vBNHbK0IKONfrIrzM58SczeetgtmX13OhydugCODzmlWNzikvAYyCEEMcqxBw+g+x4Hr6h
-        kjG6Zqe41X+cwXMxesrXUrraMbxyhj/aVvlCWp6H5AGsPB2F75eEl8mUp1Ypz2WpcaW/JHxy6/nk
-        PiKDGT01bT/5zXYqndD6/i1XKuEpfIXnyRjmjWxYZ1cK3+PCKlm2lsGf/ORWYfW4DlK60b3ra+R5
-        jLkZz+8jHhGkrfXc4HjGseqpOZWvt1Wwbo6DGVbh3Kvj91Z/sgewus1gCjM2q1bTM9bhT5/Cc9zm
-        MpVMXxfDXMJTrlvpM+CTrGl7CrEO0sJxs7hsWNd1jBPPzM644ozVW/1MhXEzWDUNn2hUGlVyle0Y
-        wNe+7ZhZrdFAJlMEQZIHqjR4tqONRlJpyIZ08qXRNCxKJFE2kioIJXJ2cutYbkI50uRFznPQShSJ
-        1ag0Hmx8oIBKg1YJW2t8UGnUuFGejQ8CksNRZOJAuKKcyGSaHEoUTSJnRVNEikCZyBQ6ntppRTbc
-        CqvcrYOvg9opxOqppvV8DKOmbbRxnlwHaiqMmgdCCFHBmI2xGFO5au0xMfEmglGjjysdjnXhj4OV
-        wrkx9n1tiWFogDsU0vI8rvu07U0vCTMnRjwe/Tn0urXW872ROAlGuOP0c1nC+Bh3wqIzHBJxMORO
-        CdsxfEyd5K0Dpnc4VnUl1w0ZKhpTv+xWo59nrGaOPfTU3kjL80h0iT8AxGdXt9aLLniABj6EeECO
-        Z2fIjmflYPWSHL8Ur0wflbQ8IhAkJWByNTcDxx/XCrM+z4URb+IHp5HE4TEchA9OmYM/NHbX2c7t
-        KX4CEL/g9BEAcccn/HH6EaTAofvYnTFWzx5ADAa+QAvS8jxWchz+zbYw5FZ/LPeUscmZjU5cCS34
-        jNNvAMQpfDZP/MGwwYRFBYsAPLkCqKhQEYAq2+SzbSJF71rXyW3WbLY14WoO5pYnJij8MQUnM3nj
-        IFEgiZIoymS9STVxECViOUxR60iVRDkSQ5XzLEkUeRIkgSaQSDJJJOiRIEqqXOAB5v6J/LrifO12
-        yc3wGDe76HAHZ5VMwdm6GNz5BSlOuS1cMsbBK1JFhtjZxZ8Ob6zYHPzJ3TmZg8u+RLastWhkx9kV
-        i4GxvVgCJmNuboNZjEquc6OYDOfcOoNHPBfOc4A3kjPbtcEjHgpvJM8rYpvBIx4CvJksMWeAN5et
-        dC9wXjzi2fBn4o0UgQhzPWyGRzwavMHgC6hABCLEl8EAa0Nr51Y8Im6lcuvwiMfCm34secMjnoo/
-        Ft54wFsHHnxAhEjxiKfCG8xtjbEUj3gm3lwaA/OgMzziofiT4U3cGCek5dma4VyyI+bWOQbAcLoN
-        7ZpBLwnf4yrj2Z/g8K53ta3ItMJjGF4yWClbsh1liWk0uVjd+cna7D+Wczk6yVqfzrlMeW7W406+
-        0K1Z8tWTK2Nc98En11E4V8vaNeVYrWRa+Zpb/+Q+7rpR+IMhd/J8G2wPDZ/8vrGgcOF0yHABwzFv
-        qISPuXqlW3Yau7XHvTCclef5AinleV2WxXFzkEJt374uPaWXQPlz6VYzxNy+kW0xQeFCw+ljdhks
-        TRMcamu1NbjsS5j8eSS96zUq4V4SIn8OiU4Zc5tBIkyXp+P3/czErbTa6LVV7uVlk+v5AiW8BMif
-        T9dOvuzlau9ZqYSR6VanfOmpZc3EH4oxN8Oc5OoTHLa4F34GpPQ1VjmrVtM6MSy/p4xRGKutlC8t
-        D81mW5O1uvUzsUquFFI5oZbx4xwQ4ZHodf94NubkPgDEHad4B0IIwXF7jDn6x9XBx1Orded+gsPC
-        C5wdLrsSOc/tghlIi9UOhdlG6Tp7SbhVcsZxtvX4kpAjxDAPXni5ciZjqNxLt9q6XzJu1fFyZMtX
-        ybR5LOFWnlXyfCZafeGPhQmLP3aq1RRjNoaznRZmnSbjin0Tf+y215MDaZEN6RadbArTNJkoE4iL
-        PIYoivUcRHEqirJONFmUA00UiBOhMDSZKAhFoiz7Fm6j9kz11/whOY8cFxxe+rS4BAiPPngIIYSA
-        N8EIv0CiwsnBn0fT6PgELBAiBAuE+GwKD59p8Ae+nVW2+76RfsEX8HA4fzgUID1Tffac/Mdztw7o
-        +ZKLuXt410OW3dkjDj0A9/B17uHZ6WL30GQbPb3wa6J13mKcNb11YYImiaJQECWSRCRnLUWKHIsp
-        lROJQJRjSSjPmV4EkSCKJU3RxCH34Rx+52mdq1XatVocXwELhKCABUI4FtglY3U7Wo7/+YNCuBlP
-        p1K+5mZwXGpmV8cXZ251Jd2uvyTMso3G3WldkJbH6jcVynSrkidbFnx0w+ppY6pzdXzLU4sAiD8e
-        ARAY7vgEihKMcIkIgJjwhyOj4xKSMczhJVCBEM94XvsGwwSKO37BMUyguAR0iXvwcElIt0vOP4C4
-        4xp+wQWPAnNCWixMOBJ+ttWhMomkKaJEXCSZQFzEqpxzKohVORSlohyu1nIo0PQ4ql4EVeyCEe5l
-        nWy2VedGaDm+XLk9JEgeSjR5KLdaQuSBRO8aIQHyTHAvCdRDOaRnylTHXJ2VOtVGaWQM082B6fgK
-        s95HZI5qm21Xd/hj9VmjjeQHLxdzq2Uqv5l8YUxr8Keibvc0U50vyTEu5k4hRnm+t25drDQjF6sQ
-        87AwYeG4tNBqIkKBIBJpJYoh7lGTkzgVZa3zIhHKiSiPcqilqMlSKH5SNJEm6kEmkKMoEQeCnCiC
-        ICeiFjwgz8E0dulqH9QDmTTA0bA0LKesdZXM85r485AgUVGbm9aOwg0SINMjcd7teMPymOuoBkcB
-        GpZfEjYPCRPokRzHpcmXIZO5lca4bufm3L5SxuqDt1g5GpYHnVs7/qAwY52My37GRIreZEAibzKk
-        6U1GJHKc52LuLGGUQKgJBZFA3ESx+EkSFIkizk4olbMRRDnSm54TsSjStJQUmVBRBP15ci2r+e2s
-        dyrUcnQNxXSMi1XJ0EHL2uj5sthkjGVmmomXTMxmW3uZrFGWnTGlHN3OmsGV8nVt0rKnLzZ2ObnW
-        1T43wgzyJXdmovRANg4bXPYhD0U90zMUhSHhm8dObi17au55cV+VyxrzoxVaLLl6IomV2zSsS0lv
-        DklvTkVvDlEYp1jV+P3JnbCqMQa3sJCWh2trn5AbClu+q4RORjbl7TGG3OnMtuSFP5lY7eQHOXPw
-        SXhBDFbJbrJ2rEKUyRrlkhCKnonYtfVc+Dj7nmZQK9PHkcKMQrmY4+yQP7PhZTGmkJaHWmAxQeFC
-        w2OM7sOQOzOVU4FMrvKCFWaubm57POW6JnqmeoWf4KD1hsuGPBCFGv4sTwqPccugo6MWFSIRBaJA
-        IgkV4WlCUc6hQCAT500mlANJJpPj3IskjwJdUnsiEoojj7KSSMITFYmcCXTChMeUsuupTdi6b0LD
-        2FadrU2gWYwT4sqmk7UJMavYBAwGM2HuZQJfm8FGM1mQM0GQc0Hr0bBgNUNnZ3AMByc/nhlIePlo
-        WHpuF8TohffmwWJoWBzV8ZyyoQV1M35vlkLixJ2VwgrrPPfaSs8P56A7KyQByd5EJKbsDUVCyt5I
-        Iokoc/xRvrDc/pAmCQrH4wOIBy/Q8Uf1oDxR9EiXdNRNq1tDngYcECJ6jtMJV6ss97Q6qPGLLHfD
-        HxpZrnbmKRt6rpKza1unYWlYthjhs53XwncH62aMOTqJpEgyVRS3E4ghKnIcQyhOBKooJ7IikGNF
-        FiKJSCRRNEHvxb4kv+sjtJhuz4B06z4nt1IJpSUSUZoIJXpDKclxmofFn1wKjnOQcXIypuPrWn0J
-        FMrppT+Xotd9I1XaFVZHQg5/OCDCJ4ca5XcJkj+nPFO9uZgE6s8pR2eqCq37fo5krSfuSMtjMUHh
-        QoMjQTIbCdLr1tVmqlN+Oy9+WwccEOHJrWQ8awbTrepJGWOzZyqs7hHRCunm+lXuSEuFyoZws8+t
-        J2vwB0Pr+iZkrDaZ2YzVX29exJNOJjNXworKnXXfMG0Nw/QCa1fUCxRqMpEokAhHkSWxKI7CjkWB
-        KA5kYsqReCJxpGonlGRNkkRZj52ldLVM85jnPpzjz8LLKRyWMJtc+T0qx59MfKzjj9WTLxpekR60
-        Tr7Q1SR8crUKTkf5vWawpI3VudUKrTb6x1Hb2lGmrZ0+uWnMGHXCyz+5jWHrzezrTcaBC+NmMd26
-        /s29eL5ujVWIaThuFc7OKMyoQGvNYAuonHzpiwJ2ZbdRo1tvElbZdTZG4R+t8rHSB5c4Bt/HHViY
-        sPjkB2kFNYkmlGgi4XXVm0ASFzmQm1CcKHKUwxQJxIEiCgVZEkoySaTleUT2VFfozyP6AcQr5eqM
-        VVolZ3CylsGQo8VT8qynMMbNMEygmKzxbIsnYxWjjq/jV4IRJmkiRSDIOX4ceRIJEiBM0mQSRSII
-        ymA3Ko1GA8ICogkkkjVwTqBH8kZ6qFudiW+a6ZneUB6owpJnKg4b/MmNnsgzFazPxLkcpMklYbNd
-        NQgfvGJBWkD4QFoqFqQFhA+kpaJl8OIDuDBxxiq2deZyKfxxLkxcckPhZFoAaXku2ZODV6A3G16h
-        8Er0itVn2RN/Yne9bCh3awQ840ozF9JSqVrW88HL9HB8kigpusQp5lqr8EAQ1EAQ1EiXOK1QoR5t
-        4+RLBsc/lnCbfPnLNsmn8Fq5nPXENN/oHbCcXOPbopPwW28XrLKlsjUKL/nCby4J58K4d7YnX7jC
-        x9PRSmF83MmXds/MzeCs+CXhZLpRB2flCgIcg0iCTJIUkVBQpJpMk4s4kAVZhy0I5Tj3nCOJWBSe
-        pIqCLAuqKAgFMk0gEGsdCnIkkmjiSCg3E8nqNywZNCyX7QGcjfV7ZudFSY80PZCJo9tJUpOJGnOl
-        jt8blkeG448HgHBUOlARRHmmyRsK8kAmbyDogUwcWt3aUu5Eih4oEj3R9nbShiXbKjQsfxy52ghj
-        U0jkjTS9iUSvXB3fOP74AMLxhqVhuQSKRBMpmkwWvwl6FArEoaqlOJMkopxJEkUOZEUikYNWgkBM
-        o/a42szbKr1MplVHuFVnzCMwOyXcOtnJ7RJlU9EvCRsuv3aOL44/lKHVFKQlEynlpSz7FL7y+BGZ
-        vacVRgrLHkIgAgZvKNw6g+MRHHu7eAMzOJ4BQdQjeGrf0weEMQqOPq3IkOEBYQuO09l1m3DkhWky
-        jHthjILjdHbXbeLNY5Ig6XKz120hw5utwgEt/Jkt23WVlsfhyQ5W2vJaJ/LrylObbrv4ky3PSiWm
-        36Ozlz4gEiQdNkYBYhdvtgM4ZFt/QORucFxyIihl+YBcsjM8IlNhBkdtsvaopksuJIDjmF/S7UYt
-        mF3/WFZodsG3c7XGyP4GacGYzcEfSyaJiiTShKosK1JFUeRIUGTi7LMoR+LIORNqn6MmChRBprlZ
-        c+W1vR4UFk49E3W60cmXQx4IxPEq4dRqt4VVCjGWN/ypm4Q9u1Jp3T+uokXxJxJ5JH9yJdADRe/6
-        kDBJjtPs0xOZKpQxJJwYrRDT8+J+cvKlMeRmWKfvtcWfKlfCrBvKHw6IMFW0Zcw9E2sG19MYtynA
-        BgvHWNaaumlYfeNM1iAVfuEU0UQyTaBpAolUFDuJHUmSUBwJRUI5G0GcQ6GsiQVJUgSJRBPJyUS+
-        3ubBWYeuU5EhwyuSCQ6nJEfrDtI0TSASQ5hyLEUVBDkVhSeOZCHKiaLpOZQIFNmosiSTZMrISMK6
-        1/Z6g+F21qbhfXIlHAghxD+AyGYEuyC2ubZ2fgCBYXiZm4Y/lQ8gOkjLE1deMG7TuWnOJWGlSs4k
-        3CZqkBaIeiDT5JEeSPJIkIlCTdAERc8EkSJPFIkm0vRQpEucgjwQyCXOYYM/0PREkku8iS7eEzDS
-        Ii3PKekSx+C5PYd5YhVemaRFMokgEIqCRCCJqpxkJZFDmSSV8/hRTmRSrROZ3kRyEVMUFPHkS1x6
-        Smdb1GxL8kBcd0pL8+yKuVHJlwp0b8XFnolcYcO683KrDktofXbDGay/QLpFl8GnDZmDKS1PE+Fa
-        FNa4Zb9kx334UZiJs1s7tTBhkfHnyZ2Qlsfq5Ym5bTJtLssx7qUznqc84dYBT8iSCHqmN9MjObMz
-        iJyZjZSJ0COZ3vXTI03ZZnBEJr7OHpDk+GNZ7awG0vJQjozVyRfe4I/kcLiYaEhxCjV2GZwBqXXZ
-        rfF8FDe6FdJCNxNjpZMnaxnsDc24oqEQq03RYMD4RkINXpltHVenlT4xbm/w52ExQeFCgwYKFxc2
-        vLEwYZHheEjObpeEGSoyZHizoUIDhQoWjjcXo5AWSRKRJAkVcQy9yYqqap0jQSQURwJBKIcSRZ5T
-        RRTESSQcQRwIIcQbQ/JcjK14BinGVmDushfP8Hxy4s1eGgNGpvjCuBHgzYU7dgI+N9PwpjEkv8xl
-        MTiEsy84LbxpiWHsxTOuAYxNqDTxBuWhVI2DkCllZopGQgGjEAggMCAejknG1Kr1AxSAAXWWXJJg
-        o43EIIZRDhlDjDEEBgQAIAAQgAwwAz+rDznJ3L4xDw5qAA30cbmdj65MTfAJAu4aWUjvZAmiTmtj
-        8ux0arRU1yaDPydavcrzCDg6zCI6/BREl+U3hJqZyMbR4XjWoURodtxb+Z37u1KR3C1N5iBJ8/pc
-        3dIVE2GExkgvSIQV/VJKxdSBnI6zecS1R7lNJk5ydDvoZfO3c8tn5KhUIV1yY0jlNyGr3g7Aw303
-        RMKsfmuICJwBnL7/QbWHzsYYMnki/2uFGbsOGOveM+Z6teRjUFoWC1/oypQU0mJUYwPB9BVRYStx
-        SB2fH7XxDchdyaZH4aNYMCUgJHVCbZIzaCXPwLlB53K7yo8rSDyMzqAp/cl2XgcDbIE21JwAELcB
-        xmXpPXxXMwPYvPHoqC/6jws9OcAHsTxakizD9k/Ipy+geqBcFsmevmYadZR3/sgeoEVI/gCiy6gp
-        lMyFZloHNrYEotTVr+6F4ZmgNXftVKh+qSiA+lNhdAP0I9DcABz/cRvzjt7n3kWm3cuJDsAwazpj
-        kLRu9VTegFI47Gow94eJ4V4Y+eIoDJwzYThZEwG+ENenXlZPtgc0QbJGmdA4HzhEGyEnVYiwjPpK
-        OyqTipNlQRkPtWTpz0UtQ+dueBSbNb5OLpe1tHnTJXdeCHCJyraD11+YrI8cAVLQ25eoAkl8EkOg
-        jj3f2OK0HFaOFCarD9OzWJb+HWTosdp+8ckOv0jx5n46E/JitTwFZUWvFDNwVx5/m5oOHWu9z6Ii
-        sjSLBGZoJot7N0MQyirGonTErcJiHObOwGWhTvjFLhPPIhEoW+iZpnwuUjj2VA/IYNWG1lQYn2tM
-        Q7nBZIIhykKL47gqqogXRMCrxmmLHNJyL2YWR3q8x/CoKNjhj6IJVwXsYjscbmrejIJ9ZSkDP+F1
-        g1MjGriA5PVUiVAsd3m9dJ4ygvz79Dfxtc6PF9+EPiz3kg10isaepx/85pXXG4ZHMhLTh8y8IIhy
-        WnS47dphI/7jNipXYZEl85HxN35Y/HefTMZTzHNepH2Go9aQswwl41J/mCtKj1EPLOTXSxhJc+dE
-        H085lnakz23lV67wGZxs75jqUv7hLfhjSXc8HuEmPeZkWuOsRDhnSOKWdUbqFSiAvtXlFUglKaMG
-        UfkovipT6wWr4s84ijolzWvhodpWZNGHUnqH1KW6aKvF6aMMgf7QYoe+fI6VQ4gD1KvGVM4m9hhO
-        vtBcrP9sZvPl8h6UqndzEZ1Lh9bkAFPu1A3iVVw9/SlpSfx1BBZ3Wsv5pVjliqIjRFFXgophZGQK
-        DzYWeT9O/NnFaa1mZKTNfwBBDDA/0ipcr5iKIvmAXbSZE2d94vzbqWUpX6/7ly275eeooRI+okPp
-        BkIXJLQVlK7wC72qz7uwZmPYNmlloGHslD5njcfi0kflOP6zeHWJdMEvEWmCq/CwJQGeY7RRG0fW
-        ycsigqSDSyzFmqggsG2ga0DQzvGUsq46xD54IzGtdqJkYNWQYXp2aLW7cLrwRaOBzoWsZSPnJJp1
-        Jtol8ftRkJXwre2XHdAnylpikKWCgUfXNwmCSJ5TeRdqYpXJkeKRDaLDLadZea2mt0P/P2RDhu51
-        N7dnvAlpsDRN8EhY2nFXPnw1shXgIqazVgL0OwAiZJaYBt2JG3vTVROur1d07VSm+CzVTPVi60By
-        lML2NyEzx6jzmsd7IIBhJoqRr4U5HnBYTVrqnAY3uVcPzWTwDSVJYcDNwGYgO78bQzBlBOTsSKSB
-        fXvlgb0YNjOiy85nXot23DqeIgnikct2kH8dxJ36/EnAZa8Axu2rBDEmIeKHrUNIxSJSAh8+jIAd
-        L82RzgLKUKYj5wEOPgXw9s5gcCbfl4UCz5nrGPm4f5r4mby+bxsO+/WKhYX/25qylTIB/HaTzFs8
-        xZvOWpIGSxAfrrWg8WVhhcdDmG6NLQ7lhT5dTxXM9E38PcAPJbO0BGbRvF2gr0TBXqb7s8khKIkb
-        QCEsrKiVUh8kUKaanT4crYdqXBAzhTd1Uu37mJKpAVP9+/msEAgUlAXb6Ms5Aw0dm8lbaa6c9P9d
-        X4GiiHVSaOrbOTGGMCNAPECWFtHuQl03hhjYQv1FkWmZF8GmgjyTKLcQLoyKJYSvNZpFmlkr439G
-        bEmgSE2d+8RpX7p8k18L8fYU9TN90ALJbS2QFicX8Sy25nGeubpYS6VUWlIB146Scf46R3bZafSN
-        e67iqBYxyOunlz2nF0DR2XAT8pjlyygvO8On4d1Lb9Qx86gkdjGxAxIkWuhDp0dcGSxEdAeDyWSw
-        acU9OXFGdBBcKmGbDsQTzvw/A/NniB3T0yAME0QsIxkeTXzI5V9DUn63GDsN9SFQbADOfgoIVg3e
-        xlVfPIjJUqnB56FFoKxfJyqE1dGxLuxZL0TxwoNIVHj347FXATlrfy4V1HNerxWlehVpvlSoWAdj
-        Zi/FfQxGx4tEmmkEita1omAy4tAx/kzjvUJyEzcv96tZhJws2Zi4tiuiI3YCg0GYjWsB30YSvHpQ
-        Ayzt8f5n16QxwQOLnnS8x8D3/XkO+nsfFpU0jiDSemXuq71CxjAwi5YkV6wYrgOllp8t08F4HEES
-        z/AqIJsMTvnNBsPR2DTj4FPn8n+rTIVGvLCZNhE5enMHYNvUdSk1zt9CgK6kOBuN0TcMFDh1TZFC
-        WYavJFHSgMYNIfNg0bTzVOlDaJaGzHkfq3LoAzjBXIJYk7NWcKRX7HR4aCwSyuZPUbcHSP05UMVD
-        ZYfYQyXkTHFCygFRSPPsABo71BB4a3HEeDeq0GSThrFYDTIUJm0+448PpmCYjqaMTbnD0QAqKgKx
-        P+8gc6f9SaAEARoHxsqbasEAyK6gWii3pd5U8B2+GS8pfiY73JhlF30vURndXtsVvQ/IljMYZVcq
-        k7+1lvJLaVXV6+X40+dTlb8myD85mids0l+zq5Shd8J88JgPUqSdLsaxQ/j4xeHG2i1AwHFhpEfL
-        JjEgIY6hSLUDhJjzfpJ4XdTy6cB+/V6CSsJoZdRgWu//YhY+MnR2Mr45y7wI/yNXGOKaJKCjl/3a
-        jaYZ/OB9f7Ap5eakf69YSVdJe+bI0Ijo0/HBcMVzgFC7tQxoQVIDGvPhPe/EESATfgKvFJByVJ+n
-        Qjux5FRSc1+V3IUQ5U7l7P3AcUDeEPZfU0I/RC95UDDiQ19iSnxQd8yC/CODXyXaBWrCFaRJhKAi
-        zqogCvNWmgh4EMMz/aqKnleFl7fUPNwoQ0w+Eqi9FJTqOgeVsbe1MoSLgqBEsQbQtQLt95Iwzu/M
-        kfA6F4dQC3ThJ4s6GkqQO5Zjzz8zQ+/yfaNF2yGxO/dZ33NMSNstWLe6Pf6uOEElajVOZdtE3cGy
-        iDo7ZHEK645duk2N5sJqdknsiAx6uivCuM0l1CDsTkHAPLHDPZQzT2KZP0UskECbgrPCueMMdusi
-        I08HDdtlwkJRGM27UYCDkW6g4OaCM1vT7vi8WljSTw/VA8i98L2KHaD8SrVYdQay+uFAXHxGZcSI
-        FJGwo45PVrjtBMKQ4xyfCHEmc+jyeT+Cn1Dz1WMk4Fq862Bsc11gpnca3aMWhkP2qtP9JOy45JdX
-        ZRWgcuiAs1NFF0Dq5zdyfHe+LMRpt5StJbyNG10pmoHrxzgTpoNaav9jJEJl6ia1JDRfEcsGx7bw
-        2YDUtvNv1m9+b0igpe9otH6uR/BLbNi27eEryMaUDHIJZSm9M0QpBjdCSlGtEyBF/sGy17RYjPdj
-        tAbwcCuUsoUFxyVsD/Kj9m1j16b3W2CaRhHTcUu2/mPVqGRnPNXf2soJG2i9kRop57JZ+cR/ybO/
-        2UqplXuFoWK0W53bHYNkPqAuwcemjcvd7F5mAdfvvfqW/taM4jXkA6tOl0KvBpA3vhxtpV5hVx2M
-        dBkUaylJVN2sR0e4jR+c7QfrE9srpeTpQH4GOn9dNuWR116FGhuT0h2ATSiZRbGBSaSQ8ZxoWVco
-        zUNzdfZBtkBrLbTG6vhtfl1Ng/UF5KEn0dqfbRZKCrPGvpthdfzRq5OCnjzFYkNUEjcpPvhvcjco
-        tA/Uc/yNfzRR5NRmXLY/DJcLEq4ybRo0XmI47YzSSqBjoGgpdwrTxrdvV1uh+yfDpGIHOKpummoD
-        YKbw1HVEmlrD+8pUdgB2iMJSygPW3RF7eJOGD6yfgDhJix47WyJFtq/B8SNVoTMWML6IiuBgB3Be
-        +wNRlHyGH1/QhGkjmfO3SmLf5VeqcYW0yY6MvUxsDC0aYbzJSLYVhRBntfIxwHww1BpRpSQetEg8
-        XCMfb2kc5d4BDVm7SQYV8H80eD4rDgQD+muXKr73KPk3AeCcEGIG3GTKiReXJsNdebEhfaLFRmFq
-        ca1sJGluCBVd2QsH2kambfybuowRxUHZhcGP1MADN+xk+mzBzX+3L0c/H3lg4hgfGx3IRIKjqtEM
-        HiuQrfQvaa5oJ2lYy/dra/BEH7SCTmIl1wzVfjYsOy7zOvUAH95q6GYRC93IdKVZog3PnnOqM8X5
-        Iww2dpMe9R5kFAlIYeX1YfAikDYBXkteZCL6WkFI8crZOdKoUVeQxuS0Zw71MP+NlBylk/5oOb6E
-        1D+E6ZoC1IynZYqMQU8cLXCRXzM0bo7gfbsggHZjKHOBVMoDax0oIQ5rVFFFGlVRQQ7v0EOE7wOU
-        3htgWwy9/t48v/ujedkOx6ccKFQVAN5J7CJUc8SqLShsB943udCK27a2JMaiw3hfC6k4qIATBwI6
-        bJiYh12kHy52TGi1e2bPJNmGv+WEjUaA1oAaxE9kpMIbhwamy8/buRAHHfMDSLngCYLVRIP8+Ulb
-        DUFARKI2Mng5CW1Ffdh1adGeJ5+NIC7kOS5MQ0bKml5wBcHOpIQm8Y6oSIVT1HZSZgs+AOc2fFBv
-        OqjP/4nofgM9tDNxg8NK/EkMo6OZkFjcSM13LSiz7XTSPhGcNb/A+3e11MtNicpdVzqDWMteuntY
-        2je8Y97aJ/dSx323Wgh/CBOU/gQjtLHpmTeSQpnH0LvUhhJLeQhpQe5R8KBPyQ5S03RIXBn+JqeN
-        Ofq/d0pgoIR44cObPmFfS9UW+AzKD1R6+ZisxHoGQJirrS7fKJG3F1YQqB4YS5rbOjLAQAGnPvTO
-        knVp/Xxs9uvPUHSthDTG+Tec6Z1RdQXTnGJGTkpQr9WzuUju2UKPcAUj6dOUxK2LrdCkDfu4aPGl
-        VGbBc1opZ80JEUtYa8xrotq1K6R6UeiF4gHctRZEJcqPqTJuPt1bJHox70kk9pMryEaJGdqFJJJB
-        0imt4wPw92zMiK+8yC3/HKtzCex3TwOoEXqP2caVjOItUEf97kjwVScaCRmXHsEzRVGlwOeoFavD
-        mMXwV3UAv4CcbZqjjYWBYrgetUJV1moE1z4Yla3p5EZGP7LBBXEMNF4dX7lqypesxKX7J5Lp9JBn
-        we5RTY36vIEKQdm2UsyWMk7UeGa2AXXH9V7CvsxJ9sIKkc2cIAwqncGHFaU/F4q9qeU+X4r/tsxW
-        dpfc2NFuCOLGMdwMC00GsPdvOxA/AnfJPY7/4ruzH40HHjm+JoUsB4BDSKbbfvCpbTVFw7js8Fwx
-        qBG8sYCdP3UaRKGwQkQq1J44MwHfOYdi7+Ho3OwSqp3OBiyaFyyXfBNqpMJx78BFyIryfWDmyrdj
-        K7bkAqkRLx3ENBtueigys5905dFOuJGgU82Nl2CKT3dLTg3BSbnzK9GOQuci7BZn8HoMvwhwJ8bl
-        lEKxwi+0ZeF4nwj3n9OJ3stYQ7eT/s9ta983wTW58FaiSyh5ZTG6vEHloTl/sV7Ca4TF7C9fUF5d
-        GeYNnAnQivEgEL8pd7EUyeH+VHpjs3u9DIhMESJCsh9gTgLiEHWkbVn1qUSlcPyXtf6IEvICQr2c
-        nm+QWFWLGGaz4EoBlaqy4V48hrhp/DmB6CSIxtCpNVyUd3FgDqADJ4XPWvH00N4NuI/OXosdE1se
-        7ROOlBIIwioysTXuWhi9IPZZZ2ZVCNRF018yr+qkSb+XyVYNq/2+2KRF0JeS5wbtV3uyOyF/xi3Q
-        dUY8qcoicZKdxbXSISxbGIRae7ieHkNN3QBhV/CSCVRaEfk7PLbgP4wC0KMyWFTUg24yvXKNVQ4F
-        GIZE9oAiOGjwOqo0HVIgeto8LncxJwMZxwDGekl2x8oNGbLTwb3DC5rdq5lhwQPLzEbRZxc0Lt9h
-        2AqM+NhXvwrtYIhLublYdEoRzIp+TUmJ5FGGNxNeGNixV6xHTFOA3YsSUANLUaPMYTsZsb45Qobm
-        f2Lx/hjKR0zxhr8hMoGnKhC8hrG0b8Vung+ZxM/j/u40c+IlgB9dIfOph3qjfku1bRT/QoP2WndX
-        eGO06PVJbLe10gBkCNK65Vx4VpzOp+BSP8KOHRzpw/S8kPSMjlqGUkDQEHAjPbA5wF7lZJFcv9PL
-        jwMQkfG8WO1HhNH79HOYieaquo+qC07zFvH51XXS48FM4aJteR2E2v7nhqiLYpwHXbM4SxUPA0H+
-        O0z/VSvNv2D1RI53iBszILqhC75KOeBcHqPLktkL3Cw39VMjRczFb2DEjvMRkBxiR+KvVfs6oqUc
-        NJdEInDdCBdWDyQ/YC38tPaoP1VkgbaoSK+q3FM2lSINHwb161ec/3+4vCnO8+v8XgT5BvAnbecB
-        n4iGBRFLn4oRG/sibUhanC48zQAj/TQJ3w7+hfDsQe0Cl8hzdYDc/fqPceS6VeoeCqcCRhfkEAGX
-        zZqQHnnW694RUOoyJF1jCusURAxaJ9eNu8ZBFIlEycfc8pLYfmcvPHc69iClM80LPYfY+l3iVIbm
-        YxpbxHxrgVMJILFawhxAQVSUB7ADWIYSN+TPF/i16EefLcpegKgC7HerDZRjlKc3SP9dF1gRg1QW
-        kl0HLx8tAGB4hyJ+syYJmEKC6QaKjE9vXlvNtEhHC0ihlELV4An2WWO/xOG1ImKL6xwot+a4kknX
-        RtzGoVOoxs1UylXK8eubOcjXyZMok+EWARkwyt8D/pLwdFWEAJklQxz/OBYN7atdabjT8/uDheTY
-        UAMa+WF7WrtuJHDQTd2V0kLoiEcq9ow+4YZmlMWRbrKhFmG2EEBJKCWdFuesz0EhEyrz3zoVKN4A
-        YD20Hv8sQtj8muM10C0VnzoFC0TkPi1NVEO8I4tEreOJ97BumF/olBKkAWQUglSDVzYoPIKd83EH
-        p7nLGLKliHMBiRIaDtgX1SxCMaHCfHO6BXCr9vBAKnVdMTsrcXXOUGul+XNQWvH71IUOlaOdb8Ee
-        uOw3+FMNGf1ExWNA6sUXXRLnSuzbBW00COZyNBBhZCvh3SLn7CK7rVfhHZVf3ImosxIJPmDj6I0F
-        t4PQCE827iXm7fACsgkAtt5qYUgy7eegoZUw19utgkWDqaW3b8VvN5D7AIIDPgqBrtEovJoAIXuE
-        CuIxL8M9vyXBtRmjzxW1X0+m/cpC/gpzFO9Z1gtyQqleyQAcNZ4cBP0n69Rg3YtB97Pp9zQkTL+2
-        eTD0OgIqv4XMuyAGYWZ5QKJJlx+V7bUM0twzm6W8xwFWUaKe7GGEiMQj6sBZR0eeX6LZWmft3TJG
-        8pkcMs+zXLDcm/waydzyOQb5fCIgWK3NlXtNO94CaAbCeCymMMPOQZTmeJpQO+lrJ53/7GxnBusI
-        d1q5EldPi+LV+dvMtNaChs1sPyvo+WjnmkWmeywqZe/NGgnA7jjvDavUg932tmeS+E7pCHEEKjca
-        0cqVSqnCzBsTfpoCXGm9ULq67kf1jr6lObkjq4uQj5sKHDuwzrTkh0u24trivjyzu/psWUUcj33/
-        EES6NeN8npxMESlSd8O9MLzJtoDFIY7IPGdlLIoMOhmBjCQRszJSzNE7bOwyP+kddeajP9JIcCWb
-        M2vsfxLMe4T4LP7abqZREPqv57zoH+GaACoNlLMEBluCuFFqucnN25uDwrjuniHZFxrXIrm7Av1s
-        TYM8fpUCkag+kdMi/YcejhUR4VsHo4kElvjZzvhHpcCiG8A9ZPbWY6BE7NhdwaYG+wQpmDWXmJS/
-        HRngz0rTQitUQJ/bWjqWwWU0FJKwulGlAzTYlou2jQ/Aw7DKPWq7a6yGmYkigRvOsZjogNLE+KJU
-        tfT3nGg29MaT5j7PtgMizcOo6PwvNYgdPyD1xCEqriFHY1pXM2wY7sVPvaIEZ/yDoBZBdn7uL9vb
-        7HfV9Y0EkQ222NFUaB2VG55CyjJsaqDMbIWuP4HFASBU3uOYe82fC/tmY6ihENvdyCrOhOKumZVd
-        1DHTJyy0j3jsEGSRfSFFIcN2jcGE+6fBEUOed6kqYPKI7nOHLrRgPNhvmiG5Y1Qi3UsYYI6AaEuT
-        YCwv3y5/GN9DpGsCS+BBDlvlw51jiAzkIHt8wiEzozcDe6OJXQ/4ADm3NuE1ewXz7T81dnHe4ZaR
-        ZRejOyiz3kzhqLGzGaLvsFR35HepKcfPRcM0MqsLCiSm8iyOKh6eVgf/hKdF2FgoXvzksYEag7Ts
-        vTdH5e5lK6wMYeALV7jwLGBYVRZ+4RGQUAfZMM1izui0YI89WJ+hdqnue1/hvcIXTpHVns+Jma2s
-        s5T4rltOWXb6lPCJROGLnqHT7RA5/yfQMyJtzKflRjwbk5DDLWjDyGYI7CESjaDUDkHs2HHtQnCA
-        BhAjc0OVVmlfqGk3gqftRT7nHli30hhzum9i8ikTB8fGAJUAw3saI7e7lq4M1WthfwWeQkGj0gJQ
-        9i9i1L9A3kPM4k1D/AhUA2QZFtD70zjjBV1WZOfCdRrja7nYlTCS6obXmgaUCZt8AFfr98ApAv+b
-        NNhR12HQyWg6mmlZQHLIUfuYVT6KyLUG6/V2l0Ci0hdZU576tPrIj1BiEIptmkBdR9+hrYS4e/jk
-        SQvGBZU5b5iA+KJlxgOpK/VlPFjh5KvPUKAdXnOI1IoS/JDZOM+C4WI3RaKaIxmsoKHUXla/W8xR
-        jKX5kt+09ECZ/+C9tVRDl1fYDfpD0lGSMWrnmsgz8LOfEqwmEj/Dr5zHWAb05PWAZrkMAQCiaWv3
-        oUyQ1d/Sit3QLsC+hPHSUviXI9gREPGpL+BBudj9MQXNBoESGAeh+O3VUwPj6hwAcMPCRSSFYIDV
-        MLGbs+lYTOUgLhnW3hJJ/ztxgNO7uwRksErv0RWIHNz2nB5eiM0/vOaN+Cocj7UWXurXnMZJjNc5
-        GbFeB+H3mYypIIIRb0SzOS4hz7pr0S1lB/qEWhpcKX2Wrr5aJHRzSqO16V6qOR76M+ql5iLi9rfx
-        pBm867IeVdFGdxo2f8Ult2J0Luj/2NwtvV9BHERaNKS/GibyX9J7K2EpADLPnkwK1n/OghLwRfwD
-        neh5fowDs7/X7mQDhBZEDTBzzHrmSvK4vcpv35nX9ne9WEX8Rk2NNLVKpYDDKZ0MJDcQiGl3f+/P
-        e51eQvSzeLzJMjicdZZd6IYOP2sHLLNFA/3DUrfZUwYIlkorD+IZwCb5e3ek69sdPt+YpLqwBAZ5
-        HsSLGJCT8CfRJUOl6/va/9+cZfoXI0/IvleerwlLiL+5b6NBNP/BhjfY6GW4vmyMIvN5QIMbZ0eT
-        dNSTlCmaH2NG++wu24BL2ygyMu7wGRh1YdY4MC0hY/UVGqUfllSbXjenbMeHUV/qfowMCMzpDu9c
-        pu9Z1XnTrjQu2R5e9cZpkeEhUeGwUO+Xyj4rpBLAp1wQyLNnJzlOI0I19tlVsInSeItL4sdtNNI2
-        7B/GAP3oDCIUuM9grciDIzCCMnB157p79mqzhkraqADqaxcJjM2U/BJTjZAVpWex507h5ICPvVhN
-        euxZgXm3Kps5cNZuWYboZ+Ju/Rc2JOHnHuf3qnUGzNGWuyXrCAF2zjzNu9yCsJVPyA73Q2q7lHeY
-        pujkP3h/G9T4/Md5k0J5wbiDwNS5aKFetN3G/1tBt4WtzWpRKkGfBWGunt6C1lUNFjcr1qOFXWQ0
-        Np4m98pPYqPPeMGQ+ME5UJ1Gv6/6Fr2A8ahfCOGcp1VmgI+r8AdpoubBkswqulIFxlVncm0NG42j
-        fWEQ3tqBabua/EOY3q8FtUi2VipH1TCPJY1Tkz3hHQnaTG6rWsWLXr5FaENnf0eSKUoGQhSQ9wOh
-        kIL63HgI73AOvnsdMnbN4r+249dzTQFOjPqRLTsbNlMgZzOIRAOAZ8++8c25zvVyaSOpP9c71sYt
-        7dEnVSJeE+u0z41TbbSRwe27sPQ69af8s/sg97TOmtzrinVKfaw8GcdZgmuT1zcDuKgYHbmdN+Dr
-        qctrcyKYrQ59k2gVFf688kcBVdE2qYXO0jjdhypsVZh10flD6fyMbqM/3DlorNcAfPNxT6qO3fLm
-        RRQDHayPrn+Qqhf0SfxwUUyAqUM6On85D3JquXBK19MakYbyFyWkf2ug65VelraAKi5u1FLo6I3G
-        iIOk9Q+XOa28/gGSemMtQphF9TQWzkljYoDui9Yro5gx6AycFda11gvDkOtPpgxXRUcV9ELEJiU1
-        qrDnem9XLkeLsT1gjm/glBXaAoBREUvSuuR26wkUM8iv/iMric6GSvPGOCU4YnTITRPtuWEyZaiE
-        OECREClW1e2UtsiJW5uLq/0uHOq46eHc0BagP2Q4MxwNJNAfpHi5AUHPsIBAsdQ+5GsgWysP4k3G
-        Xintr82NqIQYM5dYdzqQZOg4RGUTIKRIUDSgsA+zxA4CT8r/y8wthP//yVAzl/wb8pCUUo1Yv1bz
-        ADa/TvaM0hyAk7t4nM7bLlzj1VoxZfYHk0JiKR8l6Usaec/TwQtlQ3ic83MsPmgjK50eW0DSYiWO
-        MISdhG/rjDjtZ4eZ5wQof3TM8sU/
+      string: "{\"result\":{\"points\":[{\"id\":\"f792a0cd-1d82-58cf-ac3a-194b21a9219f\",\"version\":7,\"score\":0.7001384,\"payload\":{\"page_content\":\"A
+        Optimality of the Memory Allocation Rule\\nThis appendix states in what sense
+        the allocation rule is optimal. The softmax allocation is the exact optimizer
+        of a logarithmic-utility budget-allocation problem (Proposition 1); a remark
+        relates it to classical bit allocation under exponential distortion, where
+        it is instead a first-order approximation; and the rounding step is the nearest
+        budgetpreserving discretization (Proposition 2).\\nSetup. Let K passages share
+        a fixed budget of B memory tokens, passage i receiving m i tokens with \u2211
+        i m i = B , and let w i > 0 measure the utility of passage i for the query.
+        An allocation model specifies how the value of a passage depends on its token
+        count; two standard choices are analyzed below.\\nExact optimality under logarithmic
+        utility. Suppose the value of a passage grows logarithmically with its token
+        count, so that the budget-optimal allocation solves\\n<!-- formula-not-decoded
+        -->\\nLogarithmic utility is the standard model of diminishing returns in
+        resource allocation; it defines the proportionally fair operating point of
+        Kelly, Maulloo, and Tan (1998) and coincides with the weighted Nash bargaining
+        objective. Soft memory tokens plausibly exhibit such diminishing returns:
+        a single token can already absorb a large but bounded amount of information
+        (Kuratov et al. 2025), so early tokens capture the most and later tokens refine.\\nProposition
+        1 (Exact optimality of the softmax allocation) . For any scores \u0302 s \u2208
+        R K and temperature \u03C4 > 0 , the allocation a i = B softmax( \u0302 s
+        i /\u03C4 ) is the unique solution of (7) with utilities w i = e \u0302 s
+        i /\u03C4 .\\nProof. The objective is strictly concave and tends to -\u221E
+        as any m i \u2192 0 , so the optimum is unique and interior and the nonnegativity
+        constraints are inactive. Stationarity of the Lagrangian gives w i /m i =
+        \u03BB for every i , hence m i = w i /\u03BB ; the budget constraint yields
+        \u03BB = \u2211 j w j /B , so m i = Bw i / \u2211 j w j . Substituting w i
+        = e \u0302 s i /\u03C4 gives m i = B softmax( \u0302 s i /\u03C4 ) .\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"A
+        Optimality of the Memory Allocation Rule\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":125,\"page_no\":10,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"736ab32c-6d0d-5d27-bc3f-f7adc55cc70a\",\"version\":7,\"score\":0.65487754,\"payload\":{\"page_content\":\"A
+        Optimality of the Memory Allocation Rule\\nThree remarks follow. First, by
+        the Gibbs variational principle, p = softmax( \u0302 s/\u03C4 ) is also the
+        unique maximizer of \u2211 i p i \u0302 s i + \u03C4H ( p ) over the probability
+        simplex, where H denotes the Shannon entropy: the allocation maximizes the
+        total relevance of the allocated tokens under an entropy penalty on over-concentration,
+        and \u03C4 prices that penalty. Second, the temperature limits recover the
+        two prevailing strategies, uniform soft compression as \u03C4 \u2192\u221E
+        and hard selection of the top-scoring passages as \u03C4 \u2192 0 , so both
+        sit at the degenerate ends of the same family. Third, the exact optimum of
+        (7) assigns every passage a strictly positive share, matching the full support
+        of the softmax; exact zeros arise only from the integer constraint treated
+        below. Within-pool standardization together with \u03C4 fi xes the utility
+        parametrization w i = e \u0302 s i /\u03C4 ; since the relevance head is distilled
+        to standardized cross-encoder scores, the temperature selects how sharply
+        the teacher's relevance scale is converted into an allocation.\\nExponential-distortion
+        bit allocation. Classical bit allocation instead minimizes a weighted distortion
+        \u2211 i w i D ( m i ) under the same budget, with the high-resolution exponential
+        model D ( m ) = c e -\u03B3m , \u03B3 > 0 (Huang and Schultheiss 1963; Shoham
+        and Gersho 1988). Ignoring nonnegativity, the equal marginal return condition
+        \u03B3w i c e -\u03B3m i = \u03BB gives\\n<!-- formula-not-decoded -->\\nwhich
+        becomes a clipped affine function of centered logutility once m i \u2265 0
+        is restored: shares that would be negative are set to zero and the released
+        budget is redistributed among the rest ( reverse water-filling ). Under this
+        model the softmax rule is exact only to first order: expanding e \u0302 s
+        i /\u03C4 = 1 + \u0302 s i /\u03C4 + O ( \u03C4 -2 ) and using \u2211 j \u0302
+        s j = 0 gives B softmax( \u0302 s i /\u03C4 ) = B/K + ( B/K\u03C4 ) \u0302
+        s i + O ( \u03C4 -2 ) , which agrees with m \u22C6 i when \u0302 s i = (ln
+        w i -ln w ) /\u03C3 and \u03C4 = \u03B3B/ ( K\u03C3 ) , with \u03C3 the spread
+        of the log-utilities. The two models thus assign the softmax rule different
+        statuses: exact optimizer under logarithmic utility, first-order approximation
+        of reverse water-filling under exponential distortion.\\nInteger rounding.
+        The softmax yields fractional a i summing to B , whereas tokens are integers.
+        The natural discretization is the nearest budget-preserving integer vector,\\n<!--
+        formula-not-decoded -->\\nProposition 2 (Largest-remainder is nearest rounding)
+        . Largest-remainder rounding (floor every a i , then hand the R = B -\u2211
+        i \u230A a i \u230B leftover tokens to the passages with the largest fractional
+        parts r i = a i - \u230A a i \u230B ) returns an exact minimizer of (8) .\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0021\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"A
+        Optimality of the Memory Allocation Rule\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":132,\"page_no\":10,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"f90241d3-d97f-5066-b9ef-129afc267190\",\"version\":7,\"score\":0.59523034,\"payload\":{\"page_content\":\"A
+        Optimality of the Memory Allocation Rule\\nProof. If some minimizer had m
+        i -a i \u2265 1 , then, since the deviations sum to zero, some j has m j -a
+        j < 0 ; moving one token from i to j changes the squared error by 2[( m j
+        -a j ) -( m i -a i )] + 2 < 0 , a contradiction. Hence every optimal m i is
+        \u230A a i \u230B or \u2308 a i \u2309 (which also gives nonnegativity). Writing
+        m i = \u230A a i \u230B + \u03B4 i with \u03B4 i \u2208 { 0 , 1 } and \u2211
+        i \u03B4 i = R , the objective becomes \u2211 i r 2 i + \u2211 i \u03B4 i
+        (1 -2 r i ) , minimized by placing the R ones on the largest remainders.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0022\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"A
+        Optimality of the Memory Allocation Rule\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":139,\"page_no\":10,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"45380e96-4930-5f31-a95b-90cdf950ed6c\",\"version\":7,\"score\":0.54893833,\"payload\":{\"page_content\":\"Conclusion\\nWe
+        introduced AdaMem, a relevance-aware allocation framework for soft-compressed
+        RAG. Instead of uniformly representing retained passages, AdaMem converts
+        querydependent relevance scores into a non-uniform allocation of a fixed global
+        memory budget, concentrating capacity on answer-bearing evidence while retaining
+        limited capacity for complementary passages. The resulting allocation is the
+        exact optimum of a proportional-fair objective under an assumed logarithmic
+        utility model, and is a first-order approximation to the reverse-water-filling
+        optimum of classical exponential-distortion bit allocation.\\nFigure 6: Optimal
+        allocation temperature on TriviaQA across compression rates. The analytically
+        predicted schedule ( \u03C4 \u221D B ( \u03C1 ) , anchored at 16 \xD7 ) follows
+        the empirical optimum and consistently outperforms a fixed \u03C4 = 1 .\\nAdaMem
+        establishes a new state of the art among softcompression methods across six
+        evaluated QA benchmarks. At 16 \xD7 compression, it improves over baselines,
+        the strongest prior soft-compression method, by an average of 3 . 4% in relative
+        terms. The advantage becomes substantially larger as the memory budget decreases.
+        At 64 \xD7 compression, the average relative improvement reaches 14 . 6% ,
+        with gains of up to 21 . 8% on HotpotQA. At 32 \xD7 , AdaMem exceeds OSCAR
+        at 16 \xD7 on every benchmark, achieving an average relative improvement of
+        2 . 9% . These results show that adaptive allocation is particularly effective
+        under aggressive compression, where large retrieval pools must be represented
+        within strict memory constraints.\\nFinally, we introduce KILT-SCR, a training
+        and evaluation resource for the joint study of reranking and compression.
+        Constructed to retain answer-bearing retrieved evidence and answer-consistent
+        teacher targets, it enables controlled comparison of reranking and memory-allocation
+        strategies over large candidate pools with heterogeneous passage utility.\\nSeveral
+        future research directions remain open. The temperature could be learned or
+        predicted per query rather than set per compression rate, allowing allocation
+        sharpness to adapt to the confidence of the relevance estimates. The budget-allocation
+        view itself is not specific to QA or memory embeddings and extends naturally
+        to other bounded representations, such as KV-cache compression and long-context
+        summarization.\\nAllal, L. B.; Lozhkov, A.; Bakouch, E.; Bl\xE1zquez, G. M.;
+        Penedo, G.; Tunstall, L.; Marafioti, A.; Kydl\xED\u010Dek, H.; Lajar\xEDn,
+        A. P.; Srivastav, V.; Lochner, J.; Fahlgren, C.; Nguyen, X.-S.; Fourrier,
+        C.; Burtenshaw, B.; Larcher, H.; Zhao, H.; Zakka, C.; Morlon, M.; Raffel,
+        C.; von Werra, L.; and Wolf, T. 2025. SmolLM2: When Smol Goes Big - Data-Centric
+        Training of a Small Language Model. arXiv:2502.02737.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":80,\"page_no\":7,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"02d617fd-b0e2-52b2-a55e-f690c8b8df39\",\"version\":7,\"score\":0.5252092,\"payload\":{\"page_content\":\"Query-Conditioned
+        Compression and Adaptive Allocation. For each query-passage pair, we form\\n<!--
+        formula-not-decoded -->\\ntruncate it to 128 tokens, and append a fixed maximum
+        number of <MEM> tokens and one <RERANK> token. A shared compressor C \u03D5
+        encodes x i once: the final-layer state of <RERANK> yields a relevance score,\\n<!--
+        formula-not-decoded -->\\nwhereas the states at the <MEM> positions form an
+        ordered bank of candidate memory embeddings for passage d i (Figure 2a).\\nGiven
+        the scores of the K retrieved passages, we standardize them within the pool
+        as \u0302 s i = ( s i -\xAF s ) / ( \u03C3 s + \u03F5 ) and allocate a fixed
+        global memory budget B according to\\n<!-- formula-not-decoded -->\\nwhere
+        \u03C4 > 0 controls allocation sharpness. We convert the fractional shares
+        { a i } K i =1 into integer counts { m i } K i =1 using largest-remainder
+        rounding, preserving \u2211 i m i = B ; passages with m i = 0 are omitted
+        (Farber and Zeger 2006)\\n(Figure 2b). We set B to the total number of embeddings
+        assigned by a uniform length-based reference, where passage i would receive
+        m (0) i = \u230A \u2113 i /\u03C1 \u230B +1 embeddings for truncated length
+        \u2113 i and compression factor \u03C1 = 16 .\\nFor each passage, we retain
+        its first m i <MEM> states, project them into the decoder embedding space
+        with a twolayer MLP, and concatenate the resulting variable-length sequences
+        in decreasing relevance order. The decoder conditions on the query and these
+        allocated memories to generate the answer (Figure 2c). We optimize the compressor
+        and projection module in full, and adapt the decoder using rank-64 LoRA modules
+        in all linear layers ( \u03B1 = 128 , dropout 0 . 1 ); its token embeddings
+        and language-modeling head are also updated.\\nBudget-Allocation View. The
+        allocation rule is not a heuristic. If the value of a passage grows logarithmically
+        with its token count, the standard diminishing-returns model of resource allocation
+        (Kelly, Maulloo, and Tan 1998), then B softmax( \u0302 s i /\u03C4 ) is the
+        exact optimal split of the budget for utilities w i = e \u0302 s i /\u03C4
+        (Proposition 1, Appendix A). The temperature interpolates between the two
+        strategies of prior work: \u03C4 \u2192 \u221E recovers the uniform split,
+        \u03C4 \u2192 0 recovers rerank-and-truncate, and the integer rounding step
+        supplies passage dropping. The classical exponentialdistortion model of bit
+        allocation (Huang and Schultheiss 1963; Shoham and Gersho 1988) refines this
+        picture with a quantitative prediction: the softmax rule matches its reverse
+        water-filling optimum to first order precisely when\\n<!-- formula-not-decoded
+        -->\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Query-Conditioned
+        Compression and Adaptive Allocation. For each query-passage pair, we form\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":26,\"page_no\":3,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"1fc18119-3386-5be4-861e-2427d6edecc0\",\"version\":7,\"score\":0.5062823,\"payload\":{\"page_content\":\"Query-Conditioned
+        Compression and Adaptive Allocation. For each query-passage pair, we form\\nwhere
+        \u03B3 is the distortion decay rate and \u03C3 the spread of the log-utilities
+        (Appendix A).The optimal temperature should therefore decrease as the per-passage
+        budget B/K becomes smaller. This trend is reflected in the experiments, where
+        the best \u03C4 decreases from 1 . 0 at 16 \xD7 to 0 . 5 at 64 \xD7 compression
+        (Figure 6).\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Query-Conditioned
+        Compression and Adaptive Allocation. For each query-passage pair, we form\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":37,\"page_no\":3,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"57f05910-479e-5c11-98c0-1c708dbcae78\",\"version\":7,\"score\":0.50198185,\"payload\":{\"page_content\":\"Method\\nProblem
+        Setup. We consider RAG in which a query q is answered from a pool of K retrieved
+        passages D = { d i } K i =1 (Figure 2a). Soft compression represents each
+        passage d i by a short sequence of continuous memory embeddings that condition
+        the decoder in its place. Writing m i for the number of memory embeddings
+        assigned to passage i , the total B = \u2211 K i =1 m i is the memory budget
+        that governs the decoder's context length, and hence the cost of generation.
+        Existing soft-compression methods assign every retained passage the same m
+        i , or set it by a length-based rule, spreading the budget without regard
+        to how useful each passage is for the query. We instead aim to distribute
+        a fixed budget B according to query-specific utility, giving more memory embeddings
+        to answer-bearing passages, fewer to marginal ones, and none to irrelevant
+        ones, while keeping the total \u2211 i m i = B unchanged. This poses two coupled
+        subproblems: estimating passage relevance, and turning those estimates into
+        an integer per-passage allocation of the budget. We next describe the shared
+        compressor that produces passage memories and relevance scores in a single
+        pass, the rule that converts these scores into a per-passage allocation, and
+        the sense in which that rule is optimal (Figure 2).\\nFigure 2: Overview of
+        AdaMem. (a) A shared compressor jointly produces passage memory representations
+        and relevance scores. (b) The scores determine a query-dependent allocation
+        of the fixed budget B via softmax and largest-remainder rounding. (c) The
+        allocated memories are projected, ordered by relevance, and passed to a LoRA-adapted
+        decoder for answer generation.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Method\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":22,\"page_no\":2,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"3f258ab2-78e2-5e34-909f-e9c9f7f11e60\",\"version\":7,\"score\":0.4928859,\"payload\":{\"page_content\":\"Introduction\\nMotivated
+        by these limitations, we propose AdaMem , a framework that transforms reranking
+        from binary selection into relevance-aware memory allocation. A shared compressor
+        produces query-conditioned memories and scores; a principled softmax allocation,
+        grounded in logarithmic utility theory, distributes a fixed total memory budget
+        across passages according to their estimated utility. The temperature interpolates
+        between uniform allocation and hard topk selection. Here are our main contributions:\\n-
+        We introduce relevance-aware memory allocation for soft-compressed RAG: each
+        document receives an adaptive memory budget determined by its estimated relevance
+        (Figure 1), concentrating capacity on answer-bearing evidence while preserving
+        compact representations for complementary context. This adaptivity makes AdaMem
+        substantially more robust to extreme compression: between 16 \xD7 and 128
+        \xD7 its quality degrades by only about 2%, compared with over 7% for uniform-allocation
+        baselines such as OSCAR.\\n- Across six open-domain QA benchmarks, AdaMem
+        outperforms every evaluated compression baseline at matched budgets: at 16
+        \xD7 it improves over uniform allocation by 3 . 4% on average (up to 5 . 5%
+        ) and over the strongest hard-compression baseline by 9 . 7% despite an 8
+        \xD7 smaller context. Quality is also more stable under inference-time compression:
+        moving from 16 \xD7 to 64 \xD7 costs AdaMem 2 . 8% on average, against 12
+        . 2% for uniform allocation. At different compression rates, AdaMem retains
+        up to 99% of full-context quality at 4 \xD7 lower latency.\\n- We release
+        KILT-SCR (Soft Compression and Reranking), a large-candidate-pool resource
+        for reranking and context compression, with 25 passages per query, 196,916\\ntraining
+        instances, and evaluation data from six QA benchmarks. The training split
+        use answer-grounded filtration to ensure supporting retrieved evidence and
+        goldconsistent generated targets.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Introduction\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":11,\"page_no\":2,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"77674a6f-06f1-5b06-94ec-150e08ac9b37\",\"version\":7,\"score\":0.49212182,\"payload\":{\"page_content\":\"This
+        is a schematic diagram illustrating the \\\"AdaMem\\\" adaptive memory compression
+        method for retrieval-augmented language models, shown in three panels. Panel
+        (a) depicts a shared compressor network that takes query-document pairs (d1\u2013d4)
+        and outputs relevance scores (ranging from 2.1 to -1.9). Panel (b) shows the
+        adaptive budget allocation formula (using softmax over relevance scores divided
+        by temperature \u03C4) that distributes a fixed total memory budget (B=32
+        tokens) unevenly across documents based on relevance (m1=17, m2=9, m3=6, m4=0),
+        contrasted with a uniform allocation baseline (8 tokens each). Panel (c) illustrates
+        the decoder stage, where allocated memory tokens are fed into a LoRA-adapted
+        Mistral-7B model to generate an answer, demonstrating that AdaMem's adaptive
+        allocation produces the correct answer (\\\"Kazuo Ishiguro\\\") while uniform
+        budget allocation yields an incorrect answer (\\\"Frederick Forsyth\\\").\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-fig-003-01\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":23,\"page_no\":3,\"filename\":\"2609.22100v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d/figures/fig-003-01-1653e717a9d6e576.png\"}}},{\"id\":\"09d71dcc-3870-588d-8449-c5583e657121\",\"version\":7,\"score\":0.490916,\"payload\":{\"page_content\":\"Experiments
+        and Results\\nFinally, at 16 \xD7 , AdaMem closely approaches Full Context
+        performance despite replacing the retrieved text with a substantially shorter
+        continuous representation. On TriviaQA, it is within 0.4 points of Full Context,
+        while on PopQA it exceeds Full Context by 1.4 points. Hence, selective memory
+        allocation can both reduce computational cost and mitigate interference from
+        irrelevant retrieved passages.\\nFigure 4: Memory-token allocation by document
+        relevance rank at 64 \xD7 compression. The dashed line denotes OSCAR's fixed
+        16 \xD7 allocation.\\nMemory Allocation Behavior. Figure 4 illustrates the
+        allocation mechanism under this highly constrained 64 \xD7 setting. For the
+        most relevant documents, AdaMem allocates a median of roughly 10 memory tokens,
+        already exceeding OSCAR's fixed budget of 9 tokens per document at 16 \xD7
+        . The 90th percentile is substantially higher, indicating that for some queries,
+        AdaMem assigns considerably more capacity to the most relevant document. In
+        contrast, the allocation decreases sharply with relevance rank and approaches
+        zero for lower-ranked documents. Thus, AdaMem concentrates capacity on query-relevant
+        evidence while assigning minimal capacity to noisy passages, reducing their
+        potential interference in the compressed context.\\nRobustness to Retrieval
+        Depth and Compression. Figure 3 compares AdaMem and OSCAR across retrieval
+        depths k \u2208 { 5 , 10 , 15 , 20 , 25 } and compression ratios of 16 \xD7
+        , 32 \xD7 , and 64 \xD7 at \u03C4 =1. AdaMem benefits more consistently from
+        deeper retrieval, whereas OSCAR remains nearly constant as additional lower-ranked
+        documents are introduced.\\nThis difference is most pronounced under aggressive
+        compression. At 64 \xD7 , increasing k from 5 to 25 improves AdaMem by 3.5
+        points on TriviaQA, 5.4 on Natural Questions, and 4.2 on HotpotQA, while OSCAR
+        changes only marginally over the same range. A similar pattern holds at 32
+        \xD7 , particularly on Natural Questions and HotpotQA.\\nThese results suggest
+        that AdaMem can extract useful evidence from less-relevant documents without
+        allocating them the same budget as highly relevant ones. In contrast, OSCAR's
+        fixed per-document allocation provides limited benefit from deeper retrieval,
+        as its representation capacity is uniformly spread over an increasingly noisy
+        document set. The effect is weaker at 16 \xD7 , where both methods have sufficient
+        capacity for shallow retrieval pools, but becomes increasingly clear as the
+        memory budget is reduced.\\nFigure 5: Quality-latency tradeoff on TriviaQA.
+        AdaMem shows similar latency as OSCAR and matches Full Context quality at
+        4 . 0 \xD7 lower latency.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Experiments
+        and Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":58,\"page_no\":6,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"25a329f6-d3d2-501a-b98a-616022def93c\",\"version\":7,\"score\":0.47458547,\"payload\":{\"page_content\":\"This
+        is a line chart comparing TriviaQA match performance against compression rate
+        (16x, 32x, 64x, 128x on x-axis) for three memory allocation methods. The \\\"AdaMem
+        (ours)\\\" method (blue line) maintains the highest accuracy across all compression
+        rates, starting near 84 and ending around 82 (only -2.08% drop from full context),
+        outperforming \\\"Uniform(Oscar)\\\" (orange line, dropping to -7.34%) and
+        \\\"Uniform(Pisco)\\\" (purple line, dropping to -7.52%). A dashed green line
+        at the top indicates \\\"Full Context\\\" performance (~84.5) as the reference
+        baseline, and a schematic above the chart illustrates how AdaMem allocates
+        variable-length document representations (d1-d4) compared to Uniform's equal-length
+        allocation.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-fig-001-00\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":7,\"page_no\":1,\"filename\":\"2609.22100v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d/figures/fig-001-00-695c084d532812de.png\"}}},{\"id\":\"59a855a5-5d91-566d-af5b-7c35dc4e52a2\",\"version\":7,\"score\":0.4740969,\"payload\":{\"page_content\":\"Abstract\\nRetrieval-augmented
+        generation (RAG) improves language modelswithretrieved evidence, but processing
+        many long passages is costly and can introduce distracting information. Soft
+        compression addresses this challenge by encoding passages as compact sequences
+        of continuous memory embeddings before generation. However, existing methods
+        typically assign each retained passage an identical number of memory embeddings,
+        irrespective of its query-specific relevance. To address this, we propose
+        AdaMem, a relevance-guided soft-compression framework that maps learned passage-relevance
+        estimates to a query-dependent allocation of a fixed memory-token budget.
+        A shared query-conditioned compressor produces both continuous passage memories
+        and relevance scores in a single pass; a deterministic allocation rule assigns
+        more memory tokens to higher-scoring passages and can omit low-scoring ones.
+        Across six open-domain QA benchmarks, AdaMem consistently outperforms OSCAR
+        (the closely matched softcompression baseline that uses uniform allocation)
+        as well as other soft-compression methods at matched memory budgets. Under
+        standard 16 \xD7 compression, AdaMem improves sub-string match by up to 3.2
+        points (5.5%) over uniform allocation baseline, with an average relative gain
+        of 3.4%; under aggressive 64 \xD7 compression the average relative gain grows
+        to 14.6%, with a maximum of 9.8 points (19.7%) on PopQA. AdaMem matches the
+        answer quality of the uncompressed at up to 4 \xD7 lower inference latency
+        than full context baseline. AdaMem retains an efficiency profile comparable
+        to the uniform-compression baseline, while achieving up to 4 \xD7 lower inference
+        latency than full-context inference. Thus, relevance-guided memory allocation
+        is particularly effective when retrieval pools are large and the available
+        memory budget is tight.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Abstract\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":3,\"page_no\":1,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"db1ed309-fabe-5b95-bf4b-ccbf6c4871cc\",\"version\":7,\"score\":0.46913218,\"payload\":{\"page_content\":\"AdaMem:
+        Adaptive Memory Token Allocation for Soft Compression in Retrieval-Augmented
+        Generation\\nArtem Sakhno, Grigorii Davydenko, Omar Zoloev, Julia Belikova,
+        Andrey Savchenko, Maksim Makarenko \u2217\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0000\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"AdaMem:
+        Adaptive Memory Token Allocation for Soft Compression in Retrieval-Augmented
+        Generation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":1,\"page_no\":1,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"e77c451b-d619-5407-9742-cabb1f3d0ec6\",\"version\":7,\"score\":0.45722672,\"payload\":{\"page_content\":\"Experiments
+        and Results\\nBaselines. We compare AdaMem against hardcompression methods
+        (RECOMP, LLMLingua, and LLMLingua-2), and soft-compression methods (xRAG,
+        PISCO, and OSCAR). No Context answers without retrieved evidence, while Full
+        Context provides all retrieved passages without compression. PISCO and OSCAR
+        are the closest soft-compression baselines because they support large retrieved
+        candidate pools and integrate compression with the retrieval pipeline. PISCO
+        uses query-independent passage compression, whereas OSCAR, like AdaMem, performs
+        query-conditioned compression and relevance scoring. Both assign memory uniformly
+        across retained passages, while AdaMem allocates a fixed global budget according
+        to passage relevance. To isolate this difference, we train PISCO, OSCAR, and
+        AdaMem using identical data splits, hyperparameters, and training stages.
+        Consequently, the comparison with OSCAR directly measures the effect of relevance-aware
+        memory allocation under a matched setup.\\nMain Results. Table 1 reports results
+        with 25 retrieved documents. At the reference compression rate of 16 \xD7
+        , AdaMem achieves the best performance among compressed methods on five of
+        six benchmarks. The only exception is BioASQ, where LLMLingua-2 achieves the
+        strongest compressed result. Nevertheless, AdaMem outperforms all evaluated
+        soft-compression baselines.\\nHard-compression methods exhibit a clear trade-off
+        between compression and answer quality. RECOMP achieves the highest compression
+        rate (200 \xD7 ), but its performance remains only moderately above the No
+        Context baseline; for example, it improves HotpotQA from 32.3 to 37.0. Conversely,
+        LLMLingua and LLMLingua-2 operate at only 2 \xD7 compression, retaining a
+        substantially larger text budget, yet generally remain below AdaMem. For instance,
+        at 16 \xD7 , AdaMem improves over LLMLingua-2 by 3.3 points on TriviaQA, 3.0
+        points on HotpotQA, and 17.3 points on PopQA. Thus, hard compression either
+        requires aggressive token removal, which leaves limited useful evidence, or
+        preserves much larger context without reaching the effectiveness of soft compression.\\nAmong
+        soft-compression methods, AdaMem consistently outperforms OSCAR under the
+        same 16 \xD7 memory budget and yields substantial gains over PISCO. xRAG performs
+        poorly in this setting because it is designed to compress a single document.
+        When applied to long multi-document contexts, its compressed tokens become
+        less informative and fail to preserve passage-specific, query-relevant evidence.\\nBoth
+        AdaMem and OSCAR are trained at 16 \xD7 compression. We evaluate higher compression
+        ratios exclusively at inference time, without additional training or fine-tuning.
+        At 32 \xD7 , AdaMem outperforms OSCAR at its training-time compression ratio
+        of 16 \xD7 across all benchmarks, indicating that it can use approximately
+        half as many memory embeddings while maintaining answer quality. Even at 64
+        \xD7 , AdaMemsurpasses OSCAR at 16 \xD7 on five of six benchmarks. Moreover,
+        AdaMem retains a clear advantage over OSCAR at the same\\n64 \xD7 compression
+        rate. For example, on TriviaQA, increasing compression from 16 \xD7 to 64
+        \xD7 reduces performance by only 0.7 points for AdaMem, compared with 5.3
+        points for OSCAR. This robustness suggests that relevance-aware allocation
+        preserves salient evidence when the memory budget is severely constrained.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Experiments
+        and Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":52,\"page_no\":5,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"e1c28d36-ab86-5ded-b739-17a7cb520645\",\"version\":7,\"score\":0.45441878,\"payload\":{\"page_content\":\"Experiments
+        and Results\\nTable 3: Effect of the three-stage training procedure at 16
+        \xD7 compression with k = 25 .\\n\\nw/o Stage 1, TriviaQA = 71.30. w/o Stage
+        1, NQ = 44.45. w/o Stage 1, HotpotQA = 29.35. w/o Stage 2, TriviaQA = 81.35.
+        w/o Stage 2, NQ = 61.65. w/o Stage 2, HotpotQA = 43.10. w/o Stage 3, TriviaQA
+        = 81.05. w/o Stage 3, NQ = 59.30. w/o Stage 3, HotpotQA = 42.70. Full three-stage
+        training, TriviaQA = 82.80. Full three-stage training, NQ = 63.30. Full three-stage
+        training, HotpotQA = 44.50\\nOverall, the results show that each stage addresses
+        a distinct requirement: learning general-purpose soft memories, adapting them
+        to query-dependent evidence, and aligning relevance-aware allocation with
+        the target retrieval setting.\\nEffect of Allocation Temperature. The temperature
+        \u03C4 controls allocation sharpness: larger values approach uniform allocation,
+        while smaller values concentrate memory on the most relevant passages. Our
+        allocation view predicts that \u03C4 should decrease as compression becomes
+        stronger, since a smaller memory budget must be focused on fewer high-utility
+        passages.\\nFigure 6 confirms this prediction on TriviaQA. The optimal temperature
+        decreases from \u03C4 \u2217 = 1 . 0 at 16 \xD7 compression to 0 . 7 at 32
+        \xD7 and 0 . 5 at 64 \xD7 and 128 \xD7 . Moreover, a theoretically predicted
+        schedule, \u03C4 \u221D B ( \u03C1 ) anchored at 16 \xD7 , consistently outperforms
+        a fixed \u03C4 = 1 and closely tracks the empirical optimum, despite a small
+        gap at higher compression.\\nThis effect contributes to the robustness in
+        Figure 1, which uses the theoretical temperature schedule without any empirical
+        tuning.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Experiments
+        and Results\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":73,\"page_no\":7,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"fb1a6069-d311-50a7-8e9b-00b12ec5e4e2\",\"version\":7,\"score\":0.4483325,\"payload\":{\"page_content\":\"Top-25
+        QA robustness under stronger compression\\nFigure 7: LLM-as-a-judge accuracy
+        under increasingly strong inference-time compression. AdaMem consistently
+        retains higher answer quality than OSCAR as the memory budget decreases.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Top-25
+        QA robustness under stronger compression\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":164,\"page_no\":12,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"220f8f59-c41a-5797-9722-e2ce5b648308\",\"version\":7,\"score\":0.43781754,\"payload\":{\"page_content\":\"B
+        Inference Efficiency\\nTable 4 reports per-query latency, throughput, total
+        compute, and peak GPU memory on TriviaQA with k = 25 retrieved passages, for
+        all inference-time compression rates used in the main text.\\nAll compressed
+        configurations are substantially cheaper than Full Context: latency drops
+        by 3 . 5 \xD7 to 4 . 9 \xD7 and compute by 2 . 9 \xD7 to 5 . 0 \xD7 , confirming
+        that soft compression removes the dominant cost of processing large retrieval
+        pools. Relative to OSCAR at the same compression rate, AdaMem adds the cost
+        of relevance scoring and of encoding the fixed candidate memory bank before
+        selection. This overhead is confined to the compressor and does not grow with
+        the decoder context, so its share shrinks as compression increases: from 36.3
+        ms (23%) at 16 \xD7 to 10.0 ms (7%) at 64 \xD7 and 7.6 ms (6%) at 128 \xD7
+        . Because the quality of AdaMem is nearly flat in the compression rate, it
+        can be operated at aggressive compression where this overhead is smallest:
+        at 64 \xD7 and 128 \xD7 , AdaMem matches or improves on OSCAR at 16 \xD7 in
+        latency, throughput, and compute while providing higher answer quality. Peak
+        memory remains moderately higher than OSCAR because the candidate bank for
+        the full pool is encoded before allocation, yet at 64 \xD7 it is already below
+        the Full Context footprint (44.4 versus 53.5 GB), and the gap narrows further
+        with compression.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0023\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Inference Efficiency\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":141,\"page_no\":10,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"935cda58-c1e2-5fda-8602-111b6ffb5827\",\"version\":7,\"score\":0.43152374,\"payload\":{\"page_content\":\"Related
+        Work\\nPrior work on context compression follows two main paradigms: hard
+        compression , which shortens retrieved text, and soft compression , which
+        replaces it with continuous representations.\\nHard Compression. These methods
+        retain the generator's textual interface by selecting or rewriting useful
+        context. LLMLingua (Jiang et al. 2023b) uses perplexity-based token removal;
+        LongLLMLingua (Jiang et al. 2024) adds query awareness; LLMLingua-2 (Pan et
+        al. 2024) formulates compression as token classification. RECOMP (Xu, Shi,
+        and Choi 2024) learns extractive and abstractive compressors optimized for
+        downstream performance. Such methods are interpretable and model-agnostic,
+        but their discrete outputs must be re-encoded per query, limiting compression
+        rates.\\nSoft Compression. Soft compression maps text to continuous memory
+        embeddings consumed directly by the generator. Gist tokens (Mu, Li, and Goodman
+        2023), AutoCompressors (Chevalier et al. 2023), and In-Context Autoencoders
+        (Ge et al. 2024) establish that LLMs can condition on latent representations.
+        For RAG, xRAG (Cheng et al. 2024) projects a pre-computed embedding into generator
+        space; 500xCompressor (Li, Su, and Collier 2025) demonstrates extreme compression;
+        PISCO (Louis, D\xE9jean, and Clinchant 2025) trains a compressor via distillation.
+        OSCAR (Louis et al. 2026) is most closely related: it performs online query-conditioned
+        compression and jointly produces representations and relevance scores. However,
+        as in most prior pipelines, relevance determines ordering or selection, while
+        each retained passage receives the same fixed number of memory tokens. AdaMem
+        instead distributes a fixed global budget non-uniformly according to estimated
+        utility.\\nCapacity of Soft Memories. Kuratov et al. (2025) show a single
+        vector can encode sequences at compression ratios approaching 1500 \xD7 ,
+        and that compressibility depends more on resolvable uncertainty than raw length;
+        we build on this observation but study how a fi xed capacity should be distributed
+        across multiple passages rather than the ceiling of a single memory.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"Related
+        Work\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":17,\"page_no\":2,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"a0c166f0-1173-5173-9ab5-499d03def381\",\"version\":7,\"score\":0.42816073,\"payload\":{\"page_content\":\"This
+        is a line chart comparing two methods for setting \\\"allocation temperature\\\"
+        (\u03C4) against compression rate (x-axis, log scale: 16, 32, 64, 128). The
+        blue solid line labeled \\\"Empirical optimum\\\" shows \u03C4 decreasing
+        gradually from 1.0 at compression rate 16 to about 0.5 at rate 128, with match
+        accuracy scores annotated at each point (84.00, 84.45, 83.90, 83.15). The
+        orange dashed line labeled \\\"Theory: \u03C4 \u221D B(\u03C1) (anchored at
+        16x)\\\" declines more steeply, from 1.0 at rate 16 to about 0.22 at rate
+        128, with corresponding match scores (84.35, 83.35, 82.25). A gray dotted
+        horizontal reference line marks \\\"Fixed \u03C4 = 1\\\" with a match score
+        of 81.30 at compression rate 128, illustrating that both adaptive temperature
+        approaches outperform a fixed temperature baseline at high compression rates.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-fig-007-05\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"figure\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":81,\"page_no\":7,\"filename\":\"2609.22100v1.pdf\",\"image_path\":\"/var/www/html/personal/llms/portfolio/data/processed/01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d/figures/fig-007-05-af44834945b0ff05.png\"}}},{\"id\":\"b23e9f67-cdcc-54fe-a4f0-6c338b605762\",\"version\":7,\"score\":0.42342123,\"payload\":{\"page_content\":\"D
+        Judge Metrics\\nWe use Substring Match as the primary metric because it is
+        deterministic and consistent with standard open-domain QA evaluation. However,
+        it can overestimate answer quality when a model lists multiple candidate answers:
+        the prediction receives full credit whenever it contains a gold-answer alias
+        as a substring, even if the response is ambiguous, unsupported, or includes
+        incorrect alternatives. We therefore additionally report LLM-as-a-judge scores,
+        which evaluate the correctness of the generated answer in the context of the
+        question and reference answer. The judge assigns a score of 1 for a correct
+        answer, 0.5 for a partially correct answer, and 0 for a wrong answer; we report
+        the mean score as a percentage. This complementary evaluation penalizes answer
+        enumeration and verifies that improvements in Match correspond to genuinely
+        correct answers rather than increased lexical overlap with the reference.\\nTable
+        5: Training schedule for the three-stage procedure.\\n\\nStage 1, Examples
+        = 2,000,000. Stage 1, Epochs = 1. Stage 2, Examples = 500,000. Stage 2, Epochs
+        = 1. Stage 3 (KILT-SCR), Examples = 196,916. Stage 3 (KILT-SCR), Epochs =
+        3\\nFor each example, we provide the judge with the question, the reference
+        answer, and the model prediction. We use the following prompt:\\nSystem prompt:
+        You are an evaluation tool. Answer with one of: 1: Correct, 0.5: Partially
+        correct, 0: Wrong.\\nUser prompt: Here is a question, a golden answer, and
+        an AI-generated answer. Can you judge whether the AIgenerated answer is correct
+        according to the question and golden answer? Simply answer with one of: 1:
+        Correct, 0.5: Partially correct, 0: Wrong.\\nQuestion:\\n{question}\\nGolden
+        answer:\\n{answer}\\nGenerated answer: {prediction}\\nFigure 7 corroborates
+        the Match-based robustness trends. At the training-time compression rate of
+        16 \xD7 , AdaMem matches or exceeds OSCAR across all three benchmarks, improving
+        by 1.8 points on TriviaQA and 2.4 points on NQ, while the methods are effectively
+        tied on HotpotQA. The advantage grows under stronger inference-time compression.
+        At 64 \xD7 , AdaMem exceeds OSCAR by 6.1 points on TriviaQA and NQ, and by
+        7.1 points on HotpotQA. In contrast to OSCAR, AdaMem remains stable as the
+        memory budget shrinks: its judge score decreases by only 0.9, 3.3, and 1.4
+        points from 16 \xD7 to 64 \xD7 on TriviaQA, NQ, and HotpotQA, respectively,
+        compared with drops of 5.2, 7.0, and 8.7 points for OSCAR. These results show
+        that relevance-aware allocation preserves answer-critical information under
+        severe compression, rather than merely improving lexical overlap with reference
+        answers.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"D
+        Judge Metrics\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":148,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.001618823}"
     headers:
       content-type:
       - application/json

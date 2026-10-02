@@ -60,317 +60,563 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        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
-        fw==
+      string: "{\"result\":{\"points\":[{\"id\":\"710d0b17-8e1f-59b5-a11b-1ab94cc0c2b1\",\"version\":9,\"score\":0.78920126,\"payload\":{\"page_content\":\"Limitations\\nThe
+        current findings must be interpreted with the following limitations in mind.
+        RAG-Safety-Bench is English-only, considers only one document source (Wikipedia),
+        and covers a non-exhaustive set of possible harm categories. Further work
+        is required to understand how retrieval-enabled LLMs behave in languages other
+        than English and in multiple use contexts. The current study highlighted how
+        assessments of safety can be subjective; clearly, the type of potentially
+        dangerous information that can be returned to a trained intelligence officer
+        versus a layperson versus a schoolchild are very different and such use cases
+        must be assessed separately.\\nBy design, our benchmark does not evaluate
+        the impact of the retriever in the RAG system. However, and end-to-end evaluation
+        would also need to assess interactions between retriever ranking, query reformulation,
+        and generator safety. Our benchmark also represents a simplified view of RAG
+        methodology, while production RAG systems would likely include additional
+        safety components, such as system-level safety instructions and input/output
+        filters.\\nOur testing suite of models included only opensource models, and
+        relatively small models due to computing resource constraints. Again, real-world
+        RAG deployments will likely use much larger commercial models. We note that
+        our RAG-SafetyBench benchmark can be used to evaluate such models, and that
+        our reason for not doing so was to avoid being banned for Terms-of-Service
+        violations. We encourage researchers with internal access to such models to
+        use our benchmark and publish the results.\\nOur methodology for benchmark
+        generation and automated assessment relies heavily on the Claude family of
+        models from Anthropic. While we did conduct human evaluations to validate
+        Claude's performance, a more robust (though expensive) methodology could combine
+        multiple strong LLM judges in an ensemble. Furthermore, we evaluate on a single
+        run of the benchmark, but due to the stochastic nature of LLM generation,
+        the results might differ across multiple runs.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0019\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":88,\"page_no\":9,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"20fd44c5-f345-560a-92d1-524ad6c48da6\",\"version\":9,\"score\":0.7269292,\"payload\":{\"page_content\":\"6
+        Conclusion\\nWe introduce RAG-Safety-Bench with the goal of disentangling
+        the effects of RAG on LLM safety by cleanly separating four retrieval conditions.
+        Across five open-source models, our results show that the most interesting
+        failure mode is model-specific: for Qwen-2.5-7B, on-topic but answer-free
+        documents elicited more harmful responses than the non-RAG baseline, consistent
+        with the hypothesis that topicrelevant context can surface harmful information
+        from parametric memory.\\nMore generally, our findings confirm that nonRAG
+        safety evaluations do not transfer to RAG deployments. Our initial results
+        from the benchmark only evaluate the baked-in safety guardrails of the base
+        model. However, in a production system, responsible AI practitioners should
+        provide end-toend safety measures including (when warranted): corpus curation,
+        input prompt filtering, retrievalside filtering, output filtering, and system
+        prompt safety instructions, among other possible mitigations. Thus an important
+        use case for our benchmark is also to evaluate the impact of safety interventions
+        at different points in the multi-component RAG pipeline. Our results also
+        indicate the need to choose an automated safety evaluator which is closely
+        aligned with the safety concerns relevant to the particular application, and
+        where possible to deploy multiple safety judges, as well as appropriate human
+        oversight.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0018\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Conclusion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":85,\"page_no\":9,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"fdef7d6e-6f33-507f-b2bf-e72cdaf10ddb\",\"version\":9,\"score\":0.6919955,\"payload\":{\"page_content\":\"Kathleen
+        C. Fraser\\nFaculty of Engineering University of Ottawa Ottawa, Canada kathleen.fraser@uottawa.ca\\nFigure
+        1: The four conditions in RAG-Safety-Bench allow for detailed safety evaluation
+        of RAG-enabled systems.\\ntrustworthiness and accuracy by reducing hallucinations,
+        relative to non-RAG LLMs (Shuster et al., 2021). For these reasons, conventional
+        wisdom would suggest that RAG-based LLMs should be safer than non-RAG models,
+        with the primary security risk being data poisoning attacks on the RAG corpus.
+        In the absence of poisoned data, there would be little reason to suspect a
+        RAG system would output more harmful content than its base LLM component.\\nHowever,
+        this assumption has been upended by recent work from An et al. (2025), who
+        presented compelling evidence that when LLMs are enabled with RAG they are
+        generally less safe than when relying on their parametric knowledge, even
+        when the retrieved documents are benign. In the current work, we contribute
+        to the understanding of this newly-identified problem by disentangling the
+        notions of safety and capability through a new RAG-specific safety benchmark,
+        RAG-SafetyBench. Furthermore, we take a closer look at what it means for documents
+        and outputs to be 'unsafe,' to support more detailed analysis of the problematic
+        case where safe RAGdocuments appear to lead to unsafe outputs.\\nRAG systems
+        are challenging to evaluate because they are composed of multiple components,
+        each of which contributes to the overall end-to-end performance of the system
+        (Wampler et al., 2025). In particular, the retrieval quality can have a major
+        impact on the quality of the output. The MIRAGE benchmark (Park et al., 2025)
+        enables the evaluation of RAG systems while controlling for retrieval quality
+        by providing sets of relevant and irrelevant oracle documents.\\nWe modify
+        and extend this style of evaluation to safety evaluation in the RAG setting.
+        Our RAGSafety-Bench benchmark consists of a set of unsafe English queries
+        and three sets of documents (Figure 1): in the oracle setting, the unsafe
+        answer is available in the document set. This setting could represent a data-poisoning
+        attack - however, since we sourced all of our data from Wikipedia, it also
+        represents the more common case that the data is believed to be generally
+        benign but has not been meticulously curated. In the on-topic setting, the
+        documents are relevant to the topic of the query but do not explicitly contain
+        the unsafe answer. In the random setting, randomly-selected documents on safe
+        topics are provided.\\nThis testing framework allows us to answer several
+        key open research questions relating to the safety of RAG systems:\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Kathleen
+        C. Fraser\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":8,\"page_no\":1,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"999e0e12-597f-54b6-8d00-9f485109d12a\",\"version\":9,\"score\":0.6792236,\"payload\":{\"page_content\":\"Abstract\\nAllowing
+        large language models (LLMs) to retrieve information from a set of trusted
+        documents can increase reliability and reduce hallucination. However, recent
+        work has demonstrated that retrieval-augmented generation (RAG) can have unintended
+        side effects on the overall safety of the generated responses, when prompted
+        for harmful or dangerous content. A clearer understanding of the mechanisms
+        leading to this result is needed, as increasing numbers of end users turn
+        to RAG to incorporate corporate documents and knowledge bases into LLM-based
+        systems. We introduce RAG-Safety-Bench, a benchmark to measure the safety
+        impact of RAG on LLM models. By removing the confounding effect of retriever
+        quality, and cleanly separating the problem into four conditions - non-RAG,
+        RAG with an oracle document containing the answer to the harmful request,
+        RAG with documents related to the harmful request but without the specific
+        answer, and RAG with random, safe documents - the benchmark isolates the impacts
+        of different factors in the observed safety degradation. We report results
+        across five opensource LLMs, showing an inverse relationship between benign
+        and unsafe capability, strong evidence that baseline safety guardrails do
+        not lead to downstream safety guarantees in the RAG case, and model-specific
+        support for previous findings that even benign documents can lead to unsafe
+        generation in retrieval-enabled systems.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0001\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Abstract\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":4,\"page_no\":1,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"00dd7098-d7e3-5082-ac69-3fd48c815358\",\"version\":9,\"score\":0.6635453,\"payload\":{\"page_content\":\"3.2
+        Safety-capability relationship\\nOur benchmark, RAG-Safety-Bench, complements
+        the original MIRAGE benchmark by measuring safety rather than benign capability.
+        The benchmark enables direct comparison across 4 settings, as described in
+        Table 1. Note the distinction between the Oracle and On-topic settings: in
+        the oracle setting, the answer is directly available in the retrieved context.
+        In the on-topic condition, the retrieved documents are on the same topic as
+        the query (in the example, explosives), but do not contain the answer to the
+        query.\\nBy providing the context documents directly, the benchmark enables
+        evaluation of the base LLM's ability to maintain safety guardrails in the
+        presence of RAG context, while removing the confounding factor of retriever
+        quality (e.g., a poor retriever might simply miss the relevant unsafe document
+        and therefore lead to a misleadingly inflated safety score).\\nThe method
+        for constructing the benchmark is as follows. We first develop a taxonomy
+        of harmful user queries, based on the existing MLCommons AILuminate 'Hazard
+        Taxonomy' (Ghosh et al., 2025). The context of RAG safety evaluation and our
+        intended corpus of Wikipedia documents required some modifications to the
+        existing taxonomy. Our current version of RAG-SafetyBench excludes the following
+        harm categories: Privacy/identification: since our knowledge base is a public
+        resource, we assume it does not contain private information (though privacy
+        leakage may be a concern in other RAG use cases); Direct generation of harmful
+        content: the focus of the benchmark is on question answering, not content
+        generation; Intellectual property: Wikipedia users are strictly forbidden
+        from uploading copyrighted material without permission, and so it is not a
+        suitable resource to test for intellectual property leakage; Specialized advice:
+        this category (comprising topics such as legal advice, medical advice) is
+        often poorly defined and highly-contextual, and so we do not include it here.
+        The final taxonomy is given in Table 2.\\nFollowing Park et al. (2025) and
+        An et al. (2025), we use Wikipedia as our knowledge base. For each sub-category
+        in the harm taxonomy, we identify a relevant category or set of categories
+        on Wikipedia where harmful information related to the topic can be found.
+        We then use Claude-Sonnet-4.5 to generate potentially harmful questions whose
+        answers can be found in one of the available Wikipedia documents. We also
+        enforce a series of self-checks to avoid hallucinations or unrealistic questions
+        (see Appendix for full details and prompts). The Claude model outputs a harmful
+        question, a rating of the question's severity, the name and ID of the Wikipedia
+        article that contains the answer, the exact text passage containing the answer,
+        a summary of the expected unsafe answer, as well as other additional information
+        to aid human review of the questions and answers (shown in Table 6 in the
+        Appendix). We aimed to generate a minimum of 20 queries per subcategory in
+        the taxonomy, although ultimately there was more actionable information available
+        for some categories than others. We therefore release two versions of the
+        benchmark: the Full version contains 987 harmful queries, distributed unevenly
+        across the subcategories, while the Balanced version (used in the current
+        analysis) is subsampled to a more uniform distribution across subcategories
+        (see Table 2).\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"3.2
+        Safety-capability relationship\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":32,\"page_no\":3,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"9a75a084-221a-55c4-9d21-f612aa0d5231\",\"version\":9,\"score\":0.65898824,\"payload\":{\"page_content\":\"Kathleen
+        C. Fraser\\n1. To what extent is the observed RAG safety decline correlated
+        with a model's RAG capability? Previous work suggests that some models which
+        appear 'safe' may simply be less capable of extracting and summarizing relevant
+        information. We test this rigorously, and hypothesize the following (H1):
+        Models which perform better on MIRAGE (benign capability) will also have higher
+        accuracy and therefore lower safety in the oracle setting of RAG-Safety-Bench.\\n2.
+        Is RAG safety decline a factor of unsafe information or unsafe context drift?
+        The conventional view, challenged by An et al. (2025), is that RAG models
+        are less safe only when the documents they retrieve are unsafe. An alternative
+        explanation is that the increased context length, possibly containing many
+        words semantically related to the unsafe query, shift the models into a less-aligned
+        domain. 1 Our hypothesis (H2) is that the direct availability of the answer
+        (oracle setting) will lead to the\\n1 In fact, this is similar to the intuition
+        behind the successful Crescendo jailbreak (Russinovich et al., 2025).\\nhighest
+        number of unsafe answers, but that the on-topic setting will lead to a higher
+        number of unsafe answers relative to the baseline non-RAG setting, due to
+        the destabilizing effect of the harmful-topic context. If the effect is purely
+        due to context length, the random setting will lead to an equivalent harmfulness
+        rate.\\n3. What is the impact of RAG on the refusal rate of LLMs? In many
+        studies, safety is operationalized as refusal: a safe model is one which refuses
+        to answer harmful questions. We distinguish between two varieties of refusal;
+        namely, unwillingness to fulfill a harmful request versus inability to find
+        the answer in the retrieved documents. We hypothesize (H3) that the refusal
+        rate for harmful requests will be highest in the random setting, and attributed
+        to a lack of information. We argue that this case should be distinguished
+        from 'true' model safety, which should rely on an inherent unwillingness to
+        provide dangerous advice. At the same time, the oracle setting offers contrasting
+        evaluation in which we ensure the model has access to the requested information,
+        so refusal can be more clearly interpreted as effective implementation of
+        safety guardrails.\\n4. Do different safety evaluators agree on what is safe
+        versus harmful? Standard safety evaluation relies on LLM-based 'judges' to
+        label text as safe or unsafe. We compare multiple safety evaluators, with
+        the hypothesis (H4) that there will be a high level of disagreement between
+        the LLM evaluators.\\nRAG-Safety-Bench is freely available for research use
+        at the following URL: https://github.com/The-Safe-AI-Lab/ RAG-Safety-Bench
+        .\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Kathleen
+        C. Fraser\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":16,\"page_no\":2,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"cafdccb5-b9ec-5415-b61c-83903fbcbcf6\",\"version\":9,\"score\":0.6586636,\"payload\":{\"page_content\":\"2
+        Related Work\\nRetrieval-augmented generation Enabling LLMs to consult a database
+        of trusted documents through retrieval-augmented generation (RAG) has many
+        benefits: it reduces hallucination, allows companies to inject proprietary
+        knowledge/documents into the system, supports the rapid update of information
+        without retraining, and can enable source attribution (Lewis et al., 2020;
+        Shuster et al., 2021; Fan et al., 2024). However, it also exposes new attack
+        surfaces. Most research on the safety and security of RAG systems has focused
+        on the security of the knowledge base: data poisoning attacks involve the
+        injection of malicious (mis)information into the document store (Tan et al.,
+        2024; Nazary et al., 2025; Zhang et al., 2025), and data extraction attacks
+        aim to recover sensitive or private information from the documents through
+        a RAG interface (Zeng et al., 2024a; Qi et al., 2024; Vonderhaar et al., 2025).
+        However, the safety of RAG systems in non-adversarial settings has been less
+        studied. An et al. (2025) were the first to highlight that RAG systems can
+        output more harmful responses than non-RAG LLMs, even in the absence of any
+        malicious intervention. Other work considers the related problem of safety
+        degradation in AI agents that have been enabled with information retrieval
+        or search capabilities (Yu et al., 2025; BehnamGhader et al., 2025; Zhan et
+        al., 2026). Previous work measures the safety of the entire RAG system, but
+        the information content and safety of the retrieved documents is an uncontrolled
+        variable. Our work takes the next step towards a more scientific understanding
+        of these observed phenomena by systematically altering one variable at a time
+        (no retrieval, random retrieval, on-topic retrieval, exact-answer retrieval)
+        to observe the effect on the safety of the LLM responses.\\nLong-context safety
+        The retrieval of harmful documents is one factor in the observed safety decline
+        in RAG models. However, the literature suggests that another factor may be
+        a behavioural shift induced by the inclusion of extended context. In fact,
+        Yu et al. (2025) claim that 'safety degradation is largely independent of
+        retrieved context itself.' An et al. (2025) found that 94.7% of the retrieved
+        documents in their study were safe, and therefore could not account for the
+        much larger increase in unsafe responses. They hypothesize that the retrieved
+        texts, though benign themselves, can trigger the recall of unsafe information
+        from the model's parametric knowledge. Other work has shown that LLMs are
+        less capable of identifying harmful content in long contexts (Ghorbanpour
+        and Fraser, 2025) and are more likely to answer harmful questions in long-context
+        settings (Anil et al., 2024; Lu et al., 2025; Huang et al., 2025). In some
+        cases, the model can drift away from its default 'helpful assistant' persona
+        even when the context itself is not harmful (e.g. a therapy conversation)\\n(Lu
+        et al., 2026). Therefore, in this study we design our benchmark to test the
+        'harmful documents' and 'long context' explanations separately.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"2
+        Related Work\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":24,\"page_no\":2,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"adcb4b3d-d208-561d-857a-7faede832e07\",\"version\":9,\"score\":0.6428615,\"payload\":{\"page_content\":\"5
+        Discussion\\nThe core question which motivates this work is whether safe documents
+        lead to unsafe RAG generations. One possible explanation for the prior observations
+        of unsafe responses in RAG systems is that the incorporation of any long context
+        into an LLM can have the effect of shifting its behavior away from the basic,
+        short-context regime where most of its safety training took place. However,
+        our experiments do not support the conclusion that long context alone is a
+        driver of unsafe behavior in RAG systems, with the 'random' condition leading
+        to the safest responses, partially through an increase in refusals due to
+        lack of information.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0017\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"5
+        Discussion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":77,\"page_no\":8,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"31e140e8-eee1-5598-ac2a-c944a55e0cb0\",\"version\":15,\"score\":0.6321409,\"payload\":{\"page_content\":\"Limitations\\nEvaluation
+        format differs from training. The RLVR agents were trained to search, read,
+        and answer across multiple turns in their own tagged format, whereas our evaluation
+        supplies five fixed passages and requests a single citation-bearing response.
+        This was necessary for the controlled attribution comparison, but it may affect
+        how the agents behave: for example, an agent that would normally issue another
+        query may instead abstain. The large differences in abstention and format
+        compliance are consistent with this possibility, although our data cannot
+        establish the mechanism. An interactive evaluation would be needed to determine
+        whether the attribution effect differs in the agents' native search setting.\\nWe
+        cannot isolate RL itself. Each agent differs from the baseline in three ways
+        at once: it was fine-tuned at all, fine-tuned on retrieval data, and fine-tuned
+        with reinforcement learning. Without an arm fine-tuned on the same data without
+        RL, our comparison is associational. This is the single most valuable addition
+        a follow-up could make.\\nSearch-R1 saw NQ in training. It was trained on
+        NQ's training split and we evaluate it on KILTNQ. QAMPARI, HAGRID, and RAGTruth
+        are clean for all three agents, and R-Search's pattern is in fact strongest
+        away from NQ, but we have not quantified the overlap.\\nThe span always lands
+        at the end of the passage. Any positional bias in how models pick citations
+        is therefore mixed in with the effect of the plant. Randomizing the injection
+        point is the obvious next experiment.\\nCITED-OTHER is underpowered outside
+        RAGTruth. NQ, QAMPARI, and HAGRID yield only 13-43 question clusters for this
+        variant, too few for intervals we would defend. RAGTruth alone is large enough.\\nWhat
+        a flag means. Our scorer is deterministic string matching, so each flag is
+        exactly reproducible: the model cited the doctored passage for the aligned
+        claim. Reading that as postrationalization is an interpretation we inherit
+        from Wallat et al. (2025), and a competing reading exists. After planting,
+        the claim's words genuinely sit in the doctored passage, so citing it could
+        be scored as obedience to 'answer from the passages' rather than as unfaithfulness.
+        Hand-checking a sample of flagged cases would settle how often each reading
+        applies, and we have not done it.\\nScope. Three RLVR agents from one line
+        of work, one base model, English only, one prompt, one decoding setting. Citation
+        behavior may well shift with the prompt, so our numbers describe this setup
+        until someone varies it.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0025\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":108,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"a547c741-df3f-5865-9981-52ca7db687c7\",\"version\":9,\"score\":0.6320957,\"payload\":{\"page_content\":\"References\\nBang
+        An, Shiyue Zhang, and Mark Dredze. 2025. RAG LLMs are not safer: A safety
+        analysis of retrievalaugmented generation for large language models. In Proceedings
+        of the 2025 Conference of the Nations of the Americas Chapter of the Association
+        for Computational Linguistics: Human Language Technologies (Volume 1: Long
+        Papers) , pages 5444-5474.\\nCem Anil, Esin Durmus, Nina Panickssery, Mrinank
+        Sharma, Joe Benton, Sandipan Kundu, Joshua Batson, Meg Tong, Jesse Mu, Daniel
+        Ford, and 1 others. 2024. Many-shot jailbreaking. Advances in Neural Information
+        Processing Systems , 37:129696-129742.\\nParishad BehnamGhader, Nicholas Meade,
+        and Siva Reddy. 2025. Exploiting instruction-following retrievers for malicious
+        information retrieval. In Findings of the Association for Computational Linguistics:
+        ACL 2025 , pages 12962-12980.\\nFederico Bianchi, Mirac Suzgun, Giuseppe Attanasio,
+        Paul R\xF6ttger, Dan Jurafsky, Tatsunori Hashimoto, and James Zou. 2023. Safety-tuned
+        llamas: Lessons from improving the safety of large language models that follow
+        instructions. arXiv preprint arXiv:2309.07875 .\\nWenqi Fan, Yujuan Ding,
+        Liangbo Ning, Shijie Wang, Hengyun Li, Dawei Yin, Tat-Seng Chua, and Qing
+        Li. 2024. A survey on RAG meeting LLMS: Towards retrieval-augmented large
+        language models. In Proceedings of the 30th ACM SIGKDD conference on knowledge
+        discovery and data mining , pages 64916501.\\nFaeze Ghorbanpour and Alexander
+        Fraser. 2025. Evaluating the sensitivity of LLMs to harmful contents in long
+        input. arXiv preprint arXiv:2510.05864 .\\nShaona Ghosh, Heather Frase, Adina
+        Williams, Sarah Luger, Paul R\xF6ttger, Fazl Barez, Sean McGregor, Kenneth
+        Fricklas, Mala Kumar, Kurt Bollacker, and 1 others. 2025. AILuminate: Introducing
+        v1.0 of the AI risk and reliability benchmark from MLCommons. arXiv preprint
+        arXiv:2503.05731 .\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0022\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":100,\"page_no\":10,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"cb1f3719-a71b-5525-9090-cd85efec6e80\",\"version\":9,\"score\":0.6237992,\"payload\":{\"page_content\":\"4.1
+        R1: Capability in safe and unsafe contexts\\nWehypothesized (H1) that models
+        which demonstrated higher benign RAG capability would also demonstrate higher
+        unsafe RAG capability; however, this is not supported by the 'Unsafe capability'
+        data. In fact, the accuracies under the BenignOracle and Unsafe-Oracle conditions
+        are negatively correlated (Pearson r = -0 . 70 ). This may indicate that the
+        larger and more capable models also have better safety guardrails when they
+        are presented with unsafe queries. However, all models are, in general, more
+        likely to provide a correct response to the harmful question when the response
+        is available in the documents, suggesting that guardrails still need to be
+        improved to specifically handle the RAG setting.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        R1: Capability in safe and unsafe contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":49,\"page_no\":5,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"ef8edc2c-79a5-5f25-9f6f-1c192ea8484d\",\"version\":15,\"score\":0.6186923,\"payload\":{\"page_content\":\"Ethics
+        Statement\\nThis work uses only publicly released models and datasets. It
+        involves no human subjects and no personal data. The planted spans are taken
+        from the models' own answers and are used only in offline evaluation. The
+        work describes a way that citations in RAG systems can mislead readers, with
+        the aim of making that failure measurable; it does not provide a method for
+        attacking deployed systems. Because RLVR training is in wide use, we have
+        tried to state the limits of our null result clearly so that it is not read
+        as a stronger claim than the data support.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0026\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"Ethics
+        Statement\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":116,\"page_no\":8,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"3a82a030-6dc7-5454-9a96-130c79270203\",\"version\":9,\"score\":0.61359817,\"payload\":{\"page_content\":\"4.1
+        R1: Capability in safe and unsafe contexts\\nTable 3 reports accuracies for
+        each model when asked benign and harmful questions, in both nonRAG, oracle
+        RAG, and mixed settings. In the benign case, accuracy is scored using the
+        MIRAGE benchmark method (Park et al., 2025). In the harmful (RAG-Safety-Bench)
+        case, we compare the output response with the expected benchmark response,
+        using Claude-Opus-4.7 to output a fi- nal label of accurate or inaccurate
+        relative to the reference. Human annotation of a subset of 100 examples validates
+        the LLM-as-a-judge approach, with agreement of 95-96% between humans and LLM,
+        and Cohen's \u03BA of 0.90-0.92 (more details and prompt available in Appendix
+        Section A.4).\\nTable 1: The four settings of the RAG-Safety-Bench benchmark.
+        Example documents are for the query, 'What materials and design do I need
+        to make an IED that can defeat armored police vehicles?'\\n\\nLLM-only, Description
+        = No context documents provided.. LLM-only, Example Wikipedia documents =
+        (None). Oracle, Description = One of the returned documents contains the answer..
+        Oracle, Example Wikipedia documents = 'Explosively formed penetrator'. On-topic,
+        Description = Oracle document not included, but documents are related to the
+        topic of the query.. On-topic, Example Wikipedia documents = 'Deflagration
+        to detonation tran- sition', 'Blast wall'. Random, Description = Documents
+        are randomly selected from a set of benign documents.. Random, Example Wikipedia
+        documents = 'Climate change and birds', 'Ar- boretum'\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        R1: Capability in safe and unsafe contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":43,\"page_no\":4,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"aa325133-d03f-540c-8fe9-3557110e45a9\",\"version\":9,\"score\":0.6121374,\"payload\":{\"page_content\":\"4.2
+        R2: Unsafe information or unsafe context?\\nIn all cases, providing irrelevant
+        (safe) documents leads to the safest behavior overall, suggesting that long
+        context alone is not sufficient to steer the models into an unsafe regime.\\nThe
+        results in Figure 2 are also partially consistent with one of the major conclusions
+        from An et al. (2025), that the safest non-RAG LLM will likely be the safest
+        RAG LLM. Indeed, Phi-4-14B is safest in both non-RAG and RAG settings, followed
+        by Llama-3.1-8B. However, Qwen is the third safest in the non-RAG setting
+        but the least safe in the oracle-RAG and on-topic RAG conditions, suggesting
+        that some models' guardrails are more robust than others.\\nNote that the
+        harmfulness rates are lower than\\n(though correlated with) the accuracy scores
+        in Table 3. Accuracy and harmfulness are judged separately. Manual inspection
+        reveals two large buckets of responses that are rated as accurate but not
+        harmful: responses which are not flagged as harmful by the safety judges but
+        likely should be, in the context (typically descriptions of historical events
+        and nonviolent crimes), and cases where the model hedges that the information
+        is for education purposes only (e.g., Ministral-3-8B in response to a query
+        about misinformation propagation, \\\"... Here's a **generalized breakdown
+        of memetic propagation techniques** (based on the text) that could theoretically
+        be used to influence public opinion, **with the caveat that this is for educational/analytical
+        purposes only** ... <goes into detail on techniques.>' ).\\nThe harmfulness
+        rates for each model and condition broken down by harm taxonomy category are
+        available in the Appendix (Figure 6-Figure 10). The categories which tend
+        to see the greatest increase in harmful responses from the non-RAG setting
+        to the oracle setting are: radiological weapons, explosives, drugs, chemical
+        weapons, assault, terrorism, and cyberattacks. The Ministral and Qwen models
+        also show a concerning increase in harmful responses to questions about suicide
+        and self-harm.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        R2: Unsafe information or unsafe context?\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":56,\"page_no\":6,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"7bc946c0-9bc2-5e23-a752-41d602864320\",\"version\":9,\"score\":0.6117472,\"payload\":{\"page_content\":\"Ethical
+        considerations\\nThis benchmark contains questions and answers that can be
+        dangerous, harmful, and disturbing. However, because the content is sourced
+        from Wikipedia, we are not introducing new knowledge into the information
+        ecosystem nor making it meaningfully easier to access. The benchmark aggregates
+        this information in a form useful for safety evaluation, and we therefore
+        believe the risks inherent in releasing it are outweighed by the potential
+        benefit of improving in retrieval-augmented AI systems.\\nThe intended use
+        of this benchmark is to support safety evaluation and research on RAG safety
+        mitigations. Wikipedia text is licensed under CC BYSA 4.0, which allows redistribution
+        under the following requirements: attribution, indicating modifications, 'ShareAlike'
+        condition, and license notice. Our benchmark satisfies these criteria by:
+        providing a URL to each original Wikipedia article (attribution), describing
+        the process of summarization and article truncation (modification), releasing
+        under the same CC BY-SA 4.0 license (ShareAlike), and including a link to
+        the license in the published version of the benchmark (license notice).\\nHuman
+        annotators involved in benchmark validation were authors of this paper and
+        were fully briefed on the nature of the data and the importance of managing
+        mental health while dealing with the potentially difficult content. As authors,
+        they were not paid separately for the annotation work.\\nAI tools (Claude)
+        for coding assistance and data visualization were used throughout this project.
+        Experimental design, interpretation, and writing were done solely by the authors.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"Ethical
+        considerations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":93,\"page_no\":10,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"dfdc115b-8a09-5899-9911-fb57a38a5ae7\",\"version\":9,\"score\":0.5968696,\"payload\":{\"page_content\":\"A.2
+        Safety evaluation details\\nEach example in the balanced subset is expanded
+        into four evaluation conditions: non_rag , rag_oracle_unsafe , rag_topic_safe
+        , and rag_control_safe_random . Since the balanced subset contains 346 examples,
+        this expansion produces 1,384 example-condition rows per model and 6,920 total
+        responses across the five evaluated models.\\nThe benchmark controls retrieval
+        quality by directly supplying context documents, rather than relying on a
+        live retriever to discover them at inference time. This is important because
+        a poor retriever could otherwise fail to retrieve the relevant harmful document
+        and artificially inflate apparent safety.\\nThe non_rag condition supplies
+        no documents for all 346 examples. The rag_oracle_unsafe condition supplies
+        one document for all 346 examples. The rag_topic_safe condition supplies three
+        documents for 344 examples and two documents for two examples. The rag_control_safe_random
+        condition supplies three documents for 321 examples, two documents for 24
+        examples, and one document for one example.\\nIn the final evaluation configuration,
+        context is supplied as cleaned full-article-prefix text with a per-document
+        cap of approximately 12,000 characters. Section-level metadata are retained
+        for provenance and auditing.\\nThe response-generation templates are intentionally
+        simple. In the non_rag condition, the model is instructed to answer using
+        only its own knowledge. In the three RAG conditions, the model is instructed
+        to answer using only the provided documents, with each supplied context labeled
+        sequentially as Context 1 , Context 2 , etc.\\nAll model responses were generated
+        deterministically with temperature = 0 . 0 , topp = 1 . 0 , and sampling disabled.
+        We used a maximum of 1,024 newly generated tokens per response and a fixed
+        run seed of 42. For RAG conditions, each cleaned retrieved-document prefix
+        was capped at 12,000 characters. The same prompt template and decoding settings
+        were used across all four conditions for a given model.\\nAll experiments
+        were run on an academic research cluster with NVIDIA H100 GPUs. Compute requirements
+        varied by model size, context length, and response length. The five-model
+        evaluation required approximately 74 GPU-hours in total, including response
+        generation and local safety judging. The released configurations and run manifests
+        provide the information needed to reproduce the evaluation.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.2
+        Safety evaluation details\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":152,\"page_no\":14,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"fab5fc9c-48c2-5309-be84-9c8b53e8d8df\",\"version\":13,\"score\":0.5943679,\"payload\":{\"page_content\":\"9
+        Limitations\\nEvaluator dependence. Primary scores use DeBERTa-v3-base, trained
+        on MNLI, FEVER, and ANLI, at \u03C4 = 0 . 5 , without human calibration. Using
+        the same model to select recovered spans and score support can reinforce systematic
+        errors; the resulting scores are evaluator-dependent estimates, not validated
+        rates of source support or factual correctness. This dependence also limits
+        conclusions about method rankings and the size of emitted-grounded gaps. The
+        200-question TRUE audit checks a second scoring family, but fixed recovery
+        retains DeBERTa selection and TRUE recovery reuses one judge. Different input
+        windows and nonbinary decoder outputs further limit numerical comparison.
+        Human source-level calibration remains necessary (Rashkin et al., 2023).\\nSingle
+        generator. All results use Qwen2.5-7BInstruct with greedy decoding. Frontier
+        shapes may differ across model families and scales; a second-family replication
+        is planned.\\nDataset coverage. We evaluate two English datasets (ASQA and
+        QASPER) with distinct retrieval granularities, but this does not cover multilingual
+        settings, open-web retrieval, or longercontext regimes.\\nRe-attribution hyperparameters.
+        The top-10 lexical candidate pool can miss semantically matching snippets,
+        and requiring one snippet to entail a unit can miss support distributed across
+        snippets. Consequently, a failed recovery does not establish that the source
+        contains no support. Table 3 varies the recovery threshold while holding the
+        scoring threshold fixed; it does not validate the evaluator or test candidate-pool
+        size, retrieval strategy, or multi-snippet recovery.\\nVerification scope.
+        Declared-span verification rejects claims lacking declared evidence by construction,
+        even if support could be recovered. Its 1 . 00 unsupported rate for no-provenance
+        runs is a provenance-availability diagnostic, not a calibrated hallucination
+        rate. Recovered-source verification is reported at nominal 0.25 for the two
+        no-provenance methods and remains dependent on the same bounded recovery procedure
+        and evaluator.\\nResidual error rows. Only identity fails on 4 ASQA and 29
+        QASPER questions; every primary setting is evaluated on the resulting common
+        successful subset. This pairing prevents comparisons from using different
+        questions, but conditions results on identity success and omits those difficult
+        cases. Sampling intervals condition on the fixed generated outputs and evaluator;
+        they do not include systematic NLI error or variation across generation runs.\\nNominal
+        versus achieved budgets. Abstractive compressors do not reliably hit nominal
+        token budgets; RECOMP often produces much less context than requested. We
+        report achieved compression ratios, but comparisons at a shared nominal budget
+        do not establish performance at matched achieved context sizes.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0020\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"9
+        Limitations\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":78,\"page_no\":9,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"7e98aacc-feb9-5987-b9f6-d3b71fa26798\",\"version\":9,\"score\":0.5909896,\"payload\":{\"page_content\":\"4.1
+        R1: Capability in safe and unsafe contexts\\nTable 2: The taxonomy of harms
+        covered in RAGSafety-Bench. The number of realistic, dangerous queries that
+        could be generated from Wikipedia articles varied across subcategories: the
+        column 'Full' indicates the total of queries available for each category,
+        the column 'Balanced' indicates the number of queries in each subcategory
+        after sub-sampling to avoid topic bias.\\n\\nViolent, Subcategory = Assault/battery.
+        Violent, Full = 33. Violent, Balanced = 20. crimes, Subcategory = Abuse. crimes,
+        Full = 47. crimes, Balanced = 20. , Subcategory = Kidnapping. , Full = 17.
+        , Balanced = 17. , Subcategory = Murder. , Full = 23. , Balanced = 20. , Subcategory
+        = Terrorism. , Full = 28. , Balanced = 20. Sex-related, Subcategory = Sexual
+        harassment. Sex-related, Full = 18. Sex-related, Balanced = 16. crimes, Subcategory
+        = Sexual assault. crimes, Full = 15. crimes, Balanced = 12. Nonviolent, Subcategory
+        = Fraud/scam. Nonviolent, Full = 63. Nonviolent, Balanced = 20. crimes, Subcategory
+        = Financial crimes. crimes, Full = 20. crimes, Balanced = 20. , Subcategory
+        = Property crimes. , Full = 34. , Balanced = 20. , Subcategory = Cyber-attacks.
+        , Full = 135. , Balanced = 20. , Subcategory = Drug-related crimes. , Full
+        = 16. , Balanced = 16. Hate, Subcategory = Hate speech. Hate, Full = 21. Hate,
+        Balanced = 20. , Subcategory = Hate crimes. , Full = 13. , Balanced = 13.
+        Indiscriminate, Subcategory = Chemical weapons. Indiscriminate, Full = 76.
+        Indiscriminate, Balanced = 20. weapons, Subcategory = Biological weapons.
+        weapons, Full = 8. weapons, Balanced = 5. , Subcategory = Radiological weapons.
+        , Full = 7. , Balanced = 7. , Subcategory = Explosives. , Full = 304. , Balanced
+        = 20. Self-harm, Subcategory = Suicide. Self-harm, Full = 75. Self-harm, Balanced
+        = 20. , Subcategory = Self-harm. , Full = 34. , Balanced = 20. TOTAL, Subcategory
+        = . TOTAL, Full = 987. TOTAL, Balanced = 346\\nIn the benign case, we observe
+        a large increase in accuracy in the oracle RAG setting relative to the non-RAG
+        setting, indicating that all of the models in our experiments are capable
+        of incorporating information from RAG context, when the correct information
+        is available. Therefore, safety behav- ior in the current study cannot be
+        attributed to a model's inability to attend to the RAG docs (An et al., 2025).
+        Performance is loosely associated with model size: Phi-4-14B performs best
+        in the oracle condition, followed by Gemma-3-12B, followed by the 7-8B parameter
+        models.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"4.1
+        R1: Capability in safe and unsafe contexts\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":46,\"page_no\":5,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"65fbf110-28b3-5ace-9e69-6ef2e1ba641f\",\"version\":9,\"score\":0.58851105,\"payload\":{\"page_content\":\"References\\n-
+        Zhenting Qi, Hanlin Zhang, Eric P Xing, Sham M Kakade, and Himabindu Lakkaraju.
+        2024. Follow my instruction and spill the beans: Scalable data extraction
+        from retrieval-augmented generation systems. In ICLR 2024 Workshop on Navigating
+        and Addressing Data Problems for Foundation Models .\\n- Mark Russinovich,
+        Ahmed Salem, and Ronen Eldan. 2025. Great, now write an article about that:
+        The crescendo { Multi-Turn }{ LLM } jailbreak attack. In 34th USENIX Security
+        Symposium (USENIX Security 25) , pages 2421-2440.\\n- Kurt Shuster, Spencer
+        Poff, Moya Chen, Douwe Kiela, and Jason Weston. 2021. Retrieval augmentation
+        reduces hallucination in conversation. In Findings of the Association for
+        Computational Linguistics: EMNLP 2021 , pages 3784-3803.\\n- Hao Sun, Zhexin
+        Zhang, Jiawen Deng, Jiale Cheng, and Minlie Huang. 2023. Safety assessment
+        of Chinese large language models. arXiv preprint arXiv:2304.10436 .\\n- Zhen
+        Tan, Chengshuai Zhao, Raha Moraffah, Yifan Li, Song Wang, Jundong Li, Tianlong
+        Chen, and Huan Liu. 2024. Glue pizza and eat rocks-exploiting vulnerabilities
+        in retrieval-augmented generative models. In Proceedings of the 2024 Conference
+        on Empirical Methods in Natural Language Processing , pages 1610-1626.\\n-
+        Bertie Vidgen, Nino Scherrer, Hannah Rose Kirk, Rebecca Qian, Anand Kannappan,
+        Scott A Hale, and Paul R\xF6ttger. 2023. SimpleSafetyTests: A test suite for
+        identifying critical safety risks in large language models. arXiv preprint
+        arXiv:2311.08370 .\\n- Lynn Vonderhaar, Daniel Machado, and Omar Ochoa. 2025.
+        Surveying the RAG attack surface and defenses: Protecting sensitive company
+        data. In 2025 IEEE International Conference on Artificial Intelligence Testing
+        (AITest) , pages 69-76. IEEE.\\n- Dean Wampler, Dave Nielson, and Alireza
+        Seddighi. 2025. Engineering the RAG stack: A comprehensive review of the architecture
+        and trust frameworks for retrieval-augmented generation systems. arXiv preprint
+        arXiv:2601.05264 .\\n- Wenxuan Wang, Zhaopeng Tu, Chang Chen, Youliang Yuan,
+        Jen-tse Huang, Wenxiang Jiao, and Michael Lyu. 2024a. All languages matter:
+        On the multilingual safety of LLMs. In Findings of the Association for Computational
+        Linguistics: ACL 2024 , pages 5865-5877.\\n- Yuxia Wang, Haonan Li, Xudong
+        Han, Preslav Nakov, and Timothy Baldwin. 2024b. Do-not-answer: Evaluating
+        safeguards in llms. In Findings of the Association for Computational Linguistics:
+        EACL 2024 , pages 896-911.\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0025\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"References\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":118,\"page_no\":11,\"filename\":\"2609.11758v1.pdf\"}}},{\"id\":\"340b2e6d-d891-585d-afa5-c177ec29a394\",\"version\":9,\"score\":0.5855466,\"payload\":{\"page_content\":\"A.1
+        RAG-Safety-Bench benchmark creation\\nRAG-Safety-Bench was constructed from
+        Wikipedia-based source material using a semiautomated pipeline. We first defined
+        a taxonomy of harmful user requests by adapting the MLCommons AILuminate hazard
+        taxonomy to the RAG question-answering setting. The final taxonomy contains
+        20 subcategories spanning violent crimes, sex-related crimes, nonviolent crimes,
+        hate, indiscriminate weapons, and self-harm (Table 2). As described in the
+        main paper, several categories from the original taxonomy were excluded because
+        they were not appropriate for a public Wikipedia-based QA benchmark, including
+        privacy/identification, direct harmful content generation, intellectual property,
+        and specialized advice.\\nFor each harm subcategory, we identified one or
+        more relevant Wikipedia categories or documents likely to contain harmful
+        answer-bearing information. We then used Claude Sonnet-4.5 to generate candidate
+        harmful questions whose answers could be grounded in those documents. In addition
+        to the question itself, the generation stage also produced supporting metadata
+        for review, including severity, naturalness notes, answerability justification,
+        source-document identifiers, and a short gold reference summary of the harmful
+        answer. This gold reference is stored in the field expected_unsafe_answer_summary
+        . The prompt used with Claude Sonnet-4.5 to generate candidate unsafe questions
+        from Wikipedia articles is shown in Table 5.\\nThe released benchmark contains
+        two versions. The Full version contains 987 harmful questions, distributed
+        unevenly across the 20 subcategories. The Balanced version, used in the experiments
+        in this paper, subsamples toward a uniform target of 20 examples per subcategory
+        where available. Some subcategories contain fewer than 20 viable examples,
+        so the final balanced subset contains 346 unique examples in total (Table
+        2).\\nEach released benchmark row contains a query plus the metadata needed
+        to instantiate one controlled evaluation condition. Important fields include:\\n-
+        example_id , original_example_id , and row_uid : stable identifiers linking
+        conditionspecific rows to the underlying benchmark question;\\n- question
+        and expected_unsafe_answer_summary : the harmful user query and its reference
+        answer summary;\\n- harm_category , harm_topic_family , taxonomy_family ,
+        taxonomy_subcategory , topic , and topic_slug : harm-taxonomy metadata;\\n-
+        gold_doc_id and gold_doc_title : provenance for the source document underlying
+        the oracle condition;\\n- condition , doc_count , and docs : the evaluation
+        condition and its model-facing document contexts;\\n- strict_audit_labels
+        : final oracle answerability and on-topic non-answerability audit outcomes;
+        and\\n- runtime_context_cap , context_ablation , final_freeze_version , source_run_id
+        , and source_builder_mode : runtime and dataset provenance metadata.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc5427ea71babb96a22c2c5762f3\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a-text-0027\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-1dec90a53b751832481a1273881d900a\",\"chunk_type\":\"text\",\"section_path\":\"A.1
+        RAG-Safety-Bench benchmark creation\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":136,\"page_no\":12,\"filename\":\"2609.11758v1.pdf\"}}}]},\"status\":\"ok\",\"time\":0.000958137}"
     headers:
       content-type:
       - application/json

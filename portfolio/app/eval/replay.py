@@ -121,7 +121,32 @@ def _scrub_request(request: Any, *, qdrant_host: str | None) -> Any:  # noqa: AN
     return request
 
 
+def _decode_zstd(response: dict) -> dict:
+    """Decompress a zstd body, which vcrpy's `decode_compressed_response` leaves alone (it knows
+    gzip, deflate and br). Qdrant answers httpx's `Accept-Encoding: zstd` with zstd once
+    `zstandard` is installed, and the allow-list below then drops `content-encoding`, so the first
+    real recording stored compressed bytes labelled as plain JSON: every replay died in
+    `response.json()` with `UnicodeDecodeError ... byte 0xb5` (zstd's magic is `28 b5 2f fd`).
+    """
+    headers = response.get("headers") or {}
+    encoding = next((v for k, v in headers.items() if k.lower() == "content-encoding"), None)
+    codecs = [c.strip().lower() for value in (encoding or []) for c in str(value).split(",") if c.strip()]
+    if not codecs:
+        return response
+    if codecs != ["zstd"]:
+        # Anything vcrpy didn't decode and we don't either would be stored compressed under a
+        # header the allow-list is about to drop -- the failure above, for a different codec.
+        msg = f"response body is still {'+'.join(codecs)}-encoded; add a decoder in replay._decode_zstd"
+        raise ReplayError(msg)
+    import zstandard  # noqa: PLC0415 -- present whenever httpx advertised zstd, which is the only way to get here
+
+    response["body"]["string"] = zstandard.ZstdDecompressor().decompressobj().decompress(response["body"]["string"])
+    response["headers"] = {k: v for k, v in headers.items() if k.lower() != "content-encoding"}
+    return response
+
+
 def _scrub_response(response: dict) -> dict:
+    response = _decode_zstd(response)
     response["headers"] = {
         k: v for k, v in (response.get("headers") or {}).items() if k.lower() in _KEEP_RESPONSE_HEADERS
     }
@@ -254,6 +279,11 @@ def require_judges_match(meta: dict, *, judges: bool) -> None:
 # -------------------------------------------------------------------------------------------
 
 
+def _offline_tokenize(_self: object, texts: list[str], model: str | None = None) -> list[list[str]]:
+    """Stands in for `voyageai` tokenization during record and replay; see `offline_environment`."""
+    return [text.split() for text in texts]
+
+
 @contextlib.contextmanager
 def offline_environment(mode: Mode) -> Iterator[None]:
     """LangSmith tracing off in both modes; dummy provider keys in replay.
@@ -268,6 +298,13 @@ def offline_environment(mode: Mode) -> Iterator[None]:
     Dummy keys in replay so that a request that somehow escaped the cassettes is a 401 from the
     provider, not a billed call with a real key.
 
+    Also keeps Voyage's tokenizer off the network. `langchain_voyageai` tokenizes every text it
+    embeds, queries included, only to size batches, and `voyageai` loads that tokenizer from the
+    Hugging Face Hub. On the recording machine the Hub cache was warm, so `_setup.yaml` captured
+    two `HEAD`s; on a fresh CI runner the cache is cold, the Hub `GET`s the file, and that is a
+    cassette miss in the first warm-up call. Every eval embed is one short text, which is one
+    batch whatever the count, so a whitespace count batches identically and needs no file.
+
     Also silences `QdrantClient`'s compatibility check. It is a fire-and-forget daemon thread
     started by the constructor, so its `GET /` lands at an arbitrary moment: inside whichever
     cassette happens to be open (a miss at replay, or an unplayed recording), or after it has
@@ -276,6 +313,7 @@ def offline_environment(mode: Mode) -> Iterator[None]:
     from langsmith import tracing_context  # noqa: PLC0415 -- runtime dependency, kept off import time
     from langsmith.utils import get_env_var  # noqa: PLC0415
     from qdrant_client.qdrant_remote import QdrantRemote  # noqa: PLC0415
+    from voyageai._base import _BaseClient  # noqa: PLC0415
 
     from app.config import get_settings  # noqa: PLC0415
 
@@ -292,6 +330,7 @@ def offline_environment(mode: Mode) -> Iterator[None]:
         mock.patch.dict(os.environ, overrides),
         tracing_context(enabled=False),
         mock.patch.object(QdrantRemote, "_check_compatibility", staticmethod(lambda *_args, **_kwargs: None)),
+        mock.patch.object(_BaseClient, "tokenize", _offline_tokenize),
     ):
         env_cache.cache_clear()
         get_settings.cache_clear()

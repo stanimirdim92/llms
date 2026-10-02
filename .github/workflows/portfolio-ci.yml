@@ -273,6 +273,10 @@ jobs:
       # Tracing off, or LangChain would try to reach LangSmith on every call. `run_eval.py`
       # forces this too; this makes the job's environment say so.
       LANGSMITH_TRACING: "false"
+      # Must equal the flags the cassettes were recorded with (`data/eval/cassettes/meta.json`,
+      # `pipeline`). Off, the three cross-document questions take the refusal path, make none of
+      # their recorded requests, and replay aborts on unplayed interactions.
+      AGGREGATE_ANSWERING: "true"
 
     steps:
       - uses: actions/checkout@v7

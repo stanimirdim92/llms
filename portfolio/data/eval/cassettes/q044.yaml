@@ -60,215 +60,827 @@ interactions:
     uri: http://qdrant.recorded.invalid/collections/portfolio_rag/points/query
   response:
     body:
-      string: !!binary |
-        KLUv/QBYNXEBWtAZT0EwaSbJA8DAQCcjIiISuoiHCveVLbJfrtSSbfueWNvsPTwUuYrpD4tQ1awY
-        Px//PrLHLylCiiS/lX9QfKyEg4EFBOYEywTPBAp6EufSkrYwKVFSMRCu6RpqcKGFYEoRIvUaek4p
-        h1hCCSnkElROoaRWYiAVk2IJxpScQzCixKBLby23nGJtQbhaYgs+FdFiLK210mrKMaacSqmlxFZj
-        jsXIXEtqJRiVQk69FJWDjbG4UHOwKcfQa2s9lxBK7z3GHlpJcm3BFBFi2IKSceglc7knnlRLknMt
-        if/SYr7Axx5irSEUo4uoIbhgUkoppGB6LS33GkLNJdXYS0nFBdVKKSmHUFIwsYQYQ1CpqFR8bCX1
-        UoIPopTie0uhfuDBPchaYqmx9qBKKzW8lJqDDy6mFGRRvfQYam/BFNFaT7noEHKxIYUQcyqitVBL
-        DDGlFFKIuYmYJAdXWmi5BKFMDCrkPrZEtQUTBV1LJuMtWXI6NBnlkmJMoYWQgwvBFIDYHkqLPQZs
-        ca3InHvNpfQYcw2upd6KKDXGWGPrOadcc0jtxdWYU8yBgRpzCKqGYmoxuZQgUk21hWJEDg/OMYUa
-        agghJTGFWESdGIwJKYhaAhZLKMWWALUagiqliJKKCiXnEGKqoRRhdK9F1FxCKzEY8DGGWnvsPcUg
-        fI25B5dDDAKEhtRarSkLECCwGBV6iy20IlOxk1rIgcWeaMgSYm0lxfrBpSw4MNJCDhOMzDwE3Pzi
-        TUt68z96Vu9GpTn/hFb+aVwiaSeBLDVjG7kkrcbVYnrdeVgZoRleQypGpfzlXImx9Q0laplLgiRq
-        CRPRSr75cv9pUUEFFVSInRHXH4qFgpmOkiQaUywpETmlYFD8w+s3lFEskGJQ2LpALjEoKvysdAH3
-        57WKhSJXr58VC4WCQeHI7sjHioVCwaB4J5KlnYqFIiWEkm8Wz8lPBqU5E/xlLSnnYys2nxHO9RKC
-        niQXvS2LzwmX556vhh7zbXHRHXlCC4ioj0MqFoq4wIU5+JEt8RHja6LnkWFYkwzyhBQLaFSqcACD
-        wrNPz/9QLBQpNcVQUyitp2CaAKKEngSlHoQRRsRekpBiVA69+BhSKEGIUkKtNOqkI4KQqdYJgO4t
-        1WBKCbmIGg466Qbmg7QYUs4l1ZiD0LWEFkIsNRRRglgJPtgehEoKqYQYREJvOQiUEINoiFG5l9ZS
-        EMXFVkpPNbWaYo7BXs2ptZiEttx6zzEYLLKoVFwRIkCAsNpijMFQCKWeaKYQUtAEqL1Fo9YU0BPd
-        qLlWGgWgJ7obHaGT/o7QgAOjoSe6E4LoiUphYmIimagUJjqidvdEd0/0A4dWoMWe6AdAYAKzPkCe
-        HmBaR/4HPLuDnuhuBw96olKoFBQGugKd9R2noTHENo1lulqaPdva9x05glZW6vmfXdLG+dsIoQVK
-        rUQa+nCGqcbUkbtSR6aQnp/xw4Dpj8Y60AztQDvd4GX9+wxDZ1f/R2dHg94EP5U+ksx80wz9AAhM
-        oBV8P+OnkQu4WprxPxQ0Q0cs1G4QuS9h5d/5FSiz4BCMBwbeQV9Lr9MMDbHQwIKDVjDFkcard8af
-        E8hSN15pg17b78j9sJfpz37dedwLnLHfXK1sjL9m/Cz29oMEDIieX6s3TjPVTdPQDCr1N4tDKBgU
-        uX6uVi7gGz7dNhF3FIvVnGrIMQUxKP5aiRWLlRgU1VJ8X0KxUDiE2vKSeQxaEiSZJVkytsQppiUv
-        PrcYewWDYlKFAxTAoMC5UusoHMCgyM2D/yocELTCN57+t6uluH6u8I2pA6IVSRl6X4JRKSjzca6P
-        lV27Qd/PjPfDzjopTiwkO34zztYujynEG9N+4NAKlvRmnDFt+lJ32nE78tPGcfzx/Hyt4zy4Pv3y
-        PhYn8yPXH48H96K6g5P51xv587YEC/1oCRaUz36fhd6c/W9j2vIZqYFJJb4xXTzwkNyMG9N+4KEb
-        3MbC/Jzp4xsL34umcfl3gbEQoZXZWAeOLD0/0ji2F/kb81m68Uofti5ci/Ff52GlSvxpVArhgQgP
-        RODwwOiF31zhe9GoNKL6/duLSKa5/qQQIDgwepGAXjAYvZgPugHjIcKEBgkLDRImNPRnW3+2hIWG
-        VpSX3jjd+IPKf/w0blzifq4UN8AP6o1s7D2/Us9/O9vaj60jP42stEEpcY1bqZb+tDKplmIq/zqV
-        9gLP6g+a8fcC52sdVna1j4eVv9Ar8c9WCusJlcL8Sz1Cf/7GeViHZkDBFtNr6yWXC0Y4fc1kxgWT
-        92ZLFuYyeY3J5lhrK9LkXzrSzPtfafPYl2uZyNL4s9+en6s3+XGvSgF/o7pDdnYHAjopLbGWHHuT
-        IaWQQpJJ0oJLIuNsiXSyJYyRi1mYtBpaKr1c4VVCKMkVPifu55vz3RuKHllrzDGEXGLkjExcnltL
-        Qi3NtbwFvV/cU495TTUFYu+1S9vc2Hnsbdj+CNpArjuYdnZHvpbp/I2uLvurjVTvvw6Z1x1dbeNM
-        mc71H38f7P/ofzhmbPf8prENGGAotfd8/HRkPhlDtEJntbId2S4LnKvT6xL9fx25Fzg/9uxzgZuf
-        9tH3sUxjbK/0xvNOFN3CrW5UOpunkcaLZUBLEKEADVkzVEsxftz3nUYoRehvGpXi9r62MYNoC8m9
-        uE9z/1+m8QLfNBpugK62q99uVOrIkfsSD618fpyHdagUlOq371/L/EIvpCvN8u+1shnb78j/sDI/
-        tiPXH/Q6j4BWZH28eGdvmPau7sh+u2me2vNnfezS3vla528/pCMOSGPaDkkdkF5k6+CelTZL38f2
-        T4or7Yhn3DiPle3N2MaZoY4JrWTa+b7sjO2jcUjXBsU/F5dO+l1p/7WPvrYd53Vk6QbQxm+SsXV6
-        voR9NOMAEBg93dEMkaZSbyK0wsBxFjTub3iuL+87/TrSOBqPvc3Y9s7y88+2ue9DrNMKINgvQRuN
-        v3Eejvs+EbSSHY3HZb+EO3o2j5X9kM7yGeabsf0NoLizOyANsTWiHwGVgvPkn9CN5/oPet+p8NAs
-        rYcSbN/c8xWVM5NJ1PslceYtWa59gpZ3cUaHESqlHkysMcUWi4vFtaBT6TakGoSQNfYeS5ExxdZi
-        zy3EGHOIrcWgavHB+B6Ez73HFnsNOpbeUhZYUsuhBFdyaq2W1ooOSUW4EFIIPVqCThq3BD3RrRJT
-        CaHkmFoqppbkv4QgWumpmFRSSLmkkkNPVAoTE8kEZClJKqGUXFwtrtbcN6akkxEl7iFP1pstWd5U
-        4taUs0UUoYNsJagUQy2y5BJiKy312GILLqcUSo0htBhaKCWUFkKpgQfE0oLRNYjSQig9lBBqMTHI
-        4mNuKeSSYyi16NBb0K0WkVPRPejec081pyBTSrXmkmILpoTSSkxFiKJKSYrRtRUZQotL+cs1l9RK
-        PtcdWsESRChAM4jFX2fx9x0Zd0OloDSNd/bGJZ7e/BcCoxkLgeHZZ31y8pUy/bje1V1ielfa3gyZ
-        9jc5P8Z9H1vbtN/P0nH9zFjcFvei2uw87HW+Wosbb0zr/Zzd6Vw/Y4ob//vV9vwk419cUqbafuzL
-        S9jFG2eKldw8+PpPSBgOsQ5UCo/E1EG7BGGMqskY33y4FqaYZLYGk8ZcS9xqnyCJkovLp5bQyvUf
-        jfkwoKs/HkdnXKk3vCPS7yOl436QgAEBl4IYVFAzdvZnn3RWl6kVWApqjd3BEGk84+XB/X8bjiWj
-        lXdIpw+/DZsxdcz3xsz1aitt/tYGxdi7QXYe3wulRqU3445cr3SptjYDBRZS1AKlUi8e19b6ETY3
-        YmzxWDtyo37TyV+nH8+DVvBHfW7uie9jG2iFQePTncfn7D1/Ok9+3A0alTr/ERHWLmixBbhjYl1p
-        438ooPXpltDC1ef2OyAqhfxYhsNDK/MlGov/1iexjuONTlxqGlcpSQnTThqV9jsgMra14XRGMpWg
-        meL6Ex6SWa38Ce3QFGOIoeazfZRINZXMh540plryUsHkuWPUXB5hqtZ5ej72b/52pJG0WR6nf+mm
-        oZBO7jtW2myrlb3A+Ot1R78D4j5M58c6MoU0KNP3aa72Mvf/b+MkUiWl1dIJlcIEynjttQYRs2Bb
-        XorvF0sce54sS7WEMQkm6TmH0FJsoeRQp6uljsZjszd6Rsh3yIbY2rfxNyKrO38lpvPlM+11/s6X
-        cNwNrcxvqDP1HZCuL/GNSjvSVO/GedDGj6USf53HMt0Nf2Xjl6Df+FNpR6p7N9Rz/ba562eX9dKH
-        gr/deIHs0CvxU/0RoVJQrs3+NL7A+XHyY/va7PfrNxrTftk0Ddc2LkEfCr4dmDaLZ/yd7WTA37a5
-        /z4N9QZa6SaAdqCdBHcD/NivnpvnQfGDVjKmjb9/nfZFZPrfxO8/XLa0js541mfRwJ3I0hji976E
-        7Vnrc+fPix3S1XaCH3xfIpk/p/dDepHpfLy/4d6zNrSC52Mq8TfLd3Clkb9WNutKM620X+ansXjx
-        ni9xHy/W+x9/vTP2b5b++w5ILxBCC3qhGaQOQC+9wDbXHfpztQ+08vC/GSe5/qzv/Kz07zNf2us0
-        zVMzrY9n2tDFK3z/48HYH0eaXKllgOMQ3DjjzxCtSMpQ+Q5Omsb/Je7jv04vGPvUxrPN+CeVoLPv
-        O/I3bO7mJfzmnq7k+o+/9x13Oj1VbeNGpX97wQAmpHqhNN75+9rrYEE7pONv6OPnQaWgSNDsJNVS
-        jLN0hubrfX95/KMT+s1QR6aQ6v9IDtAKblT6sPKXpyv1x9/G1zI/qwSt4PnZ1gapga7e+ENBLyp9
-        CHaHQ/pDK/MjuT4kNw+D8Uv54GZsP43QSqbzaegHGrpxSTOm2fOEVgpbikXY1pKMgko5GOPLZKG4
-        JIlxLUH/YJJSTI/FZaW1ElSVQqT5603j951eYOeJsLZZVG+cfwd2R+fHqQ9aaZqH6Uvx05SCOnsz
-        4PsQXD2x9xvw82lkhWdgfqay+6vtxh8Kfv7Xxpn2ItLk+g8Fj6t1aKVRaWOtk/2dv41fwj7+9v0H
-        9eZZKHbwoPHT+UEruGlcNuRr29r4I/zhkC57fuOP8QMIEOAVPJUeSgmhB82KhSLCKhgU+MmesWJR
-        wQQVVFDBQqmT1lKn5JTHmMJQmlAUVFhS4sTERDIBn3ruzbkenAzjLLokJeTJQ6YlkE2VLNEXY4lp
-        7jGmoKWWcguwNaTAlJxbQC2ppdJSaeFFpaVOootuAbZI9WSBklJMTnnsLaYwlqCCEHsgAgcQNDBa
-        iYpiDi40pUCFpbXYAnNKUmJMayEqpLAUAJTeWlBNAgQLpQewYDC/NmjjyYKGQIIEwgODAXrg0DS+
-        oDZWAKHUmHZjGQ8OQESQOHiAeODQN7VCwcOCdpyutL8Bg64LEb3gukNiK8N67rlnzXlrizGOJSgu
-        MHGLawmTHCZtOXzliTFXbf99snTmqf54NAQBrXy1jfe1NDPf4Gsh/XhHznTRPIwjU2fwdBxx7I2H
-        oFIgQJL0/GnlzyTbmnjzJAkABFApLDCD9FDwsCBhwEmlSXYHRCsPexnajfsSdEJg2Nr4wY9phFYq
-        5B2ZQho3qt/FrL509p4KtIhfdOSmKMb29L8SVOI+FjfEL/4HzY0hfmczTP+M/eaO8Ae+OVf46sC4
-        bW7nwUqmPSt1/NLVYuqNOxx34Mb3sQ20rzvu0EAB1drmVqClRaWe8eIdeQfEOrrSjjTOdQfuByT+
-        Opk+Dbo83ObkQb3Jlf59JPYF07ijc3XaON9wicbxN9YBcez95rnJV+t/F8a+AwEILcdx2YvI/L+N
-        xtTKd9BKvtaBu2mc6QXyAtXOfrBARxpnAqWAxh5psvQK381iflPtY3PTfJ5/bZZ2Ni6Tz5GlFxHX
-        QprGI2jFeVj84LY1U9k258cu3rZK+Df1H4+0s7/ax4KBAkt5a4EECBjbDjJIgKAr7YhLHwqcz/gn
-        xZHrFHtHHOKQ/sXxRtv6Da/Ur60LxWmLO+K4H0IbB+MFJECQGAlt5z+iH9L29i/2Oi8BglZeUuuQ
-        EvbO/oZH+EOoFF5qb0HIPCTTZIxpSUQsJktELfEFysThm0r+YioitaZ/kirN5os1X+09fMcUg+4v
-        ZUpxsshEX2g+tNSLC1OPUXGtiGsh3aj08eC/znPvZ9w0L3vKCPmOyH2Jj8B0dqYX0jwSRHDoajvi
-        sz238w/BDLSy6NTXMtW/kb3A9bkDaNYRkECvjoAEmpf4xmJqncZ3BGN7HVpxfD+3tblf1s/1MePh
-        AA8NPH5c/tI234c0nhjTmzyuZSrt+hCtfOPYuoA/8kzbuIN7keV8i7G9wE/vPxR0o9IkS2c6ssaV
-        en7sQHlQSL2IHmK8MU0tJlnUx+Q51JLllk+kXJ8iEyNjq+PCxcRgQa/WrTohtFApeejuiYfuBDO0
-        x9L8FKH/e4ZY8pyMSVtUS+ZbS7J8WRK+iVBS7s020ZONMYs39k/KxThf0uOSC9NQjK59eomZaDqZ
-        HC6k3moQrkalDIcJCQSEBwZg7jMb/1Wp8Tc8T+hK+6tteMbZezqkdb7C59Y88x1yAvUL0Q8OqhbV
-        c8/We5fShDP5Jj2Zk2mJTMwnzKs0F/SUIlqpF9EpKLmF5xz5uRAFaGBMsJS0egEVlBQQkVtQjAI0
-        OPCUmHqxlIdUWnDpAaMhwgMNEnqCpijVi6Y0ZaUAdEe3ECVAkCg35waHnuiO8Lip96LyyZ6rNOMi
-        W4KYuCRJrZakhlyyTBVRXG6hpZ7bNtPZD2nc2JsltfU70jy2jXxuxtXK6RJOls8Ae53GNN93SEjz
-        MB+Lhqj0r+pGihglmVIIDcwMMCoIoxQAQCgYHgoGpHKNmzoUAARZbkZWRmA4m0sjoSDGkQwFYSCm
-        mELGGIOMDA0IWqkBMG/4gIGpWHvuBo9EN60QV3hHce85ro4d2Q14g5Pw60NnuVkODrdfELG0jARD
-        S2AZvHEWaYsNCjNiTCUNq7DzId9+9UjcNhMkbKv6DJNoRQF+DB9aMatfejlQ9abNrnRXB/3rqgmD
-        qzJAXupHEDOEyqXUYzGkABvZw2D+P2FgBSGpp9m7bzUFG0iEhPU9e9Sh80vEH4RHyYAa5kfFIJLy
-        rhRlk8NqHgYRY4s4OoIiZ4FJAQx5CSqdE4IdlPKNIpbW36D6semB9T/RrD92EUIYE8gZh0bvI0ND
-        ElDYcZK9lIyu5PShrHgxAOAPsF+t8aMdQ6bdeGjr1DtEyD56kY09YQ30CyQdn8zhBsyMOY8VD8DL
-        hnAnZh1DLiEpmDcNKQYTJ/RlGgeVGyATP/f3kKObqLlPIopH4Pe+XubH8w+NPdTD0VqvTwfA935i
-        0biOSgDLguX3OIV1BiJcCcFPnkVUtMrVLmtoAuyvLHcvGtFIE1V7bmdpLfm3qsPqyxRprQuZHJ13
-        iMx6vuXHHmbaNwMOvt6AqfaxA7BbjgPFZ2tcNDpcn6ESMFzr6hNs2RDWzFvSNr8Cj3jNmOPYbY+s
-        QSZQNTNQ/7f5pmNheppmhq2gezIvhV+PQAJQyGTAgx26B5XBQbF0bABa0HZHo687/O6CpGhNaOUE
-        ojNT7R3CNxmF4Dnm/BTu1rSS3yIfriTpsDTacQ2HTMhYCALobtcyseXms66UaZ2YXHTrbm7AP1/v
-        cGtTXXckWp2RoM+B9zeI5HNJ+9khydCxM9cFS/fH9EusaMOzdE0XuUx8ckRs7NMhokZJBIjd5BD2
-        oO3iqFROh5LOtn1QQjlORtJdYJXH5JXuPlPyS81TakEL5TBRKHe3fsRDhFf06GkIgKPdRtvAAAEB
-        3InUmjwppHh277wEa6NmyFbNEBuCpeO7rVCID9EEmS9u8EwDML96xfPdFh98XeQ9ox0EJIL5c94J
-        R/Lm0rrMdYioh1hSRwpy9CY0TAsCDGASDD0S0M1jja6jJ1lPsYlbTkBs1gpfkfzMv0vEaDVaIdjn
-        M4McYghxOeN5P2+R5bG+n91wZmdMMp4ZTeR9b/Zr+0Jg9jYgYqMI3tMg5AkEr8beokUxfRgKevFN
-        hwaYm785x0oG0/W/d7qNlbzcGoOA5QenohYUhhZDfn0tcbOanhTnT2VCbikAaMkroMua7PG0TDMU
-        3CpcdKLx5ZG9Ldw09MRqjrYM+5+Do9KklxrWcelMKDsYfzTVFuNtsqf58yIyFB3+2jcJ7zRlaGEa
-        wqAtoqQFbS3IjCEvbqGJHtaolq5Teghmj7hu44eB084SkI7iOiT+oAjo4sAIGKG6OlCkyh5t8EoQ
-        coDFnBqj2m7toVom/HHfhmTULkzE/PrBvQPyos0z82Uwg6uhzK9Mpjv519llKIskzWvtJq4kjzsF
-        LxyzmmhsY4B4D5A7DhKN9ROpm2Kz/e9xOoxWV0el8baybzld+1jeU0cvXDpcQSUPmduKcYbdMAon
-        9/6zJMe+SSKm7RRWuJaCASwgGsWDksfsXT/TkBg8Ssjb2bNEKHUnRAkjF+ha6la/84owlclKVwIE
-        8cpwYz1ndQHLvMux2SaFpk92fIdmLbhItrgqZtw1a4b4HNfClTFqNIzqpVZ+ACBH/BMLKNUVl8Nd
-        blpciy+oGhbgTXyFSYseMNS3aLiXcS3I1XOsI0wtBopcLUDxtwVIcTi51Crp18dsd9wZU1DRBwik
-        eHWBgK2WAU4Hhl4/aXzvPlX1NJKrOXeT0N+aDdUlLpn+FSIL8SqbIn7ZkBKfHpSvmvIcoS1WKBh5
-        C9LERrhoeCEJEKo+MA9pRJE8TCmEAwsNvb+1VbrRx1mU66JUBhllU+gbi2hghmK0XFKWdKuyDmtB
-        5Y/hXET3QmzcuZGlka4bgtnlLUdnJDoi1Eq7sS6u3wAepFB0q0WJU53u7kmyECfiUqgXDpYNXHcF
-        z4QqwdWcqFgMrqZgek/QJyOWG4deW1KK4RbuZ7+res9OQCQB1JuS8M/ei9pf9dgoCAY7X/MH9omF
-        VOUpyyDVfYttOD9MMo4h6fXeAsJEmqfLzJhnQON07A5obOqfWr/ArVJ5pGsA2KSmvDyx95HkQrXY
-        PwWLlRGrw1aaMheewfVB+e6V9os9o6EnWA8PMvZ3cGonn094ASrQjLIY9TRQIgFq0DfAlX5gIAYc
-        gN1UfFs7tIN1DmLjeknWCWmYLRqvXj2D+tyMfyZAyr627FasGDXme3ln0TdfNnFNljINODG6xUZx
-        S8T0pm0FyFw1rKQtPkEQcI23rSMHJLwBYI9f+NkH04UO+ZPTpaAEa76BYnLIt6inUxFNDMT/f7FK
-        0RkoUi/rOppl60jVq0GJ8TGkG6M2gXgBOLZnTW7EBFhFWiNz9284XeDRHBSrjmV3ECphsD/cG28I
-        ncIKppqBgy5pw/fx1rNJOBKr8PEgsQdXo+++oQA40V2SD42JvsUW+K4KBrohwnxvT4XM0W81kWI3
-        p2fo+a7d+hbACR2vLaLyPT1d2OXDfqtqrcUwc/jYzT557JlNKa4TjgoAlqBKyKbm2F2hzBgW3Vmi
-        YVUlC07oCDZwFIs+6eNz8Z6WvFJy0uRS5Q9E6R8DU5iq0J/QPzSUkM1GOePUcNNUjLzpkymqCzzm
-        XMHoArJ5MILBn/p3PJ+zUsJyICgbcPZ9qhf5YB+xtaFhRlwZfEEECqSE+Dr0YTLy9PSTZSYZqsWU
-        HabFCa3t0GyX4qQyLfbFVEIR/RcwjK2QKLKjUHkeTv9dkDBi9GLp/qRuA4K1SlJEo7Ei5MYsLbGX
-        Qg9TT20BKmLg+2XoTJHIA0F7qJGRqrl2CVYKKpmGCalsQmjw+B0cBI81lEYWogUk4Wv+6yhScCx9
-        qIGAjBX/5hbjboxQ4CKUvPbWDfnrwSPQLc7GrUY8kASsrn+2symjiKg+TK8ppLzJ8izQ+m88Wt6y
-        CjLMJWCMFzzvb6gioaDHGtds8bdRF+zlLF/ODPmOg7y2V5llFN9Ej7m5UBJk3UOy/3al16liWWz7
-        +3SA/xpHe3Ad49vRC5xQSEAhV25/wNTFWeGkfYouwjJBUooeJRBLNzg3OEdC/FkG8C21vlQBHyF6
-        1VGGLuUAJoK0pveg+t7dka6SjqoDX9vHZiD3ijKSVu34+X1YhEoxdbyF5Fi/0CuoCIPDek0PLoII
-        nswvWMkYjaWSBtlEj/mhHYE/4U899lF99QViY6kT72kYYxPCrJkhPG5WVk87pEK5KqczuumQJyJJ
-        bqOrxBEo5JfAJYxUt4QLIYX2vPrELe3FklNzhLd5O0uszto40RvQ+Q13maOzsqco8u+WHwkJMrYb
-        isbmQ9vT4CZXNZYOKqRpXehquDoZlFXCOCMjFDOSHdgV5z/Hz3CFor17KuIj2aC4e6SVuzG6e23+
-        pQ77TxLIA+8nxGTJOlcCoHF1i+6Ntc8QQgPUuoSWmkdQGIRfH4QVy6VSdojFLRFqcS8chNMF98C0
-        K77mcFWsYA49iNia2+6H2l5x1Z3vhkptOSZg1CjC0rIu0eRaHxZ1u8VHpK3XvqYCwN0ycY/eneNw
-        9FexO4Wwdy0BgoQ6t3xMmwnK5KIKEOXnwsTYWSWK+cztofVr1QrIjJNdID+U+wtZSyUOhAIN5vLk
-        SjWQg2M0oaRYqVLtw+VJtBNU2ZL/gH4NR5I98xeQCADdVveohwbVxTGr9mpiuPLvSM3n3xcxOgHU
-        iNYNGcw4HaVq4rjO7ip7RoxVrnZFGZBqriW5fCuubh8SgMGaarLJRwcIR6gm+1JKtq27HpasNowU
-        pEa6EnZdXOzC33ouVMXnQruSIMW3acXB7UzBYMUSFu3N/Gkle0C6jrJ26BSnpF9UvC6zrjbpUtwb
-        GtCRY0G+4gm67JOfbddGU8lieM1FLsGWCE/pJf3zvUzGloHk1SmRKa+Q6swAnq5d0bLOTQaHMLRD
-        L/R4nn2jleQLzQp3PsH55X5PbAUkxBRp2hF7UXhqFm6O3G6kFAJGk15WPHUOBUGWI2GBWKnqMaxo
-        MfSN1HgyMThDjR+2qcoME7c5kP3QQwqgbovmFsHkbP0Cd1CVDCVc7mP0amKTku8ZxhLtgeq+HkqQ
-        43pOwDKOtjCEykH1dw+HrFFK8Rlh9KcJ1SI/bW1EKgaRUV3ucsFW9f1IwIbyhgHFCMjKmQiFU7vC
-        TmzEi1ls1fSgbStoi589TetPk0tPQVVFqK1tUcAYU4XNBBCQwioST35ghGh+riBkuU1fscGFI6JQ
-        NAVtJExqwNPim5m1J9P6cIeRqGfgVKwcLN5p9DBBQu1GzsjnSBUqiYWn1jQACwZ+fQlyu5smmvgH
-        iF/dw5/988hBMxQUl5eiDQrU1WlQCw1nyFAUCaphDJlgEhsKINobbsq0BuGhITRCWMxIid5/8PnH
-        Q2qYk4sD+bUT2N4EZq3XGhAcA4wpj0BGE1haxceofZC7Z7I1VDRApje/kOzbr6GEzEqNu+Q82Gb6
-        rYCn/gfTcuwOEr164M6ag+PgrXEMjOBwCftQeg/Qz2LZWZU4nTN1w2/49v27jP5DojKLzX+RsRdS
-        4DNL66rOqUPSoR2nA6A2JDpN4KtwApDQ6iWP4e1IHERipmneF1b05lWUKAGgwecfBYhWL6gQ3P10
-        u+pYjmGEAbtRamtRPvFmoZumxSfSPf09NV6IXpu5wJWu/BGtW+alzL8hSLcVoFsYFsEqvu/NtdzS
-        N9dqGZ4TygYP6zKiYe9eCWnUX+qK6h58LD675q1kqno3Ui+piYi5raNVy1B5dcVzIS/0zJbpftQH
-        ccFWeMdXVitVoqive/r+P4EX7IOiagcp8/HVz7HrWgi4qbpTLGe2+JV2gyonXiYs4gV4yvoK6L0h
-        WWljXA51AIa8KRP/1oZc9RHo6qqjfFdPa9roVsut64MmiOvw81WNLGqsOYXrc9WffVA39RTUqFZH
-        2MzQOxDIl9uTuOvWyYy7lqthGxT9oFF5WJPFw2aJBWfdnmSD567B55B1zenQXavJQ8hjbZkGFUtA
-        8ziHWy5x7rbpxKPX+aB8IuOGEpX0f1/dUl5Fg8/NzKkR4aBWKYn4mtHzQVZpqNr9DuSaArstjkr2
-        MYuyg6lkC5CHtq0b5ym7tobJUcwiDZq9D/d0QblHvqAubuV8YQN1ai9qJs2t9FpkxR/5QB9vIu7f
-        iM5ndKGX1hl5qVAlENHbd93eKbqAtkgB8VzP5YVnLtSw2R23AGvoA7ksszID8UAo1+weyFk+7bKs
-        lu6lG/nH3BRtLrdNGTLXkmk/pS9bijjlVW0C86sQ+BO8hsQnTi6xi2MjIY9mh+nq6ZcdDEOIDQqm
-        Bz3TMBo30rTMXj5z6UI07dv3gHbhbk+DPllvOx7u9NqQUaPi6t78+XLJR3pPb1mdnUlVklyuAu8F
-        TVbCRhaEpwz9QCtDbMMAWeDex4aeqsXFsY8V8VxLz8qNcWjQWGkSx0PLYjwmKq1ZkYG43E+/TrLR
-        rWfo+/aiYhxJwCL0ZRqDyROaNMU41bMHEMcl14gprrbxweQnKo8xMMlrhJYub1mQA0TjCGB6Jrnq
-        TsKEEEwN4JQwsQt93768pU8dmCgQbH1PXyu+F5msabBtaNc+mxnioEmMcOdUvpIOJLm3NmpC7KlR
-        s4bRIkaDmYbqaUSDwqJwG6Gl8J/ltcssX9de1X/ln8iVjmuZK5npbfQuFhqrJr7Hs0p/vZt7NW0D
-        p3a7iGrPGBwc5RrLcRAoWiK9i3GnRRv3hzaYrIQtB0cIbU5Tw+7yVqNCIukbd/nTyTGUSTw7Kjvb
-        h7gEVhat1S3Y0EsTFzPCjL5Kvi/dVSuJ8kukW5Uj7P6E47+qOXqFr1jBBVkpGXiPWXQVOGAMJjcb
-        59/qH4CG97kT3LuCCmwqwOr8J1RU2YvC1KPb6jwr/I3bhPO0TKmIdnu9nRa6aVvTp34J/ZqBYGB3
-        A9d3s8anbPrYKy4xQnc2OWMf/B6WBMYnMWLShHYl2BxhBKHPChf84wUE6Ez/KrhQYj8f56Dqn7+P
-        EUPfHsZLvo7KpjfT4d38UCE6b+UBU62PQfRJiRmZUVKdnQ8rR7NOvJJhIh05ki+gRSQlcTMDa3Ri
-        pQxhuUjtBV1fPLSkgcqwZiudQEpJ9NJy93CYsf35/aYK3rJMKhlI6sm3d0d57to0HeAorKRbxHm7
-        dacVBvqU257djnarQ9Lbx2k1rTI30RxGfQ+OSiYgsXCoj3A4f0aK4CMQGP6G3dOcG3TsHOCrj+pw
-        PlYTkaf79uv7Jqit5Tf+XJemsfmTsbsyrJJGBEqwO2wFBORkySsLa9ah6qL6+xbxk7eGSfBK54D/
-        ci6uiOta/ifef8VyqoEznu+/4A53tNb8uBFv1GXZKuyhAlAgQQYjPpd4/x/drvyUvj84WJ8OxH9t
-        oBBzYunXiZ0wNkB2bY5JRQyJLmDwZTx0wsvK9WUihT3toTbYzXr/iQVwGRwpzEbEvGLbYFUR3Loe
-        QSKIgCC5vsBKAMjaw+omoivURmaBsA0rdtpC6biEXuNpV/CtZphAc8IDcHgQpQ9IxVfDzhxtqzuQ
-        o6Trzp0cO+yo4AMolSjOq27GG/iWvABjvpJjDr+9WVG8DED6OBsftwXVP2GMh02UkvflFRgwbL/y
-        ACvDtrIu42DKmTcWYQqEFmXKUGSBS1WcRBpLFyFWZxU857FR7R5fzvr4qwA4eTE2m97otVFsYbOJ
-        BkXzF9esy5PX2/Uc5d/tcFFC6bbHHVy366F42aNjMujN7Da6EX+YuL3w1yNqFSHPyCAdQ5gBsycv
-        /r+I5u3G8ce/lIyCPLqgUTIddH0f+6ni0aukQadwvpS1e9Xso5tf5O1pwH2CUy6Eewtqdny28eX/
-        SezFyPs+bGQS4s2BFS1IohSTxPDg9W736CDdYxzCJbzSDAENkna7UHSV/kdfxRK40jFC1aRCMkIl
-        CZE2/4Zo5pkNiD5n3KsVXfUBzTWICnbGkdCkIJXeDZaHmigAoIxMpD94eIeZ760Behr+AziB15LA
-        3U4zATL0B5yvt1k16FufJwR3Xe22eztZ75QZ3Cc79oMmZNoi+YNUVvj/JuxlJVNzqhq6WkW6Pi6L
-        EvzDklE6BHkX8jeICgpMT6WmBSHO6K3JDU1azVxDAQER2MXf7AZ62nu7Oek7u93WxzOBhvhZbZzX
-        J+mg1NunKvWfHe7RoFy69z0v3ybkxDVg9pFXG1gK9Wn+a/mykGaJpK/WCfad/6u/Ncr6aFrkdd3N
-        1pqrA4Ex3bNt1JIc4C2pkVN4dHSinaGXklqywNco8SDoXyOFbz/utFFcm6t90P39uln2GSRi9bbP
-        4f/A7Pb0mFe/vf3rwn67X7Ozt6GTcN9uj+OlX0dl0pvp726/6vrddNgHP3k1+1rVCkYn8kWdtXlw
-        f+aIWSUnjgWDHzq5yMdbqEXZJxixTWcilA1T7LAWzrASEfDSTrKLjNYBhP18d7RRi0wcBu0qCIOm
-        vG2bBxY9pAWJMPt7Dj+ObwFq5yuz2d5M4wKgnwFxGe1DB5keWPZ20sFyvyls+JuqPJTxCAMgAAj/
-        IxkjWE4jKE8G7MP6bd+zCZrrZ8KhvKfxmakuRQEJEKzxKwuIYOgRJpZS1SYSR7ouazne3hakBV7R
-        bXYBY1cfDvsTGgctVLqeX3tHgKD55maWkEhqlYIg/IT5c7BmFA864KO8fdgSzNxmuHJXtrfmZggP
-        fxJ4J8TQNFUxBhFQ4HtCv2KvkB1nALgG9fq5xQeaILybk3gsrVA53ngmHMykhe6WLhV0wTlnv77h
-        2/fR63UsXCbeWtyXYXq2T3s+nfSKr3JH/tbpZvHJY3r6YzQpa2+dyColwTXoI6acqRp+WhOGPB3Y
-        2BmEh1+n++OCJyZNemYgy8VlWpsAq0UTBi8dqmuz0MX4tcY8k1WzcBVVi+V3Ohc+4vgx2hvu0B8Y
-        5bhctu4vcbn6PBwAzo4XC3huu2ZYI7izx+1Chl9/r9qnPpcZSF2ETTAb/QtZDOQCEh7FnHrOs39x
-        ApjehHYl3+MQ2fUcEJ5z8l8qmHO2zR/d4jnwKQGwz7uZ3wEatC/DXbgupqsqY6IOXLeqqwSlzeOu
-        bI3tpfwsPdcmw1HhHKhUxDaMLU42gO1gP8Z594xrE3lbwXQZDpv9oMpHJBNFZnTOpfzeDkZNZkpT
-        icqjtzpnLmxXl25tV7jkc1veBMNqtgxe9bQdFBMRlxVZKMPvzWhoBlF80HWLdOAXKb74Ws/a3iDA
-        jKxgj8hHBTVQSklW7btSUe8Ci9XDruzeMPtIxMmmneyj968z06w7P78l92Y6wY+o7XlvHJpn9vES
-        b9lKei+0PuD9C7fSzH357vHlKqmd9c3y1jfb4tIHXenDwLC2KTVWjPX7ssjbEtW2zE51bGcVXEYl
-        nuTYriGCnRi2d5hnYTW1xeDpxU/LAv3gteiV7SjMB3Mz5zEeX2CEqJskchpWLudK6wYJAn5pfDp1
-        S44qM0KVV9H2L1CcJFSPoYnq9WKF1SxCrHrUs4PLcT9GY9FWM8s25Yxd/hgcOP7qkRyd51VtVZVM
-        iUTbuJe0yuc+DwNAGJCV6ZFcDUufsTykHq4bfvbhnsvO9Lrn1Cm7t9Ld9I2r6GHfNtyc7dqWgE7b
-        2EtgmPJ7GEWFbObM8Ep3Heci3Ez4eVivfuS5cfhzTv3hHKM2xp/ObESj0Gf83EXbvcXn4xK3hSDH
-        qE8zt3FsMrH8RSrFQiUTiz/Mcb1iQJnxLpztmRCT9kyrmbKYEnOAGeS6XswYJQXYYAQaqV2rciY1
-        EW9pkcHJDl28nfKt5afX3Z26i1JHkuvNjknWem1sDsi1oe8dRl8TT1TAeajjT39nHC1uJ1O47m0p
-        TWhzKZWRmfLZ+LebhVhVb4FsMGCCdYK2pyEB/2ma3jtzAnd7njtTcBh/ljjw1AGIWonfQR3iuS93
-        IAcxS+nvU5ZG35pY3u16N4hX/WoppaxX
+      string: "{\"result\":{\"points\":[{\"id\":\"e4436797-5f26-59c3-bfc0-b0f7fceb5006\",\"version\":13,\"score\":0.46052653,\"payload\":{\"page_content\":\"Table
+        12: All 24 planned TRUE robustness contrasts, separate from the original 148-test
+        analysis. D/F/T : prior DeBERTa/TRUE fixed/TRUE recovery; n/k : questions/clusters.
+        \u2206 : left-minus-right mean difference; p H : Holmadjusted within this
+        24-test family. 10,000 replicates, seed 13. Other notation follows Appendix
+        B.\\n\\n| ID   | Data   | Method   | View   | Endpoint   | \u2206         |
+        95% CI                   |    p H |   n |   k |\\n|------|--------|----------|--------|------------|-----------|--------------------------|--------|-----|-----|\\n|
+        T01  | A      | RC       | F      | P e - P g  | +0 . 650  | [+0 . 550 , +0
+        . 750]    | 0.0024 | 100 | 100 |\\n| T02  | A      | RC       | F      | R
+        e - R g  | +0 . 640  | [+0 . 540 , +0 . 735]    | 0.0024 | 100 | 100 |\\n|
+        T03  | A      | LL       | F      | P e - P g  | +0 . 392  | [+0 . 290 , +0
+        . 495]    | 0.0024 | 100 | 100 |\\n| T04  | A      | LL       | F      | R
+        e - R g  | +0 . 367  | [+0 . 273 , +0 . 463]    | 0.0024 | 100 | 100 |\\n|
+        T05  | Q      | RC       | F      | P e - P g  | +0 . 430  | [+0 . 326 , +0
+        . 530]    | 0.0024 | 100 |  84 |\\n| T06  | Q      | RC       | F      | R
+        e - R g  | +0 . 425  | [+0 . 320 , +0 . 525]    | 0.0024 | 100 |  84 |\\n|
+        T07  | Q      | LL       | F      | P e - P g  | +0 . 311  | [+0 . 234 , +0
+        . 390]    | 0.0024 | 100 |  84 |\\n| T08  | Q      | LL       | F      | R
+        e - R g  | +0 . 233  | [+0 . 176 , +0 . 293]    | 0.0024 | 100 |  84 |\\n|
+        T09  | A      | RC       | T      | P e - P g  | +0 . 640  | [+0 . 540 , +0
+        . 740]    | 0.0024 | 100 | 100 |\\n| T10  | A      | RC       | T      | R
+        e - R g  | +0 . 637  | [+0 . 540 , +0 . 730]    | 0.0024 | 100 | 100 |\\n|
+        T11  | A      | LL       | T      | P e - P g  | +0 . 405  | [+0 . 312 , +0
+        . 502]    | 0.0024 | 100 | 100 |\\n| T12  | A      | LL       | T      | R
+        e - R g  | +0 . 375  | [+0 . 287 , +0 . 468]    | 0.0024 | 100 | 100 |\\n|
+        T13  | Q      | RC       | T      | P e - P g  | +0 . 410  | [+0 . 309 , +0
+        . 505]    | 0.0024 | 100 |  84 |\\n| T14  | Q      | RC       | T      | R
+        e - R g  | +0 . 405  | [+0 . 303 , +0 . 505]    | 0.0024 | 100 |  84 |\\n|
+        T15  | Q      | LL       | T      | P e - P g  | +0 . 368  | [+0 . 286 , +0
+        . 452]    | 0.0024 | 100 |  84 |\\n| T16  | Q      | LL       | T      | R
+        e - R g  | +0 . 263  | [+0 . 204 , +0 . 325]    | 0.0024 | 100 |  84 |\\n|
+        T17  | A      | Id       | F - D  | P g        | +0 . 096  | [+0 . 011 , +0
+        . 185]    | 0.2376 | 100 | 100 |\\n| T18  | A      | X        | F - D  | P
+        g        | +0 . 095  | [+0 . 024 , +0 . 168]    | 0.0880 | 100 | 100 |\\n|
+        T19  | A      | RC       | F - D  | P g        | +0 . 040  | [ - 0 . 010 ,
+        +0 . 100]  | 0.8810 | 100 | 100 |\\n| T20  | A      | LL       | F - D  |
+        P g        | - 0 . 047 | [ - 0 . 097 , +0 . 000]  | 0.6299 | 100 | 100 |\\n|
+        T21  | Q      | Id       | F - D  | P g        | +0 . 010  | [ - 0 . 074 ,
+        +0 . 098]  | 0.9887 | 100 |  84 |\\n| T22  | Q      | X        | F - D  |
+        P g        | - 0 . 070 | [ - 0 . 134 , - 0 . 008] | 0.1827 | 100 |  84 |\\n|
+        T23  | Q      | RC       | F - D  | P g        | - 0 . 010 | [ - 0 . 025 ,
+        +0 . 000]  | 0.9887 | 100 |  84 |\\n| T24  | Q      | LL       | F - D  |
+        P g        | - 0 . 042 | [ - 0 . 095 , +0 . 011]  | 0.6299 | 100 |  84 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":20,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        12: All 24 planned TRUE robustness contrasts, separate from the original 148-test
+        analysis. D/F/T : prior DeBERTa/TRUE fixed/TRUE recovery; n/k : questions/clusters.
+        \u2206 : left-minus-right mean difference; p H : Holmadjusted within this
+        24-test family. 10,000 replicates, seed 13. Other notation follows Appendix
+        B.\\n\\n| ID   | Data   | Method   | View   | Endpoint   | \u2206         |
+        95% CI                   |    p H |   n |   k |\\n|------|--------|----------|--------|------------|-----------|--------------------------|--------|-----|-----|\\n|
+        T01  | A      | RC       | F      | P e - P g  | +0 . 650  | [+0 . 550 , +0
+        . 750]    | 0.0024 | 100 | 100 |\\n| T02  | A      | RC       | F      | R
+        e - R g  | +0 . 640  | [+0 . 540 , +0 . 735]    | 0.0024 | 100 | 100 |\\n|
+        T03  | A      | LL       | F      | P e - P g  | +0 . 392  | [+0 . 290 , +0
+        . 495]    | 0.0024 | 100 | 100 |\\n| T04  | A      | LL       | F      | R
+        e - R g  | +0 . 367  | [+0 . 273 , +0 . 463]    | 0.0024 | 100 | 100 |\\n|
+        T05  | Q      | RC       | F      | P e - P g  | +0 . 430  | [+0 . 326 , +0
+        . 530]    | 0.0024 | 100 |  84 |\\n| T06  | Q      | RC       | F      | R
+        e - R g  | +0 . 425  | [+0 . 320 , +0 . 525]    | 0.0024 | 100 |  84 |\\n|
+        T07  | Q      | LL       | F      | P e - P g  | +0 . 311  | [+0 . 234 , +0
+        . 390]    | 0.0024 | 100 |  84 |\\n| T08  | Q      | LL       | F      | R
+        e - R g  | +0 . 233  | [+0 . 176 , +0 . 293]    | 0.0024 | 100 |  84 |\\n|
+        T09  | A      | RC       | T      | P e - P g  | +0 . 640  | [+0 . 540 , +0
+        . 740]    | 0.0024 | 100 | 100 |\\n| T10  | A      | RC       | T      | R
+        e - R g  | +0 . 637  | [+0 . 540 , +0 . 730]    | 0.0024 | 100 | 100 |\\n|
+        T11  | A      | LL       | T      | P e - P g  | +0 . 405  | [+0 . 312 , +0
+        . 502]    | 0.0024 | 100 | 100 |\\n| T12  | A      | LL       | T      | R
+        e - R g  | +0 . 375  | [+0 . 287 , +0 . 468]    | 0.0024 | 100 | 100 |\\n|
+        T13  | Q      | RC       | T      | P e - P g  | +0 . 410  | [+0 . 309 , +0
+        . 505]    | 0.0024 | 100 |  84 |\\n| T14  | Q      | RC       | T      | R
+        e - R g  | +0 . 405  | [+0 . 303 , +0 . 505]    | 0.0024 | 100 |  84 |\\n|
+        T15  | Q      | LL       | T      | P e - P g  | +0 . 368  | [+0 . 286 , +0
+        . 452]    | 0.0024 | 100 |  84 |\\n| T16  | Q      | LL       | T      | R
+        e - R g  | +0 . 263  | [+0 . 204 , +0 . 325]    | 0.0024 | 100 |  84 |\\n|
+        T17  | A      | Id       | F - D  | P g        | +0 . 096  | [+0 . 011 , +0
+        . 185]    | 0.2376 | 100 | 100 |\\n| T18  | A      | X        | F - D  | P
+        g        | +0 . 095  | [+0 . 024 , +0 . 168]    | 0.0880 | 100 | 100 |\\n|
+        T19  | A      | RC       | F - D  | P g        | +0 . 040  | [ - 0 . 010 ,
+        +0 . 100]  | 0.8810 | 100 | 100 |\\n| T20  | A      | LL       | F - D  |
+        P g        | - 0 . 047 | [ - 0 . 097 , +0 . 000]  | 0.6299 | 100 | 100 |\\n|
+        T21  | Q      | Id       | F - D  | P g        | +0 . 010  | [ - 0 . 074 ,
+        +0 . 098]  | 0.9887 | 100 |  84 |\\n| T22  | Q      | X        | F - D  |
+        P g        | - 0 . 070 | [ - 0 . 134 , - 0 . 008] | 0.1827 | 100 |  84 |\\n|
+        T23  | Q      | RC       | F - D  | P g        | - 0 . 010 | [ - 0 . 025 ,
+        +0 . 000]  | 0.9887 | 100 |  84 |\\n| T24  | Q      | LL       | F - D  |
+        P g        | - 0 . 042 | [ - 0 . 095 , +0 . 011]  | 0.6299 | 100 |  84 |\"}}},{\"id\":\"1ee63a5e-309f-50c0-bdb2-05e34413dcea\",\"version\":13,\"score\":0.42299205,\"payload\":{\"page_content\":\"Table
+        7: Planned comparisons 31-60 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206           | 95% CI
+        \                  |    p H |   n |\\n|------|--------|---------|---------|------------|-------------|--------------------------|--------|-----|\\n|
+        C031 | A      | RC/.25  | Id      | P g        | - 0 . 387   | [ - 0 . 421
+        , - 0 . 354] | 0.0148 | 944 |\\n| C032 | A      | RC/.1   | Id      | P g
+        \       | - 0 . 392   | [ - 0 . 424 , - 0 . 359] | 0.0148 | 944 |\\n| C033
+        | A      | RC/.05  | Id      | P g        | - 0 . 334   | [ - 0 . 370 , -
+        0 . 299] | 0.0148 | 944 |\\n| C034 | A      | LL/.5   | Id      | P g        |
+        - 0 . 353   | [ - 0 . 386 , - 0 . 320] | 0.0148 | 944 |\\n| C035 | A      |
+        LL/.25  | Id      | P g        | - 0 . 406   | [ - 0 . 438 , - 0 . 374] |
+        0.0148 | 944 |\\n| C036 | A      | LL/.1   | Id      | P g        | - 0 .
+        457   | [ - 0 . 488 , - 0 . 427] | 0.0148 | 944 |\\n| C037 | A      | LL/.05
+        \ | Id      | P g        | - 0 . 475   | [ - 0 . 504 , - 0 . 447] | 0.0148
+        | 944 |\\n| C038 | Q      | RR/.5   | Id      | P g        | - 0 . 130   |
+        [ - 0 . 165 , - 0 . 095] | 0.0148 | 976 |\\n| C039 | Q      | RR/.25  | Id
+        \     | P g        | 0 . 089     | [ - 0 . 124 , - 0 . 052] | 0.0148 | 976
+        |\\n| C040 | Q      | RR/.1   | Id      | P g        | - - 0 . 066 | [ - 0
+        . 104 , - 0 . 029] | 0.0280 | 976 |\\n| C041 | Q      | RR/.05  | Id      |
+        P g        | - 0 . 091   | [ - 0 . 128 , - 0 . 053] | 0.0148 | 976 |\\n| C042
+        | Q      | X/.5    | Id      | P g        | - 0 . 130   | [ - 0 . 159 , -
+        0 . 101] | 0.0148 | 976 |\\n| C043 | Q      | X/.25   | Id      | P g        |
+        - 0 . 050   | [ - 0 . 082 , - 0 . 019] | 0.0832 | 976 |\\n| C044 | Q      |
+        X/.1    | Id      | P g        | - 0 . 009   | [ - 0 . 041 , +0 . 024]  |
+        1.0000 | 976 |\\n| C045 | Q      | X/.05   | Id      | P g        | +0 . 009
+        \   | [ - 0 . 027 , +0 . 046]  | 1.0000 | 976 |\\n| C046 | Q      | ECR/.5
+        \ | Id      | P g        | - 0 . 067   | [ - 0 . 099 , - 0 . 035] | 0.0148
+        | 976 |\\n| C047 | Q      | ECR/.25 | Id      | P g        | - 0 . 020   |
+        [ - 0 . 050 , +0 . 011]  | 1.0000 | 976 |\\n| C048 | Q      | ECR/.1  | Id
+        \     | P g        | +0 . 016    | [ - 0 . 019 , +0 . 051]  | 1.0000 | 976
+        |\\n| C049 | Q      | ECR/.05 | Id      | P g        | +0 . 028    | [ - 0
+        . 010 , +0 . 064]  | 1.0000 | 976 |\\n| C050 | Q      | RC/.5   | Id      |
+        P g        | - 0 . 426   | [ - 0 . 455 , - 0 . 397] | 0.0148 | 976 |\\n| C051
+        | Q      | RC/.25  | Id      | P g        | - 0 . 425   | [ - 0 . 455 , -
+        0 . 396] | 0.0148 | 976 |\\n| C052 | Q      | RC/.1   | Id      | P g        |
+        - 0 . 426   | [ - 0 . 456 , - 0 . 397] | 0.0148 | 976 |\\n| C053 | Q      |
+        RC/.05  | Id      | P g        | - 0 . 425   | [ - 0 . 454 , - 0 . 396] |
+        0.0148 | 976 |\\n| C054 | Q      | LL/.5   | Id      | P g        | - 0 .
+        345   | [ - 0 . 381 , - 0 . 309] | 0.0148 | 976 |\\n| C055 | Q      | LL/.25
+        \ | Id      | P g        | - 0 . 372   | [ - 0 . 404 , - 0 . 338] | 0.0148
+        | 976 |\\n| C056 | Q      | LL/.1   | Id      | P g        | - 0 . 444   |
+        [ - 0 . 471 , - 0 . 416] | 0.0148 | 976 |\\n| C057 | Q      | LL/.05  | Id
+        \     | P g        | - 0 . 466   | [ - 0 . 493 , - 0 . 439] | 0.0148 | 976
+        |\\n| C058 | A      | RR/.25  | Id      | R g        | +0 . 074    | [+0 .
+        039 , +0 . 107]    | 0.0148 | 944 |\\n| C059 | A      | ECR/.5  | X/.5    |
+        P g        | +0 . 010    | [ - 0 . 018 , +0 . 038]  | 1.0000 | 944 |\\n| C060
+        | A      | ECR/.25 | X/.25   | P g        | - 0 . 006   | [ - 0 . 036 , +0
+        . 022]  | 1.0000 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":142,\"page_no\":16,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        7: Planned comparisons 31-60 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206           | 95% CI
+        \                  |    p H |   n |\\n|------|--------|---------|---------|------------|-------------|--------------------------|--------|-----|\\n|
+        C031 | A      | RC/.25  | Id      | P g        | - 0 . 387   | [ - 0 . 421
+        , - 0 . 354] | 0.0148 | 944 |\\n| C032 | A      | RC/.1   | Id      | P g
+        \       | - 0 . 392   | [ - 0 . 424 , - 0 . 359] | 0.0148 | 944 |\\n| C033
+        | A      | RC/.05  | Id      | P g        | - 0 . 334   | [ - 0 . 370 , -
+        0 . 299] | 0.0148 | 944 |\\n| C034 | A      | LL/.5   | Id      | P g        |
+        - 0 . 353   | [ - 0 . 386 , - 0 . 320] | 0.0148 | 944 |\\n| C035 | A      |
+        LL/.25  | Id      | P g        | - 0 . 406   | [ - 0 . 438 , - 0 . 374] |
+        0.0148 | 944 |\\n| C036 | A      | LL/.1   | Id      | P g        | - 0 .
+        457   | [ - 0 . 488 , - 0 . 427] | 0.0148 | 944 |\\n| C037 | A      | LL/.05
+        \ | Id      | P g        | - 0 . 475   | [ - 0 . 504 , - 0 . 447] | 0.0148
+        | 944 |\\n| C038 | Q      | RR/.5   | Id      | P g        | - 0 . 130   |
+        [ - 0 . 165 , - 0 . 095] | 0.0148 | 976 |\\n| C039 | Q      | RR/.25  | Id
+        \     | P g        | 0 . 089     | [ - 0 . 124 , - 0 . 052] | 0.0148 | 976
+        |\\n| C040 | Q      | RR/.1   | Id      | P g        | - - 0 . 066 | [ - 0
+        . 104 , - 0 . 029] | 0.0280 | 976 |\\n| C041 | Q      | RR/.05  | Id      |
+        P g        | - 0 . 091   | [ - 0 . 128 , - 0 . 053] | 0.0148 | 976 |\\n| C042
+        | Q      | X/.5    | Id      | P g        | - 0 . 130   | [ - 0 . 159 , -
+        0 . 101] | 0.0148 | 976 |\\n| C043 | Q      | X/.25   | Id      | P g        |
+        - 0 . 050   | [ - 0 . 082 , - 0 . 019] | 0.0832 | 976 |\\n| C044 | Q      |
+        X/.1    | Id      | P g        | - 0 . 009   | [ - 0 . 041 , +0 . 024]  |
+        1.0000 | 976 |\\n| C045 | Q      | X/.05   | Id      | P g        | +0 . 009
+        \   | [ - 0 . 027 , +0 . 046]  | 1.0000 | 976 |\\n| C046 | Q      | ECR/.5
+        \ | Id      | P g        | - 0 . 067   | [ - 0 . 099 , - 0 . 035] | 0.0148
+        | 976 |\\n| C047 | Q      | ECR/.25 | Id      | P g        | - 0 . 020   |
+        [ - 0 . 050 , +0 . 011]  | 1.0000 | 976 |\\n| C048 | Q      | ECR/.1  | Id
+        \     | P g        | +0 . 016    | [ - 0 . 019 , +0 . 051]  | 1.0000 | 976
+        |\\n| C049 | Q      | ECR/.05 | Id      | P g        | +0 . 028    | [ - 0
+        . 010 , +0 . 064]  | 1.0000 | 976 |\\n| C050 | Q      | RC/.5   | Id      |
+        P g        | - 0 . 426   | [ - 0 . 455 , - 0 . 397] | 0.0148 | 976 |\\n| C051
+        | Q      | RC/.25  | Id      | P g        | - 0 . 425   | [ - 0 . 455 , -
+        0 . 396] | 0.0148 | 976 |\\n| C052 | Q      | RC/.1   | Id      | P g        |
+        - 0 . 426   | [ - 0 . 456 , - 0 . 397] | 0.0148 | 976 |\\n| C053 | Q      |
+        RC/.05  | Id      | P g        | - 0 . 425   | [ - 0 . 454 , - 0 . 396] |
+        0.0148 | 976 |\\n| C054 | Q      | LL/.5   | Id      | P g        | - 0 .
+        345   | [ - 0 . 381 , - 0 . 309] | 0.0148 | 976 |\\n| C055 | Q      | LL/.25
+        \ | Id      | P g        | - 0 . 372   | [ - 0 . 404 , - 0 . 338] | 0.0148
+        | 976 |\\n| C056 | Q      | LL/.1   | Id      | P g        | - 0 . 444   |
+        [ - 0 . 471 , - 0 . 416] | 0.0148 | 976 |\\n| C057 | Q      | LL/.05  | Id
+        \     | P g        | - 0 . 466   | [ - 0 . 493 , - 0 . 439] | 0.0148 | 976
+        |\\n| C058 | A      | RR/.25  | Id      | R g        | +0 . 074    | [+0 .
+        039 , +0 . 107]    | 0.0148 | 944 |\\n| C059 | A      | ECR/.5  | X/.5    |
+        P g        | +0 . 010    | [ - 0 . 018 , +0 . 038]  | 1.0000 | 944 |\\n| C060
+        | A      | ECR/.25 | X/.25   | P g        | - 0 . 006   | [ - 0 . 036 , +0
+        . 022]  | 1.0000 | 944 |\"}}},{\"id\":\"2fd06dc3-5afd-5682-8352-59e602841c88\",\"version\":13,\"score\":0.41630313,\"payload\":{\"page_content\":\"Table
+        8: Planned comparisons 61-90 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C061 | A      | ECR/.1  | X/.1    | P g        | - 0 . 004 | [ - 0 . 029 ,
+        +0 . 021]  | 1.0000 | 944 |\\n| C062 | A      | ECR/.05 | X/.05   | P g        |
+        - 0 . 027 | [ - 0 . 049 , - 0 . 005] | 0.4158 | 944 |\\n| C063 | Q      |
+        ECR/.5  | X/.5    | P g        | +0 . 063  | [+0 . 033 , +0 . 092]    | 0.0148
+        | 976 |\\n| C064 | Q      | ECR/.25 | X/.25   | P g        | +0 . 030  | [+0
+        . 002 , +0 . 059]    | 1.0000 | 976 |\\n| C065 | Q      | ECR/.1  | X/.1    |
+        P g        | +0 . 025  | [ - 0 . 001 , +0 . 051]  | 1.0000 | 976 |\\n| C066
+        | Q      | ECR/.05 | X/.05   | P g        | +0 . 018  | [ - 0 . 009 , +0 .
+        046]  | 1.0000 | 976 |\\n| C067 | A      | LL/.25  | LL/.5   | P g        |
+        - 0 . 053 | [ - 0 . 076 , - 0 . 029] | 0.0148 | 944 |\\n| C068 | A      |
+        LL/.1   | LL/.25  | P g        | - 0 . 051 | [ - 0 . 073 , - 0 . 030] | 0.0148
+        | 944 |\\n| C069 | A      | LL/.05  | LL/.1   | P g        | - 0 . 018 | [
+        - 0 . 036 , - 0 . 001] | 1.0000 | 944 |\\n| C070 | Q      | LL/.25  | LL/.5
+        \  | P g        | - 0 . 027 | [ - 0 . 058 , +0 . 004]  | 1.0000 | 976 |\\n|
+        C071 | Q      | LL/.1   | LL/.25  | P g        | - 0 . 072 | [ - 0 . 096 ,
+        - 0 . 048] | 0.0148 | 976 |\\n| C072 | Q      | LL/.05  | LL/.1   | P g        |
+        - 0 . 022 | [ - 0 . 041 , - 0 . 005] | 0.3836 | 976 |\\n| C073 | A      |
+        RR/.25  | RR/.5   | P g        | +0 . 086  | [+0 . 053 , +0 . 117]    | 0.0148
+        | 944 |\\n| C074 | A      | RR/.25  | RR/.1   | P g        | +0 . 317  | [+0
+        . 280 , +0 . 354]    | 0.0148 | 944 |\\n| C075 | A      | RR/.25  | RR/.05
+        \ | P g        | +0 . 451  | [+0 . 415 , +0 . 487]    | 0.0148 | 944 |\\n|
+        C076 | A      | RR/.5   | Id      | EM         | - 0 . 039 | [ - 0 . 055 ,
+        - 0 . 023] | 0.0148 | 944 |\\n| C077 | A      | RR/.25  | Id      | EM         |
+        - 0 . 091 | [ - 0 . 108 , - 0 . 074] | 0.0148 | 944 |\\n| C078 | A      |
+        RR/.1   | Id      | EM         | - 0 . 153 | [ - 0 . 172 , - 0 . 134] | 0.0148
+        | 944 |\\n| C079 | A      | RR/.05  | Id      | EM         | - 0 . 229 | [
+        - 0 . 249 , - 0 . 209] | 0.0148 | 944 |\\n| C080 | A      | X/.5    | Id      |
+        EM         | - 0 . 029 | [ - 0 . 044 , - 0 . 014] | 0.0148 | 944 |\\n| C081
+        | A      | X/.25   | Id      | EM         | - 0 . 082 | [ - 0 . 100 , - 0
+        . 064] | 0.0148 | 944 |\\n| C082 | A      | X/.1    | Id      | EM         |
+        - 0 . 151 | [ - 0 . 170 , - 0 . 132] | 0.0148 | 944 |\\n| C083 | A      |
+        X/.05   | Id      | EM         | - 0 . 199 | [ - 0 . 219 , - 0 . 179] | 0.0148
+        | 944 |\\n| C084 | A      | ECR/.5  | Id      | EM         | - 0 . 029 | [
+        - 0 . 045 , - 0 . 014] | 0.0216 | 944 |\\n| C085 | A      | ECR/.25 | Id      |
+        EM         | - 0 . 075 | [ - 0 . 093 , - 0 . 057] | 0.0148 | 944 |\\n| C086
+        | A      | ECR/.1  | Id      | EM         | - 0 . 138 | [ - 0 . 157 , - 0
+        . 120] | 0.0148 | 944 |\\n| C087 | A      | ECR/.05 | Id      | EM         |
+        - 0 . 202 | [ - 0 . 222 , - 0 . 183] | 0.0148 | 944 |\\n| C088 | A      |
+        RC/.5   | Id      | EM         | - 0 . 054 | [ - 0 . 070 , - 0 . 039] | 0.0148
+        | 944 |\\n| C089 | A      | RC/.25  | Id      | EM         | - 0 . 054 | [
+        - 0 . 069 , - 0 . 039] | 0.0148 | 944 |\\n| C090 | A      | RC/.1   | Id      |
+        EM         | - 0 . 055 | [ - 0 . 070 , - 0 . 040] | 0.0148 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0007\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":144,\"page_no\":17,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        8: Planned comparisons 61-90 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C061 | A      | ECR/.1  | X/.1    | P g        | - 0 . 004 | [ - 0 . 029 ,
+        +0 . 021]  | 1.0000 | 944 |\\n| C062 | A      | ECR/.05 | X/.05   | P g        |
+        - 0 . 027 | [ - 0 . 049 , - 0 . 005] | 0.4158 | 944 |\\n| C063 | Q      |
+        ECR/.5  | X/.5    | P g        | +0 . 063  | [+0 . 033 , +0 . 092]    | 0.0148
+        | 976 |\\n| C064 | Q      | ECR/.25 | X/.25   | P g        | +0 . 030  | [+0
+        . 002 , +0 . 059]    | 1.0000 | 976 |\\n| C065 | Q      | ECR/.1  | X/.1    |
+        P g        | +0 . 025  | [ - 0 . 001 , +0 . 051]  | 1.0000 | 976 |\\n| C066
+        | Q      | ECR/.05 | X/.05   | P g        | +0 . 018  | [ - 0 . 009 , +0 .
+        046]  | 1.0000 | 976 |\\n| C067 | A      | LL/.25  | LL/.5   | P g        |
+        - 0 . 053 | [ - 0 . 076 , - 0 . 029] | 0.0148 | 944 |\\n| C068 | A      |
+        LL/.1   | LL/.25  | P g        | - 0 . 051 | [ - 0 . 073 , - 0 . 030] | 0.0148
+        | 944 |\\n| C069 | A      | LL/.05  | LL/.1   | P g        | - 0 . 018 | [
+        - 0 . 036 , - 0 . 001] | 1.0000 | 944 |\\n| C070 | Q      | LL/.25  | LL/.5
+        \  | P g        | - 0 . 027 | [ - 0 . 058 , +0 . 004]  | 1.0000 | 976 |\\n|
+        C071 | Q      | LL/.1   | LL/.25  | P g        | - 0 . 072 | [ - 0 . 096 ,
+        - 0 . 048] | 0.0148 | 976 |\\n| C072 | Q      | LL/.05  | LL/.1   | P g        |
+        - 0 . 022 | [ - 0 . 041 , - 0 . 005] | 0.3836 | 976 |\\n| C073 | A      |
+        RR/.25  | RR/.5   | P g        | +0 . 086  | [+0 . 053 , +0 . 117]    | 0.0148
+        | 944 |\\n| C074 | A      | RR/.25  | RR/.1   | P g        | +0 . 317  | [+0
+        . 280 , +0 . 354]    | 0.0148 | 944 |\\n| C075 | A      | RR/.25  | RR/.05
+        \ | P g        | +0 . 451  | [+0 . 415 , +0 . 487]    | 0.0148 | 944 |\\n|
+        C076 | A      | RR/.5   | Id      | EM         | - 0 . 039 | [ - 0 . 055 ,
+        - 0 . 023] | 0.0148 | 944 |\\n| C077 | A      | RR/.25  | Id      | EM         |
+        - 0 . 091 | [ - 0 . 108 , - 0 . 074] | 0.0148 | 944 |\\n| C078 | A      |
+        RR/.1   | Id      | EM         | - 0 . 153 | [ - 0 . 172 , - 0 . 134] | 0.0148
+        | 944 |\\n| C079 | A      | RR/.05  | Id      | EM         | - 0 . 229 | [
+        - 0 . 249 , - 0 . 209] | 0.0148 | 944 |\\n| C080 | A      | X/.5    | Id      |
+        EM         | - 0 . 029 | [ - 0 . 044 , - 0 . 014] | 0.0148 | 944 |\\n| C081
+        | A      | X/.25   | Id      | EM         | - 0 . 082 | [ - 0 . 100 , - 0
+        . 064] | 0.0148 | 944 |\\n| C082 | A      | X/.1    | Id      | EM         |
+        - 0 . 151 | [ - 0 . 170 , - 0 . 132] | 0.0148 | 944 |\\n| C083 | A      |
+        X/.05   | Id      | EM         | - 0 . 199 | [ - 0 . 219 , - 0 . 179] | 0.0148
+        | 944 |\\n| C084 | A      | ECR/.5  | Id      | EM         | - 0 . 029 | [
+        - 0 . 045 , - 0 . 014] | 0.0216 | 944 |\\n| C085 | A      | ECR/.25 | Id      |
+        EM         | - 0 . 075 | [ - 0 . 093 , - 0 . 057] | 0.0148 | 944 |\\n| C086
+        | A      | ECR/.1  | Id      | EM         | - 0 . 138 | [ - 0 . 157 , - 0
+        . 120] | 0.0148 | 944 |\\n| C087 | A      | ECR/.05 | Id      | EM         |
+        - 0 . 202 | [ - 0 . 222 , - 0 . 183] | 0.0148 | 944 |\\n| C088 | A      |
+        RC/.5   | Id      | EM         | - 0 . 054 | [ - 0 . 070 , - 0 . 039] | 0.0148
+        | 944 |\\n| C089 | A      | RC/.25  | Id      | EM         | - 0 . 054 | [
+        - 0 . 069 , - 0 . 039] | 0.0148 | 944 |\\n| C090 | A      | RC/.1   | Id      |
+        EM         | - 0 . 055 | [ - 0 . 070 , - 0 . 040] | 0.0148 | 944 |\"}}},{\"id\":\"ba4317e9-5661-521a-aa3d-706fc834f009\",\"version\":13,\"score\":0.4118355,\"payload\":{\"page_content\":\"Table
+        6: Planned comparisons 1-30 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C001 | A      | RC/.5   | RC/.5   | P e - P g  | +0 . 744  | [+0 . 715 , +0
+        . 771]    | 0.0148 | 944 |\\n| C002 | A      | RC/.25  | RC/.25  | P e - P
+        g  | +0 . 740  | [+0 . 711 , +0 . 767]    | 0.0148 | 944 |\\n| C003 | A      |
+        RC/.1   | RC/.1   | P e - P g  | +0 . 743  | [+0 . 715 , +0 . 770]    | 0.0148
+        | 944 |\\n| C004 | A      | RC/.05  | RC/.05  | P e - P g  | +0 . 621  | [+0
+        . 588 , +0 . 654]    | 0.0148 | 944 |\\n| C005 | A      | LL/.5   | LL/.5
+        \  | P e - P g  | +0 . 426  | [+0 . 394 , +0 . 458]    | 0.0148 | 944 |\\n|
+        C006 | A      | LL/.25  | LL/.25  | P e - P g  | +0 . 425  | [+0 . 391 , +0
+        . 458]    | 0.0148 | 944 |\\n| C007 | A      | LL/.1   | LL/.1   | P e - P
+        g  | +0 . 260  | [+0 . 229 , +0 . 291]    | 0.0148 | 944 |\\n| C008 | A      |
+        LL/.05  | LL/.05  | P e - P g  | +0 . 132  | [+0 . 108 , +0 . 156]    | 0.0148
+        | 944 |\\n| C009 | Q      | RC/.5   | RC/.5   | P e - P g  | +0 . 499  | [+0
+        . 464 , +0 . 534]    | 0.0148 | 976 |\\n| C010 | Q      | RC/.25  | RC/.25
+        \ | P e - P g  | +0 . 491  | [+0 . 457 , +0 . 525]    | 0.0148 | 976 |\\n|
+        C011 | Q      | RC/.1   | RC/.1   | P e - P g  | +0 . 492  | [+0 . 457 , +0
+        . 526]    | 0.0148 | 976 |\\n| C012 | Q      | RC/.05  | RC/.05  | P e - P
+        g  | +0 . 496  | [+0 . 462 , +0 . 531]    | 0.0148 | 976 |\\n| C013 | Q      |
+        LL/.5   | LL/.5   | P e - P g  | +0 . 360  | [+0 . 319 , +0 . 402]    | 0.0148
+        | 976 |\\n| C014 | Q      | LL/.25  | LL/.25  | P e - P g  | +0 . 309  | [+0
+        . 278 , +0 . 341]    | 0.0148 | 976 |\\n| C015 | Q      | LL/.1   | LL/.1
+        \  | P e - P g  | +0 . 388  | [+0 . 354 , +0 . 421]    | 0.0148 | 976 |\\n|
+        C016 | Q      | LL/.05  | LL/.05  | P e - P g  | +0 . 361  | [+0 . 329 , +0
+        . 395]    | 0.0148 | 976 |\\n| C017 | A      | RC/.25  | RC/.25  | R e - R
+        g  | +0 . 712  | [+0 . 684 , +0 . 740]    | 0.0148 | 944 |\\n| C018 | A      |
+        RR/.5   | Id      | P g        | +0 . 098  | [+0 . 066 , +0 . 131]    | 0.0148
+        | 944 |\\n| C019 | A      | RR/.25  | Id      | P g        | +0 . 184  | [+0
+        . 149 , +0 . 219]    | 0.0148 | 944 |\\n| C020 | A      | RR/.1   | Id      |
+        P g        | - 0 . 132 | [ - 0 . 170 , - 0 . 095] | 0.0148 | 944 |\\n| C021
+        | A      | RR/.05  | Id      | P g        | - 0 . 267 | [ - 0 . 303 , - 0
+        . 230] | 0.0148 | 944 |\\n| C022 | A      | X/.5    | Id      | P g        |
+        - 0 . 081 | [ - 0 . 116 , - 0 . 047] | 0.0148 | 944 |\\n| C023 | A      |
+        X/.25   | Id      | P g        | - 0 . 019 | [ - 0 . 053 , +0 . 016]  | 1.0000
+        | 944 |\\n| C024 | A      | X/.1    | Id      | P g        | - 0 . 023 | [
+        - 0 . 061 , +0 . 014]  | 1.0000 | 944 |\\n| C025 | A      | X/.05   | Id      |
+        P g        | - 0 . 091 | [ - 0 . 129 , - 0 . 053] | 0.0148 | 944 |\\n| C026
+        | A      | ECR/.5  | Id      | P g        | - 0 . 071 | [ - 0 . 105 , - 0
+        . 038] | 0.0148 | 944 |\\n| C027 | A      | ECR/.25 | Id      | P g        |
+        - 0 . 025 | [ - 0 . 061 , +0 . 010]  | 1.0000 | 944 |\\n| C028 | A      |
+        ECR/.1  | Id      | P g        | - 0 . 027 | [ - 0 . 064 , +0 . 010]  | 1.0000
+        | 944 |\\n| C029 | A      | ECR/.05 | Id      | P g        | - 0 . 118 | [
+        - 0 . 155 , - 0 . 080] | 0.0148 | 944 |\\n| C030 | A      | RC/.5   | Id      |
+        P g        | - 0 . 388 | [ - 0 . 421 , - 0 . 354] | 0.0148 | 944 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0005\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":140,\"page_no\":15,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        6: Planned comparisons 1-30 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206         | 95% CI                   |
+        \   p H |   n |\\n|------|--------|---------|---------|------------|-----------|--------------------------|--------|-----|\\n|
+        C001 | A      | RC/.5   | RC/.5   | P e - P g  | +0 . 744  | [+0 . 715 , +0
+        . 771]    | 0.0148 | 944 |\\n| C002 | A      | RC/.25  | RC/.25  | P e - P
+        g  | +0 . 740  | [+0 . 711 , +0 . 767]    | 0.0148 | 944 |\\n| C003 | A      |
+        RC/.1   | RC/.1   | P e - P g  | +0 . 743  | [+0 . 715 , +0 . 770]    | 0.0148
+        | 944 |\\n| C004 | A      | RC/.05  | RC/.05  | P e - P g  | +0 . 621  | [+0
+        . 588 , +0 . 654]    | 0.0148 | 944 |\\n| C005 | A      | LL/.5   | LL/.5
+        \  | P e - P g  | +0 . 426  | [+0 . 394 , +0 . 458]    | 0.0148 | 944 |\\n|
+        C006 | A      | LL/.25  | LL/.25  | P e - P g  | +0 . 425  | [+0 . 391 , +0
+        . 458]    | 0.0148 | 944 |\\n| C007 | A      | LL/.1   | LL/.1   | P e - P
+        g  | +0 . 260  | [+0 . 229 , +0 . 291]    | 0.0148 | 944 |\\n| C008 | A      |
+        LL/.05  | LL/.05  | P e - P g  | +0 . 132  | [+0 . 108 , +0 . 156]    | 0.0148
+        | 944 |\\n| C009 | Q      | RC/.5   | RC/.5   | P e - P g  | +0 . 499  | [+0
+        . 464 , +0 . 534]    | 0.0148 | 976 |\\n| C010 | Q      | RC/.25  | RC/.25
+        \ | P e - P g  | +0 . 491  | [+0 . 457 , +0 . 525]    | 0.0148 | 976 |\\n|
+        C011 | Q      | RC/.1   | RC/.1   | P e - P g  | +0 . 492  | [+0 . 457 , +0
+        . 526]    | 0.0148 | 976 |\\n| C012 | Q      | RC/.05  | RC/.05  | P e - P
+        g  | +0 . 496  | [+0 . 462 , +0 . 531]    | 0.0148 | 976 |\\n| C013 | Q      |
+        LL/.5   | LL/.5   | P e - P g  | +0 . 360  | [+0 . 319 , +0 . 402]    | 0.0148
+        | 976 |\\n| C014 | Q      | LL/.25  | LL/.25  | P e - P g  | +0 . 309  | [+0
+        . 278 , +0 . 341]    | 0.0148 | 976 |\\n| C015 | Q      | LL/.1   | LL/.1
+        \  | P e - P g  | +0 . 388  | [+0 . 354 , +0 . 421]    | 0.0148 | 976 |\\n|
+        C016 | Q      | LL/.05  | LL/.05  | P e - P g  | +0 . 361  | [+0 . 329 , +0
+        . 395]    | 0.0148 | 976 |\\n| C017 | A      | RC/.25  | RC/.25  | R e - R
+        g  | +0 . 712  | [+0 . 684 , +0 . 740]    | 0.0148 | 944 |\\n| C018 | A      |
+        RR/.5   | Id      | P g        | +0 . 098  | [+0 . 066 , +0 . 131]    | 0.0148
+        | 944 |\\n| C019 | A      | RR/.25  | Id      | P g        | +0 . 184  | [+0
+        . 149 , +0 . 219]    | 0.0148 | 944 |\\n| C020 | A      | RR/.1   | Id      |
+        P g        | - 0 . 132 | [ - 0 . 170 , - 0 . 095] | 0.0148 | 944 |\\n| C021
+        | A      | RR/.05  | Id      | P g        | - 0 . 267 | [ - 0 . 303 , - 0
+        . 230] | 0.0148 | 944 |\\n| C022 | A      | X/.5    | Id      | P g        |
+        - 0 . 081 | [ - 0 . 116 , - 0 . 047] | 0.0148 | 944 |\\n| C023 | A      |
+        X/.25   | Id      | P g        | - 0 . 019 | [ - 0 . 053 , +0 . 016]  | 1.0000
+        | 944 |\\n| C024 | A      | X/.1    | Id      | P g        | - 0 . 023 | [
+        - 0 . 061 , +0 . 014]  | 1.0000 | 944 |\\n| C025 | A      | X/.05   | Id      |
+        P g        | - 0 . 091 | [ - 0 . 129 , - 0 . 053] | 0.0148 | 944 |\\n| C026
+        | A      | ECR/.5  | Id      | P g        | - 0 . 071 | [ - 0 . 105 , - 0
+        . 038] | 0.0148 | 944 |\\n| C027 | A      | ECR/.25 | Id      | P g        |
+        - 0 . 025 | [ - 0 . 061 , +0 . 010]  | 1.0000 | 944 |\\n| C028 | A      |
+        ECR/.1  | Id      | P g        | - 0 . 027 | [ - 0 . 064 , +0 . 010]  | 1.0000
+        | 944 |\\n| C029 | A      | ECR/.05 | Id      | P g        | - 0 . 118 | [
+        - 0 . 155 , - 0 . 080] | 0.0148 | 944 |\\n| C030 | A      | RC/.5   | Id      |
+        P g        | - 0 . 388 | [ - 0 . 421 , - 0 . 354] | 0.0148 | 944 |\"}}},{\"id\":\"d388f2c2-1fb5-5bd9-a82e-3216563eccab\",\"version\":13,\"score\":0.40049356,\"payload\":{\"page_content\":\"Table
+        9: Planned comparisons 91-120 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206          | 95% CI
+        \                    |    p H |   n |\\n|------|--------|---------|---------|------------|------------|----------------------------|--------|-----|\\n|
+        C091 | A      | RC/.05  | Id      | EM         | - 0 . 067  | [ - 0 . 084
+        , - 0 . 051]   | 0.0148 | 944 |\\n| C092 | A      | LL/.5   | Id      | EM
+        \        | - 0 . 041  | [ - 0 . 055 , - 0 . 026]   | 0.0148 | 944 |\\n| C093
+        | A      | LL/.25  | Id      | EM         | - 0 . 101  | [ - 0 . 118 , - 0
+        . 083]   | 0.0148 | 944 |\\n| C094 | A      | LL/.1   | Id      | EM         |
+        - 0 . 184  | [ - 0 . 203 , - 0 . 165]   | 0.0148 | 944 |\\n| C095 | A      |
+        LL/.05  | Id      | EM         | - 0 . 227  | [ - 0 . 248 , - 0 . 207]   |
+        0.0148 | 944 |\\n| C096 | A      | RR/.25  | RR/.5   | EM         | - 0 .
+        052  | [ - 0 . 064 , - 0 . 040]   | 0.0148 | 944 |\\n| C097 | A      | RR/.1
+        \  | RR/.25  | EM         | - 0 . 062  | [ - 0 . 077 , - 0 . 046]   | 0.0148
+        | 944 |\\n| C098 | A      | RR/.05  | RR/.1   | EM         | - 0 . 076  |
+        [ - 0 . 092 , - 0 . 060]   | 0.0148 | 944 |\\n| C099 | A      | X/.25   |
+        X/.5    | EM         | - 0 . 053  | [ - 0 . 068 , - 0 . 037]   | 0.0148 |
+        944 |\\n| C100 | A      | X/.1    | X/.25   | EM         | - 0 . 069  | [
+        - 0 . 084 , - 0 . 055]   | 0.0148 | 944 |\\n| C101 | A      | X/.05   | X/.1
+        \   | EM         | - 0 . 048  | [ - 0 . 062 , - 0 . 034]   | 0.0148 | 944
+        |\\n| C102 | A      | ECR/.25 | ECR/.5  | EM         | - 0 . 046  | [ - 0
+        . 060 , - 0 . 032]   | 0.0148 | 944 |\\n| C103 | A      | ECR/.1  | ECR/.25
+        | EM         | - 0 . 064  | [ - 0 . 079 , - 0 . 048]   | 0.0148 | 944 |\\n|
+        C104 | A      | ECR/.05 | ECR/.1  | EM         | - 0 . 064  | [ - 0 . 079
+        , - 0 . 049]   | 0.0148 | 944 |\\n| C105 | A      | RC/.25  | RC/.5   | EM
+        \        | +0 . 000   | [ - 0 . 002 , +0 . 002]    | 1.0000 | 944 |\\n| C106
+        | A      | RC/.1   | RC/.25  | EM         | - 0 . 001  | [ - 0 . 006 , +0
+        . 004]    | 1.0000 | 944 |\\n| C107 | A      | RC/.05  | RC/.1   | EM         |
+        - 0 . 012  | [ - 0 . 022 , - 0 . 003]   | 0.3030 | 944 |\\n| C108 | A      |
+        LL/.25  | LL/.5   | EM         | - 0 . 060  | [ - 0 . 076 , - 0 . 045]   |
+        0.0148 | 944 |\\n| C109 | A      | LL/.1   | LL/.25  | EM         | - 0 .
+        083  | [ - 0 . 100 , - 0 . 067]   | 0.0148 | 944 |\\n| C110 | A      | LL/.05
+        \ | LL/.1   | EM         | - 0 . 043  | [ - 0 . 057 , - 0 . 030]   | 0.0148
+        | 944 |\\n| C111 | Q      | ECR/.5  | X/.5    | EF1        | - 0 . 0007 |
+        [ - 0 . 0011 , - 0 . 0002] | 0.0374 | 976 |\\n| C112 | Q      | ECR/.25 |
+        X/.25   | EF1        | - 0 . 0018 | [ - 0 . 0025 , - 0 . 0012] | 0.0148 |
+        976 |\\n| C113 | Q      | ECR/.1  | X/.1    | EF1        | - 0 . 0022 | [
+        - 0 . 0035 , - 0 . 0010] | 0.0148 | 976 |\\n| C114 | Q      | ECR/.05 | X/.05
+        \  | EF1        | - 0 . 0030 | [ - 0 . 0046 , - 0 . 0012] | 0.0185 | 976 |\\n|
+        C115 | Q      | X/.25   | X/.5    | EF1        | +0 . 0199  | [+0 . 0170 ,
+        +0 . 0227]    | 0.0148 | 976 |\\n| C116 | Q      | X/.1    | X/.25   | EF1
+        \       | +0 . 0389  | [+0 . 0343 , +0 . 0435]    | 0.0148 | 976 |\\n| C117
+        | Q      | X/.05   | X/.1    | EF1        | +0 . 0289  | [+0 . 0231 , +0 .
+        0346]    | 0.0148 | 976 |\\n| C118 | Q      | ECR/.25 | ECR/.5  | EF1        |
+        +0 . 0187  | [+0 . 0160 , +0 . 0214]    | 0.0148 | 976 |\\n| C119 | Q      |
+        ECR/.1  | ECR/.25 | EF1        | +0 . 0385  | [+0 . 0339 , +0 . 0430]    |
+        0.0148 | 976 |\\n| C120 | Q      | ECR/.05 | ECR/.1  | EF1        | +0 . 0281
+        \ | [+0 . 0222 , +0 . 0340]    | 0.0148 | 976 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0008\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":146,\"page_no\":18,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        9: Planned comparisons 91-120 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right   | Endpoint   | \u2206          | 95% CI
+        \                    |    p H |   n |\\n|------|--------|---------|---------|------------|------------|----------------------------|--------|-----|\\n|
+        C091 | A      | RC/.05  | Id      | EM         | - 0 . 067  | [ - 0 . 084
+        , - 0 . 051]   | 0.0148 | 944 |\\n| C092 | A      | LL/.5   | Id      | EM
+        \        | - 0 . 041  | [ - 0 . 055 , - 0 . 026]   | 0.0148 | 944 |\\n| C093
+        | A      | LL/.25  | Id      | EM         | - 0 . 101  | [ - 0 . 118 , - 0
+        . 083]   | 0.0148 | 944 |\\n| C094 | A      | LL/.1   | Id      | EM         |
+        - 0 . 184  | [ - 0 . 203 , - 0 . 165]   | 0.0148 | 944 |\\n| C095 | A      |
+        LL/.05  | Id      | EM         | - 0 . 227  | [ - 0 . 248 , - 0 . 207]   |
+        0.0148 | 944 |\\n| C096 | A      | RR/.25  | RR/.5   | EM         | - 0 .
+        052  | [ - 0 . 064 , - 0 . 040]   | 0.0148 | 944 |\\n| C097 | A      | RR/.1
+        \  | RR/.25  | EM         | - 0 . 062  | [ - 0 . 077 , - 0 . 046]   | 0.0148
+        | 944 |\\n| C098 | A      | RR/.05  | RR/.1   | EM         | - 0 . 076  |
+        [ - 0 . 092 , - 0 . 060]   | 0.0148 | 944 |\\n| C099 | A      | X/.25   |
+        X/.5    | EM         | - 0 . 053  | [ - 0 . 068 , - 0 . 037]   | 0.0148 |
+        944 |\\n| C100 | A      | X/.1    | X/.25   | EM         | - 0 . 069  | [
+        - 0 . 084 , - 0 . 055]   | 0.0148 | 944 |\\n| C101 | A      | X/.05   | X/.1
+        \   | EM         | - 0 . 048  | [ - 0 . 062 , - 0 . 034]   | 0.0148 | 944
+        |\\n| C102 | A      | ECR/.25 | ECR/.5  | EM         | - 0 . 046  | [ - 0
+        . 060 , - 0 . 032]   | 0.0148 | 944 |\\n| C103 | A      | ECR/.1  | ECR/.25
+        | EM         | - 0 . 064  | [ - 0 . 079 , - 0 . 048]   | 0.0148 | 944 |\\n|
+        C104 | A      | ECR/.05 | ECR/.1  | EM         | - 0 . 064  | [ - 0 . 079
+        , - 0 . 049]   | 0.0148 | 944 |\\n| C105 | A      | RC/.25  | RC/.5   | EM
+        \        | +0 . 000   | [ - 0 . 002 , +0 . 002]    | 1.0000 | 944 |\\n| C106
+        | A      | RC/.1   | RC/.25  | EM         | - 0 . 001  | [ - 0 . 006 , +0
+        . 004]    | 1.0000 | 944 |\\n| C107 | A      | RC/.05  | RC/.1   | EM         |
+        - 0 . 012  | [ - 0 . 022 , - 0 . 003]   | 0.3030 | 944 |\\n| C108 | A      |
+        LL/.25  | LL/.5   | EM         | - 0 . 060  | [ - 0 . 076 , - 0 . 045]   |
+        0.0148 | 944 |\\n| C109 | A      | LL/.1   | LL/.25  | EM         | - 0 .
+        083  | [ - 0 . 100 , - 0 . 067]   | 0.0148 | 944 |\\n| C110 | A      | LL/.05
+        \ | LL/.1   | EM         | - 0 . 043  | [ - 0 . 057 , - 0 . 030]   | 0.0148
+        | 944 |\\n| C111 | Q      | ECR/.5  | X/.5    | EF1        | - 0 . 0007 |
+        [ - 0 . 0011 , - 0 . 0002] | 0.0374 | 976 |\\n| C112 | Q      | ECR/.25 |
+        X/.25   | EF1        | - 0 . 0018 | [ - 0 . 0025 , - 0 . 0012] | 0.0148 |
+        976 |\\n| C113 | Q      | ECR/.1  | X/.1    | EF1        | - 0 . 0022 | [
+        - 0 . 0035 , - 0 . 0010] | 0.0148 | 976 |\\n| C114 | Q      | ECR/.05 | X/.05
+        \  | EF1        | - 0 . 0030 | [ - 0 . 0046 , - 0 . 0012] | 0.0185 | 976 |\\n|
+        C115 | Q      | X/.25   | X/.5    | EF1        | +0 . 0199  | [+0 . 0170 ,
+        +0 . 0227]    | 0.0148 | 976 |\\n| C116 | Q      | X/.1    | X/.25   | EF1
+        \       | +0 . 0389  | [+0 . 0343 , +0 . 0435]    | 0.0148 | 976 |\\n| C117
+        | Q      | X/.05   | X/.1    | EF1        | +0 . 0289  | [+0 . 0231 , +0 .
+        0346]    | 0.0148 | 976 |\\n| C118 | Q      | ECR/.25 | ECR/.5  | EF1        |
+        +0 . 0187  | [+0 . 0160 , +0 . 0214]    | 0.0148 | 976 |\\n| C119 | Q      |
+        ECR/.1  | ECR/.25 | EF1        | +0 . 0385  | [+0 . 0339 , +0 . 0430]    |
+        0.0148 | 976 |\\n| C120 | Q      | ECR/.05 | ECR/.1  | EF1        | +0 . 0281
+        \ | [+0 . 0222 , +0 . 0340]    | 0.0148 | 976 |\"}}},{\"id\":\"095dcd36-25a3-5d73-a076-09c6c245e655\",\"version\":13,\"score\":0.3953961,\"payload\":{\"page_content\":\"Table
+        10: Planned comparisons 121-148 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right     | Endpoint   | \u2206            | 95%
+        CI                     |    p H |   n |\\n|------|--------|---------|-----------|------------|--------------|----------------------------|--------|-----|\\n|
+        C121 | Q      | RR/.25  | RR/.5     | EF1        | 0 . 0162     | [ - 0 .
+        0225 , - 0 . 0097] | 0.0148 | 976 |\\n| C122 | Q      | RR/.1   | RR/.25    |
+        EF1        | - - 0 . 0194 | [ - 0 . 0275 , - 0 . 0112] | 0.0148 | 976 |\\n|
+        C123 | Q      | RR/.05  | RR/.1     | EF1        | - 0 . 0084   | [ - 0 .
+        0171 , +0 . 0008]  | 1.0000 | 976 |\\n| C124 | A      | LL/.25  | LL/.5     |
+        Rec        | - 0 . 156    | [ - 0 . 194 , - 0 . 117]   | 0.0148 | 944 |\\n|
+        C125 | A      | LL/.1   | LL/.25    | Rec        | - 0 . 153    | [ - 0 .
+        192 , - 0 . 114]   | 0.0148 | 944 |\\n| C126 | A      | LL/.05  | LL/.1     |
+        Rec        | - 0 . 050    | [ - 0 . 086 , - 0 . 015]   | 0.2418 | 944 |\\n|
+        C127 | A      | Id      | Id        | U s - U m  | - 0 . 002    | [ - 0 .
+        007 , +0 . 002]    | 1.0000 | 944 |\\n| C128 | A      | RR/.25  | RR/.25    |
+        U s - U m  | - 0 . 003    | [ - 0 . 008 , +0 . 002]    | 1.0000 | 944 |\\n|
+        C129 | A      | X/.25   | X/.25     | U s - U m  | +0 . 000     | [ - 0 .
+        002 , +0 . 001]    | 1.0000 | 944 |\\n| C130 | A      | ECR/.25 | ECR/.25
+        \  | U s - U m  | +0 . 009     | [+0 . 002 , +0 . 016]      | 0.3045 | 944
+        |\\n| C131 | Q      | Id      | Id        | U s - U m  | - 0 . 001    | [
+        - 0 . 005 , +0 . 003]    | 1.0000 | 976 |\\n| C132 | Q      | RR/.25  | RR/.25
+        \   | U s - U m  | - 0 . 002    | [ - 0 . 006 , +0 . 001]    | 1.0000 | 976
+        |\\n| C133 | Q      | X/.25   | X/.25     | U s - U m  | - 0 . 008    | [
+        - 0 . 014 , - 0 . 003]   | 0.0627 | 976 |\\n| C134 | Q      | ECR/.25 | ECR/.25
+        \  | U s - U m  | - 0 . 001    | [ - 0 . 007 , +0 . 004]    | 1.0000 | 976
+        |\\n| C135 | A      | RC/.25  | RC/.25/.3 | P e - P g  | +0 . 714     | [+0
+        . 685 , +0 . 743]      | 0.0148 | 944 |\\n| C136 | A      | RC/.25  | RC/.25/.4
+        | P e - P g  | +0 . 730     | [+0 . 701 , +0 . 758]      | 0.0148 | 944 |\\n|
+        C137 | A      | RC/.25  | RC/.25/.6 | P e - P g  | +0 . 753     | [+0 . 726
+        , +0 . 780]      | 0.0148 | 944 |\\n| C138 | A      | RC/.25  | RC/.25/.7
+        | P e - P g  | +0 . 766     | [+0 . 739 , +0 . 792]      | 0.0148 | 944 |\\n|
+        C139 | A      | RC/.25  | RC/.25/.8 | P e - P g  | +0 . 779     | [+0 . 752
+        , +0 . 805]      | 0.0148 | 944 |\\n| C140 | A      | LL/.25  | LL/.25/.3
+        | P e - P g  | +0 . 372     | [+0 . 338 , +0 . 406]      | 0.0148 | 944 |\\n|
+        C141 | A      | LL/.25  | LL/.25/.4 | P e - P g  | +0 . 400     | [+0 . 367
+        , +0 . 433]      | 0.0148 | 944 |\\n| C142 | A      | LL/.25  | LL/.25/.6
+        | P e - P g  | +0 . 449     | [+0 . 415 , +0 . 481]      | 0.0148 | 944 |\\n|
+        C143 | A      | LL/.25  | LL/.25/.7 | P e - P g  | +0 . 474     | [+0 . 441
+        , +0 . 506]      | 0.0148 | 944 |\\n| C144 | A      | LL/.25  | LL/.25/.8
+        | P e - P g  | +0 . 488     | [+0 . 455 , +0 . 520]      | 0.0148 | 944 |\\n|
+        C145 | A      | RC/.25  | RC/.25    | U r - U m  | +0 . 712     | [+0 . 683
+        , +0 . 739]      | 0.0148 | 944 |\\n| C146 | A      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 394     | [+0 . 362 , +0 . 426]      | 0.0148 | 944 |\\n|
+        C147 | Q      | RC/.25  | RC/.25    | U r - U m  | +0 . 450     | [+0 . 417
+        , +0 . 483]      | 0.0148 | 974 |\\n| C148 | Q      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 253     | [+0 . 225 , +0 . 282]      | 0.0148 | 976 |\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-table-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":148,\"page_no\":18,\"filename\":\"2609.14245v1.pdf\",\"markdown\":\"Table
+        10: Planned comparisons 121-148 of 148. \u2206 : left-minus-right mean difference;
+        p H : Holm-adjusted p -value. Setting and metric labels follow Appendix B.\\n\\n|
+        ID   | Data   | Left    | Right     | Endpoint   | \u2206            | 95%
+        CI                     |    p H |   n |\\n|------|--------|---------|-----------|------------|--------------|----------------------------|--------|-----|\\n|
+        C121 | Q      | RR/.25  | RR/.5     | EF1        | 0 . 0162     | [ - 0 .
+        0225 , - 0 . 0097] | 0.0148 | 976 |\\n| C122 | Q      | RR/.1   | RR/.25    |
+        EF1        | - - 0 . 0194 | [ - 0 . 0275 , - 0 . 0112] | 0.0148 | 976 |\\n|
+        C123 | Q      | RR/.05  | RR/.1     | EF1        | - 0 . 0084   | [ - 0 .
+        0171 , +0 . 0008]  | 1.0000 | 976 |\\n| C124 | A      | LL/.25  | LL/.5     |
+        Rec        | - 0 . 156    | [ - 0 . 194 , - 0 . 117]   | 0.0148 | 944 |\\n|
+        C125 | A      | LL/.1   | LL/.25    | Rec        | - 0 . 153    | [ - 0 .
+        192 , - 0 . 114]   | 0.0148 | 944 |\\n| C126 | A      | LL/.05  | LL/.1     |
+        Rec        | - 0 . 050    | [ - 0 . 086 , - 0 . 015]   | 0.2418 | 944 |\\n|
+        C127 | A      | Id      | Id        | U s - U m  | - 0 . 002    | [ - 0 .
+        007 , +0 . 002]    | 1.0000 | 944 |\\n| C128 | A      | RR/.25  | RR/.25    |
+        U s - U m  | - 0 . 003    | [ - 0 . 008 , +0 . 002]    | 1.0000 | 944 |\\n|
+        C129 | A      | X/.25   | X/.25     | U s - U m  | +0 . 000     | [ - 0 .
+        002 , +0 . 001]    | 1.0000 | 944 |\\n| C130 | A      | ECR/.25 | ECR/.25
+        \  | U s - U m  | +0 . 009     | [+0 . 002 , +0 . 016]      | 0.3045 | 944
+        |\\n| C131 | Q      | Id      | Id        | U s - U m  | - 0 . 001    | [
+        - 0 . 005 , +0 . 003]    | 1.0000 | 976 |\\n| C132 | Q      | RR/.25  | RR/.25
+        \   | U s - U m  | - 0 . 002    | [ - 0 . 006 , +0 . 001]    | 1.0000 | 976
+        |\\n| C133 | Q      | X/.25   | X/.25     | U s - U m  | - 0 . 008    | [
+        - 0 . 014 , - 0 . 003]   | 0.0627 | 976 |\\n| C134 | Q      | ECR/.25 | ECR/.25
+        \  | U s - U m  | - 0 . 001    | [ - 0 . 007 , +0 . 004]    | 1.0000 | 976
+        |\\n| C135 | A      | RC/.25  | RC/.25/.3 | P e - P g  | +0 . 714     | [+0
+        . 685 , +0 . 743]      | 0.0148 | 944 |\\n| C136 | A      | RC/.25  | RC/.25/.4
+        | P e - P g  | +0 . 730     | [+0 . 701 , +0 . 758]      | 0.0148 | 944 |\\n|
+        C137 | A      | RC/.25  | RC/.25/.6 | P e - P g  | +0 . 753     | [+0 . 726
+        , +0 . 780]      | 0.0148 | 944 |\\n| C138 | A      | RC/.25  | RC/.25/.7
+        | P e - P g  | +0 . 766     | [+0 . 739 , +0 . 792]      | 0.0148 | 944 |\\n|
+        C139 | A      | RC/.25  | RC/.25/.8 | P e - P g  | +0 . 779     | [+0 . 752
+        , +0 . 805]      | 0.0148 | 944 |\\n| C140 | A      | LL/.25  | LL/.25/.3
+        | P e - P g  | +0 . 372     | [+0 . 338 , +0 . 406]      | 0.0148 | 944 |\\n|
+        C141 | A      | LL/.25  | LL/.25/.4 | P e - P g  | +0 . 400     | [+0 . 367
+        , +0 . 433]      | 0.0148 | 944 |\\n| C142 | A      | LL/.25  | LL/.25/.6
+        | P e - P g  | +0 . 449     | [+0 . 415 , +0 . 481]      | 0.0148 | 944 |\\n|
+        C143 | A      | LL/.25  | LL/.25/.7 | P e - P g  | +0 . 474     | [+0 . 441
+        , +0 . 506]      | 0.0148 | 944 |\\n| C144 | A      | LL/.25  | LL/.25/.8
+        | P e - P g  | +0 . 488     | [+0 . 455 , +0 . 520]      | 0.0148 | 944 |\\n|
+        C145 | A      | RC/.25  | RC/.25    | U r - U m  | +0 . 712     | [+0 . 683
+        , +0 . 739]      | 0.0148 | 944 |\\n| C146 | A      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 394     | [+0 . 362 , +0 . 426]      | 0.0148 | 944 |\\n|
+        C147 | Q      | RC/.25  | RC/.25    | U r - U m  | +0 . 450     | [+0 . 417
+        , +0 . 483]      | 0.0148 | 974 |\\n| C148 | Q      | LL/.25  | LL/.25    |
+        U r - U m  | +0 . 253     | [+0 . 225 , +0 . 282]      | 0.0148 | 976 |\"}}},{\"id\":\"a9d96eb0-e563-5a4a-be72-fdfa293a765e\",\"version\":15,\"score\":0.38107315,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nWe know what size of effect we could have caught. Our
+        sample sizes give 80% power to detect a difference of roughly 7 percentage
+        points (pp). Plainly: had RLVR moved post-rationalization by 7pp or more in
+        either direction, this design would almost certainly have caught it. Shifts
+        of a couple of points stay inside our blind spot, which is why we report a
+        bounded null rather than a flat absence of effect. We fixed the primary outcome
+        and the family of corrected comparisons in writing before the scorer ran.\\nCompute.
+        Everything ran on Kaggle's free tier, two T4s or a single P100 per session:
+        48 GPU jobs yielding 36,690 scored records across four models, four datasets,
+        three variants, and both conditions. The original study used a 104B model;
+        the controlled version of the same measurement fits on hardware anyone can
+        get for free, and that is the part we would most like other groups to borrow.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0012\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":71,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1fbf3cf4-5c6c-5d9c-b831-fc0202204d74\",\"version\":15,\"score\":0.36154115,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nTable 3 sets the planted and control rates side
+        by side for the baseline model, and the three variants could hardly behave
+        more differently.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0013\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":75,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"5465c457-ca4b-5d77-839d-d3ad8983ca17\",\"version\":13,\"score\":0.35719582,\"payload\":{\"page_content\":\"B
+        Complete Paired Comparisons\\nSection 4.2 describes the common cohorts, estimands,
+        inference, and precision-code correction. Tables 6-10 report all 148 planned
+        contrasts, including those not retained as claims; EF1 effects and intervals
+        use four decimal places, and other effects and intervals use three.\\nTable
+        notation. A/Q denote ASQA/QASPER; Id, RR, X, RC, and LL denote identity, reranking,
+        extraction, RECOMP, and LLMLingua-2. Setting labels give compressor/nominal
+        budget, optionally followed by the recovery threshold. P/R denote precision/recall,
+        with e/g for emitted/grounded; EM is str-EM, EF1 is evidence F1, and Rec is
+        reattribution rate. U s /U m /U r denote declared-span, summary, and recovered-source
+        unsupported rates. \u2206 is the paired left-minus-right mean difference;
+        a single endpoint applies to both settings, and a pair lists left-minus-right
+        metrics. CI is a pointwise 95% bootstrap interval; p H is the two-sided randomization
+        p -value after Holm adjustment across all 148 comparisons; n counts included
+        questions.\\nRecovered-source verification. This extension reads existing
+        NLI scores from the sealed cache and makes no new model calls. It uses the
+        same recovered source IDs as citation scoring, but the claim verifier removes
+        repeated source IDs before pooling evidence. Consequently, its unsupported
+        rate need not equal one minus grounded citation recall, which retains repeated
+        cited evidence. Both summary and recovered-source rates exclude the same zero-claim
+        answers: two QASPER RECOMP answers at nominal 0.25; the other three comparisons
+        use their full common cohorts. Input hashes, the extension plan, cache lookups,
+        perquestion records, and all four comparisons are retained separately from
+        the original analysis.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0028\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"B
+        Complete Paired Comparisons\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":133,\"page_no\":13,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"b9471911-87e0-56f1-b903-ce99862282fc\",\"version\":13,\"score\":0.33589423,\"payload\":{\"page_content\":\"4.2
+        Statistical Analysis and Metric Audit\\nCommon cohorts and estimands. Primary
+        summaries and comparisons use the intersection of successful question IDs
+        across identity and all twenty compressed settings. Each question has equal
+        weight in citation precision, citation recall, answer quality, and evidence
+        F1; claims and citations are not pooled across questions. Undefined evidence
+        or recovery metrics remain undefined rather than becoming zeros. Verification-rate
+        means exclude answers with zero claims; paired verification comparisons exclude
+        a question if ei- ther member has zero claims. The analysis artifacts report
+        those exclusions and retain full-cohort descriptive means separately.\\nInference.
+        We use pointwise 95% percentile bootstrap intervals for each paired mean difference
+        (Dror et al., 2018), resampling 944 questions on ASQA and 271 papers on QASPER
+        with replacement. All retained questions from a sampled QASPER paper travel
+        together, and each replicate divides its total difference by the number of
+        sampled questions, preserving the questionweighted estimand. Every QASPER
+        contrast retains all 271 papers after metric-specific exclusions. Two-sided
+        randomization tests swap paired labels within questions on ASQA and jointly
+        within papers on QASPER. These tests assume label exchangeability within a
+        resampling unit under the null. Both procedures use 10,000 replicates and
+        seed 13, with independent random-number streams for bootstrap sampling and
+        randomization. Monte Carlo p -values use ( b + 1) / (10 , 000 + 1) , where
+        b counts randomizations at least as extreme as the observed absolute difference.
+        The initial plan specified 134 core contrasts and 10 recoverythreshold contrasts
+        before inspecting the revised inferential results. After that analysis and
+        a cachecoverage audit, we added four recovered-source versus summary-verification
+        contrasts at nominal 0.25 for RECOMP and LLMLingua-2 on both datasets. The
+        extension plan was recorded before running these four tests, and Holm adjustment
+        was recomputed over all 148 raw p -values. We denote Holm-adjusted values
+        by p H . All reported adjusted values use this expanded family; original effects,
+        intervals, and raw p -values are unchanged. This is a post hoc camera-ready
+        analysis, not a preregistration. Intervals are pointwise, not simultaneous;
+        statistical-support statements use p H < 0 . 05 . Failure to reject a difference
+        does not establish equivalence or preservation. All inference is conditional
+        on the fixed generator outputs, recovery procedure, and evaluator.\\nPrecision-code
+        audit. The manuscript's precision definition requires the concatenated cited
+        evidence to entail a claim before any individual citation receives credit.
+        A code audit found that the previous implementation could credit an individually
+        supporting citation even when joint entailment failed. A saved ASQA answer
+        reproduced this discrepancy, and a regression test now checks the required
+        gate through the evaluation pipeline.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0010\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"4.2
+        Statistical Analysis and Metric Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":36,\"page_no\":4,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"23006671-81f4-523b-a746-43e7917b583f\",\"version\":13,\"score\":0.30855757,\"payload\":{\"page_content\":\"Reproducibility
+        Statement\\nSaved generation outputs, input hashes, and pinned evaluator revisions
+        accompany perquestion rescoring records. The fixed contrast plans and paired-analysis
+        reports regenerate the numerical tables and frontier figures without further
+        model calls. The harness, configurations, protocol, and per-question records
+        will be publicly released upon publication.\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0021\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"Reproducibility
+        Statement\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":86,\"page_no\":9,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"a3d2f6a7-82ce-5245-a8ed-2520c9e5da50\",\"version\":13,\"score\":0.30404425,\"payload\":{\"page_content\":\"C
+        Second-Evaluator Sensitivity Audit\\nInference and diagnostics. The separate
+        24-test family uses pointwise 95% bootstrap intervals and two-sided randomization
+        tests, each with 10,000 replicates and seed 13, question resampling on ASQA
+        and paper clustering on QASPER, with question-weighted means and Holm adjustment.
+        The original 148-test analysis is unchanged. Tables 11-12 report precision
+        means and all planned contrasts. All 16 emitted-grounded gaps remain positive
+        after adjustment; the eight cross-evaluator precision differences remain unresolved,
+        which does not establish equivalence. ECR and other budgets are outside this
+        audit.\\nThe run scored 6,015 unique pairs in 419 seconds of model inference
+        (430 seconds including bookkeeping; setup and excluded attempts are additional).
+        Four inputs required truncation, with maximum pre-truncation length 47,440
+        tokens. After normalization, 122 pairs (2.03%) produced nonbinary strings,
+        including 103 empty strings; assigning zero does not establish reliable nonentailment.
+        These are pair counts, not fractions of questions affected; the full histogram
+        accompanies the cache. Recovery can disagree substantially: QASPER LLMLingua-2
+        has 50.3% agreement over 1,000 candidate decisions and mean recovery rates
+        of 0.84 for DeBERTa versus 0.38 for TRUE. These descriptive results support
+        sensitivity analysis, not accuracy against human judgments.\\n\",\"metadata\":{\"ingestion_version\":\"01a0fc54ff9a70d3af0e9b49e864b8b9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde-text-0030\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-a80173d89da59347dcc33be81dd10fde\",\"chunk_type\":\"text\",\"section_path\":\"C
+        Second-Evaluator Sensitivity Audit\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":156,\"page_no\":19,\"filename\":\"2609.14245v1.pdf\"}}},{\"id\":\"eb9610c0-e536-5645-855d-f24b38ed799c\",\"version\":15,\"score\":0.29988125,\"payload\":{\"page_content\":\"6
+        Discussion\\nHow to read the R-Search result. R-Search sits above its base
+        on all four datasets and significantly above on the best-powered one, which
+        is a real and consistent pattern. It is also one model, one base, one prompt,
+        and one scorer, so four datasets are not four independent replications, and
+        the effect softens under a stricter variant and a looser outcome. Two things
+        would settle it: a cross-dataset test declared in advance, and an arm fine-tuned
+        on the same data without RL, which would separate the contribution of RL from
+        the contribution of fine-tuning on retrieval data at all.\\nA note on cost.
+        Everything here, four models, four datasets, three variants, both conditions,
+        and the control that makes the comparison interpretable, ran on Kaggle's T4
+        GPUs. Careful measurement was the cheap part of this project. The expensive
+        part was reading the construction code closely enough to know which controls
+        we did not have to run.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0023\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"6
+        Discussion\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":103,\"page_no\":7,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"639092db-6051-5321-b9f0-5cb9d12a74da\",\"version\":15,\"score\":0.2977252,\"payload\":{\"page_content\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0009\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":160,\"page_no\":11,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"|
+        Dataset   | Planted   | Control   |   Attr. | 95% CI       |\\n|-----------|-----------|-----------|---------|--------------|\\n|
+        NQ        | 9/69      | 0/69      |   +13.0 | [5.5, 22.5]  |\\n| QAMPARI   |
+        16/123    | 0/123     |   +13.0 | [7.3, 19.7]  |\\n| HAGRID    | 12/61     |
+        0/61      |   +19.7 | [10.8, 31.3] |\\n| RAGTruth  | 67/623    | 1/623     |
+        \  +10.6 | [7.9, 13.5]  |\"}}},{\"id\":\"a83d12ef-ef1c-5fdd-ac5e-d8d116e734e6\",\"version\":7,\"score\":0.2952867,\"payload\":{\"page_content\":\"E
+        Training Schedule.\\nTable 5 summarizes the number of training examples and
+        epochs used at each stage. We train for one epoch in Stages 12 and for three
+        epochs during the final KILT-SCR fine-tuning stage.\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-text-0027\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"text\",\"section_path\":\"E
+        Training Schedule.\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":161,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\"}}},{\"id\":\"d78c3ba3-b37d-52b5-9c67-404e7ea891ed\",\"version\":7,\"score\":0.2914756,\"payload\":{\"page_content\":\"Table
+        5: Training schedule for the three-stage procedure.\\n\\n| Stage              |
+        \  Examples |   Epochs |\\n|--------------------|------------|----------|\\n|
+        Stage 1            |  2,000,000 |        1 |\\n| Stage 2            |    500,000
+        |        1 |\\n| Stage 3 (KILT-SCR) |    196,916 |        3 |\",\"metadata\":{\"ingestion_version\":\"01a0fc53885372038a1c6d0df171e569\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d-table-0004\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-905fbc39ac3a6f3cc7e45abf45c70d5d\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":149,\"page_no\":11,\"filename\":\"2609.22100v1.pdf\",\"markdown\":\"Table
+        5: Training schedule for the three-stage procedure.\\n\\n| Stage              |
+        \  Examples |   Epochs |\\n|--------------------|------------|----------|\\n|
+        Stage 1            |  2,000,000 |        1 |\\n| Stage 2            |    500,000
+        |        1 |\\n| Stage 3 (KILT-SCR) |    196,916 |        3 |\"}}},{\"id\":\"9f91e3cc-eb63-5067-9e2b-f325f5af07fc\",\"version\":5,\"score\":0.29097202,\"payload\":{\"page_content\":\"E.
+        Experimental Design\\nThe evaluation set contains 49 fact-checking queries,
+        of which 37 are distinct, spanning locations, dates and counts, yes/no claims,
+        and people. Ten information-rich passages covering the queried facts were
+        added to the index because raw FEVER evidence sentences are often too terse
+        to support a full answer. Crossing the query set with three strategies and
+        four poisoning levels yields 49 \xD7 3 \xD7 4 = 588 runs, each producing a
+        clean and a poisoned answer for 1 , 176 generations in total. Because a full
+        sweep takes roughly a day on CPU, results are written to disk after every
+        run and a checkpoint records completed cells, so an interrupted sweep resumes
+        without repeating work.\",\"metadata\":{\"ingestion_version\":\"01a0fc53392f724b972307d03a9f94d9\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead-text-0006\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-11cceaa84246e8e753a543a5d12c1ead\",\"chunk_type\":\"text\",\"section_path\":\"E.
+        Experimental Design\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":30,\"page_no\":2,\"filename\":\"2609.09243v1.pdf\"}}},{\"id\":\"dec2d78a-c8ba-509b-9409-5f44d1c07f13\",\"version\":15,\"score\":0.28837517,\"payload\":{\"page_content\":\"4
+        Experimental Setup\\nLeakage drove the dataset choice. NQ is where the original
+        probe ran, so we keep it for comparability, but Search-R1 trained on NQ's
+        training split and we say so plainly. QAMPARI, HAGRID, and RAGTruth were not
+        used to train any of the three agents, so on those datasets no gap can be
+        waved away as familiarity with the data. They also sidestep a retrieval quirk
+        in NQ: for 186 of 499 NQquestions (37.3%), all five passages come from one
+        document, which leaves the model almost no choice about what to cite. The
+        other three datasets have no such questions.\\nPrompt and generation. One
+        prompt does all the work, byte-identical across models and across the clean
+        and doctored runs. It tells the model to answer using only the numbered passages,
+        to close every sentence with exactly one citation such as [2], and to reply
+        'I don't know' when the passages fall short. Decoding is greedy, capped at
+        300 new tokens. When any sentence of an answer breaks the one-citation rule
+        we drop the whole answer rather than salvage the compliant half, because a
+        partly rescued answer reintroduces the claim-to-citation ambiguity the format
+        exists to prevent. Models differ sharply in how often they abstain, from 15%
+        to 52% of questions; Appendix C takes that apart. The full prompt is in Appendix
+        A.\\nReading our numbers. Three statistical choices shape every result, and
+        each has a plain reason behind it.\\nWe resample questions, not claims. A
+        single question yields up to seven claims that share one context and one generated
+        answer, so treating claims as independent would make our intervals look tighter
+        than they are. We use a cluster bootstrap instead: draw whole questions with
+        replacement 2,000 times, recompute the planted and control conditions on the
+        same draw so the pairing survives, and read off the 2.5th and 97.5th percentiles.
+        Every 95% confidence interval in this paper is that band, the range of effects
+        our data are consistent with.\\nWe compare each agent against its own base.
+        Post-rationalization is common in the baseline, so reporting that an agent
+        post-rationalizes tells us nothing about RL. The question is whether an agent
+        diverges from the model it was trained from. That calls for a difference-in-differences:
+        take the plantversus-control difference within a model (Equation 1), then
+        difference those differences across models,\\n<!-- formula-not-decoded -->\\nNegative
+        says RLVR made citations more faithful, positive says it made them worse,
+        and zero says training left this behavior alone. Within each dataset we test
+        all three agents against the baseline and correct the three comparisons with
+        the Holm method, so that running three tests does not manufacture a significant
+        one.\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0011\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"4
+        Experimental Setup\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":64,\"page_no\":4,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"1a2e8a35-8a1f-56b6-8b90-46f4355a654e\",\"version\":15,\"score\":0.2867673,\"payload\":{\"page_content\":\"5.1
+        What the control changes\\nTable 3: What the no-planting control changes,
+        for the baseline model. Planted and Control are cited records over all records
+        ( k/n ); Attr. is the attributable rate in pp (Eq. 1). For CITED-OTHER the
+        control is 100%, and the attributable rate is negative (all 95% CIs exclude
+        0).\\n\\nREL-UNCITED (claim-aligned), Planted = REL-UNCITED (claim-aligned).
+        REL-UNCITED (claim-aligned), Control = REL-UNCITED (claim-aligned). REL-UNCITED
+        (claim-aligned), Attr. = REL-UNCITED (claim-aligned). NQ, Planted = 52/371.
+        NQ, Control = 0/371. NQ, Attr. = +14.0. QAMPARI, Planted = 29/319. QAMPARI,
+        Control = 0/319. QAMPARI, Attr. = +9.1. HAGRID, Planted = 64/433. HAGRID,
+        Control = 0/433. HAGRID, Attr. = +14.8. RAGTruth, Planted = 25/864. RAGTruth,
+        Control = 0/864. RAGTruth, Attr. = +2.9. RANDOM (claim-aligned), Planted =
+        RANDOM (claim-aligned). RANDOM (claim-aligned), Control = RANDOM (claim-aligned).
+        RANDOM (claim-aligned), Attr. = RANDOM (claim-aligned). NQ, Planted = 40/371.
+        NQ, Control = 0/371. NQ, Attr. = +10.8. QAMPARI, Planted = 14/319. QAMPARI,
+        Control = 0/319. QAMPARI, Attr. = +4.4. HAGRID, Planted = 37/433. HAGRID,
+        Control = 4/433. HAGRID, Attr. = +7.6. RAGTruth, Planted = 19/864. RAGTruth,
+        Control = 1/864. RAGTruth, Attr. = +2.1. CITED-OTHER (cited-anywhere), Planted
+        = CITED-OTHER (cited-anywhere). CITED-OTHER (cited-anywhere), Control = CITED-OTHER
+        (cited-anywhere). CITED-OTHER (cited-anywhere), Attr. = CITED-OTHER (cited-anywhere).
+        NQ, Planted = 58/69. NQ, Control = 69/69. NQ, Attr. = - 15.9. QAMPARI, Planted
+        = 97/123. QAMPARI, Control = 123/123. QAMPARI, Attr. = - 21.1. HAGRID, Planted
+        = 50/61. HAGRID, Control = 61/61. HAGRID, Attr. = - 18.0. RAGTruth, Planted
+        = 558/623. RAGTruth, Control = 623/623. RAGTruth, Attr. = - 10.4\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-text-0014\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"text\",\"section_path\":\"5.1
+        What the control changes\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":76,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\"}}},{\"id\":\"f1443a9b-2d48-5f8e-a011-694affd873dd\",\"version\":15,\"score\":0.27672786,\"payload\":{\"page_content\":\"Table
+        3: What the no-planting control changes, for the baseline model. Planted and
+        Control are cited records over all records ( k/n ); Attr. is the attributable
+        rate in pp (Eq. 1). For CITED-OTHER the control is 100%, and the attributable
+        rate is negative (all 95% CIs exclude 0).\\n\\n| Dataset                      |
+        Planted                      | Control                      | Attr.                        |\\n|------------------------------|------------------------------|------------------------------|------------------------------|\\n|
+        REL-UNCITED (claim-aligned)  | REL-UNCITED (claim-aligned)  | REL-UNCITED
+        (claim-aligned)  | REL-UNCITED (claim-aligned)  |\\n| NQ                           |
+        52/371                       | 0/371                        | +14.0                        |\\n|
+        QAMPARI                      | 29/319                       | 0/319                        |
+        +9.1                         |\\n| HAGRID                       | 64/433                       |
+        0/433                        | +14.8                        |\\n| RAGTruth
+        \                    | 25/864                       | 0/864                        |
+        +2.9                         |\\n| RANDOM (claim-aligned)       | RANDOM (claim-aligned)
+        \      | RANDOM (claim-aligned)       | RANDOM (claim-aligned)       |\\n|
+        NQ                           | 40/371                       | 0/371                        |
+        +10.8                        |\\n| QAMPARI                      | 14/319                       |
+        0/319                        | +4.4                         |\\n| HAGRID                       |
+        37/433                       | 4/433                        | +7.6                         |\\n|
+        RAGTruth                     | 19/864                       | 1/864                        |
+        +2.1                         |\\n| CITED-OTHER (cited-anywhere) | CITED-OTHER
+        (cited-anywhere) | CITED-OTHER (cited-anywhere) | CITED-OTHER (cited-anywhere)
+        |\\n| NQ                           | 58/69                        | 69/69
+        \                       | - 15.9                       |\\n| QAMPARI                      |
+        97/123                       | 123/123                      | - 21.1                       |\\n|
+        HAGRID                       | 50/61                        | 61/61                        |
+        - 18.0                       |\\n| RAGTruth                     | 558/623
+        \                     | 623/623                      | - 10.4                       |\",\"metadata\":{\"ingestion_version\":\"01a0fc55257f7276be70b7b3d1501b36\",\"chunk_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6-table-0003\",\"doc_id\":\"01a0aa96b5ef7053a767b8ddabb5a961-7b9f9dcf16004645549a905aaedd7de6\",\"chunk_type\":\"table\",\"section_path\":\"\",\"tenant_id\":\"01a0aa96b5ef7053a767b8ddabb5a961\",\"order_index\":76,\"page_no\":5,\"filename\":\"2609.23053v1.pdf\",\"markdown\":\"Table
+        3: What the no-planting control changes, for the baseline model. Planted and
+        Control are cited records over all records ( k/n ); Attr. is the attributable
+        rate in pp (Eq. 1). For CITED-OTHER the control is 100%, and the attributable
+        rate is negative (all 95% CIs exclude 0).\\n\\n| Dataset                      |
+        Planted                      | Control                      | Attr.                        |\\n|------------------------------|------------------------------|------------------------------|------------------------------|\\n|
+        REL-UNCITED (claim-aligned)  | REL-UNCITED (claim-aligned)  | REL-UNCITED
+        (claim-aligned)  | REL-UNCITED (claim-aligned)  |\\n| NQ                           |
+        52/371                       | 0/371                        | +14.0                        |\\n|
+        QAMPARI                      | 29/319                       | 0/319                        |
+        +9.1                         |\\n| HAGRID                       | 64/433                       |
+        0/433                        | +14.8                        |\\n| RAGTruth
+        \                    | 25/864                       | 0/864                        |
+        +2.9                         |\\n| RANDOM (claim-aligned)       | RANDOM (claim-aligned)
+        \      | RANDOM (claim-aligned)       | RANDOM (claim-aligned)       |\\n|
+        NQ                           | 40/371                       | 0/371                        |
+        +10.8                        |\\n| QAMPARI                      | 14/319                       |
+        0/319                        | +4.4                         |\\n| HAGRID                       |
+        37/433                       | 4/433                        | +7.6                         |\\n|
+        RAGTruth                     | 19/864                       | 1/864                        |
+        +2.1                         |\\n| CITED-OTHER (cited-anywhere) | CITED-OTHER
+        (cited-anywhere) | CITED-OTHER (cited-anywhere) | CITED-OTHER (cited-anywhere)
+        |\\n| NQ                           | 58/69                        | 69/69
+        \                       | - 15.9                       |\\n| QAMPARI                      |
+        97/123                       | 123/123                      | - 21.1                       |\\n|
+        HAGRID                       | 50/61                        | 61/61                        |
+        - 18.0                       |\\n| RAGTruth                     | 558/623
+        \                     | 623/623                      | - 10.4                       |\"}}}]},\"status\":\"ok\",\"time\":0.001107127}"
     headers:
       content-type:
       - application/json
