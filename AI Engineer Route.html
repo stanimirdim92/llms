@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI Engineer Route</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a transit-line route down the left edge; each stage is a stop with its resources, project and exit check. */
+:root{
+  --bg:#F2F3EE; --surface:#FBFBF8; --ink:#1B2220; --muted:#5B6662; --line:#D3D8CF;
+  --route:#2B4C7E; --route-soft:#DCE4F0; --core:#B87A12; --core-soft:#F5E8CF;
+  --ok:#2F7A4F; --ok-soft:#DDEFE3; --skip:#9A3B32; --skip-soft:#F4DEDB;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --surface:#1B2220; --ink:#E6EAE5; --muted:#9AA6A1; --line:#2E3834;
+  --route:#7FA3DB; --route-soft:#22304A; --core:#E0A845; --core-soft:#3A2E17;
+  --ok:#6CC08F; --ok-soft:#1C3527; --skip:#E08A80; --skip-soft:#3D2220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --surface:#1B2220; --ink:#E6EAE5; --muted:#9AA6A1; --line:#2E3834;
+  --route:#7FA3DB; --route-soft:#22304A; --core:#E0A845; --core-soft:#3A2E17;
+  --ok:#6CC08F; --ok-soft:#1C3527; --skip:#E08A80; --skip-soft:#3D2220; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+a{color:var(--route)} a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--route);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,5vw,2.9rem);font-weight:700;letter-spacing:-.02em}
+h2{font-size:1.45rem;font-weight:700}
+h3{font-size:.78rem;font-family:var(--f-mono);font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+header{display:flex;flex-direction:column;gap:14px}
+.lede{max-width:66ch;color:var(--muted);margin:0}
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.seg button{border:0;background:none;color:var(--muted);font:600 .9rem var(--f-body);padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--route);color:var(--surface)}
+label.inline{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-size:.9rem}
+select,input[type=search]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.meter{display:flex;flex-direction:column;gap:6px}
+.bar{height:8px;background:var(--route-soft);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--route);width:0;transition:width .4s}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem;color:var(--muted)}
+.meta-row b{color:var(--ink);font-weight:700}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;font:700 .95rem var(--f-body);color:var(--muted);padding:10px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--route)}
+.sync{font-size:.8rem;color:var(--muted)}
+
+/* Route */
+.route{display:flex;flex-direction:column}
+.stop{display:grid;grid-template-columns:44px minmax(0,1fr);gap:0 14px}
+.rail{position:relative;display:flex;justify-content:center}
+.rail::before{content:"";position:absolute;top:0;bottom:0;width:6px;background:var(--route);border-radius:3px}
+.stop:first-child .rail::before{top:18px}
+.stop:last-child .rail::before{bottom:calc(100% - 26px)}
+.stop.deep .rail::before{background:repeating-linear-gradient(var(--route) 0 10px,transparent 10px 18px)}
+.node{position:relative;margin-top:6px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:5px solid var(--route);display:grid;place-items:center;font:700 .9rem var(--f-mono);color:var(--route);
+  background-image:conic-gradient(var(--route-soft) calc(var(--p,0)*1%),transparent 0)}
+.node.full{background:var(--route);color:var(--surface)}
+.stage{padding-bottom:36px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.stage-head{display:flex;flex-direction:column;gap:4px;padding-top:8px}
+.eyebrow{font:500 .78rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.eyebrow .deep-tag{color:var(--core)}
+.goal{margin:0;max-width:66ch}
+.group{display:flex;flex-direction:column;gap:8px}
+.res{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.res.core{border-left:4px solid var(--core)}
+.res.child{margin-left:22px}
+.res.is-done{opacity:.62}
+.res.is-done .rt a{text-decoration:line-through}
+.res input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--ok);cursor:pointer}
+.rt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.rt a{font-weight:700;color:var(--ink);text-decoration-color:var(--line);text-underline-offset:3px}
+.rt a:hover{text-decoration-color:var(--route)}
+.sub{font-size:.84rem;color:var(--muted)}
+.sum{margin:4px 0 0;font-size:.94rem}
+.note{margin:4px 0 0;font-size:.86rem;color:var(--muted)}
+.note b{color:var(--ink)}
+.links{display:flex;gap:10px;flex-wrap:wrap;font-size:.84rem;margin-top:4px}
+.chip{font:500 .7rem var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:5px;white-space:nowrap}
+.chip.core{background:var(--core-soft);color:var(--core)}
+.chip.alt,.chip.opt,.chip.ref{background:var(--route-soft);color:var(--route)}
+.chip.skip{background:var(--skip-soft);color:var(--skip)}
+.chip.done{background:var(--ok-soft);color:var(--ok)}
+.chip.added{background:transparent;border:1px dashed var(--muted);color:var(--muted)}
+.chip.bm{background:transparent;border:1px solid var(--route);color:var(--route)}
+.outcome{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.outcome div{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;min-width:0}
+.outcome p{margin:4px 0 0;font-size:.94rem}
+.collapsed{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:.94rem}
+.collapsed button{font:inherit;color:var(--route);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+details.more>summary{cursor:pointer;color:var(--route);font-weight:700;font-size:.92rem;list-style:none;padding:4px 0}
+details.more>summary::before{content:"+ ";font-family:var(--f-mono)}
+details.more[open]>summary::before{content:"− "}
+details.more>.group{margin-top:8px}
+
+/* Library & skip */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.toolbar input{flex:1 1 220px;min-width:0}
+.cat{display:flex;flex-direction:column;gap:8px}
+.cat+.cat{margin-top:22px}
+.cat h2{font-size:1.15rem;display:flex;gap:10px;align-items:baseline}
+.cat h2 span{font:400 .8rem var(--f-mono);color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .74rem var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.empty{color:var(--muted);padding:12px 0}
+footer{color:var(--muted);font-size:.84rem;border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+@media (max-width:520px){.stop{grid-template-columns:30px minmax(0,1fr);gap:0 10px}.node{width:30px;height:30px;border-width:4px;font-size:.75rem}.rail::before{width:4px}.res.child{margin-left:10px}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Learning roadmap · built from every link in your list</span>
+    <h1>AI Engineer Route</h1>
+    <p class="lede">Every link from your list was opened and sorted onto one route, from first concepts to shipping agents in production. Core items are the main path. Alternatives cover the same ground, so pick one. Optional items add depth, and dead or duplicate links are on the skip list.</p>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Track">
+        <button type="button" id="trk-builder" data-track="builder">Builder track</button>
+        <button type="button" id="trk-full" data-track="full">Full track</button>
+      </div>
+      <label class="inline" for="pace">Pace
+        <select id="pace">
+          <option value="5">5 h / week</option>
+          <option value="10" selected>10 h / week</option>
+          <option value="15">15 h / week</option>
+          <option value="20">20 h / week</option>
+        </select>
+      </label>
+    </div>
+    <p class="lede" id="track-desc"></p>
+    <div class="meter">
+      <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+      <div class="meta-row" id="summary"></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="tab-route" data-view="route" aria-selected="true">Route</button>
+    <button role="tab" id="tab-library" data-view="library" aria-selected="false">Library by topic</button>
+    <button role="tab" id="tab-skip" data-view="skip" aria-selected="false">Skip list</button>
+    <button role="tab" id="tab-certs" data-view="certs" aria-selected="false">Certificates</button>
+  </nav>
+
+  <main id="view"></main>
+
+  <footer>
+    <p id="sync" class="sync">Offline copy: progress is saved in this browser only. The online version syncs to your account: https://claude.ai/artifact/5KRkq84PEj5zvbtbBnqmzj</p>
+    <p>Items marked <span class="chip added">added</span> were not in your list. I added them to fill gaps (math, Claude prompting, the current bitsandbytes install). Hours are estimates from each course page, or from search results where a page was blocked. Checked October 2026. Round 2 added 25 DeepLearning.AI courses picked from its full catalogue, plus the Jam With AI, Philipp Schmid and AI Engineering From Scratch repos. Items marked <span class="chip bm">bookmark</span> came from your browser bookmarks.</p>
+  </footer>
+</div>
+
+<script>
+const STAGES=[
+ {n:0,title:"Orientation",goal:"Get the vocabulary and a mental model of what LLMs are before you write code. You already finished AI For Everyone, so this stage is short.",
+  project:"Write a one-page explainer for a colleague covering tokens, training versus inference, and when you would use RAG, fine-tuning or an agent.",
+  check:"You can explain how a transformer predicts the next token, and why models hallucinate."},
+ {n:1,title:"Python and math footing",goal:"Write idiomatic Python, including OOP, comprehensions, venv and packages, and handle data with NumPy and pandas. Pick up just enough linear algebra to read ML code. Skip whatever you already know.",
+  project:"Write a script that pulls JSON from a public API, cleans it with pandas, and saves a chart and a CSV.",
+  check:"You can write a small package with classes and tests without looking things up, and you can explain a matrix multiply."},
+ {n:2,title:"Build with LLM APIs",goal:"Ship useful things on top of hosted models early: prompting, structured output, tool calls, embeddings. This keeps you motivated while the theory comes later.",
+  project:"Build a CLI that turns messy text (emails, invoices, logs) into validated JSON with Pydantic, and include an eval set of 20 examples.",
+  check:"You can pick zero-shot, few-shot or chain-of-thought for a task, and you can explain a prompt injection risk in your own app."},
+ {n:3,title:"Machine learning foundations",goal:"Learn the classic ML loop: features, loss, gradient descent, overfitting, evaluation. On the Builder track the faster Google crash course is enough.",
+  project:"Take a Kaggle tabular dataset from EDA to a tuned XGBoost model, with a proper validation split and a short write-up.",
+  check:"You can explain bias versus variance and choose the right metric for an imbalanced classifier."},
+ {n:4,title:"Deep learning",deep:true,goal:"Learn how neural networks actually train: backprop, optimizers, regularization, CNNs and sequence models. Do it in PyTorch, because the LLM tooling is PyTorch.",
+  project:"Fine-tune a pretrained vision or text model in plain PyTorch, with your own training loop and learning-rate schedule.",
+  check:"You can write a training loop from memory and debug a loss that won't go down."},
+ {n:5,title:"Transformers and LLM internals",deep:true,goal:"Build a GPT from scratch, then learn the Hugging Face stack that real work happens in.",
+  project:"Train a tiny GPT on a text corpus of your choice, then load an open 1–3B model with transformers and compare their outputs.",
+  check:"You can explain attention, KV cache, tokenization quirks and why context length costs memory."},
+ {n:6,title:"Fine-tuning and alignment",deep:true,goal:"Adapt open models with LoRA/QLoRA, instruction tuning and preference optimization (DPO), and know when fine-tuning beats prompting or RAG.",
+  project:"Fine-tune a small open model with QLoRA on a domain dataset, then show the improvement over the base model on a held-out eval.",
+  check:"You can estimate the GPU memory a fine-tune needs and choose between SFT and DPO."},
+ {n:7,title:"Retrieval-augmented generation",goal:"Ground models in your own data: chunking, embeddings, vector databases, hybrid search, reranking, query rewriting and RAG evaluation.",
+  project:"Build a question-answering bot over your own docs (for example, your setup_scripts repo) using Qdrant, with an evaluation set scored by RAGAS or similar.",
+  check:"You can show measured retrieval precision before and after a reranker."},
+ {n:8,title:"Agents",goal:"Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines, MCP servers and multi-agent patterns, plus knowing when not to use an agent.",
+  project:"Build a research agent with web search, a code tool and an MCP server you wrote, and add traces you can inspect.",
+  check:"You can explain why your agent failed on a task by reading its trace."},
+ {n:9,title:"Production: MLOps and LLMOps",goal:"Deploy, monitor and iterate: experiment tracking, model registry, orchestration, CI/CD, observability, guardrails, cost and latency.",
+  project:"Ship your Stage 7 or Stage 8 app with Docker, run its eval suite in CI, add tracing and monitoring, and write a cost-per-request report.",
+  check:"A regression in your prompt or model gets caught by CI before users see it."}
+];
+
+/* r = role on Full track, b = role on Builder track (defaults to r).
+   roles: core | alt (same ground as a core item, pick one) | opt | ref | skip | done
+   parent = shown nested under an umbrella programme; h = hours for core estimate */
+const R=[
+/* 0 Orientation */
+{id:"A8",s:0,r:"done",cat:"Concepts",t:"AI For Everyone",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/ai-for-everyone/",ty:"Course",h:7,c:"Audit free",sum:"Non-technical intro to what ML can do, AI projects and strategy.",note:"You already completed this. It's from 2019, before generative AI."},
+{id:"A14",s:0,r:"core",cat:"Concepts",t:"Generative AI for Everyone",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/generative-ai-for-everyone",ty:"Course",h:6,c:"Audit free",sum:"How LLMs work and where they fail; prompting, RAG and fine-tuning at a concept level; the GenAI project lifecycle.",note:"The natural sequel to AI For Everyone. Take this instead of the Google AI cert and the IBM GenAI article."},
+{id:"A19",s:0,r:"core",cat:"Concepts",t:"Neural networks series",p:"3Blue1Brown",u:"https://www.youtube.com/watch?v=aircAruvnKk&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi",ty:"Video series",h:4,c:"Free",sum:"Animated explanations of gradient descent, backprop, transformers, attention and how LLMs store facts.",note:"The best intuition builder on the list. Chapters 5–7 (2024) cover transformers."},
+{id:"E17",s:0,r:"core",cat:"Concepts",t:"Karpathy: Intro to LLMs and Deep Dive into LLMs",p:"Andrej Karpathy",u:"https://www.youtube.com/@AndrejKarpathy/videos",ty:"Talks",h:5,c:"Free",sum:"Non-coding talks on how ChatGPT-style models are pretrained, fine-tuned and used. Start with the 1-hour 'Intro to Large Language Models', then the 3.5-hour 'Deep Dive into LLMs like ChatGPT' (2025).",note:"The same channel hosts Zero to Hero, which is in Stage 5."},
+{id:"A10",s:0,r:"ref",cat:"Concepts",t:"What is machine learning?",p:"IBM Think",u:"https://www.ibm.com/think/topics/machine-learning",ty:"Article",h:1,c:"Free",sum:"A long, current explainer on learning paradigms, architectures and MLOps.",note:"Updated October 2026. Read once."},
+{id:"A11",s:0,r:"opt",cat:"Concepts",t:"What is generative AI?",p:"IBM Research",u:"https://research.ibm.com/blog/what-is-generative-AI",ty:"Article",h:0.5,c:"Free",sum:"A history from VAEs to transformers, plus instruction tuning and RLHF.",note:"From 2023, before agents and reasoning models. The 3Blue1Brown series covers this better."},
+{id:"A1",s:0,r:"opt",cat:"Concepts",t:"Google AI Professional Certificate",p:"Google",u:"https://coursera.org/professional-certificates/google-ai",ty:"Certificate",h:8,c:"Paid",sum:"Eight short courses on using Gemini and Workspace at work: prompting, research, vibe-coding simple apps.",note:"Teaches AI use, not AI building, and overlaps the two Andrew Ng intros."},
+
+/* 1 Python & math */
+{id:"F3",s:1,r:"core",cat:"Python and data",t:"Python Programming MOOC",p:"University of Helsinki",u:"https://programming-23.mooc.fi/",ty:"Course",h:40,c:"Free",sum:"14 parts from basics through OOP (your link was Part 9.3, Encapsulation), with auto-graded exercises.",note:"Linked here at the course root. Skim the parts you know and do the OOP parts (8–10) properly.",links:[["Your original link (9.3)","https://programming-23.mooc.fi/part-9/3-encapsulation"]]},
+{id:"A2",s:1,r:"alt",cat:"Python and data",t:"AI Python for Beginners",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/ai-python-for-beginners",ty:"Course",h:20,c:"Free on deeplearning.ai",sum:"Python from zero through small LLM-powered projects, with an AI tutor.",note:"Gentler and more AI-flavoured than the Helsinki MOOC but shallower. Pick one."},
+{id:"D5",s:1,r:"alt",cat:"Python and data",t:"Python for Data Science, AI & Development",p:"IBM",u:"https://www.coursera.org/learn/python-for-applied-data-science-ai",ty:"Course",h:25,c:"Audit free",sum:"Python basics, pandas, NumPy, REST APIs and scraping in Jupyter.",note:"Course 4 of the IBM GenAI cert. Only needed if you don't know Python yet."},
+{id:"D8",s:1,r:"opt",cat:"Python and data",t:"Data Analysis with Python",p:"IBM",u:"https://www.coursera.org/learn/data-analysis-with-python",ty:"Course",h:16,c:"Audit free",sum:"Wrangling, EDA and regression with pandas and scikit-learn.",note:"Good pandas practice. Its regression part repeats Ng's ML course 1."},
+{id:"G1",s:1,r:"core",added:true,cat:"Math",t:"Essence of Linear Algebra",p:"3Blue1Brown",u:"https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab",ty:"Video series",h:4,c:"Free",sum:"Visual intuition for vectors, matrices, dot products and transforms, which is the math under every layer.",note:"Added to cover the 'Mathematics for ML' item in your MISC notes."},
+{id:"G2",s:1,r:"alt",b:"skip",added:true,cat:"Math",t:"Mathematics for Machine Learning",p:"Imperial College London",u:"https://www.coursera.org/specializations/mathematics-machine-learning",ty:"Specialization",h:60,c:"Audit free",sum:"Linear algebra, multivariate calculus and PCA, aimed at ML.",note:"Only needed on the Full track, if the math in Stages 4–6 feels shaky."},
+{id:"F4",s:1,r:"ref",cat:"Reference lists",t:"free-programming-books: Python courses",p:"EbookFoundation",u:"https://github.com/EbookFoundation/free-programming-books/blob/main/courses/free-courses-en.md#python",ty:"Link list",c:"Free",sum:"About 50 free Python courses, including Django, Flask and FastAPI.",note:"A directory, not a path. Use it to find alternatives."},
+
+/* 2 Build with LLMs */
+{id:"E8",s:2,r:"core",cat:"Prompting and LLM apps",t:"Building software on top of LLMs (PyCon 2025)",p:"Simon Willison",u:"https://building-with-llms-pycon-2025.readthedocs.io/en/latest/",ty:"Workshop",h:4,c:"Free (API costs)",sum:"Hands-on with the llm library: prompting from Python, text-to-SQL, structured extraction, embeddings/RAG, tool use and prompt injection.",note:"The best practical first step on your list, and it takes about 3 hours."},
+{id:"G3",s:2,r:"core",added:true,cat:"Prompting and LLM apps",t:"Anthropic courses",p:"Anthropic",u:"https://github.com/anthropics/courses",ty:"Notebooks",h:8,c:"Free (API costs)",sum:"Notebook courses on API fundamentals, prompt engineering, real-world prompting, prompt evaluations and tool use.",note:"Added because it covers evals and tool use from a model provider's point of view."},
+{id:"F19",s:2,r:"core",cat:"Prompting and LLM apps",t:"Prompt_Engineering",p:"Nir Diamant",u:"https://github.com/NirDiamant/Prompt_Engineering",ty:"Notebooks",h:12,c:"Free",sum:"22 notebooks: zero/few-shot, chain-of-thought, self-consistency, decomposition, prompt security.",note:"Active as of September 2026. Skim the basics and spend your time on the security and decomposition notebooks."},
+{id:"E11",s:2,r:"ref",cat:"Prompting and LLM apps",t:"DeepLearning.AI short courses",p:"DeepLearning.AI + partners",u:"https://learn.deeplearning.ai/my/learnings",ty:"Course platform",h:8,c:"Freemium",sum:"1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others.",note:"Your dashboard. I went through the full catalogue of 131 items and placed the 25 worth taking in their stages. The rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro."},
+{id:"E13",s:2,r:"ref",cat:"Prompting and LLM apps",t:"Prompt Engineering Guide",p:"DAIR.AI",u:"https://www.promptingguide.ai/",ty:"Docs",c:"Free",sum:"A full catalogue of prompting techniques, agents, context engineering and risks, with papers.",note:"Kept current (2026). Use it as a lookup, not to read cover to cover."},
+{id:"E14",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Learn Prompting",p:"Learn Prompting",u:"https://learnprompting.org/",ty:"Docs",c:"Freemium",sum:"Prompting docs plus a strong prompt-hacking and red-teaming section.",note:"Duplicates promptingguide.ai except for the security angle."},
+{id:"D4",s:2,r:"opt",b:"skip",cat:"Prompting and LLM apps",t:"Generative AI: Prompt Engineering Basics",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-prompt-engineering-for-everyone",ty:"Course",h:9,c:"Audit free",sum:"Prompting techniques in chat UIs, with no API work.",note:"Course 3 of the IBM GenAI cert. Below the level of the core items here."},
+{id:"D7",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Building Generative AI-Powered Applications with Python",p:"IBM",u:"https://www.coursera.org/learn/building-gen-ai-powered-applications",ty:"Course",h:15,c:"Audit free",sum:"Seven small projects: image captioner, chatbot, voice assistant, RAG and more, built with Gradio and Flask.",note:"The best early IBM course, but some of its models (GPT-3, Llama 2) are dated."},
+{id:"D6",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Developing AI Applications with Python and Flask",p:"IBM",u:"https://www.coursera.org/learn/python-project-for-ai-application-development",ty:"Course",h:12,c:"Audit free",sum:"Flask, unit tests, packaging and deployment around Watson NLP.",note:"Mostly general web development. Skip it if you already build web apps."},
+{id:"A15",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Generative AI for Software Development",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.coursera.org/professional-certificates/generative-ai-for-software-development",ty:"Certificate",h:34,c:"Audit free",sum:"Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design.",note:"About productivity, not about building AI. Take it any time you like."},
+
+/* 3 ML foundations */
+{id:"B1",s:3,r:"core",b:"opt",cat:"ML foundations",t:"Machine Learning Specialization",p:"DeepLearning.AI & Stanford · Andrew Ng",u:"https://www.coursera.org/specializations/machine-learning-introduction",ty:"Specialization",c:"Audit free",sum:"Three courses in Python: regression, classification, neural nets in TensorFlow, trees and XGBoost, clustering, recommenders, intro RL.",note:"The 2022 Python remake of Ng's classic, rated 4.9. Its three courses are listed below."},
+{id:"B2",s:3,r:"core",b:"opt",parent:"B1",cat:"ML foundations",t:"1 · Supervised ML: Regression and Classification",p:"Andrew Ng",u:"https://www.coursera.org/learn/machine-learning",ty:"Course",h:33,c:"Audit free",sum:"Cost functions, gradient descent, logistic regression, regularization."},
+{id:"B3",s:3,r:"core",b:"opt",parent:"B1",cat:"ML foundations",t:"2 · Advanced Learning Algorithms",p:"Andrew Ng",u:"https://www.coursera.org/learn/advanced-learning-algorithms",ty:"Course",h:34,c:"Audit free",sum:"Neural nets in TensorFlow, bias/variance, error analysis, random forests, XGBoost."},
+{id:"B4",s:3,r:"opt",parent:"B1",cat:"ML foundations",t:"3 · Unsupervised Learning, Recommenders, RL",p:"Andrew Ng",u:"https://www.coursera.org/learn/unsupervised-learning-recommenders-reinforcement-learning",ty:"Course",h:28,c:"Audit free",sum:"Clustering, anomaly detection, collaborative filtering, deep Q-learning.",note:"Your list marked this 'OTHER'. It's useful but not on the critical path."},
+{id:"C6",s:3,r:"alt",b:"core",cat:"ML foundations",t:"Machine Learning Crash Course",p:"Google",u:"https://developers.google.com/machine-learning/crash-course",ty:"Course",h:15,c:"Free",sum:"Fast, interactive tour of regression, classification, data prep, neural nets, embeddings, LLM basics and production ML.",note:"Refreshed in 2024. It's enough ML for the Builder track."},
+{id:"B5",s:3,r:"opt",cat:"ML foundations",t:"ML From Scratch",p:"Python Engineer · Patrick Loeber",u:"https://www.python-engineer.com/courses/mlfromscratch/01_knn/",ty:"Video series",h:10,c:"Free",sum:"Implements KNN, regression, Naive Bayes, SVM, trees, PCA and K-Means in NumPy.",note:"The site returned 503 when I checked. The code is mirrored at github.com/patrickloeber/MLfromscratch.",links:[["GitHub mirror","https://github.com/patrickloeber/MLfromscratch"]]},
+{id:"E16",s:3,r:"opt",cat:"ML foundations",t:"CS50's Introduction to AI with Python",p:"Harvard · Malan & Yu",u:"https://pll.harvard.edu/course/cs50s-introduction-artificial-intelligence-python",ty:"Course",h:70,c:"Free",sum:"Project-heavy classical AI: search, logic, probability, optimization, ML, RL, neural nets, NLP.",note:"Covers search and logic, which none of the ML certs do. It's weak on LLMs."},
+{id:"E18",s:3,r:"opt",cat:"ML foundations",t:"Cynthia Rudin's channel",p:"Duke · Cynthia Rudin",u:"https://www.youtube.com/@cynthiarudinduke/videos",ty:"Talks",c:"Free",sum:"Research talks on interpretable ML, plus lectures for her free textbook 'Intuition for the Algorithms of Machine Learning'.",note:"For interpretability depth. It's not a course."},
+{id:"D9",s:3,r:"alt",cat:"ML foundations",t:"Machine Learning with Python",p:"IBM",u:"https://www.coursera.org/learn/machine-learning-with-python",ty:"Course",h:20,c:"Audit free",sum:"Survey of classical ML in scikit-learn, ending in a project.",note:"Covers the same ground as Ng's specialization with more sklearn and less intuition. Take one."},
+{id:"E5",s:3,r:"alt",cat:"ML foundations",t:"IBM Machine Learning Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ibm-machine-learning",ty:"Certificate",h:120,c:"Paid",sum:"Six courses: EDA, regression, classification, unsupervised, intro DL/RL in Keras, capstone.",note:"Overlaps Ng's ML Specialization. Take it only if you want the IBM credential."},
+{id:"E6",s:3,r:"alt",cat:"ML foundations",t:"Applied Machine Learning Specialization",p:"Johns Hopkins",u:"https://www.coursera.org/specializations/applied-machine-learning",ty:"Specialization",h:55,c:"Paid",sum:"Three courses of Kaggle-style ML projects, ending in CNNs and RL.",note:"A university-branded alternative with nothing unique."},
+{id:"E2",s:3,r:"alt",cat:"ML foundations",t:"ML with Scikit-learn, PyTorch & Hugging Face",p:"Coursera · industry instructors",u:"https://www.coursera.org/professional-certificates/machine-learning-scikit-learn-pytorch-hugging-face",ty:"Certificate",h:137,c:"Paid",sum:"Five courses: sklearn ML, advanced techniques, PyTorch DL, Hugging Face GenAI, end-to-end project.",note:"A modern stack in one package that covers Stages 3–5 at a lighter depth. The instructors aren't named."},
+
+/* 4 Deep learning */
+{id:"A6",s:4,r:"core",cat:"Deep learning",t:"PyTorch in One Hour",p:"Sebastian Raschka",u:"https://sebastianraschka.com/teaching/pytorch-1h/",ty:"Tutorial",h:2,c:"Free",sum:"Tensors, autograd, training loop, DataLoader, saving models, multi-GPU DDP.",note:"Do this first. It is also Appendix A of his LLMs-from-scratch book."},
+{id:"B6",s:4,r:"core",cat:"Deep learning",t:"Deep Learning Specialization",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/specializations/deep-learning",ty:"Specialization",c:"Audit per course",sum:"Five courses: NNs from scratch, tuning, ML strategy, CNNs, sequence models up to transformers.",note:"Last updated in 2021, so it has no modern LLM content. Audit the individual courses below for free."},
+{id:"B7",s:4,r:"core",parent:"B6",cat:"Deep learning",t:"1 · Neural Networks and Deep Learning",p:"Andrew Ng",u:"https://www.coursera.org/learn/neural-networks-deep-learning",ty:"Course",h:25,c:"Audit free",sum:"Vectorized forward and backward propagation in NumPy, shallow and deep nets."},
+{id:"B8",s:4,r:"core",parent:"B6",cat:"Deep learning",t:"2 · Improving Deep Neural Networks",p:"Andrew Ng",u:"https://www.coursera.org/learn/deep-neural-network",ty:"Course",h:24,c:"Audit free",sum:"Regularization, initialization, Adam, batch norm, hyperparameter search."},
+{id:"B9",s:4,r:"core",parent:"B6",cat:"Deep learning",t:"3 · Structuring ML Projects",p:"Andrew Ng",u:"https://www.coursera.org/learn/machine-learning-projects",ty:"Course",h:7,c:"Audit free",sum:"Metrics, error analysis, data mismatch, transfer learning.",note:"Short and useful even on the Builder track."},
+{id:"B10",s:4,r:"opt",parent:"B6",cat:"Deep learning",t:"4 · Convolutional Neural Networks",p:"Andrew Ng",u:"https://www.coursera.org/learn/convolutional-neural-networks",ty:"Course",h:36,c:"Audit free",sum:"ResNets, YOLO, U-Net, face recognition, style transfer.",note:"Skip it unless you care about computer vision."},
+{id:"B11",s:4,r:"core",parent:"B6",cat:"Deep learning",t:"5 · Sequence Models",p:"Andrew Ng",u:"https://www.coursera.org/learn/nlp-sequence-models",ty:"Course",h:37,c:"Audit free",sum:"RNNs, LSTMs, word embeddings, attention, intro to transformers.",note:"Your list marked this 'OTHER'. Keep it, because it is the bridge to Stage 5."},
+{id:"B13",s:4,r:"core",cat:"Deep learning",t:"MIT 6.S191: Introduction to Deep Learning",p:"MIT · Amini & Amini",u:"https://introtodeeplearning.com/",ty:"Course",h:20,c:"Free",sum:"Fast bootcamp from fundamentals through generative models, RL and LLMs, with three code labs.",note:"The 2026 edition is the most current deep learning course on your list."},
+{id:"A4",s:4,r:"alt",cat:"Deep learning",t:"Practical Deep Learning for Coders",p:"fast.ai · Jeremy Howard",u:"https://course.fast.ai/Lessons/lesson1.html",ty:"Course",h:40,c:"Free",sum:"Top-down and code-first: train real models from lesson 1, then learn how they work. Part 2 builds Stable Diffusion.",note:"A practical alternative to Ng's DL specialization. It's from 2022 and centred on the fastai library. Your separate YouTube playlist link is the same course.",links:[["YouTube playlist","https://www.youtube.com/playlist?list=PLfYUBJiXbdtSvpQjSnJJ_PmDQB_VyT5iU"]]},
+{id:"B17",s:4,r:"ref",cat:"Deep learning",t:"Dive into Deep Learning (D2L)",p:"Zhang, Lipton, Li, Smola",u:"https://d2l.ai/index.html",ty:"Book",c:"Free",sum:"An interactive textbook where every section is a runnable notebook, from basics to transformers.",note:"Use it as the textbook alongside whichever course you take."},
+{id:"B16",s:4,r:"opt",cat:"Deep learning",t:"NYU Deep Learning (Spring 2021)",p:"NYU · LeCun & Canziani",u:"https://atcold.github.io/NYU-DLSP21/",ty:"Course",h:60,c:"Free",sum:"Graduate-level: energy-based models, self-supervised learning, GNNs, attention.",note:"Theory depth for later. It's light on LLMs."},
+{id:"B12",s:4,r:"opt",cat:"Production and MLOps",t:"Full Stack Deep Learning 2022",p:"FSDL · Karayev, Tobin, Frye",u:"https://fullstackdeeplearning.com/course/2022/",ty:"Course",h:20,c:"Free",sum:"The engineering around DL products: tooling, testing, data, deployment, monitoring, teams.",note:"Some tools are from 2022. Its LLM Bootcamp (2023) is the newer follow-up."},
+
+/* 5 LLM internals */
+{id:"A18",s:5,r:"core",cat:"Transformers and LLMs",t:"Neural Networks: Zero to Hero",p:"Andrej Karpathy",u:"https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ",ty:"Video series",h:20,c:"Free",sum:"Code along as Karpathy builds micrograd, makemore, a GPT and a BPE tokenizer from scratch, then reproduces GPT-2.",note:"In order: micrograd → makemore 1–5 → Let's build GPT → Tokenizer → GPT-2. Code it yourself rather than just watching."},
+{id:"C7",s:5,r:"core",cat:"Transformers and LLMs",t:"Build a Large Language Model (From Scratch)",p:"Sebastian Raschka",u:"https://github.com/rasbt/LLMs-from-scratch",ty:"Book + repo",h:40,c:"Code free, book paid",sum:"Build a GPT in plain PyTorch: data, attention, pretraining, classification and instruction fine-tuning, LoRA. Bonus chapters cover Llama, Qwen and Gemma.",note:"About 106k stars and actively maintained. Pairs with Karpathy: his series for intuition, this repo for a clean reference implementation."},
+{id:"A5",s:5,r:"core",b:"opt",cat:"Transformers and LLMs",t:"Hugging Face LLM Course",p:"Hugging Face",u:"https://huggingface.co/learn/llm-course/chapter1/1",ty:"Course",h:40,c:"Free",sum:"The transformers, tokenizers and datasets libraries, fine-tuning with Trainer, sharing models, and the newer chapters on LLM fine-tuning and reasoning.",note:"The best free course for working with open models. Builders can do chapters 1–4 only."},
+{id:"D11",s:5,r:"opt",cat:"Transformers and LLMs",t:"Generative AI and LLMs: Architecture and Data Preparation",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-llm-architecture-data-preparation",ty:"Course",h:6,c:"Audit free",sum:"Generative model families, tokenization, PyTorch data loaders.",note:"Covered by the HF course."},
+{id:"D12",s:5,r:"opt",cat:"Transformers and LLMs",t:"Gen AI Foundational Models for NLP",p:"IBM",u:"https://www.coursera.org/learn/gen-ai-foundational-models-for-nlp-and-language-understanding",ty:"Course",h:10,c:"Audit free",sum:"N-grams, Word2Vec, seq2seq RNNs, BLEU in PyTorch.",note:"Repeats Ng's Sequence Models."},
+{id:"D13",s:5,r:"opt",cat:"Transformers and LLMs",t:"Generative AI Language Modeling with Transformers",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-language-modeling-with-transformers",ty:"Course",h:9,c:"Audit free",sum:"Builds attention, positional encoding, BERT- and GPT-style models in PyTorch.",note:"Solid, but Karpathy and Raschka cover it better."},
+{id:"C1",s:5,r:"opt",cat:"Transformers and LLMs",t:"Natural Language Processing Specialization",p:"DeepLearning.AI",u:"https://www.coursera.org/specializations/natural-language-processing",ty:"Specialization",c:"Paid",sum:"Classic NLP (naive Bayes, HMMs, n-grams) through RNNs to T5/BERT, in TensorFlow.",note:"Pre-LLM-era NLP, last updated December 2023. Not needed for AI engineering. If you want one course, take #4."},
+{id:"C2",s:5,r:"opt",parent:"C1",cat:"Transformers and LLMs",t:"1 · Classification and Vector Spaces",p:"DeepLearning.AI",u:"https://www.coursera.org/learn/classification-vector-spaces-in-nlp",ty:"Course",h:33,c:"Paid",sum:"Sentiment with logistic regression and naive Bayes, word vectors, LSH."},
+{id:"C3",s:5,r:"opt",parent:"C1",cat:"Transformers and LLMs",t:"2 · Probabilistic Models",p:"DeepLearning.AI",u:"https://www.coursera.org/learn/probabilistic-models-in-nlp",ty:"Course",h:30,c:"Paid",sum:"Autocorrect, HMM POS tagging, n-gram LMs, CBOW."},
+{id:"C4",s:5,r:"opt",parent:"C1",cat:"Transformers and LLMs",t:"3 · Sequence Models",p:"DeepLearning.AI",u:"https://www.coursera.org/learn/sequence-models-in-nlp",ty:"Course",h:21,c:"Paid",sum:"RNNs, LSTMs, GRUs, NER, Siamese nets.",note:"Overlaps heavily with Ng's DL course 5."},
+{id:"C5",s:5,r:"opt",parent:"C1",cat:"Transformers and LLMs",t:"4 · Attention Models",p:"DeepLearning.AI",u:"https://www.coursera.org/learn/attention-models-in-nlp",ty:"Course",h:26,c:"Paid",sum:"Attention NMT, a transformer summarizer, T5/BERT question answering.",note:"The one worth taking if you take any."},
+{id:"C8",s:5,r:"opt",cat:"Transformers and LLMs",t:"LLMs from Scratch: Base Model to PPO RLHF",p:"freeCodeCamp",u:"https://www.youtube.com/watch?v=p3sij8QzONQ",ty:"Video",h:6,c:"Free",sum:"Six hours of pure PyTorch: train a tiny LLM, add MoE, then SFT, reward modelling and RLHF with PPO.",note:"Not the same as Raschka's book. Watch it after Karpathy or Raschka, because it covers the RLHF they skip."},
+
+/* 6 Fine-tuning */
+{id:"D14",s:6,r:"alt",cat:"Fine-tuning",t:"Generative AI Engineering and Fine-Tuning Transformers",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-engineering-and-fine-tuning-transformers",ty:"Course",h:8,c:"Audit free",sum:"Fine-tuning with Hugging Face and PyTorch, then PEFT: LoRA, QLoRA, quantization.",note:"Overlaps the HF course's fine-tuning chapters. Do one of them in depth."},
+{id:"D15",s:6,r:"alt",cat:"Fine-tuning",t:"Generative AI Advanced Fine-Tuning for LLMs",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-advanced-fine-tuning-for-llms",ty:"Course",h:9,c:"Audit free",sum:"Instruction tuning, reward modelling, RLHF with PPO, DPO and the math behind it, with TRL.",note:"Covers the same ground as DeepLearning.AI's post-training courses, with more DPO math. Pick one."},
+{id:"G4",s:6,r:"ref",added:true,cat:"Fine-tuning",t:"bitsandbytes installation docs",p:"Hugging Face",u:"https://huggingface.co/docs/bitsandbytes/main/en/installation",ty:"Docs",c:"Free",sum:"The current install path is pip install bitsandbytes (Python 3.10+, PyTorch 2.4+). Prebuilt wheels cover CUDA 11.8–13, ROCm, CPU and Apple Silicon.",note:"Replaces the cuda_install.sh script in your PACKAGES notes, which now returns 404."},
+
+/* 7 RAG */
+{id:"A20",s:7,r:"core",cat:"RAG",t:"RAG From Scratch",p:"LangChain · Lance Martin",u:"https://www.youtube.com/watch?v=wd7TZ4w1mSw&list=PLfaIDFEXuae2LXbO1_PKyVJiQ23ZztA0x",ty:"Video series",h:4,c:"Free",sum:"About 14 short videos with notebooks: indexing, multi-query, HyDE, RAG-Fusion, routing, CRAG, Self-RAG, Adaptive RAG.",note:"From 2024, so some LangChain APIs have moved. The concepts haven't."},
+{id:"F16",s:7,r:"core",cat:"RAG",t:"RAG_Techniques",p:"Nir Diamant",u:"https://github.com/NirDiamant/RAG_Techniques",ty:"Notebooks",h:20,c:"Free",sum:"42+ runnable notebooks, one per technique: chunking, HyDE, reranking, Graph RAG, Self-RAG/CRAG, evaluation with RAGAS and DeepEval.",note:"About 30k stars and active. This is the RAG repo to use, and it supersedes bRAG and Advanced_RAG."},
+{id:"F13",s:7,r:"opt",cat:"RAG",t:"Qdrant vector DB: installation and setup",p:"FutureSmart AI",u:"https://blog.futuresmart.ai/comprehensive-guide-to-qdrant-vector-db-installation-and-setup",ty:"Tutorial",h:1,c:"Free",sum:"Qdrant in Docker or in memory, collections, embeddings, filtered queries, web UI.",note:"You starred this one. Check calls against the current Qdrant client, which renamed query to query_points. It's optional now because the Jam With AI project uses OpenSearch, so do this tutorial if you want Qdrant specifically."},
+{id:"D16",s:7,r:"alt",cat:"RAG",t:"Fundamentals of AI Agents Using RAG and LangChain",p:"IBM",u:"https://www.coursera.org/learn/fundamentals-of-ai-agents-using-rag-and-langchain",ty:"Course",h:9,c:"Audit free",sum:"End-to-end RAG with FAISS, in-context learning, LangChain tools, chains and agents.",note:"Some lab code lags behind current LangChain."},
+{id:"D17",s:7,r:"alt",cat:"RAG",t:"Project: Generative AI Applications with RAG and LangChain",p:"IBM",u:"https://www.coursera.org/learn/project-generative-ai-applications-with-rag-and-langchain",ty:"Project course",h:10,c:"Audit free",sum:"Capstone: build a document QA bot with loaders, splitters, embeddings, a vector DB and a Gradio UI.",note:"The highest-rated IBM course (4.8). The Jam With AI project is now the main capstone, so this is the lighter alternative."},
+{id:"F10",s:7,r:"opt",cat:"RAG",t:"bRAG-langchain",p:"bRAGAI",u:"https://github.com/bRAGAI/bRAG-langchain/",ty:"Notebooks",h:8,c:"Free",sum:"Five notebooks: multi-query, routing, RAPTOR, ColBERT, fusion and reranking.",note:"Follows 'RAG From Scratch' closely, so it's redundant if you did that."},
+{id:"F20",s:7,r:"opt",cat:"RAG",t:"MongoDB GenAI Showcase",p:"MongoDB",u:"https://github.com/mongodb-developer/GenAI-Showcase",ty:"Notebooks",c:"Free",sum:"RAG and agent examples and workshops on Atlas vector search.",note:"Only useful if MongoDB is your vector store."},
+{id:"F8",s:7,r:"ref",cat:"RAG",t:"Emerging LLM App Stack",p:"a16z",u:"https://github.com/a16z-infra/llm-app-stack",ty:"Link list",h:1,c:"Free",sum:"Tools listed by layer: data pipelines, embeddings, vector DBs, orchestration, eval, hosting.",note:"A good mental model, but the tool lists stopped in February 2024 and predate agents and MCP. You also bookmarked the companion article, which has the architecture diagram.",links:[["Companion article (bookmark)","https://a16z.com/emerging-architectures-for-llm-applications/"]]},
+
+/* 8 Agents */
+{id:"A16",s:8,r:"core",cat:"Agents",t:"Hugging Face AI Agents Course",p:"Hugging Face",u:"https://huggingface.co/learn/agents-course/unit0/introduction",ty:"Course",h:16,c:"Free + free cert",sum:"Thought-action-observation, tools, smolagents, LangGraph, LlamaIndex, agentic RAG, and a benchmarked final project.",note:"The free core path for agents."},
+{id:"F17",s:8,r:"core",cat:"Agents",t:"GenAI_Agents",p:"Nir Diamant",u:"https://github.com/NirDiamant/GenAI_Agents",ty:"Notebooks",h:20,c:"Free",sum:"About 57 agent tutorials, mostly LangGraph, plus CrewAI, AutoGen, PydanticAI and MCP.",note:"Start with the beginner and framework section. The use-case demos vary in depth."},
+{id:"A3",s:8,r:"alt",cat:"Agents",t:"IBM RAG and Agentic AI Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ibm-rag-and-agentic-ai",ty:"Certificate",h:40,c:"Audit free",sum:"Ten courses: LangChain, RAG with Chroma and FAISS, LangGraph, CrewAI, AG2, BeeAI, MCP, multimodal, capstone.",note:"The structured, credentialed alternative to the HF course plus GenAI_Agents, and it's current (includes MCP)."},
+{id:"C14",s:8,r:"alt",cat:"Agents",t:"The AI Engineer Path",p:"Scrimba",u:"https://v2.scrimba.com/the-ai-engineer-path-c02v",ty:"Course path",h:17,c:"Paid (Scrimba Pro)",sum:"For JavaScript developers: LLM APIs, RAG, agents, MCP, multimodal, deployment on Cloudflare.",note:"Pick this only if you'd rather build AI apps in JS than Python. It includes your two other Scrimba links."},
+{id:"F12",s:8,r:"opt",cat:"Agents",t:"Shandu",p:"jolovicdev",u:"https://github.com/jolovicdev/shandu",ty:"Open-source tool",c:"Free",sum:"A deep-research agent (CLI + Gradio) that searches, scores sources and writes cited reports.",note:"Read its ARCH.md as a reference architecture after you've built your own agent."},
+
+/* 9 Production */
+{id:"C9",s:9,r:"core",cat:"Production and MLOps",t:"Machine Learning in Production",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/introduction-to-machine-learning-in-production/",ty:"Course",h:12,c:"Paid",sum:"The ML project lifecycle: scoping, deployment patterns, drift, error analysis, data-centric AI.",note:"Conceptual. Take it before MLOps Zoomcamp."},
+{id:"C10",s:9,r:"core",cat:"Production and MLOps",t:"MLOps Zoomcamp",p:"DataTalks.Club",u:"https://github.com/DataTalksClub/mlops-zoomcamp",ty:"Course",h:60,c:"Free",sum:"MLflow tracking and registry, Prefect orchestration, batch, web and stream deployment, Evidently, Grafana monitoring, CI/CD, Terraform.",note:"No 2026 cohort, so it's self-paced. Covers MLflow from your MISC notes. Kubeflow isn't covered anywhere on your list."},
+{id:"F18",s:9,r:"core",cat:"Production and MLOps",t:"Agents Towards Production",p:"Nir Diamant",u:"https://github.com/NirDiamant/agents-towards-production",ty:"Notebooks",h:25,c:"Free",sum:"Taking agents to production: memory, tool auth, guardrails, tracing, evaluation, Docker/GPU deployment.",note:"Many tutorials are sponsored, so the stacks are vendor-specific. Learn the pattern and swap in the vendor you prefer."},
+{id:"C11",s:9,r:"opt",cat:"Production and MLOps",t:"Machine Learning Zoomcamp",p:"DataTalks.Club · Alexey Grigorev",u:"https://github.com/DataTalksClub/machine-learning-zoomcamp",ty:"Course",h:120,c:"Free",sum:"Project-based ML engineering: sklearn, FastAPI + Docker deployment, trees, DL, serverless, Kubernetes.",note:"Core if you want a classic ML-engineer job. The 2026 cohort started on 14 September and you can join late."},
+{id:"E15",s:9,r:"ref",cat:"Production and MLOps",t:"ml-ops.org",p:"INNOQ",u:"https://ml-ops.org/",ty:"Docs",c:"Free",sum:"MLOps principles, maturity levels, CRISP-ML(Q), testing and governance.",note:"Conceptual, tool-agnostic, and older than LLMOps."},
+{id:"F1",s:9,r:"opt",cat:"Production and MLOps",t:"Apache Airflow",p:"Apache",u:"https://github.com/apache/airflow",ty:"Framework",c:"Free",sum:"Workflow orchestration with Python DAGs. Airflow 3.x is current.",note:"Learn it from the official tutorial, not the repo. Only needed for data and ML pipeline work."},
+{id:"E10",s:9,r:"opt",cat:"Production and MLOps",t:"DeepLearning.AI Data Engineering Professional Certificate",p:"DeepLearning.AI & AWS · Joe Reis",u:"https://www.coursera.org/professional-certificates/data-engineering",ty:"Certificate",h:106,c:"Paid",sum:"Pipelines on AWS: ingestion, storage, modelling, Airflow, Spark, SQL, IaC.",note:"An adjacent skill, not AI. Covers the SQL from your MISC notes."},
+{id:"A7",s:9,r:"opt",cat:"Production and MLOps",t:"Foundations of AI and Machine Learning",p:"Microsoft",u:"https://www.coursera.org/learn/foundations-of-ai-and-machine-learning",ty:"Course",h:40,c:"Audit free",sum:"AI/ML infrastructure: data pipelines, frameworks, deployment, versioning, on Azure.",note:"Course 1 of the Microsoft AI & ML cert. Despite the title, it's about infrastructure."},
+
+
+/* Added in round 2: DeepLearning.AI catalogue picks + three repos */
+{id:"L1",s:1,r:"opt",b:"skip",cat:"Math",t:"Mathematics for Machine Learning and Data Science",p:"DeepLearning.AI · Luis Serrano",u:"https://www.deeplearning.ai/specializations/mathematics-for-machine-learning-and-data-science",ty:"Specialization",h:94,c:"DLAI Pro",sum:"Linear algebra, calculus, probability and statistics, with Python labs.",note:"Friendlier than the Imperial specialization, which is now listed as its alternative. Only needed if the math in Stages 4–6 feels shaky."},
+{id:"L2",s:2,r:"core",cat:"Prompting and LLM apps",t:"Pydantic for LLM Workflows",p:"DeepLearning.AI · Ryan Keenan",u:"https://www.deeplearning.ai/courses/pydantic-for-llm-workflows",ty:"Short course",h:2,c:"Free to watch",sum:"Validated structured outputs and tool-call data with Pydantic.",note:"Exactly what the Stage 2 project needs, and it's vendor-neutral."},
+{id:"L3",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Getting Structured LLM Output",p:"DeepLearning.AI × DotTxt",u:"https://www.deeplearning.ai/courses/getting-structured-llm-output",ty:"Short course",h:1.5,c:"Free to watch",sum:"Covers JSON modes, re-prompting and constrained decoding with Outlines.",note:"Explains how structured generation works under the hood."},
+{id:"L5",s:0,r:"opt",b:"core",cat:"Transformers and LLMs",t:"How Transformer LLMs Work",p:"DeepLearning.AI · Jay Alammar & Maarten Grootendorst",u:"https://www.deeplearning.ai/courses/how-transformer-llms-work",ty:"Short course",h:2,c:"Free to watch",sum:"Visual walk-through of tokenizers, embeddings, attention, transformer blocks, KV cache and MoE.",note:"The LLM internals a builder needs, in under 2 hours. Optional on the Full track, since Stage 5 goes much deeper."},
+{id:"L4",s:4,r:"opt",cat:"Deep learning",t:"PyTorch for Deep Learning Professional Certificate",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.deeplearning.ai/specializations/pytorch-for-deep-learning-professional-certificate",ty:"Certificate",h:88,c:"DLAI Pro",sum:"Building, optimizing and deploying deep learning models in PyTorch.",note:"Ng's DL specialization is TensorFlow/NumPy, so take selected modules from this if PyTorch still feels unfamiliar after the one-hour primer."},
+{id:"L6",s:5,r:"opt",cat:"Transformers and LLMs",t:"Transformers in Practice",p:"DeepLearning.AI × AMD · Sharon Zhou",u:"https://www.deeplearning.ai/courses/transformers-in-practice",ty:"Course",h:11,c:"DLAI Pro",sum:"How to reason about and debug transformer behaviour, and how to make deployment decisions.",note:"New in May 2026. Take it after Karpathy and Raschka to connect internals to engineering choices."},
+{id:"L7",s:5,r:"opt",cat:"Transformers and LLMs",t:"Attention in Transformers: Concepts and Code in PyTorch",p:"DeepLearning.AI · Josh Starmer",u:"https://www.deeplearning.ai/courses/attention-in-transformers-concepts-and-code-in-pytorch",ty:"Short course",h:1.5,c:"Free to watch",sum:"Derives self-attention, masked attention and multi-head attention, then codes them.",note:"A gentle warm-up before Karpathy's 'Let's build GPT'."},
+{id:"L8",s:6,r:"core",cat:"Fine-tuning",t:"Fine-tuning & RL for LLMs: Intro to Post-training",p:"DeepLearning.AI × AMD · Sharon Zhou",u:"https://www.deeplearning.ai/courses/fine-tuning-and-reinforcement-learning-for-llms-intro-to-post-training",ty:"Course",h:13,c:"DLAI Pro",sum:"SFT, RL-based alignment, reasoning improvement and evaluation of post-trained models.",note:"The most current full post-training course on the route. The IBM fine-tuning courses are now alternatives to it."},
+{id:"L9",s:6,r:"core",cat:"Fine-tuning",t:"Post-training of LLMs",p:"DeepLearning.AI · Banghua Zhu (UW)",u:"https://www.deeplearning.ai/courses/post-training-of-llms",ty:"Short course",h:1.5,c:"Free to watch",sum:"Hands-on SFT, DPO and online RL, and when to use each.",note:"A short lab companion to the course above."},
+{id:"L10",s:6,r:"opt",cat:"Fine-tuning",t:"Reinforcement Fine-Tuning LLMs with GRPO",p:"DeepLearning.AI × Predibase",u:"https://www.deeplearning.ai/courses/reinforcement-fine-tuning-llms-grpo",ty:"Short course",h:2,c:"Free to watch",sum:"Reward-function design and GRPO training for reasoning behaviour.",note:"The RL method behind current reasoning models."},
+{id:"P2",s:6,r:"ref",cat:"Fine-tuning",t:"deep-learning-pytorch-huggingface",p:"Philipp Schmid",u:"https://github.com/philschmid/deep-learning-pytorch-huggingface",ty:"Notebook cookbook",c:"Free",sum:"Notebook recipes for fine-tuning, DPO, GRPO, quantization and FSDP/DeepSpeed training on the Hugging Face stack.",note:"Not a course, and inactive since February 2025. Most notebooks pin old TRL/PEFT versions and old models (FLAN-T5, Llama 2, Falcon). Only the 2025 ones (fine-tune LLMs in 2025, DPO in 2025, mini-R1 GRPO) are worth running, and many need A100-class GPUs."},
+{id:"L11",s:7,r:"core",cat:"RAG",t:"Retrieval Augmented Generation (RAG)",p:"DeepLearning.AI · Zain Hasan",u:"https://www.deeplearning.ai/courses/retrieval-augmented-generation",ty:"Course",h:26,c:"DLAI Pro",sum:"End-to-end RAG: retrieval, vector DBs, chunking, prompting, evaluation and production.",note:"The structured backbone for this stage. It replaces the IBM RAG courses, which are now alternatives."},
+{id:"P1",s:7,r:"core",cat:"RAG",t:"Production Agentic RAG Course (arXiv Paper Curator)",p:"Jam With AI",u:"https://github.com/jamwithai/production-agentic-rag-course",ty:"Project course",h:30,c:"Free",sum:"Seven weeks building one real system: FastAPI, Postgres and OpenSearch with Airflow ingestion, then BM25, hybrid search with RRF, local-LLM RAG with Ollama, Langfuse tracing, Redis caching and finally LangGraph agentic RAG with a Telegram bot.",note:"The best capstone on the route, and it carries into Stages 8 and 9. Each week is a notebook, a Substack post and a git tag. Needs Docker and 8 GB+ RAM. Expect some setup friction, since its fixes are community-driven and its last update was April 2026. Ships no RAG eval suite, so add RAGAS yourself."},
+{id:"L12",s:7,r:"opt",cat:"RAG",t:"Advanced Retrieval for AI with Chroma",p:"DeepLearning.AI × Chroma",u:"https://www.deeplearning.ai/courses/advanced-retrieval-for-ai",ty:"Short course",h:1,c:"Free to watch",sum:"Query expansion, cross-encoder reranking and embedding adapters.",note:"The techniques carry over to any vector store."},
+{id:"L13",s:8,r:"core",cat:"Agents",t:"Agentic AI",p:"DeepLearning.AI · Andrew Ng",u:"https://www.deeplearning.ai/courses/agentic-ai",ty:"Course",h:10,c:"DLAI Pro",sum:"Agent workflows in plain Python: reflection, tool use, planning, multi-agent patterns, error analysis and evals.",note:"Framework-agnostic, so take it first in this stage, before LangGraph."},
+{id:"L14",s:8,r:"core",cat:"Agents",t:"MCP: Build Rich-Context AI Apps with Anthropic",p:"DeepLearning.AI × Anthropic",u:"https://www.deeplearning.ai/courses/mcp-build-rich-context-ai-apps-with-anthropic",ty:"Short course",h:2,c:"Free to watch",sum:"Build MCP servers and clients, connect them to Claude Desktop, and deploy a remote server.",note:"Needed for the Stage 8 project."},
+{id:"L15",s:8,r:"opt",cat:"Agents",t:"AI Agents in LangGraph",p:"DeepLearning.AI × LangChain",u:"https://www.deeplearning.ai/courses/ai-agents-in-langgraph",ty:"Short course",h:2,c:"Free to watch",sum:"An agent built from scratch and then in LangGraph, covering state, persistence and human-in-the-loop.",note:"From 2024, so check the code against current LangGraph."},
+{id:"L16",s:8,r:"opt",cat:"Agents",t:"Agent Memory: Building Memory-Aware Agents",p:"DeepLearning.AI × Oracle",u:"https://www.deeplearning.ai/courses/agent-memory-building-memory-aware-agents",ty:"Short course",h:2,c:"Free to watch",sum:"Memory that lets an agent store, retrieve and refine knowledge across sessions.",note:"From 2026. It supersedes the older Letta and LangGraph memory courses."},
+{id:"L17",s:8,r:"opt",cat:"Agents",t:"Agent Skills with Anthropic",p:"DeepLearning.AI × Anthropic",u:"https://www.deeplearning.ai/courses/agent-skills-with-anthropic",ty:"Short course",h:2,c:"Free to watch",sum:"Package on-demand expertise as Skills for coding, research and data agents.",note:"Context engineering through progressive disclosure. It pairs with MCP."},
+{id:"L18",s:8,r:"opt",cat:"Agents",t:"Claude Code: A Highly Agentic Coding Assistant",p:"DeepLearning.AI × Anthropic",u:"https://www.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant",ty:"Short course",h:2,c:"Free to watch",sum:"Subagents, hooks, MCP and GitHub integration in a real agent harness.",note:"Useful as a productivity tool and as a look inside a production agent."},
+{id:"L19",s:8,r:"opt",cat:"Agents",t:"Multi-Agent Systems with CrewAI",p:"DeepLearning.AI × CrewAI",u:"https://www.deeplearning.ai/courses/design-develop-and-deploy-multi-agent-systems-with-crewai",ty:"Course",h:13,c:"DLAI Pro",sum:"Multi-agent systems with tools, memory, guardrails and deployment.",note:"Tied to CrewAI. Take it only if multi-agent work is your focus."},
+{id:"L20",s:8,r:"opt",cat:"Agents",t:"A2A: The Agent2Agent Protocol",p:"DeepLearning.AI × Google Cloud & IBM",u:"https://www.deeplearning.ai/courses/a2a-the-agent2agent-protocol",ty:"Short course",h:1.5,c:"Free to watch",sum:"Make agents built on different frameworks interoperate.",note:"MCP connects agents to tools, and A2A connects agents to each other."},
+{id:"L21",s:9,r:"core",cat:"Production and MLOps",t:"Evaluating AI Agents",p:"DeepLearning.AI × Arize",u:"https://www.deeplearning.ai/courses/evaluating-ai-agents",ty:"Short course",h:3,c:"Free to watch",sum:"Tracing, component and trajectory evals, LLM-as-judge, and experiment-driven iteration.",note:"The best evals course in the catalogue. Its ideas apply from Stage 2 onward."},
+{id:"L22",s:9,r:"opt",cat:"Production and MLOps",t:"NeMo Agent Toolkit: Making Agents Reliable",p:"DeepLearning.AI × Nvidia",u:"https://www.deeplearning.ai/courses/nvidia-nat-making-agents-reliable",ty:"Short course",h:1.5,c:"Free to watch",sum:"Observability, evaluation and deployment tooling for agents moving from prototype to production.",note:"Tied to Nvidia, but the concepts carry over."},
+{id:"L23",s:9,r:"opt",cat:"Production and MLOps",t:"Safe and Reliable AI via Guardrails",p:"DeepLearning.AI × GuardrailsAI",u:"https://www.deeplearning.ai/courses/safe-and-reliable-ai-via-guardrails",ty:"Short course",h:2,c:"Free to watch",sum:"Input and output validators against hallucination, PII leaks and off-topic answers.",note:"The only guardrails-focused course in the catalogue."},
+{id:"L24",s:9,r:"opt",cat:"Production and MLOps",t:"Fast & Efficient LLM Inference with vLLM",p:"DeepLearning.AI × Red Hat",u:"https://www.deeplearning.ai/courses/fast-and-efficient-llm-inference-with-vllm",ty:"Short course",h:1.5,c:"Free to watch",sum:"Optimize, deploy and benchmark an open model with vLLM.",note:"For when you self-host the models you fine-tuned in Stage 6."},
+{id:"L25",s:9,r:"opt",cat:"Production and MLOps",t:"Semantic Caching for AI Agents",p:"DeepLearning.AI × Redis",u:"https://www.deeplearning.ai/courses/semantic-caching-for-ai-agents",ty:"Short course",h:1.5,c:"Free to watch",sum:"Cut latency and cost by caching responses by meaning.",note:"A practical cost lever that nothing else on the route covers."},
+{id:"P3",s:null,r:"ref",cat:"Reference lists",t:"AI Engineering From Scratch",p:"Rohit Ghumare",u:"https://github.com/rohitg00/ai-engineering-from-scratch",ty:"Curriculum",h:342,c:"Free (MIT)",sum:"523 text-and-code lessons in 20 phases, from math to agents, MCP, production and safety. It's very current (2026) and updated daily.",note:"Its phases map onto this route (P1→Stage 1, P2→3, P3→4, P7/P10→5, P10/P11→6, P11→7, P13–16→8, P17→9), but don't follow all 342 hours. It grew very fast and looks heavily AI-assisted, so quality varies by lesson. Use it to fill gaps (Agent Skills, coding agents, 2026 architectures) and as a second explanation, not as a replacement for Karpathy or Raschka."},
+
+/* Round 3: from the user's browser bookmarks (checked October 2026) */
+{id:"K1",bm:true,s:1,r:"opt",cat:"Python and data",t:"Automate the Boring Stuff with Python (3rd ed.)",p:"Al Sweigart",u:"https://automatetheboringstuff.com/",ty:"Free book",h:20,c:"Free",sum:"Practical scripting: files, web scraping, spreadsheets and PDFs, scheduling, GUI automation.",note:"Your bookmark pointed to the 2nd edition. The 3rd is current. Use it as a practical companion to the Helsinki MOOC."},
+{id:"K2",bm:true,s:1,r:"opt",cat:"Python and data",t:"Software Design by Example",p:"Greg Wilson",u:"https://third-bit.com/sdxpy/intro/",ty:"Free book",h:30,c:"Free",sum:"Learn design by building small versions of real tools: an interpreter, a test runner, a database, a web server.",note:"From 2024. Nothing else on the route teaches software design, so read it after the MOOC to write better Python."},
+{id:"K3",bm:true,s:1,r:"opt",cat:"Python and data",t:"Kaggle Learn",p:"Kaggle",u:"https://www.kaggle.com/learn",ty:"Micro-courses",h:8,c:"Free",sum:"In-browser 3–5 hour courses: pandas, data cleaning, feature engineering, data viz, plus Google's self-paced GenAI and Agents intensives.",note:"Do the pandas and feature-engineering ones before Stage 3. The ML and agent ones repeat what's on the route."},
+{id:"K4",bm:true,s:1,r:"ref",cat:"Python and data",t:"Comprehensive Python Cheatsheet",p:"gto76",u:"https://github.com/gto76/python-cheatsheet",ty:"Reference",c:"Free",sum:"The whole language on one page, and still maintained in 2026.",note:"Keep it open while you code."},
+{id:"K5",bm:true,s:1,r:"ref",cat:"Python and data",t:"Hypermodern Python",p:"Claudio Jolowicz",u:"https://blog.claudiojolowicz.com/posts/hypermodern-python-01-setup/",ty:"Article series",c:"Free",sum:"A six-part guide to project setup, testing, linting, typing, docs and CI.",note:"The ideas hold up, but the tools are from 2020. Use uv and ruff instead of Poetry, pyenv and flake8."},
+{id:"K6",bm:true,s:1,r:"ref",cat:"Python and data",t:"Python Design Patterns and wtfpython",p:"Brandon Rhodes · Satwik Kansal",u:"https://python-patterns.guide/",ty:"Reference",c:"Free",sum:"Idiomatic patterns for Python, plus a catalogue of surprising language gotchas with explanations.",note:"Good for depth, not required.",links:[["wtfpython","https://github.com/satwikkansal/wtfpython"]]},
+{id:"K7",bm:true,s:2,r:"ref",cat:"Prompting and LLM apps",t:"Artificial Analysis",p:"Artificial Analysis",u:"https://artificialanalysis.ai/",ty:"Leaderboard",c:"Free",sum:"Independent comparison of models and API providers on intelligence, speed, latency and price.",note:"Where to look when choosing a model for a project. Nothing else on the route covers this."},
+{id:"K8",bm:true,s:2,r:"ref",cat:"Prompting and LLM apps",t:"OpenAI Cookbook",p:"OpenAI",u:"https://github.com/openai/openai-cookbook",ty:"Notebooks",c:"Free (API costs)",sum:"Runnable examples for tool calling, structured outputs, embeddings, RAG, agents and evals.",note:"The OpenAI counterpart to the Anthropic courses. Look things up here rather than working through it."},
+{id:"K9",bm:true,s:2,r:"opt",cat:"Prompting and LLM apps",t:"Safety system messages",p:"Microsoft Learn",u:"https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/system-message",ty:"Docs",h:0.5,c:"Free",sum:"How to write, iterate on and test system prompts, with their safety techniques and limits.",note:"A short, mostly vendor-neutral checklist. Your bookmark's URL has moved, and this is the new one."},
+{id:"K10",bm:true,s:3,r:"opt",cat:"ML foundations",t:"mlcourse.ai",p:"Yury Kashnitsky",u:"https://mlcourse.ai/book/index.html",ty:"Course",h:40,c:"Free",sum:"Ten topics of classic ML with assignments: trees, linear models, ensembles, gradient boosting, time series.",note:"Only adds depth beyond Ng on boosting and time series."},
+{id:"K11",bm:true,s:4,r:"opt",cat:"Deep learning",t:"Neural Networks and Deep Learning",p:"Michael Nielsen",u:"http://neuralnetworksanddeeplearning.com/",ty:"Free book",h:15,c:"Free",sum:"Derives backprop and builds an MNIST classifier in NumPy, explaining every step.",note:"Very clear on intuition. The code is dated (last updated 2019), and Karpathy's micrograd covers the same ground."},
+{id:"K12",bm:true,s:4,r:"opt",cat:"Deep learning",t:"An overview of gradient descent optimization algorithms",p:"Sebastian Ruder",u:"https://www.ruder.io/optimizing-gradient-descent/",ty:"Article",h:1,c:"Free",sum:"Momentum, Adagrad, RMSprop and Adam compared side by side.",note:"Still the clearest single read on optimizers. It predates AdamW."},
+{id:"K13",bm:true,s:4,r:"ref",cat:"Deep learning",t:"Deep Learning (Goodfellow, Bengio, Courville)",p:"MIT Press",u:"https://www.deeplearningbook.org/",ty:"Textbook",c:"Free online",sum:"A theory-heavy reference on DL math, regularization, optimization and classic architectures.",note:"From 2016, with no transformers. Use it to look up theory, not to read through."},
+{id:"K14",bm:true,s:5,r:"opt",b:"opt",cat:"Transformers and LLMs",t:"LLM Visualization",p:"Brendan Bycroft",u:"https://bbycroft.net/llm",ty:"Interactive",h:1.5,c:"Free",sum:"A 3D walk through every step of one token's inference in a small GPT, with GPT-2 and GPT-3 scale views.",note:"Spend an hour on it between 3Blue1Brown and Karpathy. It works on the Builder track too."},
+{id:"K15",bm:true,s:5,r:"ref",cat:"Transformers and LLMs",t:"LLM Architecture Gallery",p:"Sebastian Raschka",u:"https://sebastianraschka.com/llm-architecture-gallery/",ty:"Interactive reference",c:"Free",sum:"Diagrams and fact sheets for about 109 current open models, with a compare tool and memory calculator.",note:"Updated October 2026. Use it after LLMs-from-scratch to see how real models differ from your GPT."},
+{id:"K16",bm:true,s:5,r:"opt",cat:"Transformers and LLMs",t:"Hands-On Large Language Models",p:"Jay Alammar & Maarten Grootendorst",u:"https://github.com/HandsOnLLM/Hands-On-Large-Language-Models",ty:"Book + notebooks",h:20,c:"Notebooks free, book paid",sum:"A very visual book: tokens, embeddings, transformer internals, classification, clustering, semantic search and fine-tuning.",note:"Same authors as DeepLearning.AI's How Transformer LLMs Work. Its embedding and topic-modelling chapters are the parts the route lacks."},
+{id:"K17",bm:true,s:5,r:"opt",cat:"Transformers and LLMs",t:"ViT and CLIP papers",p:"Google · OpenAI",u:"https://arxiv.org/abs/2010.11929",ty:"Papers",h:3,c:"Free",sum:"Vision Transformer (2020) and CLIP (2021), the foundations of today's multimodal models and image embeddings.",note:"Read them when you move into multimodal work.",links:[["CLIP paper","https://arxiv.org/abs/2103.00020"]]},
+{id:"K18",bm:true,s:6,r:"ref",cat:"Fine-tuning",t:"LLM Course (Labonne)",p:"Maxime Labonne",u:"https://github.com/mlabonne/llm-course",ty:"Roadmap + notebooks",c:"Free",sum:"A roadmap in three tracks (Fundamentals, Scientist, Engineer), plus Colab notebooks for fine-tuning, quantization and model merging.",note:"Mostly links that overlap this route. Its notebooks are good practical references for Stage 6. You had it bookmarked twice (GitHub and the HF blog)."},
+{id:"K19",bm:true,s:7,r:"core",cat:"RAG",t:"Introducing Contextual Retrieval",p:"Anthropic",u:"https://www.anthropic.com/engineering/contextual-retrieval",ty:"Article",h:0.5,c:"Free",sum:"Prepend LLM-written context to each chunk before embedding and BM25. Failed retrievals drop 49%, or 67% with a reranker.",note:"A widely cited, measured technique you can add to your Stage 7 project in an afternoon."},
+{id:"K20",bm:true,s:7,r:"ref",cat:"RAG",t:"Vector Database Comparison",p:"Superlinked",u:"https://superlinked.com/vector-db-comparison",ty:"Comparison table",c:"Free",sum:"About 47 vector DBs compared on features, pricing, performance and integrations.",note:"Maintained (August 2026). Use it when picking a store beyond Qdrant or OpenSearch."},
+{id:"K21",bm:true,s:7,r:"ref",cat:"RAG",t:"sentence-transformers",p:"Hugging Face",u:"https://github.com/huggingface/sentence-transformers",ty:"Library",c:"Free",sum:"The standard library for local embedding, retrieval and reranking models, and for fine-tuning them.",note:"Moved from UKPLab to Hugging Face. Docs are at sbert.net. Read them as needed."},
+{id:"K22",bm:true,s:8,r:"core",b:"opt",cat:"Agents",t:"CMU 11-768: AI Agents (Fall 2026)",p:"CMU · Graham Neubig & Daniel Fried",u:"https://www.cmu-agents.com/#/schedule",ty:"University course",h:40,c:"Free materials",sum:"Build an agent harness from scratch on an open model, design multi-step evals, and train agents with SFT and RL.",note:"The only item on the route that covers agent harness internals and RL for agents. The course is running now, so slides and videos are still being released. It's graduate level, so take it last in this stage."},
+{id:"K23",bm:true,s:8,r:"opt",cat:"Agents",t:"Gemini Fullstack LangGraph Quickstart",p:"Google Gemini",u:"https://github.com/google-gemini/gemini-fullstack-langgraph-quickstart",ty:"Template",h:3,c:"Free (API key)",sum:"React frontend plus LangGraph backend for a research agent that searches, reflects and cites.",note:"A clean full-stack template for your Stage 8 project. Swap Gemini for any model."},
+{id:"K24",bm:true,s:8,r:"opt",cat:"Agents",t:"AI Agents for Beginners",p:"Microsoft",u:"https://github.com/microsoft/ai-agents-for-beginners",ty:"Course (18 lessons)",h:15,c:"Free",sum:"Agent design patterns, MCP and A2A, context engineering, memory and agent security, on the Microsoft Agent Framework.",note:"Mostly overlaps the HF Agents course. Its context-engineering and memory lessons are the useful extra. You bookmarked the Bulgarian translation, which is in the repo's translations folder."},
+{id:"K25",bm:true,s:8,r:"opt",cat:"Agents",t:"ollama-playground",p:"Nariman N.",u:"https://github.com/NarimanN2/ollama-playground",ty:"Projects",c:"Free",sum:"Small local-model projects: PDF and hybrid RAG, MCP agents, multi-agent supervisor and swarm, voice, vision.",note:"Project ideas that run entirely on your machine."},
+{id:"K26",bm:true,s:9,r:"opt",cat:"Production and MLOps",t:"From MLOps to ML Systems with FTI Pipelines",p:"Hopsworks · Jim Dowling",u:"https://www.hopsworks.ai/post/mlops-to-ml-systems-with-fti-pipelines",ty:"Article",h:0.5,c:"Free",sum:"Split any ML system into feature, training and inference pipelines, a simple mental model for architecture.",note:"Read it alongside MLOps Zoomcamp."},
+{id:"K27",bm:true,s:9,r:"opt",cat:"Production and MLOps",t:"What is Inference?",p:"Paolo Perrone · The AI Engineer",u:"https://theaiengineer.substack.com/p/what-is-inference",ty:"Article",h:0.3,c:"Free",sum:"Prefill versus decode, the KV cache, why output tokens cost more, and PagedAttention.",note:"From August 2026. A good primer before the vLLM course."},
+{id:"K28",bm:true,s:9,r:"opt",cat:"Production and MLOps",t:"Made With ML",p:"Goku Mohandas",u:"https://github.com/GokuMohandas/Made-With-ML",ty:"Course",h:30,c:"Free",sum:"Take a PyTorch model to production with Ray, MLflow, pytest and GitHub Actions CI/CD.",note:"Overlaps MLOps Zoomcamp. Its extras are Ray-based scaling and stronger software-engineering discipline."},
+{id:"K29",bm:true,s:9,r:"opt",cat:"Production and MLOps",t:"Agent Starter Pack",p:"Google Cloud",u:"https://github.com/GoogleCloudPlatform/agent-starter-pack",ty:"Templates",c:"Free (GCP billed)",sum:"Production agent templates with CI/CD, evaluation and observability built in.",note:"Only if you deploy on GCP. Your bookmark pointed at its old location in the generative-ai repo."},
+{id:"K30",bm:true,s:null,r:"ref",cat:"Reference lists",t:"Become a Machine Learning Engineer",p:"Max Mynter",u:"https://www.maxmynter.com/pages/blog/become-mle",ty:"Roadmap post",c:"Free",sum:"A second-opinion roadmap for software engineers, which recommends mostly the same resources as this route.",note:"Reassurance that the route is sensible, and nothing more."},
+{id:"K31",bm:true,s:null,r:"ref",cat:"Reference lists",t:"Hugging Face Papers (formerly Papers with Code)",p:"Hugging Face",u:"https://huggingface.co/papers/trending",ty:"Paper feed",c:"Free",sum:"Trending research papers with code links.",note:"paperswithcode.com now redirects here, so update your bookmark."},
+/* Certificates shelf (s:null) */
+{id:"D1",s:null,r:"cert",cat:"Certificates",t:"IBM Generative AI Engineering Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ibm-generative-ai-engineering",ty:"Certificate · 16 courses",h:150,c:"Paid cert, courses audit free",sum:"From AI basics through Python, Flask, ML and Keras to transformers, LoRA, RLHF/DPO and RAG with LangChain.",note:"Its useful courses already sit in Stages 2, 5, 6 and 7. Courses 1–2 are skipped and 4, 7, 8 and 9 repeat Ng. Pay for the certificate only if you need the credential."},
+{id:"E3",s:null,r:"cert",cat:"Certificates",t:"IBM AI Engineering Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ai-engineer",ty:"Certificate · 13 courses",h:160,c:"Paid",sum:"ML in sklearn, DL in Keras and PyTorch, transformers, fine-tuning, RAG and agents with LangChain.",note:"Overlaps the IBM GenAI cert heavily and teaches both Keras and PyTorch. Don't take both IBM certs."},
+{id:"E7",s:null,r:"cert",cat:"Certificates",t:"Microsoft AI & ML Engineering Professional Certificate",p:"Microsoft",u:"https://www.coursera.org/professional-certificates/microsoft-ai-and-ml-engineering",ty:"Certificate · 5 courses",h:175,c:"Paid + Azure",sum:"ML algorithms, DL, LLM troubleshooting agents, Azure ML, MLOps.",note:"Only for Azure-focused jobs."},
+{id:"C18",s:null,r:"cert",cat:"Certificates",t:"Microsoft Generative AI Engineering Professional Certificate",p:"Microsoft",u:"https://www.coursera.org/professional-certificates/microsoft-generative-ai-engineering/",ty:"Certificate · 5 courses",h:96,c:"Paid + Azure ($40–200)",sum:"Generative models, LLMs on Azure, RAG, multimodal, MLOps and responsible AI.",note:"Only for Azure-focused jobs. Pick one Microsoft cert at most."},
+{id:"E9",s:null,r:"cert",cat:"Certificates",t:"More Applied Data Science with Python",p:"University of Michigan",u:"https://www.coursera.org/specializations/more-applied-data-science-with-python",ty:"Specialization",h:139,c:"Paid",sum:"Data mining, unsupervised learning, network analysis, information extraction.",note:"Data science and text mining, not AI engineering. Low priority."},
+
+/* Reference shelf */
+{id:"A17",s:null,r:"ref",cat:"Reference lists",t:"learn-ai-engineering",p:"Ashish Pratap Singh",u:"https://github.com/ashishps1/learn-ai-engineering",ty:"Link list",c:"Free",sum:"A curated list of free resources across math, ML, DL, LLMs, RAG, agents and MLOps.",note:"Already includes many items on this route. Use it to find a second explanation for a topic."},
+{id:"C16",s:null,r:"ref",cat:"Reference lists",t:"AI Engineer Roadmap",p:"roadmap.sh",u:"https://roadmap.sh/ai-engineer",ty:"Roadmap",c:"Free",sum:"An interactive topic map for applied AI engineers, with links per node.",note:"Use it as a checklist against this route."},
+{id:"E12",s:null,r:"ref",cat:"Reference lists",t:"The AI Engineer's Handbook",p:"Exemplar",u:"https://handbook.exemplar.dev/",ty:"Handbook",c:"Free",sum:"A survey of prompting, vector DBs, RAG, agents, evaluation and security.",note:"No date and an unknown author. Use it for lookups only."},
+{id:"F9",s:null,r:"ref",cat:"Reference lists",t:"best-of-ml-python",p:"ml-tooling",u:"https://github.com/ml-tooling/best-of-ml-python",ty:"Link list",c:"Free",sum:"Ranked ML Python libraries by category.",note:"Use it to compare libraries. Updates have slowed since March 2026."},
+{id:"F6",s:null,r:"ref",cat:"Reference lists",t:"LF AI & Data Landscape",p:"Linux Foundation",u:"https://landscape.lfai.foundation/",ty:"Ecosystem map",c:"Free",sum:"A map of open-source AI and data projects.",note:"Useful for getting oriented, not for learning."},
+{id:"C15",s:null,r:"ref",cat:"Reference lists",t:"How I started learning ML",p:"r/learnmachinelearning",u:"https://www.reddit.com/r/learnmachinelearning/comments/1g4x299/how_i_started_learning_machine_learning/",ty:"Forum post",c:"Free",sum:"One person's path: CS229, Ng, Goodfellow, Kaggle, FastAPI, HF, Unsloth, LangGraph.",note:"Low engagement, self-promotional, and some links are dated. This route already covers it."},
+{id:"A9",s:null,r:"ref",cat:"Reference lists",t:"What is an AI engineer?",p:"Coursera",u:"https://www.coursera.org/articles/ai-engineer",ty:"Career article",c:"Free",sum:"The role, skills and salary (about $138k median in the US).",note:"Mostly marketing for Coursera programs."},
+
+/* Skip list */
+{id:"A12",s:null,r:"skip",cat:"Not learning material",t:"Applied AI (glossary)",p:"Cognizant",u:"https://www.cognizant.com/us/en/glossary/applied-ai",ty:"Glossary",sum:"A short marketing definition with no technical content.",note:"It appeared twice in your list."},
+{id:"A13",s:null,r:"skip",cat:"Not learning material",t:"Getting Started with LLMs",p:"LinkedIn · Wendy Ran Wei",u:"https://www.linkedin.com/pulse/getting-started-llms-guide-resources-opportunities-wendy-ran-wei/",ty:"Article",sum:"A link roundup from April 2023.",note:"Outdated and superseded by learn-ai-engineering."},
+{id:"D2",s:null,r:"skip",cat:"Concepts",t:"Introduction to Artificial Intelligence",p:"IBM",u:"https://www.coursera.org/learn/introduction-to-ai",ty:"Course",sum:"A non-technical overview of AI.",note:"Repeats AI For Everyone, which you've done."},
+{id:"D3",s:null,r:"skip",cat:"Concepts",t:"Generative AI: Introduction and Applications",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-introduction-and-applications",ty:"Course",sum:"A tour of GenAI tools.",note:"No engineering content, and it will date quickly."},
+{id:"D10",s:null,r:"skip",cat:"Deep learning",t:"Intro to Deep Learning & Neural Networks with Keras",p:"IBM",u:"https://www.coursera.org/learn/introduction-to-deep-learning-with-keras",ty:"Course",sum:"Shallow Keras intro to NNs, CNNs and RNNs.",note:"Much shallower than Ng's DL specialization, and it uses Keras while the rest of the route uses PyTorch."},
+{id:"E1",s:null,r:"skip",cat:"ML foundations",t:"ML with Scikit-learn, PyTorch & HF (specialization URL)",p:"Coursera",u:"https://www.coursera.org/specializations/machine-learning-scikit-learn-pytorch-hugging-face",ty:"Duplicate",sum:"Serves the same program page as the professional certificate.",note:"A duplicate of the certificate listed in Stage 3."},
+{id:"E4",s:null,r:"skip",cat:"ML foundations",t:"IBM Introduction to Machine Learning Specialization",p:"IBM",u:"https://www.coursera.org/specializations/ibm-intro-machine-learning",ty:"Duplicate",sum:"Four classical ML courses.",note:"These are exactly the first 4 courses of the IBM ML Professional Certificate."},
+{id:"B15",s:null,r:"skip",cat:"Deep learning",t:"Foundations of Deep Learning (Larochelle)",p:"Deep Learning School 2016",u:"https://www.youtube.com/watch?v=zij_FTbJHsk&list=PLrAXtmErZgOfMuxkACrYnD2fTgbzk2THW&index=2",ty:"Lecture",sum:"A single 2016 lecture on feedforward nets and backprop.",note:"The playlist ID no longer resolves, and Ng, MIT and fast.ai cover this better."},
+{id:"F15",s:null,r:"skip",cat:"RAG",t:"Advanced_RAG",p:"NisaarAgharia",u:"https://github.com/NisaarAgharia/Advanced_RAG",ty:"Notebooks",sum:"Ten RAG notebooks.",note:"Stale since April 2024. RAG_Techniques covers the same and more."},
+{id:"F11",s:null,r:"skip",cat:"Agents",t:"RAGent",p:"alonlavian",u:"https://github.com/alonlavian/RAGent",ty:"Demo app",sum:"A small Streamlit PDF and web-search agent with 4 commits.",note:"Inactive since December 2024, with no explanations."},
+{id:"F7",s:null,r:"skip",cat:"Agents",t:"Rasa Open Source",p:"Rasa",u:"https://github.com/RasaHQ/rasa",ty:"Framework",sum:"Intent-based chatbot framework.",note:"In maintenance mode. Rasa itself now points to its LLM-based CALM."},
+{id:"C12",s:null,r:"skip",cat:"Agents",t:"Learn AI Agents",p:"Scrimba",u:"https://v2.scrimba.com/learn-ai-agents-c034",ty:"Course",sum:"JS agent course.",note:"Already part of The AI Engineer Path."},
+{id:"C13",s:null,r:"skip",cat:"Prompting and LLM apps",t:"Intro to AI Engineering",p:"Scrimba",u:"https://v2.scrimba.com/intro-to-ai-engineering-c032",ty:"Course",sum:"JS LLM-app basics.",note:"Already part of The AI Engineer Path."},
+{id:"C17",s:null,r:"skip",cat:"Not learning material",t:"ML Artifacts (dictionary)",p:"Hopsworks",u:"https://www.hopsworks.ai/dictionary/ml-artifacts",ty:"Glossary",sum:"About 200 words defining ML artifacts.",note:"Vendor marketing. MLOps Zoomcamp teaches this properly."},
+{id:"C19",s:null,r:"skip",cat:"Not learning material",t:"bitsandbytes cuda_install.sh",p:"Tim Dettmers",u:"https://raw.githubusercontent.com/TimDettmers/bitsandbytes/main/cuda_install.sh",ty:"Script",sum:"A legacy CUDA install script.",note:"Returns 404. Use pip install bitsandbytes instead (see Stage 6)."},
+{id:"F2",s:null,r:"skip",cat:"Not learning material",t:"500+ Python Interview Questions",p:"Applyre",u:"https://applyre.com/resources/500-interview-questions/python/",ty:"Lead magnet",sum:"An interview Q&A page behind a job-application SaaS.",note:"The content couldn't be verified, and it's not AI learning."},
+{id:"F5",s:null,r:"skip",cat:"Not learning material",t:"Kling AI",p:"Kling",u:"https://klingai.com/",ty:"Product",sum:"Commercial AI video and image generator.",note:"A tool to play with, not to learn from."},
+{id:"F14",s:null,r:"skip",cat:"Not learning material",t:"Luma Dream Machine",p:"Luma Labs",u:"https://lumalabs.ai/dream-machine?ref=FutureTools.io",ty:"Product",sum:"Commercial video and image generation, now sold as 'Luma Agents'.",note:"A product, and it duplicates Kling."}
+];
+
+const ROLE_LABEL={core:"Core",alt:"Alternative",opt:"Optional",ref:"Reference",skip:"Skip",done:"Done",cert:"Certificate"};
+const CAT_ORDER=["Concepts","Python and data","Math","Prompting and LLM apps","ML foundations","Deep learning","Transformers and LLMs","Fine-tuning","RAG","Agents","Production and MLOps","Certificates","Reference lists","Not learning material"];
+const byId=Object.fromEntries(R.map(x=>[x.id,x]));
+
+/* ---------- state ---------- */
+const LS="ai-route-v1";
+let state={track:"builder",pace:10,view:"route",showDeep:false,done:{A8:true}};
+try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s)state={...state,...s,done:{...state.done,...(s.done||{})}}}catch(e){}
+const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}};
+
+let remote=null,writing=false,pending=false,timer=null;
+function queueRemote(){ if(!remote) return; clearTimeout(timer); timer=setTimeout(flush,700); }
+async function flush(){
+  if(!remote) return;
+  if(writing){pending=true;return}
+  writing=true;
+  try{await remote.set({done:state.done,track:state.track,pace:state.pace});setSync("Progress is synced to your account.")}
+  catch(e){setSync("Couldn't sync to your account, so progress is saved in this browser only.")}
+  writing=false;
+  if(pending){pending=false;flush()}
+}
+function setSync(t){document.getElementById("sync").textContent=t}
+(async()=>{
+  try{
+    if(!window.claude?.use) return;
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user) return;
+    const id=await user.id(); if(!id) return;
+    const ref=db.doc("data/users/"+id+"/progress");
+    let first=true;
+    ref.onSnapshot(snap=>{
+      const d=snap.exists?snap.data():null;
+      if(first){first=false;remote=ref;
+        if(d&&d.done){state.done={...d.done};if(d.track)state.track=d.track;if(d.pace)state.pace=d.pace;saveLocal();render();}
+        else if(Object.keys(state.done).length>1){flush()}
+        setSync("Progress is synced to your account.");return;}
+      if(d&&d.done&&!snap.metadata?.hasPendingWrites){state.done={...d.done};saveLocal();render();}
+    },()=>{remote=null;setSync("Couldn't sync to your account, so progress is saved in this browser only.")});
+  }catch(e){}
+})();
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const role=x=>state.track==="builder"&&x.b?x.b:x.r;
+const isDeep=s=>STAGES[s]?.deep;
+const visibleStage=s=>!(state.track==="builder"&&isDeep(s));
+function stageCore(s){return R.filter(x=>x.s===s&&role(x)==="core"&&!(R.some(c=>c.parent===x.id)))}
+function hours(s){return stageCore(s).reduce((a,x)=>a+(x.h||0),0)}
+function weeks(h){return Math.max(1,Math.round(h/state.pace))}
+function fmtW(w){return w===1?"1 week":w+" weeks"}
+
+function resHTML(x,opts={}){
+  const r=role(x), done=!!state.done[x.id];
+  const umbrella=R.some(c=>c.parent===x.id);
+  const cb=(r==="skip"||umbrella)?`<span aria-hidden="true"></span>`:`<input type="checkbox" id="cb-${x.id}" data-id="${x.id}" ${done?"checked":""} aria-label="Mark ${esc(x.t)} done">`;
+  const extra=(x.links||[]).map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`).join("");
+  const meta=[x.p,x.ty,x.h?`~${x.h} h`:"",x.c].filter(Boolean).map(esc).join(" · ");
+  return `<div class="res ${r==="core"?"core":""} ${x.parent&&!opts.flat?"child":""} ${done&&r!=="skip"?"is-done":""}">
+    ${cb}
+    <div style="min-width:0">
+      <div class="rt"><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a>
+        <span class="chip ${done&&r!=="skip"?"done":r}">${done&&r!=="skip"?"Done":ROLE_LABEL[r]}</span>${x.added?`<span class="chip added">added</span>`:""}${x.bm?`<span class="chip bm">bookmark</span>`:""}${opts.stage!=null&&x.s!=null?`<span class="chip ref">Stage ${x.s}</span>`:""}</div>
+      <div class="sub">${meta}</div>
+      <p class="sum">${esc(x.sum)}</p>
+      ${x.note?`<p class="note">${esc(x.note)}</p>`:""}
+      ${extra?`<div class="links">${extra}</div>`:""}
+    </div></div>`;
+}
+function ordered(list){ // parents followed by their children
+  const out=[];list.filter(x=>!x.parent||!list.includes(byId[x.parent])).forEach(x=>{out.push(x);list.filter(c=>c.parent===x.id).forEach(c=>out.push(c))});return out;
+}
+
+/* ---------- views ---------- */
+function routeView(){
+  let html=`<div class="route">`;
+  let hiddenShown=false;
+  STAGES.forEach(st=>{
+    const vis=visibleStage(st.n);
+    if(!vis&&!state.showDeep){
+      if(!hiddenShown){hiddenShown=true;
+        const hs=STAGES.filter(s=>s.deep).reduce((a,s)=>a+hours(s.n),0);
+        html+=`<section class="stop deep"><div class="rail"><div class="node" style="--p:0">4–6</div></div><div class="stage"><div class="stage-head"><span class="eyebrow"><span class="deep-tag">Full track only</span> · ~${hs} h of core material</span><h2>Deep learning, LLM internals, fine-tuning</h2></div>
+        <div class="collapsed">The Builder track skips these three stages so you can ship RAG and agents sooner. Come back for them when you want to train or fine-tune models yourself. <button type="button" id="show-deep">Show them anyway</button></div></div></section>`;}
+      return;
+    }
+    const items=R.filter(x=>x.s===st.n);
+    const groups={core:[],alt:[],opt:[],ref:[]};
+    ordered(items).forEach(x=>{const r=role(x);if(r==="done"||r==="core")groups.core.push(x);else if(groups[r])groups[r].push(x)});
+    const core=stageCore(st.n).filter(x=>role(x)!=="done");
+    const doneN=core.filter(x=>state.done[x.id]).length;
+    const pct=core.length?Math.round(doneN/core.length*100):100;
+    const h=hours(st.n);
+    html+=`<section class="stop ${st.deep?"deep":""}" id="stage-${st.n}">
+      <div class="rail"><div class="node ${pct===100?"full":""}" style="--p:${pct}" title="${pct}% of core done">${st.n}</div></div>
+      <div class="stage">
+        <div class="stage-head"><span class="eyebrow">Stage ${st.n}${st.deep?` · <span class="deep-tag">Full track</span>`:""} · ~${h} h · ${fmtW(weeks(h))} at your pace · ${doneN}/${core.length} core done</span>
+        <h2>${esc(st.title)}</h2><p class="goal">${esc(st.goal)}</p></div>
+        ${groups.core.length?`<div class="group"><h3>Do these</h3>${groups.core.map(x=>resHTML(x)).join("")}</div>`:""}
+        ${groups.alt.length?`<details class="more"><summary>Alternatives: same ground, pick at most one (${groups.alt.length})</summary><div class="group">${groups.alt.map(x=>resHTML(x)).join("")}</div></details>`:""}
+        ${groups.opt.length?`<details class="more"><summary>Optional depth (${groups.opt.length})</summary><div class="group">${groups.opt.map(x=>resHTML(x)).join("")}</div></details>`:""}
+        ${groups.ref.length?`<details class="more"><summary>Keep open as reference (${groups.ref.length})</summary><div class="group">${groups.ref.map(x=>resHTML(x)).join("")}</div></details>`:""}
+        <div class="outcome"><div><h3>Build</h3><p>${esc(st.project)}</p></div><div><h3>Move on when</h3><p>${esc(st.check)}</p></div></div>
+      </div></section>`;
+  });
+  return html+`</div>`;
+}
+let q="";
+function libraryView(){
+  const ql=q.trim().toLowerCase();
+  const list=R.filter(x=>!ql||[x.t,x.p,x.sum,x.note,x.cat,x.ty].join(" ").toLowerCase().includes(ql));
+  let html=`<div class="toolbar"><input type="search" id="lib-q" placeholder="Filter by title, topic or provider" value="${esc(q)}" aria-label="Filter resources"><span class="sub">${list.length} of ${R.length} links</span></div>`;
+  CAT_ORDER.forEach(c=>{const xs=list.filter(x=>x.cat===c);if(!xs.length)return;
+    html+=`<section class="cat"><h2>${esc(c)} <span>${xs.length}</span></h2>${xs.map(x=>resHTML(x,{flat:true,stage:true})).join("")}</section>`});
+  if(!list.length)html+=`<p class="empty">Nothing matches “${esc(q)}”.</p>`;
+  return html;
+}
+function skipView(){
+  const xs=R.filter(x=>x.r==="skip");
+  return `<p class="lede">I checked these ${xs.length} links and left them off the route. Each one is dead, a duplicate, vendor marketing, a product rather than a course, or covered better elsewhere.</p>
+  <div class="tbl"><table><thead><tr><th>Link</th><th>What it is</th><th>Why skip</th></tr></thead><tbody>
+  ${xs.map(x=>`<tr><td><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a><div class="sub">${esc(x.p)}</div></td><td>${esc(x.sum)}</td><td>${esc(x.note)}</td></tr>`).join("")}
+  </tbody></table></div>`;
+}
+function certsView(){
+  const xs=R.filter(x=>x.r==="cert");
+  return `<p class="lede">You don't need any of these to learn the material, since the route already includes their best courses individually and most can be audited for free. Pay for one only if a credential matters for your job search. If you do, the IBM Generative AI Engineering certificate lines up best with this route.</p>
+  <div class="group">${xs.map(x=>resHTML(x,{flat:true})).join("")}</div>`;
+}
+
+function render(){
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.track===state.track)));
+  document.getElementById("pace").value=String(state.pace);
+  document.getElementById("track-desc").textContent=state.track==="builder"
+    ?"Builder track: you want to ship LLM apps, RAG and agents. It uses a lighter ML foundation and skips model training (Stages 4–6)."
+    :"Full track: you want to understand and train models as well as build with them. It includes every stage.";
+  const st=STAGES.filter(s=>visibleStage(s.n));
+  const core=st.flatMap(s=>stageCore(s.n)).filter(x=>role(x)!=="done");
+  const d=core.filter(x=>state.done[x.id]).length;
+  const totalH=st.reduce((a,s)=>a+hours(s.n),0);
+  const leftH=core.filter(x=>!state.done[x.id]).reduce((a,x)=>a+(x.h||0),0);
+  document.getElementById("bar").style.width=(core.length?d/core.length*100:0)+"%";
+  document.getElementById("summary").innerHTML=`<span><b class="mono">${d}/${core.length}</b> core items done</span><span><b class="mono">~${totalH} h</b> of core material</span><span><b class="mono">~${fmtW(weeks(leftH))}</b> left at ${state.pace} h/week</span><span><b class="mono">${R.length}</b> links sorted</span>`;
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.view===state.view)));
+  const v=document.getElementById("view");
+  const focusQ=document.activeElement?.id==="lib-q";
+  v.innerHTML=state.view==="route"?routeView():state.view==="library"?libraryView():state.view==="skip"?skipView():certsView();
+  if(focusQ){const i=document.getElementById("lib-q");i.focus();i.setSelectionRange(i.value.length,i.value.length)}
+}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.track){state.track=t.dataset.track;saveLocal();queueRemote();render()}
+  else if(t.dataset.view){state.view=t.dataset.view;saveLocal();render()}
+  else if(t.id==="show-deep"){state.showDeep=true;render()}
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.matches("input[type=checkbox][data-id]")){if(t.checked)state.done[t.dataset.id]=true;else delete state.done[t.dataset.id];saveLocal();queueRemote();render()}
+  else if(t.id==="pace"){state.pace=+t.value;saveLocal();queueRemote();render()}
+});
+document.addEventListener("input",e=>{if(e.target.id==="lib-q"){q=e.target.value;render()}});
+const h0=location.hash.replace("#","");if(["route","library","skip","certs"].includes(h0))state.view=h0;
+render();
+</script>
+
+</body>
+</html>
