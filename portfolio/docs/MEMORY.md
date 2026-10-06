@@ -380,6 +380,29 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-10-06 — dependency bumps: Redis 8.10.2, Qdrant 1.19 (server and client), uv_build floor
+
+- **Redis 8.10.0 -> 8.10.2** (`484eac8`): 8.10.1 and 8.10.2 are both SECURITY releases (read from the
+  8.10 branch's `00-RELEASENOTES`). Dependabot had opened #42 and #54; neither was merged.
+- **Qdrant v1.18.3 -> v1.19.1, and qdrant-client 1.18.0 -> 1.19.1 together**, because compose's
+  own rule is matching major.minor; Dependabot's #37 bumped only the server. **v1.19 removed the
+  legacy `/points/search`, `/recommend`, `/discover` endpoints** (diffed the two tags'
+  `docs/redoc/master/openapi.json`); every Qdrant call recorded in the cassettes is
+  `/points/query`, `/index`, `/exists` or the collection itself, so nothing here used them.
+  **Verified:** the replay gate with client 1.19.1 is exit 0, no misses, identical scores -- so
+  the new client sends byte-identical requests. **Not verified:** a v1.19.1 *server* -- Docker
+  Hub answered 429 to the anonymous pull and GitHub release assets are blocked here; CI's `stack`
+  job is the first real run of it. Nor the 1.18 -> 1.19 upgrade of an existing `qdrant_data`
+  volume; that data is re-seedable, so the fallback is `down -v` and a re-seed.
+- **Locking: use uv 0.12.2**, the version the Dockerfile pins. This sandbox's uv 0.8.17 rewrites
+  unrelated nvidia/greenlet markers, and uv 0.12.23 bumps the lock `revision` 3 -> 5; 0.12.2
+  produced a diff of exactly the qdrant-client lines.
+- **`uv_build` floor 0.12.0 -> 0.12.2** (Dependabot #39); `uv build --wheel` resolves and builds.
+- **Recorded data worth knowing:** the Opus judge itself returned `stop_reason=refusal` on q022's
+  groundedness check (a RAG-safety question), so that pair is logged `judge.no_verdict` and
+  excluded -- groundedness is n=58, not 61. Same safety-classifier false positive as Open
+  question 10, on the judge side.
+
 ### 2026-10-02 — first replay failed on zstd; fixed, and replay reproduces the baseline
 
 - **Symptom:** `run_eval.py --replay` died in the setup cassette with `UnicodeDecodeError ... 0xb5`.

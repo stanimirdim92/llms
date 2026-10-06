@@ -8,8 +8,8 @@ limiting; docs), and Phase 5.1 (ingestion behind a Postgres-backed job queue) --
 `docs/IMPLEMENTATION_PLAN.md` only -- no agent. Don't assume code for it. Epic 2 (the eval
 framework) has its golden set (`data/eval/qa_dataset.jsonl`, 67 pairs over a pinned, seeded
 corpus), scoring and judges (`app/eval/`, `scripts/run_eval.py`) and a committed baseline
-(`data/eval/baseline_scores.json`), but **no CI gate yet**, so nothing stops a regression
-automatically. Phases 2.4 and 2.5 are built behind flags that default off -- **plus two pieces
+(`data/eval/baseline_scores.json`), gated in CI by replaying recorded provider calls
+(`eval-gate`, `app/eval/replay.py`). Phases 2.4 and 2.5 are built behind flags that default off -- **plus two pieces
 pulled forward because each fixed an observed defect rather than moved a metric:**
 
 - `app/retrieval/document_scope.py` -- naming a filename or `doc_id` in an `/ask` question

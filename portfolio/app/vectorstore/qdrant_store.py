@@ -89,7 +89,7 @@ def _point_id(chunk_id: str, ingestion_version: str) -> str:
 # the segment. Without it a tenant filter degrades toward a scan as the collection grows --
 # invisible at six documents, and the stated target is 10k tenants x 10 documents, order 1M
 # points. `qdrant-scaling` lists omitting it under things not to do. Requires Qdrant v1.11+;
-# compose pins v1.18.3.
+# compose pins v1.19.1.
 #
 # `metadata.chunk_type` is deliberately **not** indexed. `_build_filter` accepts `chunk_types`
 # but no production caller passes it, so an index there would cost write amplification on every

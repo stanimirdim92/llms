@@ -46,7 +46,7 @@ dependencies = [
     "langchain-anthropic>=1.5.2,<2.0.0",
     "langchain-voyageai>=0.4.0,<1.0.0",
     "langchain-qdrant>=1.1.0,<2.0.0",
-    "qdrant-client>=1.18.0,<2.0.0",
+    "qdrant-client>=1.19.0,<2.0.0",
     "psycopg[binary]>=3.3.4,<4.0.0",
     # Postgres, not the sqlite checkpointer: this project runs one database engine.
     "pydantic-settings>=2.14.2,<3.0.0",
@@ -110,7 +110,7 @@ repository = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
 documentation = "https://github.com/stanimirdim92/llms/tree/main/portfolio"
 
 [build-system]
-requires = ["uv_build>=0.12.0,<0.13"]
+requires = ["uv_build>=0.12.2,<0.13"]
 build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "app"

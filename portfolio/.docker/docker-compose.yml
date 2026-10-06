@@ -60,11 +60,14 @@ name: portfolio
 
 services:
   qdrant:
-    # Kept in step with pyproject.toml's qdrant-client pin (1.18.x) -- Qdrant's own
+    # Kept in step with pyproject.toml's qdrant-client pin (1.19.x) -- Qdrant's own
     # compatibility policy wants major.minor to match between client and server;
     # mismatched versions (this was v1.12.5 against a 1.18.0 client) don't necessarily
     # break anything outright but throw a real warning and aren't a supported pairing.
-    image: qdrant/qdrant:v1.18.3
+    # So a Dependabot bump of this image is half a change: bump the client in the same commit.
+    # v1.19 removed the legacy `/points/search`, `/recommend` and `/discover` endpoints; this
+    # project only queries through `/points/query` (langchain-qdrant's `query_points`).
+    image: qdrant/qdrant:v1.19.1
     restart: unless-stopped
     ports:
       # Loopback only. `- "6333:6333"` binds 0.0.0.0 on the host, and Docker inserts its

@@ -22,7 +22,7 @@ looks like a right one):
   filtered, and every cassette is scanned afterwards.
 
 HTTP libraries, read from the installed packages rather than assumed (voyageai 0.5.0,
-anthropic 0.120.2, qdrant-client 1.18.0, vcrpy 8.3.0): anthropic and qdrant_client REST use
+anthropic 0.120.2, qdrant-client 1.18.0 (still httpx in 1.19.1), vcrpy 8.3.0): anthropic and qdrant_client REST use
 httpx; voyageai's *async* rerank uses aiohttp, and its *sync* embed -- which is what
 `QdrantVectorStore.asimilarity_search` calls, in a worker thread, for the query vector -- uses
 requests. vcrpy patches all three.
