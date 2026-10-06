@@ -50,7 +50,7 @@ dependencies = [
     "psycopg[binary]>=3.3.4,<4.0.0",
     # Postgres, not the sqlite checkpointer: this project runs one database engine.
     "pydantic-settings>=2.14.2,<3.0.0",
-    "docling>=2.115.0,<3.0.0",
+    "docling>=2.120.3,<3.0.0",
     "structlog>=26.1.0,<27.0.0",
     "streamlit>=1.60.0,<2.0.0",
     "procrastinate>=3.9",
