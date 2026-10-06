@@ -1,12 +1,11 @@
 # Pinned, not `:latest`. A floating tag lets a rebuild cross a major version silently, and
 # this is the one service where that is more than a reproducibility complaint: the rate
-# limiter is a hand-rolled Lua script on `redis.asyncio` (see docs/TECHNICAL_DECISIONS.md --
-# `limits[redis]` pins redis<8 against this project's client >=8, so there is no library to
-# fall back to). A server major arriving unannounced would change EVAL/sorted-set behaviour
-# underneath it. Dependabot watches this directory (`docker` ecosystem, weekly, grouped as
-# `base-images`), so the pin gets maintained rather than left to rot -- under `:latest` there
-# was nothing for it to bump.
-FROM redis:8.10.0
+# limiter (`app/rate_limit.py`, the `limits` library's moving-window strategy on redis-py) runs
+# its own Lua scripts over sorted sets inside this server, so a server major arriving
+# unannounced would change EVAL/sorted-set behaviour underneath it. Dependabot watches this
+# directory (`docker` ecosystem, weekly, grouped as `base-images`) and opens a PR per patch --
+# merge them: 8.10.1 and 8.10.2 were both SECURITY releases and sat unmerged for weeks.
+FROM redis:8.10.2
 
 RUN mkdir -p /usr/local/etc/redis
 COPY redis.conf /usr/local/etc/redis/redis.conf
