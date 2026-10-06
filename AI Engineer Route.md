@@ -7,14 +7,14 @@ Online version with progress tracking: https://claude.ai/artifact/5KRkq84PEj5zvb
 ## How to read this
 
 - **Do these**: the main path. **Alternatives** cover the same ground, so pick at most one. **Optional** adds depth. **Reference** is for lookups.
-- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **338 h** of core material, roughly 8 months at 10 h/week.
-- **Full track** (also understand and train models) includes every stage: about **657 h**, roughly 15 months at 10 h/week.
+- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **343 h** of core material, roughly 8 months at 10 h/week.
+- **Full track** (also understand and train models) includes every stage: about **663 h**, roughly 15 months at 10 h/week.
 - Items with a different role per track say so in italics. `added` marks gap-fillers that weren't in your list, and `bookmark` marks items from your browser bookmarks.
 - In the online and HTML versions, click an item's circle to move it from Not started to In progress to Done. In this file, use `- [ ]` and `- [x]`, and add `🚧` after an item's title to mark it in progress.
 
 ## Stage 0: Orientation
 
-~22 h of core material (Full track).
+~23 h of core material (Full track).
 
 Get the vocabulary and a mental model of what LLMs are before you write code. You already finished AI For Everyone, so this stage is short.
 
@@ -32,6 +32,9 @@ Get the vocabulary and a mental model of what LLMs are before you write code. Yo
 - [ ] **[Karpathy: Intro to LLMs and Deep Dive into LLMs](https://www.youtube.com/@AndrejKarpathy/videos)**  
   Andrej Karpathy · Talks · ~5 h · Free  
   Non-coding talks on how ChatGPT-style models are pretrained, fine-tuned and used. Start with the 1-hour 'Intro to Large Language Models', then the 3.5-hour 'Deep Dive into LLMs like ChatGPT' (2025). _The same channel hosts Zero to Hero, which is in Stage 5._
+- [ ] **[The AI Engineering Skills Map](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map)**  
+  Andrew Ng · The Batch · Article series · ~1 h · Free  
+  Ng's map of the AI engineer's job, built from 10,000+ job postings. It has four pillars: building and deploying AI apps, software fundamentals, using coding agents, and shaping the build. _Use it as the rubric for this route. Parts 3 and 5 are linked from side tracks B and C below._ Also: [Part 2: AI applications](https://www.deeplearning.ai/the-batch/he-ai-engineering-skills-map-in-detail-building-and-deploying-ai-applications), [Part 4: Coding agents](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-using-coding-agents)
 
 ### Optional depth
 
@@ -121,7 +124,7 @@ Write idiomatic Python, including OOP, comprehensions, venv and packages, and ha
 
 ## Stage 2: Build with LLM APIs
 
-~26 h of core material (Full track).
+~27 h of core material (Full track).
 
 Ship useful things on top of hosted models early: prompting, structured output, tool calls, embeddings. This keeps you motivated while the theory comes later.
 
@@ -139,6 +142,9 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 - [ ] **[Pydantic for LLM Workflows](https://www.deeplearning.ai/courses/pydantic-for-llm-workflows)**  
   DeepLearning.AI · Ryan Keenan · Short course · ~2 h · Free to watch  
   Validated structured outputs and tool-call data with Pydantic. _Exactly what the Stage 2 project needs, and it's vendor-neutral._
+- [ ] **[Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/)**  
+  Hamel Husain · Article · ~0.5 h · Free  
+  Three levels of evals: assertion-style unit tests, human and LLM-judge review of logged traces, and A/B tests. Plus why reading your own data is the core habit. _Ng calls eval-driven development the skill that separates strong AI engineers. Start the habit here, not in Stage 9._
 
 ### Optional depth
 
@@ -154,9 +160,6 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 - [ ] **[Developing AI Applications with Python and Flask](https://www.coursera.org/learn/python-project-for-ai-application-development)**  
   IBM · Course · ~12 h · Audit free  
   Flask, unit tests, packaging and deployment around Watson NLP. _Mostly general web development. Skip it if you already build web apps._
-- [ ] **[Generative AI for Software Development](https://www.coursera.org/professional-certificates/generative-ai-for-software-development)**  
-  DeepLearning.AI · Laurence Moroney · Certificate · ~34 h · Audit free  
-  Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design. _About productivity, not about building AI. Take it any time you like._
 - [ ] **[Getting Structured LLM Output](https://www.deeplearning.ai/courses/getting-structured-llm-output)**  
   DeepLearning.AI × DotTxt · Short course · ~1.5 h · Free to watch  
   Covers JSON modes, re-prompting and constrained decoding with Outlines. _Explains how structured generation works under the hood._
@@ -181,7 +184,7 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 
 **Build:** Build a CLI that turns messy text (emails, invoices, logs) into validated JSON with Pydantic, and include an eval set of 20 examples.
 
-**Move on when:** You can pick zero-shot, few-shot or chain-of-thought for a task, and you can explain a prompt injection risk in your own app.
+**Move on when:** You can pick zero-shot, few-shot or chain-of-thought for a task, explain a prompt injection risk in your own app, and show the failure categories you found by reading 50 real outputs before changing the prompt.
 
 ## Stage 3: Machine learning foundations
 
@@ -477,6 +480,12 @@ Ground models in your own data: chunking, embeddings, vector databases, hybrid s
 - [ ] **[Advanced Retrieval for AI with Chroma](https://www.deeplearning.ai/courses/advanced-retrieval-for-ai)**  
   DeepLearning.AI × Chroma · Short course · ~1 h · Free to watch  
   Query expansion, cross-encoder reranking and embedding adapters. _The techniques carry over to any vector store._
+- [ ] **[Document AI: From OCR to Agentic Doc Extraction](https://www.deeplearning.ai/courses/document-ai-from-ocr-to-agentic-doc-extraction)**  
+  DeepLearning.AI · Short course · Free to watch  
+  Agentic parsing of documents grounded in their visual parts: charts, tables and forms. _From January 2026. Covers Ng's 'document transformation pipelines', which none of the RAG courses go deep on._
+- [ ] **[Knowledge Graphs for RAG](https://www.deeplearning.ai/courses/knowledge-graphs-rag)**  
+  DeepLearning.AI × Neo4j · Short course · Free to watch  
+  Build a knowledge graph and query it with Cypher to improve retrieval. _From 2024 and tied to Neo4j, but it's the only hands-on intro to Ng's 'knowledge graphs' representation choice on the route._
 
 ### Reference
 
@@ -496,7 +505,7 @@ Ground models in your own data: chunking, embeddings, vector databases, hybrid s
 
 ## Stage 8: Agents
 
-~88 h of core material (Full track).
+~89 h of core material (Full track).
 
 Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines, MCP servers and multi-agent patterns, plus knowing when not to use an agent.
 
@@ -517,6 +526,15 @@ Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines
 - [ ] **[CMU 11-768: AI Agents (Fall 2026)](https://www.cmu-agents.com/#/schedule)** `bookmark` _(Full track: core · Builder track: optional)_  
   CMU · Graham Neubig & Daniel Fried · University course · ~40 h · Free materials  
   Build an agent harness from scratch on an open model, design multi-step evals, and train agents with SFT and RL. _The only item on the route that covers agent harness internals and RL for agents. The course is running now, so slides and videos are still being released. It's graduate level, so take it last in this stage._
+- [ ] **[Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)**  
+  Anthropic · Erik Schluntz & Barry Zhang · Article · ~0.5 h · Free  
+  Workflow patterns first (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer), then autonomous agents, with the advice to stay simple and skip frameworks until needed. _Matches Ng's 'architecture selection' skill exactly. Read it before picking LangGraph or CrewAI._
+- [ ] **[Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)**  
+  Anthropic · Article · ~0.5 h · Free  
+  Treat context as a scarce budget: right-altitude system prompts, token-efficient tools, just-in-time retrieval, compaction, structured notes and sub-agents. _Ng lists context management under both agentic systems and coding agents. This is the clearest single source._
+- [ ] **[The Lethal Trifecta for AI Agents](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)**  
+  Simon Willison · Article · ~0.3 h · Free  
+  An agent with private data, exposure to untrusted content and a way to communicate externally can be made to leak that data through prompt injection, and guardrails don't reliably stop it. _The mental model for Ng's 'guardrails and adversarial input' skill. Design your Stage 8 agent so it never has all three._
 
 ### Alternatives (pick at most one)
 
@@ -541,9 +559,6 @@ Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines
 - [ ] **[Agent Skills with Anthropic](https://www.deeplearning.ai/courses/agent-skills-with-anthropic)**  
   DeepLearning.AI × Anthropic · Short course · ~2 h · Free to watch  
   Package on-demand expertise as Skills for coding, research and data agents. _Context engineering through progressive disclosure. It pairs with MCP._
-- [ ] **[Claude Code: A Highly Agentic Coding Assistant](https://www.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant)**  
-  DeepLearning.AI × Anthropic · Short course · ~2 h · Free to watch  
-  Subagents, hooks, MCP and GitHub integration in a real agent harness. _Useful as a productivity tool and as a look inside a production agent._
 - [ ] **[Multi-Agent Systems with CrewAI](https://www.deeplearning.ai/courses/design-develop-and-deploy-multi-agent-systems-with-crewai)**  
   DeepLearning.AI × CrewAI · Course · ~13 h · DLAI Pro  
   Multi-agent systems with tools, memory, guardrails and deployment. _Tied to CrewAI. Take it only if multi-agent work is your focus._
@@ -559,10 +574,13 @@ Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines
 - [ ] **[ollama-playground](https://github.com/NarimanN2/ollama-playground)** `bookmark`  
   Nariman N. · Projects · Free  
   Small local-model projects: PDF and hybrid RAG, MCP agents, multi-agent supervisor and swarm, voice, vision. _Project ideas that run entirely on your machine._
+- [ ] **[Building Coding Agents with Tool Execution](https://www.deeplearning.ai/courses/building-coding-agents-with-tool-execution)**  
+  DeepLearning.AI · Short course · Free to watch  
+  Agents that write and run code in sandboxed cloud environments. _Covers Ng's 'code versus LLM execution' and 'sandbox environments'._
 
 **Build:** Build a research agent with web search, a code tool and an MCP server you wrote, and add traces you can inspect.
 
-**Move on when:** You can explain why your agent failed on a task by reading its trace.
+**Move on when:** You can explain why your agent failed on a task by reading its trace, and say which leg of the lethal trifecta you removed from it.
 
 ## Stage 9: Production: MLOps and LLMOps
 
@@ -623,6 +641,12 @@ Deploy, monitor and iterate: experiment tracking, model registry, orchestration,
 - [ ] **[Agent Starter Pack](https://github.com/GoogleCloudPlatform/agent-starter-pack)** `bookmark`  
   Google Cloud · Templates · Free (GCP billed)  
   Production agent templates with CI/CD, evaluation and observability built in. _Only if you deploy on GCP. Your bookmark pointed at its old location in the generative-ai repo._
+- [ ] **[Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications)**  
+  DeepLearning.AI × Giskard · Short course · Free to watch  
+  Find and evaluate vulnerabilities in LLM apps: prompt injection, data leaks, harmful outputs. _From 2024. Pair it with the lethal-trifecta article for Ng's 'security incident management'._
+- [ ] **[Governing AI Agents](https://www.deeplearning.ai/courses/governing-ai-agents)**  
+  DeepLearning.AI · Short course · Free to watch  
+  Build data governance into an agent's workflow so it handles data safely, securely and accurately. _Covers Ng's 'privacy, governance and compliance' item._
 
 ### Reference
 
@@ -630,9 +654,76 @@ Deploy, monitor and iterate: experiment tracking, model registry, orchestration,
   INNOQ · Docs · Free  
   MLOps principles, maturity levels, CRISP-ML(Q), testing and governance. _Conceptual, tool-agnostic, and older than LLMOps._
 
-**Build:** Ship your Stage 7 or Stage 8 app with Docker, run its eval suite in CI, add tracing and monitoring, and write a cost-per-request report.
+**Build:** Ship your Stage 7 or Stage 8 app with Docker, run its eval suite in CI, add tracing, monitoring and drift alerts, and write a cost-per-request report with one lever you pulled (cheaper model, caching or a simpler workflow).
 
 **Move on when:** A regression in your prompt or model gets caught by CI before users see it.
+
+## Alongside every stage
+
+Andrew Ng's AI Engineering Skills Map has four pillars. The stages above cover the first one, building and deploying AI apps. These three tracks cover the rest. Work on them alongside the stages, not after.
+
+### Track A: Using coding agents
+
+~2 h of core material (Full track).
+
+Ng's third pillar. Plan, then let agents execute, then verify. The skill is directing that loop: how much autonomy to give, how to manage context, and how to review what comes back. Your Claude Code harness already covers much of 'customizing the agent and environment', so focus on spec-first planning and reviewing.
+
+#### Do these
+
+- [ ] **[Claude Code: A Highly Agentic Coding Assistant](https://www.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant)**  
+  DeepLearning.AI × Anthropic · Short course · ~2 h · Free to watch  
+  Subagents, hooks, MCP and GitHub integration in a real agent harness. _Ng's 'customizing agent and environment' skills. Your Claude Code harness already goes beyond most of it, so skim for what you haven't set up._
+- [ ] **[Spec-Driven Development with Coding Agents](https://www.deeplearning.ai/courses/spec-driven-development-with-coding-agents)**  
+  DeepLearning.AI · Short course · Free to watch  
+  Write specs that give a coding agent the context to build intentional, maintainable software instead of vibe-coding. _From April 2026. It's Ng's 'planning' phase, the part most people skip._
+
+#### Optional depth
+
+- [ ] **[Generative AI for Software Development](https://www.coursera.org/professional-certificates/generative-ai-for-software-development)**  
+  DeepLearning.AI · Laurence Moroney · Certificate · ~34 h · Audit free  
+  Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design. _About productivity, not about building AI. Its reviewing and testing modules match Ng's 'reviewing the work' skill._
+
+**Build:** Pick one feature of your portfolio project. Write the spec and an execution plan first, let an agent build it in a worktree, then review it against tests you wrote before seeing its code.
+
+**Move on when:** You can name Ng's four agent failure modes (overengineering, lost rigour, stopping too early, destructive actions) and show the guard you use for each.
+
+### Track B: Software engineering fundamentals
+
+~0 h of core material (Full track).
+
+Ng's second pillar: full-stack apps, data management, architecture, security and reliability, and running in production. Agents write the code, but you still choose the tradeoffs. Your server and infrastructure work likely covers much of this, so use Part 3 as a checklist and only study the gaps.
+
+#### Do these
+
+- [ ] **[Skills Map Part 3: Software Engineering Fundamentals](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-software-engineering-fundamentals)**  
+  Andrew Ng · The Batch · Article (checklist) · ~0.3 h · Free  
+  Five areas: full-stack apps, managing data, system architecture, security and reliability, scaling and operating in production. _Read it as a checklist and mark what you already know. Your server work likely covers most of it._
+
+#### Reference
+
+- [ ] **[System Design Primer](https://github.com/donnemartin/system-design-primer)**  
+  Donne Martin · Guide · Free  
+  Scalability, CAP, caching, load balancing, SQL vs NoSQL, async and queues, with worked design cases. _About 373k stars. Use it only for the checklist items you're unsure of._
+
+**Build:** Score yourself against the five areas in Part 3. For each weak item, write a one-paragraph design note on how your Stage 7 or Stage 8 project handles it.
+
+**Move on when:** You can defend your project's data store, sync versus async processing, and deployment choices in terms of latency, cost and reliability.
+
+### Track C: Shaping the build
+
+~0 h of core material (Full track).
+
+Ng's fourth pillar: deciding what to build, not just how. This means product sense, business basics, explaining feasibility to non-engineers, and owning outcomes. It's learned by doing, so this track is mostly a way of running your projects.
+
+#### Do these
+
+- [ ] **[Skills Map Part 5: Shaping the Build](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-shaping-the-build)**  
+  Andrew Ng · The Batch · Article (checklist) · ~0.3 h · Free  
+  Driving the build loop, making product decisions, communicating and leading, and high-agency ownership. _Nothing else on the route teaches this, and it's mostly practice. The track's project is where you learn it._
+
+**Build:** For your capstone, talk to 2–3 potential users before building, pick one metric that shows value, ship in small batches, and write a one-page update for a non-technical reader.
+
+**Move on when:** You can explain your project's user, its metric and its cost per request to someone outside engineering in two minutes.
 
 ## Reference shelf
 

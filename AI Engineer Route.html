@@ -103,6 +103,8 @@ select,input[type=search]{font:inherit;color:var(--ink);background:var(--surface
 .outcome{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .outcome div{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;min-width:0}
 .outcome p{margin:4px 0 0;font-size:.94rem}
+.side-head{display:flex;flex-direction:column;gap:6px;margin:8px 0 18px 58px}
+@media (max-width:520px){.side-head{margin-left:0}}
 .collapsed{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:.94rem}
 .collapsed button{font:inherit;color:var(--route);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 details.more>summary{cursor:pointer;color:var(--route);font-weight:700;font-size:.92rem;list-style:none;padding:4px 0}
@@ -167,7 +169,7 @@ footer{color:var(--muted);font-size:.84rem;border-top:1px solid var(--line);padd
 
   <footer>
     <p id="sync" class="sync">Offline copy: progress is saved in this browser only. The online version syncs to your account: https://claude.ai/artifact/5KRkq84PEj5zvbtbBnqmzj</p>
-    <p>Items marked <span class="chip added">added</span> were not in your list. I added them to fill gaps (math, Claude prompting, the current bitsandbytes install). Hours are estimates from each course page, or from search results where a page was blocked. Checked October 2026. Round 2 added 25 DeepLearning.AI courses picked from its full catalogue, plus the Jam With AI, Philipp Schmid and AI Engineering From Scratch repos. Items marked <span class="chip bm">bookmark</span> came from your browser bookmarks.</p>
+    <p>Items marked <span class="chip added">added</span> were not in your list. I added them to fill gaps (math, Claude prompting, the current bitsandbytes install). Hours are estimates from each course page, or from search results where a page was blocked. Checked October 2026. Round 2 added 25 DeepLearning.AI courses picked from its full catalogue, plus the Jam With AI, Philipp Schmid and AI Engineering From Scratch repos. Items marked <span class="chip bm">bookmark</span> came from your browser bookmarks. Round 4 filled the gaps found by checking the route against Andrew Ng's AI Engineering Skills Map, adding three side tracks for his pillars 2–4.</p>
   </footer>
 </div>
 
@@ -181,7 +183,7 @@ const STAGES=[
   check:"You can write a small package with classes and tests without looking things up, and you can explain a matrix multiply."},
  {n:2,title:"Build with LLM APIs",goal:"Ship useful things on top of hosted models early: prompting, structured output, tool calls, embeddings. This keeps you motivated while the theory comes later.",
   project:"Build a CLI that turns messy text (emails, invoices, logs) into validated JSON with Pydantic, and include an eval set of 20 examples.",
-  check:"You can pick zero-shot, few-shot or chain-of-thought for a task, and you can explain a prompt injection risk in your own app."},
+  check:"You can pick zero-shot, few-shot or chain-of-thought for a task, explain a prompt injection risk in your own app, and show the failure categories you found by reading 50 real outputs before changing the prompt."},
  {n:3,title:"Machine learning foundations",goal:"Learn the classic ML loop: features, loss, gradient descent, overfitting, evaluation. On the Builder track the faster Google crash course is enough.",
   project:"Take a Kaggle tabular dataset from EDA to a tuned XGBoost model, with a proper validation split and a short write-up.",
   check:"You can explain bias versus variance and choose the right metric for an imbalanced classifier."},
@@ -199,10 +201,19 @@ const STAGES=[
   check:"You can show measured retrieval precision before and after a reranker."},
  {n:8,title:"Agents",goal:"Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines, MCP servers and multi-agent patterns, plus knowing when not to use an agent.",
   project:"Build a research agent with web search, a code tool and an MCP server you wrote, and add traces you can inspect.",
-  check:"You can explain why your agent failed on a task by reading its trace."},
+  check:"You can explain why your agent failed on a task by reading its trace, and say which leg of the lethal trifecta you removed from it."},
  {n:9,title:"Production: MLOps and LLMOps",goal:"Deploy, monitor and iterate: experiment tracking, model registry, orchestration, CI/CD, observability, guardrails, cost and latency.",
-  project:"Ship your Stage 7 or Stage 8 app with Docker, run its eval suite in CI, add tracing and monitoring, and write a cost-per-request report.",
-  check:"A regression in your prompt or model gets caught by CI before users see it."}
+  project:"Ship your Stage 7 or Stage 8 app with Docker, run its eval suite in CI, add tracing, monitoring and drift alerts, and write a cost-per-request report with one lever you pulled (cheaper model, caching or a simpler workflow).",
+  check:"A regression in your prompt or model gets caught by CI before users see it."},
+ {n:"A",side:true,title:"Using coding agents",goal:"Ng's third pillar. Plan, then let agents execute, then verify. The skill is directing that loop: how much autonomy to give, how to manage context, and how to review what comes back. Your Claude Code harness already covers much of 'customizing the agent and environment', so focus on spec-first planning and reviewing.",
+  project:"Pick one feature of your portfolio project. Write the spec and an execution plan first, let an agent build it in a worktree, then review it against tests you wrote before seeing its code.",
+  check:"You can name Ng's four agent failure modes (overengineering, lost rigour, stopping too early, destructive actions) and show the guard you use for each."},
+ {n:"B",side:true,title:"Software engineering fundamentals",goal:"Ng's second pillar: full-stack apps, data management, architecture, security and reliability, and running in production. Agents write the code, but you still choose the tradeoffs. Your server and infrastructure work likely covers much of this, so use Part 3 as a checklist and only study the gaps.",
+  project:"Score yourself against the five areas in Part 3. For each weak item, write a one-paragraph design note on how your Stage 7 or Stage 8 project handles it.",
+  check:"You can defend your project's data store, sync versus async processing, and deployment choices in terms of latency, cost and reliability."},
+ {n:"C",side:true,title:"Shaping the build",goal:"Ng's fourth pillar: deciding what to build, not just how. This means product sense, business basics, explaining feasibility to non-engineers, and owning outcomes. It's learned by doing, so this track is mostly a way of running your projects.",
+  project:"For your capstone, talk to 2–3 potential users before building, pick one metric that shows value, ship in small batches, and write a one-page update for a non-technical reader.",
+  check:"You can explain your project's user, its metric and its cost per request to someone outside engineering in two minutes."}
 ];
 
 /* r = role on Full track, b = role on Builder track (defaults to r).
@@ -237,7 +248,7 @@ const R=[
 {id:"D4",s:2,r:"opt",b:"skip",cat:"Prompting and LLM apps",t:"Generative AI: Prompt Engineering Basics",p:"IBM",u:"https://www.coursera.org/learn/generative-ai-prompt-engineering-for-everyone",ty:"Course",h:9,c:"Audit free",sum:"Prompting techniques in chat UIs, with no API work.",note:"Course 3 of the IBM GenAI cert. Below the level of the core items here."},
 {id:"D7",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Building Generative AI-Powered Applications with Python",p:"IBM",u:"https://www.coursera.org/learn/building-gen-ai-powered-applications",ty:"Course",h:15,c:"Audit free",sum:"Seven small projects: image captioner, chatbot, voice assistant, RAG and more, built with Gradio and Flask.",note:"The best early IBM course, but some of its models (GPT-3, Llama 2) are dated."},
 {id:"D6",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Developing AI Applications with Python and Flask",p:"IBM",u:"https://www.coursera.org/learn/python-project-for-ai-application-development",ty:"Course",h:12,c:"Audit free",sum:"Flask, unit tests, packaging and deployment around Watson NLP.",note:"Mostly general web development. Skip it if you already build web apps."},
-{id:"A15",s:2,r:"opt",cat:"Prompting and LLM apps",t:"Generative AI for Software Development",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.coursera.org/professional-certificates/generative-ai-for-software-development",ty:"Certificate",h:34,c:"Audit free",sum:"Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design.",note:"About productivity, not about building AI. Take it any time you like."},
+{id:"A15",s:"A",r:"opt",cat:"Prompting and LLM apps",t:"Generative AI for Software Development",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.coursera.org/professional-certificates/generative-ai-for-software-development",ty:"Certificate",h:34,c:"Audit free",sum:"Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design.",note:"About productivity, not about building AI. Its reviewing and testing modules match Ng's 'reviewing the work' skill."},
 
 /* 3 ML foundations */
 {id:"B1",s:3,r:"core",b:"opt",cat:"ML foundations",t:"Machine Learning Specialization",p:"DeepLearning.AI & Stanford · Andrew Ng",u:"https://www.coursera.org/specializations/machine-learning-introduction",ty:"Specialization",c:"Audit free",sum:"Three courses in Python: regression, classification, neural nets in TensorFlow, trees and XGBoost, clustering, recommenders, intro RL.",note:"The 2022 Python remake of Ng's classic, rated 4.9. Its three courses are listed below."},
@@ -334,7 +345,7 @@ const R=[
 {id:"L15",s:8,r:"opt",cat:"Agents",t:"AI Agents in LangGraph",p:"DeepLearning.AI × LangChain",u:"https://www.deeplearning.ai/courses/ai-agents-in-langgraph",ty:"Short course",h:2,c:"Free to watch",sum:"An agent built from scratch and then in LangGraph, covering state, persistence and human-in-the-loop.",note:"From 2024, so check the code against current LangGraph."},
 {id:"L16",s:8,r:"opt",cat:"Agents",t:"Agent Memory: Building Memory-Aware Agents",p:"DeepLearning.AI × Oracle",u:"https://www.deeplearning.ai/courses/agent-memory-building-memory-aware-agents",ty:"Short course",h:2,c:"Free to watch",sum:"Memory that lets an agent store, retrieve and refine knowledge across sessions.",note:"From 2026. It supersedes the older Letta and LangGraph memory courses."},
 {id:"L17",s:8,r:"opt",cat:"Agents",t:"Agent Skills with Anthropic",p:"DeepLearning.AI × Anthropic",u:"https://www.deeplearning.ai/courses/agent-skills-with-anthropic",ty:"Short course",h:2,c:"Free to watch",sum:"Package on-demand expertise as Skills for coding, research and data agents.",note:"Context engineering through progressive disclosure. It pairs with MCP."},
-{id:"L18",s:8,r:"opt",cat:"Agents",t:"Claude Code: A Highly Agentic Coding Assistant",p:"DeepLearning.AI × Anthropic",u:"https://www.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant",ty:"Short course",h:2,c:"Free to watch",sum:"Subagents, hooks, MCP and GitHub integration in a real agent harness.",note:"Useful as a productivity tool and as a look inside a production agent."},
+{id:"L18",s:"A",r:"core",cat:"Agents",t:"Claude Code: A Highly Agentic Coding Assistant",p:"DeepLearning.AI × Anthropic",u:"https://www.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant",ty:"Short course",h:2,c:"Free to watch",sum:"Subagents, hooks, MCP and GitHub integration in a real agent harness.",note:"Ng's 'customizing agent and environment' skills. Your Claude Code harness already goes beyond most of it, so skim for what you haven't set up."},
 {id:"L19",s:8,r:"opt",cat:"Agents",t:"Multi-Agent Systems with CrewAI",p:"DeepLearning.AI × CrewAI",u:"https://www.deeplearning.ai/courses/design-develop-and-deploy-multi-agent-systems-with-crewai",ty:"Course",h:13,c:"DLAI Pro",sum:"Multi-agent systems with tools, memory, guardrails and deployment.",note:"Tied to CrewAI. Take it only if multi-agent work is your focus."},
 {id:"L20",s:8,r:"opt",cat:"Agents",t:"A2A: The Agent2Agent Protocol",p:"DeepLearning.AI × Google Cloud & IBM",u:"https://www.deeplearning.ai/courses/a2a-the-agent2agent-protocol",ty:"Short course",h:1.5,c:"Free to watch",sum:"Make agents built on different frameworks interoperate.",note:"MCP connects agents to tools, and A2A connects agents to each other."},
 {id:"L21",s:9,r:"core",cat:"Production and MLOps",t:"Evaluating AI Agents",p:"DeepLearning.AI × Arize",u:"https://www.deeplearning.ai/courses/evaluating-ai-agents",ty:"Short course",h:3,c:"Free to watch",sum:"Tracing, component and trajectory evals, LLM-as-judge, and experiment-driven iteration.",note:"The best evals course in the catalogue. Its ideas apply from Stage 2 onward."},
@@ -376,6 +387,24 @@ const R=[
 {id:"K29",bm:true,s:9,r:"opt",cat:"Production and MLOps",t:"Agent Starter Pack",p:"Google Cloud",u:"https://github.com/GoogleCloudPlatform/agent-starter-pack",ty:"Templates",c:"Free (GCP billed)",sum:"Production agent templates with CI/CD, evaluation and observability built in.",note:"Only if you deploy on GCP. Your bookmark pointed at its old location in the generative-ai repo."},
 {id:"K30",bm:true,s:null,r:"ref",cat:"Reference lists",t:"Become a Machine Learning Engineer",p:"Max Mynter",u:"https://www.maxmynter.com/pages/blog/become-mle",ty:"Roadmap post",c:"Free",sum:"A second-opinion roadmap for software engineers, which recommends mostly the same resources as this route.",note:"Reassurance that the route is sensible, and nothing more."},
 {id:"K31",bm:true,s:null,r:"ref",cat:"Reference lists",t:"Hugging Face Papers (formerly Papers with Code)",p:"Hugging Face",u:"https://huggingface.co/papers/trending",ty:"Paper feed",c:"Free",sum:"Trending research papers with code links.",note:"paperswithcode.com now redirects here, so update your bookmark."},
+
+/* Round 4: gaps found against Andrew Ng's AI Engineering Skills Map (The Batch, Aug–Sep 2026) */
+{id:"N1",s:0,r:"core",cat:"Concepts",t:"The AI Engineering Skills Map",p:"Andrew Ng · The Batch",u:"https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map",ty:"Article series",h:1,c:"Free",sum:"Ng's map of the AI engineer's job, built from 10,000+ job postings. It has four pillars: building and deploying AI apps, software fundamentals, using coding agents, and shaping the build.",note:"Use it as the rubric for this route. Parts 3 and 5 are linked from side tracks B and C below.",links:[["Part 2: AI applications","https://www.deeplearning.ai/the-batch/he-ai-engineering-skills-map-in-detail-building-and-deploying-ai-applications"],["Part 4: Coding agents","https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-using-coding-agents"]]},
+{id:"N2",s:2,r:"core",cat:"Prompting and LLM apps",t:"Your AI Product Needs Evals",p:"Hamel Husain",u:"https://hamel.dev/blog/posts/evals/",ty:"Article",h:0.5,c:"Free",sum:"Three levels of evals: assertion-style unit tests, human and LLM-judge review of logged traces, and A/B tests. Plus why reading your own data is the core habit.",note:"Ng calls eval-driven development the skill that separates strong AI engineers. Start the habit here, not in Stage 9."},
+{id:"N3",s:8,r:"core",cat:"Agents",t:"Building Effective Agents",p:"Anthropic · Erik Schluntz & Barry Zhang",u:"https://www.anthropic.com/engineering/building-effective-agents",ty:"Article",h:0.5,c:"Free",sum:"Workflow patterns first (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer), then autonomous agents, with the advice to stay simple and skip frameworks until needed.",note:"Matches Ng's 'architecture selection' skill exactly. Read it before picking LangGraph or CrewAI."},
+{id:"N4",s:8,r:"core",cat:"Agents",t:"Effective Context Engineering for AI Agents",p:"Anthropic",u:"https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",ty:"Article",h:0.5,c:"Free",sum:"Treat context as a scarce budget: right-altitude system prompts, token-efficient tools, just-in-time retrieval, compaction, structured notes and sub-agents.",note:"Ng lists context management under both agentic systems and coding agents. This is the clearest single source."},
+{id:"N5",s:8,r:"core",cat:"Agents",t:"The Lethal Trifecta for AI Agents",p:"Simon Willison",u:"https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/",ty:"Article",h:0.3,c:"Free",sum:"An agent with private data, exposure to untrusted content and a way to communicate externally can be made to leak that data through prompt injection, and guardrails don't reliably stop it.",note:"The mental model for Ng's 'guardrails and adversarial input' skill. Design your Stage 8 agent so it never has all three."},
+{id:"N6",s:7,r:"opt",cat:"RAG",t:"Document AI: From OCR to Agentic Doc Extraction",p:"DeepLearning.AI",u:"https://www.deeplearning.ai/courses/document-ai-from-ocr-to-agentic-doc-extraction",ty:"Short course",c:"Free to watch",sum:"Agentic parsing of documents grounded in their visual parts: charts, tables and forms.",note:"From January 2026. Covers Ng's 'document transformation pipelines', which none of the RAG courses go deep on."},
+{id:"N7",s:7,r:"opt",cat:"RAG",t:"Knowledge Graphs for RAG",p:"DeepLearning.AI × Neo4j",u:"https://www.deeplearning.ai/courses/knowledge-graphs-rag",ty:"Short course",c:"Free to watch",sum:"Build a knowledge graph and query it with Cypher to improve retrieval.",note:"From 2024 and tied to Neo4j, but it's the only hands-on intro to Ng's 'knowledge graphs' representation choice on the route."},
+{id:"N8",s:8,r:"opt",cat:"Agents",t:"Building Coding Agents with Tool Execution",p:"DeepLearning.AI",u:"https://www.deeplearning.ai/courses/building-coding-agents-with-tool-execution",ty:"Short course",c:"Free to watch",sum:"Agents that write and run code in sandboxed cloud environments.",note:"Covers Ng's 'code versus LLM execution' and 'sandbox environments'."},
+{id:"N9",s:9,r:"opt",cat:"Production and MLOps",t:"Red Teaming LLM Applications",p:"DeepLearning.AI × Giskard",u:"https://www.deeplearning.ai/courses/red-teaming-llm-applications",ty:"Short course",c:"Free to watch",sum:"Find and evaluate vulnerabilities in LLM apps: prompt injection, data leaks, harmful outputs.",note:"From 2024. Pair it with the lethal-trifecta article for Ng's 'security incident management'."},
+{id:"N10",s:9,r:"opt",cat:"Production and MLOps",t:"Governing AI Agents",p:"DeepLearning.AI",u:"https://www.deeplearning.ai/courses/governing-ai-agents",ty:"Short course",c:"Free to watch",sum:"Build data governance into an agent's workflow so it handles data safely, securely and accurately.",note:"Covers Ng's 'privacy, governance and compliance' item."},
+
+/* Side tracks: Ng's pillars 2–4, run alongside the stages */
+{id:"N11",s:"A",r:"core",cat:"Coding agents",t:"Spec-Driven Development with Coding Agents",p:"DeepLearning.AI",u:"https://www.deeplearning.ai/courses/spec-driven-development-with-coding-agents",ty:"Short course",c:"Free to watch",sum:"Write specs that give a coding agent the context to build intentional, maintainable software instead of vibe-coding.",note:"From April 2026. It's Ng's 'planning' phase, the part most people skip."},
+{id:"N12",s:"B",r:"core",cat:"Software fundamentals",t:"Skills Map Part 3: Software Engineering Fundamentals",p:"Andrew Ng · The Batch",u:"https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-software-engineering-fundamentals",ty:"Article (checklist)",h:0.3,c:"Free",sum:"Five areas: full-stack apps, managing data, system architecture, security and reliability, scaling and operating in production.",note:"Read it as a checklist and mark what you already know. Your server work likely covers most of it."},
+{id:"N13",s:"B",r:"ref",cat:"Software fundamentals",t:"System Design Primer",p:"Donne Martin",u:"https://github.com/donnemartin/system-design-primer",ty:"Guide",c:"Free",sum:"Scalability, CAP, caching, load balancing, SQL vs NoSQL, async and queues, with worked design cases.",note:"About 373k stars. Use it only for the checklist items you're unsure of."},
+{id:"N14",s:"C",r:"core",cat:"Shaping the build",t:"Skills Map Part 5: Shaping the Build",p:"Andrew Ng · The Batch",u:"https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-shaping-the-build",ty:"Article (checklist)",h:0.3,c:"Free",sum:"Driving the build loop, making product decisions, communicating and leading, and high-agency ownership.",note:"Nothing else on the route teaches this, and it's mostly practice. The track's project is where you learn it."},
 /* Certificates shelf (s:null) */
 {id:"D1",s:null,r:"cert",cat:"Certificates",t:"IBM Generative AI Engineering Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ibm-generative-ai-engineering",ty:"Certificate · 16 courses",h:150,c:"Paid cert, courses audit free",sum:"From AI basics through Python, Flask, ML and Keras to transformers, LoRA, RLHF/DPO and RAG with LangChain.",note:"Its useful courses already sit in Stages 2, 5, 6 and 7. Courses 1–2 are skipped and 4, 7, 8 and 9 repeat Ng. Pay for the certificate only if you need the credential."},
 {id:"E3",s:null,r:"cert",cat:"Certificates",t:"IBM AI Engineering Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ai-engineer",ty:"Certificate · 13 courses",h:160,c:"Paid",sum:"ML in sklearn, DL in Keras and PyTorch, transformers, fine-tuning, RAG and agents with LangChain.",note:"Overlaps the IBM GenAI cert heavily and teaches both Keras and PyTorch. Don't take both IBM certs."},
@@ -417,7 +446,7 @@ const ROLE_LABEL={core:"Core",alt:"Alternative",opt:"Optional",ref:"Reference",s
 /* progress status, separate from an item's role: "" = not started */
 const ST_NEXT={"":"doing",doing:"done",done:""};
 const ST_LABEL={"":"Not started",doing:"In progress",done:"Done"};
-const CAT_ORDER=["Concepts","Python and data","Math","Prompting and LLM apps","ML foundations","Deep learning","Transformers and LLMs","Fine-tuning","RAG","Agents","Production and MLOps","Certificates","Reference lists","Not learning material"];
+const CAT_ORDER=["Concepts","Python and data","Math","Prompting and LLM apps","ML foundations","Deep learning","Transformers and LLMs","Fine-tuning","RAG","Agents","Production and MLOps","Coding agents","Software fundamentals","Shaping the build","Certificates","Reference lists","Not learning material"];
 const byId=Object.fromEntries(R.map(x=>[x.id,x]));
 
 /* ---------- state ---------- */
@@ -467,9 +496,10 @@ function setSync(t){document.getElementById("sync").textContent=t}
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const role=x=>state.track==="builder"&&x.b?x.b:x.r;
 const isDeep=s=>STAGES[s]?.deep;
+const stageLabel=n=>typeof n==="string"?"Track "+n:"Stage "+n;
 const visibleStage=s=>!(state.track==="builder"&&isDeep(s));
 function stageCore(s){return R.filter(x=>x.s===s&&role(x)==="core"&&!(R.some(c=>c.parent===x.id)))}
-function hours(s){return stageCore(s).reduce((a,x)=>a+(x.h||0),0)}
+function hours(s){return Math.round(stageCore(s).reduce((a,x)=>a+(x.h||0),0))}
 function weeks(h){return Math.max(1,Math.round(h/state.pace))}
 function fmtW(w){return w===1?"1 week":w+" weeks"}
 
@@ -483,7 +513,7 @@ function resHTML(x,opts={}){
     ${cb}
     <div style="min-width:0">
       <div class="rt"><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a>
-        <span class="chip ${r}">${ROLE_LABEL[r]}</span>${s?`<span class="chip ${s}">${ST_LABEL[s]}</span>`:""}${x.added?`<span class="chip added">added</span>`:""}${x.bm?`<span class="chip bm">bookmark</span>`:""}${opts.stage!=null&&x.s!=null?`<span class="chip ref">Stage ${x.s}</span>`:""}</div>
+        <span class="chip ${r}">${ROLE_LABEL[r]}</span>${s?`<span class="chip ${s}">${ST_LABEL[s]}</span>`:""}${x.added?`<span class="chip added">added</span>`:""}${x.bm?`<span class="chip bm">bookmark</span>`:""}${opts.stage!=null&&x.s!=null?`<span class="chip ref">${stageLabel(x.s)}</span>`:""}</div>
       <div class="sub">${meta}</div>
       <p class="sum">${esc(x.sum)}</p>
       ${x.note?`<p class="note">${esc(x.note)}</p>`:""}
@@ -500,8 +530,10 @@ function routeView(){
   let html=`<div class="legend"><span><i class="st st-todo"></i>Not started</span><span><i class="st st-doing"></i>In progress</span><span><i class="st st-done"></i>Done</span><span>Click the circle to move an item to the next status.</span></div>`;
   if(doing.length)html+=`<section class="now" aria-label="In progress"><h3>In progress now (${doing.length})</h3>${doing.map(x=>resHTML(x,{flat:true,stage:true})).join("")}</section>`;
   html+=`<div class="route">`;
-  let hiddenShown=false;
+  let hiddenShown=false,sideShown=false;
   STAGES.forEach(st=>{
+    if(st.side&&!sideShown){sideShown=true;
+      html+=`</div><div class="side-head"><h2>Alongside every stage</h2><p class="goal">Andrew Ng's AI Engineering Skills Map has four pillars. The stages above cover the first one, building and deploying AI apps. These three tracks cover the rest. Work on them alongside the stages, not after.</p></div><div class="route">`;}
     const vis=visibleStage(st.n);
     if(!vis&&!state.showDeep){
       if(!hiddenShown){hiddenShown=true;
@@ -518,10 +550,10 @@ function routeView(){
     const doingN=items.filter(x=>state.status[x.id]==="doing").length;
     const pct=core.length?Math.round(doneN/core.length*100):100;
     const h=hours(st.n);
-    html+=`<section class="stop ${st.deep?"deep":""}" id="stage-${st.n}">
+    html+=`<section class="stop ${st.deep||st.side?"deep":""}" id="stage-${st.n}">
       <div class="rail"><div class="node ${pct===100?"full":""}" style="--p:${pct}" title="${pct}% of core done">${st.n}</div></div>
       <div class="stage">
-        <div class="stage-head"><span class="eyebrow">Stage ${st.n}${st.deep?` · <span class="deep-tag">Full track</span>`:""} · ~${h} h · ${fmtW(weeks(h))} at your pace · ${doneN}/${core.length} core done${doingN?` · ${doingN} in progress`:""}</span>
+        <div class="stage-head"><span class="eyebrow">${stageLabel(st.n)}${st.deep?` · <span class="deep-tag">Full track</span>`:""} · ~${h} h · ${fmtW(weeks(h))} at your pace · ${doneN}/${core.length} core done${doingN?` · ${doingN} in progress`:""}</span>
         <h2>${esc(st.title)}</h2><p class="goal">${esc(st.goal)}</p></div>
         ${groups.core.length?`<div class="group"><h3>Do these</h3>${groups.core.map(x=>resHTML(x)).join("")}</div>`:""}
         ${groups.alt.length?`<details class="more"><summary>Alternatives: same ground, pick at most one (${groups.alt.length})</summary><div class="group">${groups.alt.map(x=>resHTML(x)).join("")}</div></details>`:""}
