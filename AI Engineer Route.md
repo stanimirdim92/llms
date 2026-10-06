@@ -7,13 +7,14 @@ Online version with progress tracking: https://claude.ai/artifact/5KRkq84PEj5zvb
 ## How to read this
 
 - **Do these**: the main path. **Alternatives** cover the same ground, so pick at most one. **Optional** adds depth. **Reference** is for lookups.
-- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **331 h** of core material, roughly 8 months at 10 h/week.
-- **Full track** (also understand and train models) includes every stage: about **650 h**, roughly 15 months at 10 h/week.
+- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **338 h** of core material, roughly 8 months at 10 h/week.
+- **Full track** (also understand and train models) includes every stage: about **657 h**, roughly 15 months at 10 h/week.
 - Items with a different role per track say so in italics. `added` marks gap-fillers that weren't in your list, and `bookmark` marks items from your browser bookmarks.
+- In the online and HTML versions, click an item's circle to move it from Not started to In progress to Done. In this file, use `- [ ]` and `- [x]`, and add `🚧` after an item's title to mark it in progress.
 
 ## Stage 0: Orientation
 
-~15 h of core material (Full track).
+~22 h of core material (Full track).
 
 Get the vocabulary and a mental model of what LLMs are before you write code. You already finished AI For Everyone, so this stage is short.
 

@@ -74,7 +74,16 @@ select,input[type=search]{font:inherit;color:var(--ink);background:var(--surface
 .res.child{margin-left:22px}
 .res.is-done{opacity:.62}
 .res.is-done .rt a{text-decoration:line-through}
-.res input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--ok);cursor:pointer}
+.res.is-doing{outline:2px solid var(--core);outline-offset:-1px}
+.st{width:22px;height:22px;margin-top:1px;padding:0;border-radius:50%;border:2px solid var(--muted);background:var(--surface);cursor:pointer;display:grid;place-items:center;font:700 12px/1 var(--f-mono);color:var(--surface)}
+.st:hover{border-color:var(--route)}
+.st-doing{border-color:var(--core);background:linear-gradient(90deg,var(--core) 50%,var(--surface) 50%)}
+.st-done{border-color:var(--ok);background:var(--ok)}
+.st-done::after{content:"✓"}
+.now{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:.84rem;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend .st{width:16px;height:16px;cursor:default;font-size:9px;border-width:2px}
 .rt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
 .rt a{font-weight:700;color:var(--ink);text-decoration-color:var(--line);text-underline-offset:3px}
 .rt a:hover{text-decoration-color:var(--route)}
@@ -88,6 +97,7 @@ select,input[type=search]{font:inherit;color:var(--ink);background:var(--surface
 .chip.alt,.chip.opt,.chip.ref{background:var(--route-soft);color:var(--route)}
 .chip.skip{background:var(--skip-soft);color:var(--skip)}
 .chip.done{background:var(--ok-soft);color:var(--ok)}
+.chip.doing{background:var(--core-soft);color:var(--core)}
 .chip.added{background:transparent;border:1px dashed var(--muted);color:var(--muted)}
 .chip.bm{background:transparent;border:1px solid var(--route);color:var(--route)}
 .outcome{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
@@ -196,11 +206,11 @@ const STAGES=[
 ];
 
 /* r = role on Full track, b = role on Builder track (defaults to r).
-   roles: core | alt (same ground as a core item, pick one) | opt | ref | skip | done
+   roles: core | alt (same ground as a core item, pick one) | opt | ref | skip | cert
    parent = shown nested under an umbrella programme; h = hours for core estimate */
 const R=[
 /* 0 Orientation */
-{id:"A8",s:0,r:"done",cat:"Concepts",t:"AI For Everyone",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/ai-for-everyone/",ty:"Course",h:7,c:"Audit free",sum:"Non-technical intro to what ML can do, AI projects and strategy.",note:"You already completed this. It's from 2019, before generative AI."},
+{id:"A8",s:0,r:"core",cat:"Concepts",t:"AI For Everyone",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/ai-for-everyone/",ty:"Course",h:7,c:"Audit free",sum:"Non-technical intro to what ML can do, AI projects and strategy.",note:"You already completed this. It's from 2019, before generative AI."},
 {id:"A14",s:0,r:"core",cat:"Concepts",t:"Generative AI for Everyone",p:"DeepLearning.AI · Andrew Ng",u:"https://www.coursera.org/learn/generative-ai-for-everyone",ty:"Course",h:6,c:"Audit free",sum:"How LLMs work and where they fail; prompting, RAG and fine-tuning at a concept level; the GenAI project lifecycle.",note:"The natural sequel to AI For Everyone. Take this instead of the Google AI cert and the IBM GenAI article."},
 {id:"A19",s:0,r:"core",cat:"Concepts",t:"Neural networks series",p:"3Blue1Brown",u:"https://www.youtube.com/watch?v=aircAruvnKk&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi",ty:"Video series",h:4,c:"Free",sum:"Animated explanations of gradient descent, backprop, transformers, attention and how LLMs store facts.",note:"The best intuition builder on the list. Chapters 5–7 (2024) cover transformers."},
 {id:"E17",s:0,r:"core",cat:"Concepts",t:"Karpathy: Intro to LLMs and Deep Dive into LLMs",p:"Andrej Karpathy",u:"https://www.youtube.com/@AndrejKarpathy/videos",ty:"Talks",h:5,c:"Free",sum:"Non-coding talks on how ChatGPT-style models are pretrained, fine-tuned and used. Start with the 1-hour 'Intro to Large Language Models', then the 3.5-hour 'Deep Dive into LLMs like ChatGPT' (2025).",note:"The same channel hosts Zero to Hero, which is in Stage 5."},
@@ -403,26 +413,34 @@ const R=[
 {id:"F14",s:null,r:"skip",cat:"Not learning material",t:"Luma Dream Machine",p:"Luma Labs",u:"https://lumalabs.ai/dream-machine?ref=FutureTools.io",ty:"Product",sum:"Commercial video and image generation, now sold as 'Luma Agents'.",note:"A product, and it duplicates Kling."}
 ];
 
-const ROLE_LABEL={core:"Core",alt:"Alternative",opt:"Optional",ref:"Reference",skip:"Skip",done:"Done",cert:"Certificate"};
+const ROLE_LABEL={core:"Core",alt:"Alternative",opt:"Optional",ref:"Reference",skip:"Skip",cert:"Certificate"};
+/* progress status, separate from an item's role: "" = not started */
+const ST_NEXT={"":"doing",doing:"done",done:""};
+const ST_LABEL={"":"Not started",doing:"In progress",done:"Done"};
 const CAT_ORDER=["Concepts","Python and data","Math","Prompting and LLM apps","ML foundations","Deep learning","Transformers and LLMs","Fine-tuning","RAG","Agents","Production and MLOps","Certificates","Reference lists","Not learning material"];
 const byId=Object.fromEntries(R.map(x=>[x.id,x]));
 
 /* ---------- state ---------- */
 const LS="ai-route-v1";
-let state={track:"builder",pace:10,view:"route",showDeep:false,done:{A8:true}};
-try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s)state={...state,...s,done:{...state.done,...(s.done||{})}}}catch(e){}
+let state={track:"builder",pace:10,view:"route",showDeep:false,status:{}};
+/* older versions stored {done:{id:true}}; fold that into status */
+function migrate(status,done){const o={};for(const k in (status||{}))if(status[k]==="doing"||status[k]==="done")o[k]=status[k];for(const k in (done||{}))if(done[k]&&!o[k])o[k]="done";return o}
+let stored=null;try{stored=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){}
+if(stored){const {done,status,...rest}=stored;state={...state,...rest,status:migrate(status,done)}}
+else state.status={A8:"done"};
+const st=id=>state.status[id]||"";
 const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}};
 
-let remote=null,writing=false,pending=false,timer=null;
-function queueRemote(){ if(!remote) return; clearTimeout(timer); timer=setTimeout(flush,700); }
+let remote=null,writing=false,pending=false,timer=null,dirty=false;
+function queueRemote(){ if(!remote) return; dirty=true; clearTimeout(timer); timer=setTimeout(flush,700); }
 async function flush(){
   if(!remote) return;
   if(writing){pending=true;return}
-  writing=true;
-  try{await remote.set({done:state.done,track:state.track,pace:state.pace});setSync("Progress is synced to your account.")}
+  writing=true;timer=null;
+  try{await remote.set({status:state.status,track:state.track,pace:state.pace});setSync("Progress is synced to your account.")}
   catch(e){setSync("Couldn't sync to your account, so progress is saved in this browser only.")}
   writing=false;
-  if(pending){pending=false;flush()}
+  if(pending){pending=false;flush()}else if(!timer)dirty=false;
 }
 function setSync(t){document.getElementById("sync").textContent=t}
 (async()=>{
@@ -436,10 +454,11 @@ function setSync(t){document.getElementById("sync").textContent=t}
     ref.onSnapshot(snap=>{
       const d=snap.exists?snap.data():null;
       if(first){first=false;remote=ref;
-        if(d&&d.done){state.done={...d.done};if(d.track)state.track=d.track;if(d.pace)state.pace=d.pace;saveLocal();render();}
-        else if(Object.keys(state.done).length>1){flush()}
+        if(d&&(d.status||d.done)){state.status=migrate(d.status,d.done);if(d.track)state.track=d.track;if(d.pace)state.pace=d.pace;saveLocal();render();}
+        else if(Object.keys(state.status).length){flush()}
         setSync("Progress is synced to your account.");return;}
-      if(d&&d.done&&!snap.metadata?.hasPendingWrites){state.done={...d.done};saveLocal();render();}
+      /* ignore echoes while a local change is still queued or being written, so a click is never undone */
+      if(d&&(d.status||d.done)&&!dirty&&!snap.metadata?.hasPendingWrites){state.status=migrate(d.status,d.done);saveLocal();render();}
     },()=>{remote=null;setSync("Couldn't sync to your account, so progress is saved in this browser only.")});
   }catch(e){}
 })();
@@ -455,16 +474,16 @@ function weeks(h){return Math.max(1,Math.round(h/state.pace))}
 function fmtW(w){return w===1?"1 week":w+" weeks"}
 
 function resHTML(x,opts={}){
-  const r=role(x), done=!!state.done[x.id];
-  const umbrella=R.some(c=>c.parent===x.id);
-  const cb=(r==="skip"||umbrella)?`<span aria-hidden="true"></span>`:`<input type="checkbox" id="cb-${x.id}" data-id="${x.id}" ${done?"checked":""} aria-label="Mark ${esc(x.t)} done">`;
+  const r=role(x), umbrella=R.some(c=>c.parent===x.id), track=!(r==="skip"||umbrella);
+  const s=track?st(x.id):"", nx=ST_NEXT[s];
+  const cb=track?`<button type="button" class="st st-${s||"todo"}" data-st="${x.id}" title="${ST_LABEL[s]}. Click to mark ${ST_LABEL[nx].toLowerCase()}." aria-label="${esc(x.t)}: ${ST_LABEL[s]}. Mark ${ST_LABEL[nx].toLowerCase()}"></button>`:`<span aria-hidden="true"></span>`;
   const extra=(x.links||[]).map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`).join("");
   const meta=[x.p,x.ty,x.h?`~${x.h} h`:"",x.c].filter(Boolean).map(esc).join(" · ");
-  return `<div class="res ${r==="core"?"core":""} ${x.parent&&!opts.flat?"child":""} ${done&&r!=="skip"?"is-done":""}">
+  return `<div class="res ${r==="core"?"core":""} ${x.parent&&!opts.flat?"child":""} ${s==="done"?"is-done":s==="doing"?"is-doing":""}">
     ${cb}
     <div style="min-width:0">
       <div class="rt"><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a>
-        <span class="chip ${done&&r!=="skip"?"done":r}">${done&&r!=="skip"?"Done":ROLE_LABEL[r]}</span>${x.added?`<span class="chip added">added</span>`:""}${x.bm?`<span class="chip bm">bookmark</span>`:""}${opts.stage!=null&&x.s!=null?`<span class="chip ref">Stage ${x.s}</span>`:""}</div>
+        <span class="chip ${r}">${ROLE_LABEL[r]}</span>${s?`<span class="chip ${s}">${ST_LABEL[s]}</span>`:""}${x.added?`<span class="chip added">added</span>`:""}${x.bm?`<span class="chip bm">bookmark</span>`:""}${opts.stage!=null&&x.s!=null?`<span class="chip ref">Stage ${x.s}</span>`:""}</div>
       <div class="sub">${meta}</div>
       <p class="sum">${esc(x.sum)}</p>
       ${x.note?`<p class="note">${esc(x.note)}</p>`:""}
@@ -477,7 +496,10 @@ function ordered(list){ // parents followed by their children
 
 /* ---------- views ---------- */
 function routeView(){
-  let html=`<div class="route">`;
+  const doing=R.filter(x=>st(x.id)==="doing");
+  let html=`<div class="legend"><span><i class="st st-todo"></i>Not started</span><span><i class="st st-doing"></i>In progress</span><span><i class="st st-done"></i>Done</span><span>Click the circle to move an item to the next status.</span></div>`;
+  if(doing.length)html+=`<section class="now" aria-label="In progress"><h3>In progress now (${doing.length})</h3>${doing.map(x=>resHTML(x,{flat:true,stage:true})).join("")}</section>`;
+  html+=`<div class="route">`;
   let hiddenShown=false;
   STAGES.forEach(st=>{
     const vis=visibleStage(st.n);
@@ -490,15 +512,16 @@ function routeView(){
     }
     const items=R.filter(x=>x.s===st.n);
     const groups={core:[],alt:[],opt:[],ref:[]};
-    ordered(items).forEach(x=>{const r=role(x);if(r==="done"||r==="core")groups.core.push(x);else if(groups[r])groups[r].push(x)});
-    const core=stageCore(st.n).filter(x=>role(x)!=="done");
-    const doneN=core.filter(x=>state.done[x.id]).length;
+    ordered(items).forEach(x=>{const r=role(x);if(groups[r])groups[r].push(x)});
+    const core=stageCore(st.n);
+    const doneN=core.filter(x=>state.status[x.id]==="done").length;
+    const doingN=items.filter(x=>state.status[x.id]==="doing").length;
     const pct=core.length?Math.round(doneN/core.length*100):100;
     const h=hours(st.n);
     html+=`<section class="stop ${st.deep?"deep":""}" id="stage-${st.n}">
       <div class="rail"><div class="node ${pct===100?"full":""}" style="--p:${pct}" title="${pct}% of core done">${st.n}</div></div>
       <div class="stage">
-        <div class="stage-head"><span class="eyebrow">Stage ${st.n}${st.deep?` · <span class="deep-tag">Full track</span>`:""} · ~${h} h · ${fmtW(weeks(h))} at your pace · ${doneN}/${core.length} core done</span>
+        <div class="stage-head"><span class="eyebrow">Stage ${st.n}${st.deep?` · <span class="deep-tag">Full track</span>`:""} · ~${h} h · ${fmtW(weeks(h))} at your pace · ${doneN}/${core.length} core done${doingN?` · ${doingN} in progress`:""}</span>
         <h2>${esc(st.title)}</h2><p class="goal">${esc(st.goal)}</p></div>
         ${groups.core.length?`<div class="group"><h3>Do these</h3>${groups.core.map(x=>resHTML(x)).join("")}</div>`:""}
         ${groups.alt.length?`<details class="more"><summary>Alternatives: same ground, pick at most one (${groups.alt.length})</summary><div class="group">${groups.alt.map(x=>resHTML(x)).join("")}</div></details>`:""}
@@ -539,12 +562,13 @@ function render(){
     ?"Builder track: you want to ship LLM apps, RAG and agents. It uses a lighter ML foundation and skips model training (Stages 4–6)."
     :"Full track: you want to understand and train models as well as build with them. It includes every stage.";
   const st=STAGES.filter(s=>visibleStage(s.n));
-  const core=st.flatMap(s=>stageCore(s.n)).filter(x=>role(x)!=="done");
-  const d=core.filter(x=>state.done[x.id]).length;
+  const core=st.flatMap(s=>stageCore(s.n));
+  const d=core.filter(x=>state.status[x.id]==="done").length;
+  const ip=R.filter(x=>state.status[x.id]==="doing").length;
   const totalH=st.reduce((a,s)=>a+hours(s.n),0);
-  const leftH=core.filter(x=>!state.done[x.id]).reduce((a,x)=>a+(x.h||0),0);
+  const leftH=core.filter(x=>state.status[x.id]!=="done").reduce((a,x)=>a+(x.h||0),0);
   document.getElementById("bar").style.width=(core.length?d/core.length*100:0)+"%";
-  document.getElementById("summary").innerHTML=`<span><b class="mono">${d}/${core.length}</b> core items done</span><span><b class="mono">~${totalH} h</b> of core material</span><span><b class="mono">~${fmtW(weeks(leftH))}</b> left at ${state.pace} h/week</span><span><b class="mono">${R.length}</b> links sorted</span>`;
+  document.getElementById("summary").innerHTML=`<span><b class="mono">${d}/${core.length}</b> core items done</span>${ip?`<span><b class="mono">${ip}</b> in progress</span>`:""}<span><b class="mono">~${totalH} h</b> of core material</span><span><b class="mono">~${fmtW(weeks(leftH))}</b> left at ${state.pace} h/week</span><span><b class="mono">${R.length}</b> links sorted</span>`;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.view===state.view)));
   const v=document.getElementById("view");
   const focusQ=document.activeElement?.id==="lib-q";
@@ -557,11 +581,14 @@ document.addEventListener("click",e=>{
   if(t.dataset.track){state.track=t.dataset.track;saveLocal();queueRemote();render()}
   else if(t.dataset.view){state.view=t.dataset.view;saveLocal();render()}
   else if(t.id==="show-deep"){state.showDeep=true;render()}
+  else if(t.dataset.st){const id=t.dataset.st,n=ST_NEXT[st(id)];
+    if(n)state.status[id]=n;else delete state.status[id];
+    saveLocal();queueRemote();render();
+    const b=[...document.querySelectorAll("[data-st]")].find(e=>e.dataset.st===id);b&&b.focus();}
 });
 document.addEventListener("change",e=>{
   const t=e.target;
-  if(t.matches("input[type=checkbox][data-id]")){if(t.checked)state.done[t.dataset.id]=true;else delete state.done[t.dataset.id];saveLocal();queueRemote();render()}
-  else if(t.id==="pace"){state.pace=+t.value;saveLocal();queueRemote();render()}
+  if(t.id==="pace"){state.pace=+t.value;saveLocal();queueRemote();render()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="lib-q"){q=e.target.value;render()}});
 const h0=location.hash.replace("#","");if(["route","library","skip","certs"].includes(h0))state.view=h0;
