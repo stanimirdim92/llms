@@ -20,6 +20,7 @@ were loaded ahead of use). Vendor the three, not the upstream plugin, which also
 | `worker/arq_worker.py`, Redis-backed | **procrastinate**, Postgres-backed — reuse `app/worker/` | Already built for Phase 5.1. The row and its job commit in one transaction; a Redis broker leaves a window where the row exists and the job does not. See `docs/TECHNICAL_DECISIONS.md` § "Job queue". |
 | `agent/cache.py` — hash-keyed skip of re-fetch/re-embed | Same idea, but the **model-call cache** is the version worth building | Parse caching already exists (`processed_dir`). What is missing is caching *model* calls — the pattern taken from graphrag's LLM cache. Key on `sha256(payload + prompt_version + model_id)`; without `prompt_version` a prompt edit silently serves stale output forever. |
 | `sqlmodel` episodic decision log | Unchanged, but note the datetime contract | `SQLModel` datetime fields need an explicit `sa_column` **and** a runtime `datetime` import — see `.claude/rules/database.md`. This bit `save_document_record` and cost weeks. |
+| `interrupt()` on low confidence, resumed with whatever the reviewer sends | **Typed resume: `interrupt(value, response_schema=<Pydantic model>)`**, LangGraph >=1.2.12 (the lock has 1.2.10) | Added in 1.2.12 (read in the wheel, 2026-10-06: `types.py` builds a `TypeAdapter` only for a type, never for a dict). A Pydantic model, `TypedDict` or dataclass is validated on resume; **a raw JSON Schema dict is passed through unvalidated**, so don't use one. An untyped resume makes a malformed approval look like a decision. |
 | `PostgresSaver` checkpointer | Unchanged, and `langgraph-checkpoint-postgres` is already a declared dependency | The SQLite checkpointer is **not** an option: one database engine, per `docs/TECHNICAL_DECISIONS.md`. |
 | Scrape → parse → embed as one job | Same shape, but it must go through `ingest_document` | That function owns the terminal `ingested` write and the `EmptyDocumentError` guard. A second ingestion path would diverge on what a finished row looks like. |
 | `injection_guard.py` heuristic + Claude classification | Unchanged, and now has a sibling | Phase 2.0's intent classifier is the same shape of call. Build them against one structured-output helper rather than two. |
@@ -77,3 +78,17 @@ demonstrably reduces re-escalation, (f) a subagent calling `commit` is rejected 
 scope level rather than merely discouraged by prompt text.
 
 (f) is the one worth stating twice: prompt instructions are not an authorization boundary.
+
+(c) needs concrete cases, because "doesn't duplicate or lose work" passes vacuously otherwise. The
+bar is **exactly one correct final state**, measured as duplicate side effects (zero), not as "the
+model eventually said the right thing":
+- the worker is killed mid-node, and again between a write and its checkpoint;
+- the same job is delivered twice;
+- a tool times out after the external call actually succeeded;
+- Postgres drops mid-run;
+- a reviewer sends an invalid approval, then a corrected one, then the graph resumes;
+- a deploy happens between the pause and the resume.
+
+Checkpoints recover *execution*; they don't make side effects idempotent. Every write the agent
+causes needs its own idempotency key (e.g. `workflow_id + step + workflow_version`) stored in
+Postgres, so a replayed node is a no-op rather than a second write.

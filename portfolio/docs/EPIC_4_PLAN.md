@@ -157,6 +157,23 @@ Built as specified, plus:
   opposed to Phase 2.3's one-shot CI gate against a fixed baseline). Since 2026-09-24, Epic 2's
   runs are LangSmith experiments (the local parquet/DuckDB store was dropped), so a drift view is
   the experiment history in LangSmith. Live latency p95 is LangSmith's dashboard too.
+- **Request tracing and correlation ids: FastAPI's native OpenTelemetry (>=0.142.2).** Nothing
+  today carries one id from the HTTP request through the procrastinate job to the worker's
+  Docling/Voyage/Qdrant calls and the model call, so an incident can't be reconstructed across
+  that hop. FastAPI 0.142 added built-in OTel (`FastAPI(telemetry={...})`, `fastapi/telemetry/`,
+  read in the 0.142.2 wheel 2026-10-06), which replaces monkey-patching instrumentation. Skip
+  0.142.0 and 0.142.1: the patch releases fixed repeated wrapping of included routers and made a
+  failed auto-configuration non-fatal at startup (per the release notes; not reproduced here). We
+  pin `>=0.141.1` today. When this phase starts:
+  - carry `tenant_id` and a request id into the job's arguments, since a procrastinate job is a
+    new process and trace context does not cross it by itself;
+  - **telemetry must fail open** (root rule 9): an unreachable collector must not fail
+    `/health/ready` or a request. Pass `auto_configure: False` and configure the exporter
+    ourselves if the default doesn't guarantee that;
+  - **span attributes must not carry content**: no question text, no chunk text, no answer.
+    `answer_service.answered` already logs `question=`, so check log-to-trace bridging too;
+  - check gunicorn: one exporter per worker process, not a shared one created before fork;
+  - check for duplicate spans if LangSmith tracing and OTel both wrap the same calls.
 
 ---
 
