@@ -218,9 +218,12 @@ Learn the classic ML loop: features, loss, gradient descent, overfitting, evalua
 - [ ] **[Applied Machine Learning Specialization](https://www.coursera.org/specializations/applied-machine-learning)**  
   Johns Hopkins · Specialization · ~55 h · Paid  
   Three courses of Kaggle-style ML projects, ending in CNNs and RL. _A university-branded alternative with nothing unique._
-- [ ] **[ML with Scikit-learn, PyTorch & Hugging Face](https://www.coursera.org/professional-certificates/machine-learning-scikit-learn-pytorch-hugging-face)**  
+- **[ML with Scikit-learn, PyTorch & Hugging Face](https://www.coursera.org/professional-certificates/machine-learning-scikit-learn-pytorch-hugging-face)**  
   Coursera · industry instructors · Certificate · ~137 h · Paid  
   Five courses: sklearn ML, advanced techniques, PyTorch DL, Hugging Face GenAI, end-to-end project. _A modern stack in one package that covers Stages 3–5 at a lighter depth. The instructors aren't named._
+  - [ ] **[1 · Foundations of Machine Learning](https://www.coursera.org/learn/foundations-of-machine-learning-1)**  
+    Coursera · industry instructors · Course · ~30 h · Coursera Plus  
+    Supervised and unsupervised learning, preprocessing and feature engineering, and time-series forecasting (ARIMA, Holt-Winters, Prophet) in scikit-learn and statsmodels. _Course 1 of the certificate above. Its time-series module is the only part Ng's ML Specialization doesn't cover. Only 20 reviews so far._
 
 ### Optional depth
 
@@ -239,6 +242,9 @@ Learn the classic ML loop: features, loss, gradient descent, overfitting, evalua
 - [ ] **[mlcourse.ai](https://mlcourse.ai/book/index.html)** `bookmark`  
   Yury Kashnitsky · Course · ~40 h · Free  
   Ten topics of classic ML with assignments: trees, linear models, ensembles, gradient boosting, time series. _Only adds depth beyond Ng on boosting and time series._
+- [ ] **[Exploratory Data Analysis for Machine Learning](https://www.coursera.org/learn/ibm-exploratory-data-analysis-for-machine-learning)**  
+  IBM · Course · ~14 h · Coursera Plus  
+  Retrieving and cleaning data, EDA and feature engineering, then inferential statistics: hypothesis tests, p-values, Type I and II errors. _Course 1 of the IBM ML certificate. Its hypothesis-testing module fills a real gap, since you need it to tell whether an eval or A/B difference is real (Track C)._
 
 **Build:** Take a Kaggle tabular dataset from EDA to a tuned XGBoost model, with a proper validation split and a short write-up.
 
@@ -279,6 +285,9 @@ Learn how neural networks actually train: backprop, optimizers, regularization, 
 - [ ] **[Practical Deep Learning for Coders](https://course.fast.ai/Lessons/lesson1.html)**  
   fast.ai · Jeremy Howard · Course · ~40 h · Free  
   Top-down and code-first: train real models from lesson 1, then learn how they work. Part 2 builds Stable Diffusion. _A practical alternative to Ng's DL specialization. It's from 2022 and centred on the fastai library. Your separate YouTube playlist link is the same course._ Also: [YouTube playlist](https://www.youtube.com/playlist?list=PLfYUBJiXbdtSvpQjSnJJ_PmDQB_VyT5iU)
+- [ ] **[Convolutional Neural Networks in TensorFlow](https://www.coursera.org/learn/convolutional-neural-networks-tensorflow)**  
+  DeepLearning.AI · Laurence Moroney · Course · ~17 h · Audit free  
+  Real-world image data, augmentation, transfer learning and multiclass classification in TensorFlow and Keras. _Course 2 of the TensorFlow Developer certificate. More hands-on than Ng's CNN course, but in TensorFlow while the rest of the route uses PyTorch. Pick one._
 
 ### Optional depth
 
@@ -376,6 +385,9 @@ Build a GPT from scratch, then learn the Hugging Face stack that real work happe
 - [ ] **[ViT and CLIP papers](https://arxiv.org/abs/2010.11929)** `bookmark`  
   Google · OpenAI · Papers · ~3 h · Free  
   Vision Transformer (2020) and CLIP (2021), the foundations of today's multimodal models and image embeddings. _Read them when you move into multimodal work._ Also: [CLIP paper](https://arxiv.org/abs/2103.00020)
+- [ ] **[Natural Language Processing in TensorFlow](https://www.coursera.org/learn/natural-language-processing-tensorflow)**  
+  DeepLearning.AI · Laurence Moroney · Course · ~23 h · Audit free  
+  Tokenizing, word embeddings, LSTMs and convolutions for text, and next-word generation in TensorFlow. _Course 3 of the TensorFlow Developer certificate. Pre-transformer NLP that Ng's Sequence Models covers. Fine if you're already enrolled, but not needed._
 
 ### Reference
 
@@ -679,9 +691,18 @@ Ng's third pillar. Plan, then let agents execute, then verify. The skill is dire
 
 #### Optional depth
 
-- [ ] **[Generative AI for Software Development](https://www.coursera.org/professional-certificates/generative-ai-for-software-development)**  
-  DeepLearning.AI · Laurence Moroney · Certificate · ~34 h · Audit free  
-  Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design. _About productivity, not about building AI. Its reviewing and testing modules match Ng's 'reviewing the work' skill._
+- **[Generative AI for Software Development](https://www.coursera.org/professional-certificates/generative-ai-for-software-development)**  
+  DeepLearning.AI · Laurence Moroney · Certificate · Audit free  
+  Using LLMs as a pair programmer: writing, testing, documenting code and AI-assisted design. _About productivity, not about building AI. It's from before agentic coding tools, so it teaches chat-based pair programming. Its three courses are listed below._
+  - [ ] **[1 · Introduction to Generative AI for Software Development](https://www.coursera.org/learn/introduction-to-generative-ai-for-software-development)**  
+    DeepLearning.AI · Laurence Moroney · Course · ~9 h · Audit free  
+    How LLMs work for code, prompting an LLM as a pair programmer, and using it to write, refactor and debug code.
+  - [ ] **[2 · Team Software Engineering with AI](https://www.coursera.org/learn/team-software-engineering-with-ai)**  
+    DeepLearning.AI · Laurence Moroney · Course · ~13 h · Audit free  
+    Using LLMs for testing, debugging, documentation and dependency management. _Closest to Ng's 'reviewing the work' skill._
+  - [ ] **[3 · AI-Powered Software and System Design](https://www.coursera.org/learn/ai-powered-software-and-system-design)**  
+    DeepLearning.AI · Laurence Moroney · Course · ~12 h · Audit free  
+    Using LLMs for software design: data serialization and storage choices, database design, and design patterns. _Also counts toward Track B, since it covers design tradeoffs._
 
 **Build:** Pick one feature of your portfolio project. Write the spec and an execution plan first, let an agent build it in a worktree, then review it against tests you wrote before seeing its code.
 
@@ -698,6 +719,21 @@ Ng's second pillar: full-stack apps, data management, architecture, security and
 - [ ] **[Skills Map Part 3: Software Engineering Fundamentals](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-software-engineering-fundamentals)**  
   Andrew Ng · The Batch · Article (checklist) · ~0.3 h · Free  
   Five areas: full-stack apps, managing data, system architecture, security and reliability, scaling and operating in production. _Read it as a checklist and mark what you already know. Your server work likely covers most of it._
+
+#### Alternatives (pick at most one)
+
+- [ ] **[Algorithms for Searching, Sorting, and Indexing](https://www.coursera.org/learn/algorithms-searching-sorting-indexing)**  
+  CU Boulder · Sriram Sankaranarayanan · Course · ~36 h · Coursera Plus  
+  Sorting and searching with proofs and Big-O, heaps and priority queues, randomized quicksort, and hashing up to Bloom filters and count-min sketches, in Python. _Part of CU Boulder's data structures and algorithms specialization. It overlaps Princeton's Part I but is in Python, adds Bloom filters and count-min sketches, and the certificate needs Coursera Plus. Pick one._
+
+#### Optional depth
+
+- [ ] **[Algorithms, Part I](https://www.coursera.org/learn/algorithms-part1)**  
+  Princeton · Sedgewick & Wayne · Course · ~50 h · Free  
+  Union-find, analysis of algorithms, stacks and queues, the sorts, priority queues, symbol tables, balanced search trees and hash tables. _Free, rated 4.9 from 12k reviews, and the classic. Programming assignments are in Java. Do it if your CS theory is rusty._
+- [ ] **[Algorithms, Part II](https://www.coursera.org/learn/algorithms-part2)**  
+  Princeton · Sedgewick & Wayne · Course · ~60 h · Free  
+  Graphs, shortest paths, max flow, radix sorts, tries, substring search, regular expressions, compression, reductions and intractability. _Graphs and tries come up again in knowledge-graph RAG and tokenizers. Optional even within this track._
 
 #### Reference
 
@@ -720,6 +756,12 @@ Ng's fourth pillar: deciding what to build, not just how. This means product sen
 - [ ] **[Skills Map Part 5: Shaping the Build](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-shaping-the-build)**  
   Andrew Ng · The Batch · Article (checklist) · ~0.3 h · Free  
   Driving the build loop, making product decisions, communicating and leading, and high-agency ownership. _Nothing else on the route teaches this, and it's mostly practice. The track's project is where you learn it._
+
+#### Optional depth
+
+- [ ] **[Systems Engineering](https://www.coursera.org/learn/systems-engineering-mathworks)**  
+  MathWorks · Course · ~1.5 h · Coursera Plus  
+  Five short videos on requirements, functional architectures, trade studies and model-based systems engineering. _A 90-minute primer on turning needs into requirements and making tradeoffs explicit, which is the core of Ng's 'shaping the build'. It also supports writing specs for coding agents (Track A)._
 
 **Build:** For your capstone, talk to 2–3 potential users before building, pick one metric that shows value, ship in small batches, and write a one-page update for a non-technical reader.
 
@@ -782,6 +824,8 @@ Checked and left off the route.
 
 | Link | What it is | Why skip |
 |---|---|---|
+| [TOGAF 10 Foundation](https://www.coursera.org/learn/togaf-10-foundation) | A 7-hour overview of the TOGAF enterprise-architecture framework: the ADM phases, governance and stakeholder management. | Off the route. It's certification prep for enterprise architects, and the publisher mass-produces courses. Keep it only if you're aiming at an enterprise-architecture role. |
+| [Introduction to AI (Google AI Essentials, course 1)](https://www.coursera.org/learn/google-introduction-to-ai) | A 1.5-hour AI-literacy intro for using AI tools at work. | For end users, not builders. AI For Everyone, which you've done, covers it. |
 | [Applied AI (glossary)](https://www.cognizant.com/us/en/glossary/applied-ai) | A short marketing definition with no technical content. | It appeared twice in your list. |
 | [Getting Started with LLMs](https://www.linkedin.com/pulse/getting-started-llms-guide-resources-opportunities-wendy-ran-wei/) | A link roundup from April 2023. | Outdated and superseded by learn-ai-engineering. |
 | [Introduction to Artificial Intelligence](https://www.coursera.org/learn/introduction-to-ai) | A non-technical overview of AI. | Repeats AI For Everyone, which you've done. |
