@@ -734,6 +734,9 @@ Ng's second pillar: full-stack apps, data management, architecture, security and
 - [ ] **[Algorithms, Part II](https://www.coursera.org/learn/algorithms-part2)**  
   Princeton · Sedgewick & Wayne · Course · ~60 h · Free  
   Graphs, shortest paths, max flow, radix sorts, tries, substring search, regular expressions, compression, reductions and intractability. _Graphs and tries come up again in knowledge-graph RAG and tokenizers. Optional even within this track._
+- [ ] **[TOGAF 10 Foundation](https://www.coursera.org/learn/togaf-10-foundation)**  
+  EDUCBA · Course · ~7 h · Coursera Plus  
+  The TOGAF enterprise-architecture framework: BDAT domains, the ADM phases A to H, requirements management, architecture principles, governance and stakeholder management. _Not AI, but it's the shared language for architecture work in larger organizations, and it fits Ng's 'designing system architectures' and 'aligning stakeholders' skills. The publisher mass-produces courses, so treat this as a primer and use The Open Group's TOGAF Standard as the source if you go for the certification._
 
 #### Reference
 
@@ -989,7 +992,6 @@ Checked and left off the route.
 
 | Link | What it is | Why skip |
 |---|---|---|
-| [TOGAF 10 Foundation](https://www.coursera.org/learn/togaf-10-foundation) | A 7-hour overview of the TOGAF enterprise-architecture framework: the ADM phases, governance and stakeholder management. | Off the route. It's certification prep for enterprise architects, and the publisher mass-produces courses. Keep it only if you're aiming at an enterprise-architecture role. |
 | [Introduction to AI (Google AI Essentials, course 1)](https://www.coursera.org/learn/google-introduction-to-ai) | A 1.5-hour AI-literacy intro for using AI tools at work. | For end users, not builders. AI For Everyone, which you've done, covers it. |
 | [Applied AI (glossary)](https://www.cognizant.com/us/en/glossary/applied-ai) | A short marketing definition with no technical content. | It appeared twice in your list. |
 | [Getting Started with LLMs](https://www.linkedin.com/pulse/getting-started-llms-guide-resources-opportunities-wendy-ran-wei/) | A link roundup from April 2023. | Outdated and superseded by learn-ai-engineering. |
