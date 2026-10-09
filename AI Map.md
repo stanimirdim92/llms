@@ -608,6 +608,12 @@ Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines
 - [ ] **[text2sql-framework](https://github.com/Text2SqlAgent/text2sql-framework)**  
   Text2SqlAgent · Library · Free  
   An agent with a single execute_sql tool that explores the schema, tests queries and corrects itself, with no RAG or semantic layer. It also ships as an MCP server. _A small, readable case study in giving an agent one good tool. Its benchmark is self-reported on 20 questions._
+- [ ] **[Deep Agents](https://github.com/langchain-ai/deepagents)**  
+  LangChain · Agent harness · Free (MIT)  
+  A batteries-included agent harness (Python and TypeScript) with planning, sub-agents with isolated context, a pluggable filesystem, context summarization, sandboxed shell, persistent memory, human-in-the-loop, skills and MCP tools. _The 'deep agent' pattern behind coding agents like Claude Code, packaged so you can build your own. About 30k stars and very active. Read Building Effective Agents first so you know when you need this much harness._ Also: [Docs](https://docs.langchain.com/oss/python/deepagents/overview)
+- [ ] **[Introduction to Deep Agents](https://academy.langchain.com/courses/foundation-introduction-to-deepagents)**  
+  LangChain Academy · Course · Free  
+  LangChain's free course on building long-running agents with planning, sub-agents and a filesystem using the Deep Agents library. _Take it with the Deep Agents repo open._
 
 ### Reference
 
@@ -696,6 +702,12 @@ Deploy, monitor and iterate: experiment tracking, model registry, orchestration,
 - [ ] **[LangSmith Agent Lifecycle Workshop](https://github.com/langchain-ai/langsmith-agent-lifecycle-workshop)**  
   LangChain · Workshop · Free  
   Build a support agent in LangGraph, improve it with offline evals, then deploy it with online evals and a CI eval that blocks regressions. _A compact build-evaluate-deploy loop that bridges Stages 8 and 9. Worth it if LangGraph and LangSmith are your stack._
+- [ ] **[LangSmith](https://www.langchain.com/langsmith)**  
+  LangChain · Platform · Free tier  
+  Tracing, monitoring dashboards, online LLM-as-judge and code evals, trajectory monitoring, failure clustering and deployment for agents. _Works with any framework (OpenAI and Anthropic SDKs, LlamaIndex, Vercel AI SDK), not only LangChain. Langfuse, used in the Jam With AI project, is the open-source alternative. Pick one for your Stage 9 project._ Also: [Observability docs](https://docs.langchain.com/langsmith/observability)
+- [ ] **[Quickstart: LangSmith Essentials](https://academy.langchain.com/courses/quickstart-langsmith-essentials)**  
+  LangChain Academy · Course · Free  
+  A quick, free introduction to tracing, datasets and evaluations in LangSmith. _Pairs with the LangSmith Agent Lifecycle Workshop above. Academy also has a free LangSmith Deployment course._ Also: [Introduction to LangSmith Deployment](https://academy.langchain.com/courses/langsmith-deployment)
 
 ### Reference
 
@@ -885,6 +897,9 @@ Where the structured courses live.
 - **[Hugging Face Learn](https://huggingface.co/learn)**  
   Hugging Face · Learning platform · Free  
   Twelve free courses: LLMs, agents, context engineering, deep RL, computer vision, audio, diffusion, robotics, games and 3D, plus the Open-Source AI Cookbook. _The LLM and Agents courses are on the map (Stages 5 and 8). The others are worth knowing when you branch out._
+- **[LangChain Academy](https://academy.langchain.com/)**  
+  LangChain · Learning platform · Free (paid certification)  
+  Free courses on LangChain, LangGraph, Deep Agents and LangSmith, grouped as Build, Test, Deploy and Monitor. _All course content is free. Only the Certified Agent Engineer exam is paid._
 - [ ] **[Kaggle Learn](https://www.kaggle.com/learn)**  
   Kaggle · Micro-courses · ~8 h · Free  
   In-browser 3–5 hour courses: pandas, data cleaning, feature engineering, data viz, plus Google's self-paced GenAI and Agents intensives. _Do the pandas and feature-engineering ones before Stage 3. The ML and agent ones repeat what's on the route._
@@ -1080,6 +1095,588 @@ Landscapes, leaderboards and roadmaps. These items also appear in their stages.
 - [ ] **[best-of-ml-python](https://github.com/ml-tooling/best-of-ml-python)**  
   ml-tooling · Link list · Free  
   Ranked ML Python libraries by category. _Use it to compare libraries. Updates have slowed since March 2026._
+
+## Research: techniques and the frontier
+
+The techniques that move LLMs forward, each linked to its original paper, plus where to watch the frontier. **Standard** = used everywhere today, **Common** = widely used where it fits, **Emerging** = 2025–26 and promising, **Historical** = superseded but worth understanding.
+
+### Track the frontier
+
+**Paper feeds**
+
+- **[Hugging Face Daily Papers](https://huggingface.co/papers)** (Daily) · Hugging Face  
+  A community-upvoted daily selection of notable arXiv papers, linked to models, datasets and discussion. _The fastest curated filter on arXiv. The upvotes surface what practitioners care about._
+- **[alphaXiv](https://www.alphaxiv.org)** (Daily) · alphaXiv  
+  An arXiv discovery layer with trending papers, plain-language summaries and line-by-line discussion. _See which new papers are trending and ask questions about them in context._
+- **[arXiv cs.CL (new papers)](https://arxiv.org/list/cs.CL/recent)** (Daily) · arXiv  
+  The raw daily list of new NLP and LLM papers. _The primary source. Skim titles, or use it weekly once you know what you're looking for._
+- **[arXiv cs.LG (new papers)](https://arxiv.org/list/cs.LG/recent)** (Daily) · arXiv  
+  The daily list of new machine-learning papers, 300+ a day. _For training, optimization and RL papers not cross-listed to cs.CL. Use keyword alerts, because the volume is high._
+
+**Research newsletters**
+
+- **[Import AI](https://importai.substack.com)** (Weekly) · Jack Clark  
+  Weekly analysis of a few important papers, with a focus on policy and safety. _Thoughtful selection and the implications, not just headlines._
+- **[Last Week in AI](https://lastweekin.ai)** (Weekly) · Andrey Kurenkov et al.  
+  A weekly news-and-research roundup with a companion podcast. _One broad weekly catch-up on models, research, policy and incidents._
+- **[TLDR AI](https://tldr.tech/ai)** (Daily) · TLDR  
+  A short daily email of AI news, research and tools for engineers. _A five-minute daily skim of launches and notable papers._
+- **[AlphaSignal](https://alphasignal.ai)** (Live) · Alpha Signal  
+  An upvote-ranked feed of new models, repos and papers, with a newsletter. _Its last-24-hours view shows which new repos and papers engineers are actually picking up._
+
+**Leaderboards**
+
+- **[Arena (formerly LMArena)](https://arena.ai/leaderboard)** (Live) · LMArena  
+  Human-preference leaderboards for text, web development, vision, search, agents, images and video. _Perceived quality from blind votes. Read it with The Leaderboard Illusion in mind. lmarena.ai now redirects here._
+- **[SWE-bench leaderboards](https://www.swebench.com)** (Live) · SWE-bench team  
+  Official leaderboards for the Verified, Lite, Full, Multimodal and Multilingual variants. _Compare coding agents and models under the same harness._
+- **[Epoch AI Benchmarking Hub](https://epoch.ai/benchmarks)** (Live) · Epoch AI  
+  Independently run scores on 89 benchmarks, including FrontierMath, GPQA Diamond and SWE-bench Verified. _Comparable numbers and long-run capability trends._ Also: [Data Insights](https://epoch.ai/data-insights)
+- **[Scale Labs leaderboards](https://labs.scale.com/leaderboard)** (Live) · Scale AI  
+  Expert-built private leaderboards: Humanity's Last Exam, SWE-Bench Pro, MCP Atlas, Remote Labor Index and others. _Held-out test sets are less exposed to contamination, a check on public-benchmark claims._
+- **[METR](https://metr.org)** (Monthly) · METR  
+  Independent pre-deployment evaluations of frontier models and research on agent capability. _An outside view of what new models can really do on long tasks._
+- **[ARC Prize leaderboard](https://arcprize.org/leaderboard)** (Live) · ARC Prize Foundation  
+  Score versus cost on ARC-AGI-1, -2 and -3. _Tracks progress on fluid reasoning, and the cost per task, not just accuracy._
+
+**Annual reports**
+
+- **[State of AI Report](https://www.stateof.ai)** (Yearly (October)) · Nathan Benaich · Air Street Capital  
+  An annual report on research, industry, politics and safety, with predictions graded the next year. _Read it each autumn to recalibrate on what changed._
+- **[AI Index Report](https://hai.stanford.edu/ai-index)** (Yearly (April)) · Stanford HAI  
+  An annual data compendium on research output, benchmarks, cost, investment and policy. _The citable source for long-run AI statistics._
+
+### Prompting & reasoning (24)
+
+_Learned in Stage 2._
+
+- [ ] **[Few-shot / in-context learning](https://arxiv.org/abs/2005.14165)** · Standard · 2020  
+  Language Models are Few-Shot Learners · Tom B. Brown et al. (OpenAI)  
+  You put a few input-output examples in the prompt, and the model does the task without any weight updates. _It introduced the 'prompt instead of fine-tune' approach, and a few examples are still the cheapest way to pin down format and behavior._
+- [ ] **[Chain-of-Thought (CoT)](https://arxiv.org/abs/2201.11903)** · Standard · 2022  
+  Chain-of-Thought Prompting Elicits Reasoning in Large Language Models · Jason Wei et al. (Google)  
+  The few-shot examples include worked-out intermediate reasoning steps, so the model writes out its reasoning before it answers. _It showed large gains on math and logic tasks, and step-by-step reasoning became the basis of later reasoning models._
+- [ ] **[Zero-shot CoT ("Let's think step by step")](https://arxiv.org/abs/2205.11916)** · Common · 2022  
+  Large Language Models are Zero-Shot Reasoners · Takeshi Kojima et al. (U. Tokyo / Google)  
+  Adding one trigger phrase such as "Let's think step by step" gets the model to reason step by step without any examples. _It showed that reasoning can be unlocked with instructions alone. Today's reasoning models mostly do this on their own, so it matters mainly for non-reasoning models._
+- [ ] **[Self-Consistency](https://arxiv.org/abs/2203.11171)** · Common · 2022  
+  Self-Consistency Improves Chain of Thought Reasoning in Language Models · Xuezhi Wang et al. (Google)  
+  You sample several reasoning paths at non-zero temperature and take a majority vote over their final answers. _It is the simplest way to trade extra compute for accuracy, and the baseline every test-time scaling method compares against._
+- [ ] **[Tree of Thoughts (ToT)](https://arxiv.org/abs/2305.10601)** · Historical · 2023  
+  Tree of Thoughts: Deliberate Problem Solving with Large Language Models · Shunyu Yao et al. (Princeton / Google DeepMind)  
+  The model proposes and scores partial 'thoughts' and searches over them with breadth-first or depth-first search, backtracking when a path fails. _It framed LLM reasoning as search, which shaped later work on agent search and test-time compute. It is rarely used as-is now because of its cost._
+- [ ] **[PAL / Program-aided reasoning](https://arxiv.org/abs/2211.10435)** · Common · 2022  
+  PAL: Program-aided Language Models · Luyu Gao et al. (CMU)  
+  The model writes its reasoning as code, and an interpreter runs that code to produce the answer. _Handing exact computation to code removes arithmetic errors, and it is the idea behind today's code-interpreter tools._
+- [ ] **[Self-Refine](https://arxiv.org/abs/2303.17651)** · Common · 2023  
+  Self-Refine: Iterative Refinement with Self-Feedback · Aman Madaan et al. (CMU / AI2)  
+  The same model drafts an output, critiques it, and revises it in a loop, with no extra training. _It is the standard generate-critique-revise pattern behind many writing and coding pipelines, and works best when the critique can use concrete signals such as test results._
+- [ ] **[Chain-of-Verification (CoVe)](https://arxiv.org/abs/2309.11495)** · Common · 2023  
+  Chain-of-Verification Reduces Hallucination in Large Language Models · Shehzaad Dhuliawala et al. (Meta AI)  
+  The model drafts an answer, writes verification questions about it, answers those separately, and then produces a corrected final answer. _A practical prompting recipe for reducing factual hallucinations in long-form answers and lists._
+- [ ] **[DSPy (programmatic prompt optimization)](https://arxiv.org/abs/2310.03714)** · Common · 2023  
+  DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines · Omar Khattab et al. (Stanford)  
+  You declare LLM pipeline steps as modules with input and output signatures, and an optimizer 'compiles' them by searching over instructions and few-shot examples against a metric. _It replaces hand-tuned prompt strings with metric-driven optimization and is the main framework for doing so._
+- [ ] **[Process reward models (step-level verification)](https://arxiv.org/abs/2305.20050)** · Common · 2023  
+  Let's Verify Step by Step · Hunter Lightman et al. (OpenAI)  
+  It trains a verifier that scores each reasoning step instead of only the final answer, then uses it to pick the best of many sampled solutions. _It introduced process reward models and the PRM800K dataset, a key ingredient of verifier-guided search and reasoning-model training._
+- [ ] **[Reasoning models (OpenAI o1)](https://arxiv.org/abs/2412.16720)** · Standard · 2024  
+  OpenAI o1 System Card · OpenAI  
+  o1 is trained with reinforcement learning to produce a long hidden chain of thought before it answers, so accuracy scales with how long it thinks. _It started the reasoning-model era. Thinking or effort settings are now a standard knob on frontier models._
+- [ ] **[DeepSeek-R1 (RL for reasoning)](https://arxiv.org/abs/2501.12948)** · Standard · 2025  
+  DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning · DeepSeek-AI  
+  Large-scale RL with rule-based, verifiable rewards (GRPO) produces long chain-of-thought reasoning with little supervised data, and the reasoning can then be distilled into smaller models. _The first open-weights model to match o1-level reasoning, with a published recipe the open ecosystem then widely copied._
+- [ ] **[Compute-optimal test-time scaling](https://arxiv.org/abs/2408.03314)** · Common · 2024  
+  Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters · Charlie Snell et al. (UC Berkeley / Google DeepMind)  
+  It compares ways of spending inference compute (best-of-N, verifier-guided search, sequential revision) and allocates compute by how hard each prompt is. _It established that spending more compute at inference can beat a bigger model, the theory behind 'think longer' settings._
+- [ ] **[s1 / budget forcing](https://arxiv.org/abs/2501.19393)** · Emerging · 2025  
+  s1: Simple test-time scaling · Niklas Muennighoff et al. (Stanford)  
+  Fine-tuning on only 1,000 curated reasoning traces, plus 'budget forcing' (appending "Wait" to extend thinking, or cutting it off), gives controllable test-time scaling. _It showed reasoning can be unlocked cheaply and that thinking length can be controlled with a simple decoding trick._
+- [ ] **[Lost in the Middle](https://arxiv.org/abs/2307.03172)** · Common · 2023  
+  Lost in the Middle: How Language Models Use Long Contexts · Nelson F. Liu et al. (Stanford)  
+  It shows that models use information at the start and end of a long context much better than information in the middle. _It is why key instructions and the most relevant retrieved chunks go at the edges of the prompt, and why a bigger context window is not the same as good recall._
+- [ ] **[Least-to-Most prompting](https://arxiv.org/abs/2205.10625)** · Historical · 2022  
+  Least-to-Most Prompting Enables Complex Reasoning in Large Language Models · Denny Zhou et al. (Google)  
+  The model first breaks a problem into simpler subproblems, then solves them in order, feeding each answer into the next. _The origin of explicit decomposition prompting, still the right move when a task has clear sub-steps._
+- [ ] **[Graph of Thoughts](https://arxiv.org/abs/2308.09687)** · Historical · 2023  
+  Graph of Thoughts: Solving Elaborate Problems with Large Language Models · Maciej Besta et al. (ETH Zurich)  
+  Generalizes Tree of Thoughts so thoughts form a graph that can be merged, refined and looped back on. _Shows how far structured reasoning can go. Mostly of research interest now._
+- [ ] **[Plan-and-Solve](https://arxiv.org/abs/2305.04091)** · Historical · 2023  
+  Plan-and-Solve Prompting: Improving Zero-Shot Chain-of-Thought Reasoning by Large Language Models · Lei Wang et al.  
+  Asks the model to first write a plan and then carry it out step by step, without examples. _An early form of the plan-then-execute pattern used by today's agents._
+- [ ] **[Step-Back prompting](https://arxiv.org/abs/2310.06117)** · Common · 2023  
+  Take a Step Back: Evoking Reasoning via Abstraction in Large Language Models · Huaixiu Steven Zheng et al. (Google DeepMind)  
+  The model first asks a more general 'step-back' question about the underlying principle, answers it, and then uses that to answer the original question. _Also used in RAG as a query transformation, retrieving on the general question as well as the specific one._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/query_transformations.ipynb)
+- [ ] **[Program of Thoughts](https://arxiv.org/abs/2211.12588)** · Historical · 2022  
+  Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks · Wenhu Chen et al.  
+  Like PAL, the model expresses reasoning as a program and an interpreter does the computation. _Parallel work to PAL that confirmed code is a better medium than text for numerical reasoning._
+- [ ] **[Skeleton-of-Thought](https://arxiv.org/abs/2307.15337)** · Historical · 2023  
+  Skeleton-of-Thought: Prompting LLMs for Efficient Parallel Generation · Xuefei Ning et al.  
+  The model writes an outline first, then expands each point in parallel calls. _A latency trick for long answers: parallel expansion cuts wall-clock time._
+- [ ] **[APE (automatic prompt engineer)](https://arxiv.org/abs/2211.01910)** · Historical · 2022  
+  Large Language Models Are Human-Level Prompt Engineers · Yongchao Zhou et al.  
+  An LLM proposes candidate instructions and the best-scoring one on a dev set is kept. _The first automatic prompt optimization, a forerunner of DSPy._
+- [ ] **[OPRO (LLMs as optimizers)](https://arxiv.org/abs/2309.03409)** · Historical · 2023  
+  Large Language Models as Optimizers · Chengrun Yang et al. (Google DeepMind)  
+  The LLM iteratively proposes better prompts given past prompts and their scores. _Showed prompts can be optimized like any other parameter, using the model itself as the optimizer._
+- [ ] **[STaR (self-taught reasoner)](https://arxiv.org/abs/2203.14465)** · Historical · 2022  
+  STaR: Bootstrapping Reasoning With Reasoning · Eric Zelikman et al. (Stanford)  
+  The model generates rationales, keeps the ones that lead to correct answers, and fine-tunes on them, repeating the loop. _An early version of training on the model's own successful reasoning, the idea behind modern reasoning RL._
+
+### RAG & retrieval (41)
+
+_Learned in Stage 7._
+
+**Foundations**
+
+- [ ] **[RAG (Retrieval-Augmented Generation)](https://arxiv.org/abs/2005.11401)** · Historical · 2020  
+  Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks · Patrick Lewis et al. (Meta AI)  
+  Combines a neural retriever over a document index with a generator, so the model conditions its answers on retrieved passages. _The paper that named and defined RAG. Every retrieve-then-generate pipeline descends from it._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/simple_rag.ipynb)
+- [ ] **[REALM](https://arxiv.org/abs/2002.08909)** · Historical · 2020  
+  REALM: Retrieval-Augmented Language Model Pre-Training · Kelvin Guu et al. (Google)  
+  Pre-trains a language model together with a learned retriever that fetches Wikipedia documents during training. _Showed retrieval can be learned end to end and makes knowledge explicit and updatable, a precursor to RAG._
+- [ ] **[RETRO](https://arxiv.org/abs/2112.04426)** · Historical · 2021  
+  Improving language models by retrieving from trillions of tokens · Sebastian Borgeaud et al. (DeepMind)  
+  A language model that cross-attends to chunks retrieved from a 2-trillion-token database and matches much larger models. _Key evidence that retrieval can substitute for parameter count._
+- [ ] **[DPR (Dense Passage Retrieval)](https://arxiv.org/abs/2004.04906)** · Standard · 2020  
+  Dense Passage Retrieval for Open-Domain Question Answering · Vladimir Karpukhin et al. (Meta AI)  
+  Trains a question encoder and a passage encoder so relevant passages land near the question in embedding space. _Established the bi-encoder dense-retrieval recipe behind every vector-database RAG system._
+- [ ] **[BM25 / hybrid search](https://doi.org/10.1561/1500000019)** · Standard · 2009  
+  The Probabilistic Relevance Framework: BM25 and Beyond · Stephen Robertson & Hugo Zaragoza  
+  BM25 scores documents by term frequency, rarity and length, and hybrid search combines it with dense vector scores. _Keyword search still catches exact names, codes and rare terms that embeddings miss, so hybrid is the default production baseline._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/fusion_retrieval.ipynb)
+- [ ] **[ColBERT (late interaction)](https://arxiv.org/abs/2004.12832)** · Common · 2020  
+  ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT · Omar Khattab & Matei Zaharia (Stanford)  
+  Stores one embedding per token and scores a document by summing each query token's best match (MaxSim). ColBERTv2 compresses the vectors to make it practical. _Near-cross-encoder quality at retrieval speed, and the basis of ColPali and many modern retrievers._ Also: [ColBERTv2](https://arxiv.org/abs/2112.01488)
+- [ ] **[Sentence-BERT](https://arxiv.org/abs/1908.10084)** · Standard · 2019  
+  Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks · Nils Reimers & Iryna Gurevych  
+  Fine-tunes BERT in a siamese setup to produce sentence embeddings you can compare with cosine similarity. _Made semantic embeddings cheap. The sentence-transformers library is still the standard way to run open embedding models._
+- [ ] **[MTEB](https://arxiv.org/abs/2210.07316)** · Standard · 2022  
+  MTEB: Massive Text Embedding Benchmark · Niklas Muennighoff et al. (Hugging Face)  
+  Evaluates embedding models across retrieval, clustering, classification and similarity tasks in many languages. _Its leaderboard is the usual starting point for choosing an embedding model, but check the retrieval subset and your own data._
+- [ ] **[Matryoshka embeddings](https://arxiv.org/abs/2205.13147)** · Common · 2022  
+  Matryoshka Representation Learning · Aditya Kusupati et al.  
+  Trains embeddings so their leading dimensions are also good embeddings, so vectors can be truncated to smaller sizes. _Lets you trade accuracy for storage and speed, and most current embedding APIs support it._
+
+**Query transformation**
+
+- [ ] **[HyDE](https://arxiv.org/abs/2212.10496)** · Common · 2022  
+  Precise Zero-Shot Dense Retrieval without Relevance Labels · Luyu Gao et al. (CMU)  
+  An LLM writes a hypothetical answer, and you retrieve with that answer's embedding instead of the question's. _A cheap way to close the gap between short questions and long documents, especially in new domains._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/HyDe_Hypothetical_Document_Embedding.ipynb)
+- [ ] **[Reciprocal Rank Fusion (RRF)](https://doi.org/10.1145/1571941.1572114)** · Standard · 2009  
+  Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods · Gordon V. Cormack et al. (Waterloo)  
+  Merges several ranked lists by summing 1/(k + rank) for each document. _The simple, tuning-free default for fusing BM25 and dense results, or results from several query variants._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/fusion_retrieval.ipynb)
+- [ ] **[Multi-query / RAG-Fusion](https://arxiv.org/abs/2402.03367)** · Common · 2024  
+  RAG-Fusion: a New Take on Retrieval-Augmented Generation · Zackary Rackauckas  
+  An LLM writes several reformulations of the query, you retrieve for each and fuse the results with RRF. _Improves recall for vague questions, at the cost of extra LLM and retrieval calls._
+- [ ] **[Query decomposition (Self-Ask)](https://arxiv.org/abs/2210.03350)** · Common · 2022  
+  Measuring and Narrowing the Compositionality Gap in Language Models · Ofir Press et al.  
+  The model breaks a multi-hop question into explicit sub-questions, each answered with search. _The basis for sub-query decomposition in multi-hop RAG: retrieve per sub-question, then combine._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/query_transformations.ipynb)
+- [ ] **[Query2doc](https://arxiv.org/abs/2303.07678)** · Common · 2023  
+  Query2doc: Query Expansion with Large Language Models · Liang Wang et al. (Microsoft)  
+  Expands the query with an LLM-written pseudo-document before sparse or dense retrieval. _Simple query expansion that notably boosts BM25 as well as dense retrievers._
+- [ ] **[Rewrite-Retrieve-Read](https://arxiv.org/abs/2305.14283)** · Common · 2023  
+  Query Rewriting for Retrieval-Augmented Large Language Models · Xinbei Ma et al.  
+  Adds a query-rewriting step, by an LLM or a small rewriter trained with RL, before retrieval. _Made query rewriting a pipeline stage, now standard for conversational and messy queries._
+
+**Chunking & indexing**
+
+- [ ] **[RAPTOR](https://arxiv.org/abs/2401.18059)** · Common · 2024  
+  RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval · Parth Sarthi et al. (Stanford)  
+  Recursively clusters and summarizes chunks into a tree, then retrieves across levels from detail to summary. _For questions that need whole-document or thematic understanding that flat chunks can't give._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/raptor.ipynb)
+- [ ] **[Late chunking](https://arxiv.org/abs/2409.04701)** · Emerging · 2024  
+  Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models · Michael Günther et al. (Jina AI)  
+  Embeds the whole document with a long-context model first, then pools token embeddings per chunk so each chunk carries document context. _Fixes lost context (pronouns, references) in chunk embeddings without extra LLM calls._
+- [ ] **[Proposition indexing (Dense X Retrieval)](https://arxiv.org/abs/2312.06648)** · Emerging · 2023  
+  Dense X Retrieval: What Retrieval Granularity Should We Use? · Tong Chen et al.  
+  An LLM splits text into atomic, self-contained propositions, and those are indexed instead of passages. _Shows that retrieval granularity matters. Finer units improve precision for fact-seeking queries._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/proposition_chunking.ipynb)
+- [ ] **[Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval)** · Common · 2024  
+  Introducing Contextual Retrieval · Anthropic  
+  An LLM prepends a short, document-aware context to each chunk before embedding and BM25 indexing, combined with reranking. _A practical, widely adopted way to cut retrieval failures, made cheap by prompt caching._
+
+**Reranking**
+
+- [ ] **[Cross-encoder reranking (monoBERT)](https://arxiv.org/abs/1901.04085)** · Standard · 2019  
+  Passage Re-ranking with BERT · Rodrigo Nogueira & Kyunghyun Cho  
+  Scores each query-passage pair jointly with BERT to rerank the top candidates from a first-stage retriever. _Retrieve-then-rerank with a cross-encoder is the standard way to raise precision in production RAG._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/reranking.ipynb)
+- [ ] **[RankGPT (LLM listwise reranking)](https://arxiv.org/abs/2304.09542)** · Common · 2023  
+  Is ChatGPT Good at Search? Investigating Large Language Models as Re-Ranking Agents · Weiwei Sun et al.  
+  Prompts an LLM to reorder a list of candidate passages by relevance, using a sliding window. _Started LLM-based reranking, which trades higher cost for better zero-shot quality._
+- [ ] **[Reasoning rerankers (Rank1)](https://arxiv.org/abs/2502.18418)** · Emerging · 2025  
+  Rank1: Test-Time Compute for Reranking in Information Retrieval · Orion Weller et al. (JHU)  
+  A reranker distilled from reasoning-model traces that thinks before it judges relevance. _Reasoning rerankers excel on reasoning-heavy queries where similarity matching fails._
+
+**Graph & structured**
+
+- [ ] **[GraphRAG](https://arxiv.org/abs/2404.16130)** · Common · 2024  
+  From Local to Global: A Graph RAG Approach to Query-Focused Summarization · Darren Edge et al. (Microsoft Research)  
+  Builds an LLM-extracted entity graph, detects communities and pre-summarizes them to answer whole-corpus questions. _For questions about a whole dataset (themes, overviews) that chunk retrieval can't answer. Indexing is expensive._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/Microsoft_GraphRag.ipynb)
+- [ ] **[LightRAG](https://arxiv.org/abs/2410.05779)** · Emerging · 2024  
+  LightRAG: Simple and Fast Retrieval-Augmented Generation · Zirui Guo et al. (HKU)  
+  Graph-structured indexing with dual-level (entity and theme) retrieval and incremental updates. _A cheaper, more updatable alternative to GraphRAG, popular in open-source stacks._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/light_rag.ipynb)
+- [ ] **[HippoRAG](https://arxiv.org/abs/2405.14831)** · Emerging · 2024  
+  HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models · Bernal Jiménez Gutiérrez et al. (Ohio State)  
+  Builds a knowledge graph and runs Personalized PageRank from the query's entities to retrieve for multi-hop questions in one step. _Efficient multi-hop retrieval without iterative LLM calls, and a reference design for graph memory._ Also: [HippoRAG 2 (2025)](https://arxiv.org/abs/2502.14802)
+- [ ] **[Text-to-SQL (DIN-SQL)](https://arxiv.org/abs/2304.11015)** · Common · 2023  
+  DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction · Mohammadreza Pourreza & Davood Rafiei  
+  Splits text-to-SQL into schema linking, classification, generation and self-correction steps. _For structured data, generating a query beats embedding tables, and decomposition with self-correction remains the core pattern._
+
+**Self-reflective & adaptive**
+
+- [ ] **[Self-RAG](https://arxiv.org/abs/2310.11511)** · Common · 2023  
+  Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection · Akari Asai et al. (UW / AI2)  
+  Trains a model to emit reflection tokens that decide when to retrieve and to critique retrieved passages and its own output. _The canonical example of a model deciding when to retrieve and whether to trust what it got._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/self_rag.ipynb)
+- [ ] **[CRAG (Corrective RAG)](https://arxiv.org/abs/2401.15884)** · Common · 2024  
+  Corrective Retrieval Augmented Generation · Shi-Qi Yan et al.  
+  An evaluator grades retrieved documents, then the system keeps them, refines them or falls back to web search. _A popular guard against bad retrieval before generating, common in LangGraph examples._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/crag.ipynb)
+- [ ] **[Adaptive-RAG](https://arxiv.org/abs/2403.14403)** · Common · 2024  
+  Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity · Soyeong Jeong et al. (KAIST)  
+  A classifier predicts query complexity and routes each query to no retrieval, single-step or multi-step retrieval. _Routing saves cost on easy questions while handling hard ones properly._
+- [ ] **[FLARE (active retrieval)](https://arxiv.org/abs/2305.06983)** · Emerging · 2023  
+  Active Retrieval Augmented Generation · Zhengbao Jiang et al. (CMU)  
+  During long-form generation, retrieves again whenever the upcoming sentence contains low-confidence tokens. _Introduced retrieving during generation instead of only once up front._
+- [ ] **[IRCoT](https://arxiv.org/abs/2212.10509)** · Common · 2022  
+  Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions · Harsh Trivedi et al. (Stony Brook / AI2)  
+  Alternates chain-of-thought steps with retrieval, using each reasoning step as the next search query. _A foundational multi-hop pattern that today's agentic search loops generalize._
+- [ ] **[Agentic RAG](https://arxiv.org/abs/2501.09136)** · Standard · 2025  
+  Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG · Aditi Singh et al.  
+  Agents plan, call retrieval tools, reflect and iterate instead of running a fixed retrieve-then-generate pipeline. _Search as a tool inside an agent loop is the dominant RAG architecture in 2025–26._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/Agentic_RAG.ipynb)
+- [ ] **[Search-R1 (RL-trained search agents)](https://arxiv.org/abs/2503.09516)** · Emerging · 2025  
+  Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning · Bowen Jin et al. (UIUC)  
+  Uses RL with outcome rewards to train a model to interleave reasoning with multiple search calls. _A key open recipe behind deep-research models that learn when and what to search._
+- [ ] **[Search-o1](https://arxiv.org/abs/2501.05366)** · Emerging · 2025  
+  Search-o1: Agentic Search-Enhanced Large Reasoning Models · Xiaoxi Li et al. (Renmin U.)  
+  Lets a reasoning model call search mid-thought when it hits a knowledge gap, then condenses the results back into its reasoning. _A training-free way to add search to reasoning models._
+
+**Evaluation & long context**
+
+- [ ] **[RAGAS](https://arxiv.org/abs/2309.15217)** · Standard · 2023  
+  Ragas: Automated Evaluation of Retrieval Augmented Generation · Shahul Es et al.  
+  Reference-free, LLM-judged metrics for RAG: faithfulness, answer relevance and context relevance. _The most widely used open-source RAG evaluation framework and metric vocabulary._
+- [ ] **[ARES](https://arxiv.org/abs/2311.09476)** · Emerging · 2023  
+  ARES: An Automated Evaluation Framework for Retrieval-Augmented Generation Systems · Jon Saad-Falcon et al. (Stanford)  
+  Trains small judges on synthetic data and uses a small human-labeled set to score RAG systems with confidence intervals. _A more statistically grounded alternative to pure LLM-as-judge evaluation._
+- [ ] **[BRIGHT (reasoning-heavy retrieval)](https://arxiv.org/abs/2407.12883)** · Emerging · 2024  
+  BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval · Hongjin Su et al.  
+  A retrieval benchmark where finding the right document needs reasoning, not just keyword or semantic overlap. _Shows where standard embeddings fail and drives reasoning retrievers._
+- [ ] **[RAG survey (Naive, Advanced, Modular)](https://arxiv.org/abs/2312.10997)** · Standard · 2023  
+  Retrieval-Augmented Generation for Large Language Models: A Survey · Yunfan Gao et al. (Tongji / Fudan)  
+  Surveys RAG across retrieval, generation and augmentation and introduces the Naive, Advanced and Modular RAG taxonomy. _The standard overview and vocabulary for the RAG design space._
+
+**New retrieval models**
+
+- [ ] **[ColPali (visual document retrieval)](https://arxiv.org/abs/2407.01449)** · Emerging · 2024  
+  ColPali: Efficient Document Retrieval with Vision Language Models · Manuel Faysse et al.  
+  Embeds page images directly with a vision-language model and ColBERT-style late interaction, skipping OCR and parsing. _The go-to approach for PDFs full of tables, charts and layout._ Also: [Tutorial notebook](https://github.com/NirDiamant/RAG_Techniques/blob/main/all_rag_techniques/multi_model_rag_with_colpali.ipynb)
+- [ ] **[ReasonIR](https://arxiv.org/abs/2504.20595)** · Emerging · 2025  
+  ReasonIR: Training Retrievers for Reasoning Tasks · Rulin Shao et al. (Meta / UW)  
+  A retriever trained on synthetic, reasoning-heavy queries so it finds documents that help reasoning, not just similar text. _Part of the 2025 move toward retrievers built for reasoning models._
+- [ ] **[MUVERA](https://arxiv.org/abs/2405.19504)** · Emerging · 2024  
+  MUVERA: Multi-Vector Retrieval via Fixed Dimensional Encodings · Laxman Dhulipala et al. (Google)  
+  Turns multi-vector (ColBERT-style) representations into single fixed-size vectors so standard vector search can serve them. _Makes late-interaction quality affordable on ordinary vector databases._
+
+### Agents & tool use (22)
+
+_Learned in Stage 8._
+
+- [ ] **[ReAct](https://arxiv.org/abs/2210.03629)** · Standard · 2022  
+  ReAct: Synergizing Reasoning and Acting in Language Models · Shunyu Yao et al. (Princeton / Google)  
+  The model alternates between reasoning ('Thought'), tool calls ('Action') and tool results ('Observation') in a loop until the task is done. _The canonical agent loop. Almost every agent framework and coding agent is a variant of it._
+- [ ] **[Toolformer](https://arxiv.org/abs/2302.04761)** · Historical · 2023  
+  Toolformer: Language Models Can Teach Themselves to Use Tools · Timo Schick et al. (Meta AI)  
+  The model learns in a self-supervised way where to insert API calls (calculator, search and so on) by keeping only the calls that improve its next-token predictions. _It showed tool use can be trained into a model, which led to native function calling. Today this comes from post-training rather than this exact method._
+- [ ] **[Reflexion](https://arxiv.org/abs/2303.11366)** · Common · 2023  
+  Reflexion: Language Agents with Verbal Reinforcement Learning · Noah Shinn et al. (Northeastern / MIT / Princeton)  
+  After a failed attempt, the agent writes a verbal self-reflection into memory and uses it to do better on the next try, with no weight updates. _It popularized learning from feedback across attempts, such as retrying after failing tests, a common pattern in coding agents._
+- [ ] **[Voyager (skill library)](https://arxiv.org/abs/2305.16291)** · Historical · 2023  
+  Voyager: An Open-Ended Embodied Agent with Large Language Models · Guanzhi Wang et al. (NVIDIA / Caltech)  
+  A Minecraft agent that sets itself a curriculum, writes code-based skills, checks them, and stores them in a growing library it retrieves from later. _It introduced agents that build up reusable, retrievable skills, an idea that runs through to today's agent skill systems._
+- [ ] **[Generative Agents (memory stream)](https://arxiv.org/abs/2304.03442)** · Common · 2023  
+  Generative Agents: Interactive Simulacra of Human Behavior · Joon Sung Park et al. (Stanford / Google)  
+  Simulated characters keep a memory stream of observations, retrieve memories by recency, importance and relevance, and periodically reflect and plan. _It defined the standard agent-memory architecture (retrieval scoring plus reflection) and launched LLM-based social simulation._
+- [ ] **[MemGPT (virtual context management)](https://arxiv.org/abs/2310.08560)** · Common · 2023  
+  MemGPT: Towards LLMs as Operating Systems · Charles Packer et al. (UC Berkeley)  
+  The agent manages its own memory tiers, paging information between the context window and external storage through function calls, like an OS handles virtual memory. _The reference design for long-lived agents with persistent memory (it became Letta), and an early example of context engineering._
+- [ ] **[CodeAct (code as action)](https://arxiv.org/abs/2402.01030)** · Common · 2024  
+  Executable Code Actions Elicit Better LLM Agents · Xingyao Wang et al. (UIUC)  
+  The agent acts by writing and running Python code instead of JSON tool calls, so it can chain tools, loop and handle errors within one action. _Often more efficient and capable than JSON tool calling, and the basis of OpenHands and code-execution approaches to tool use._
+- [ ] **[SWE-agent (agent-computer interface)](https://arxiv.org/abs/2405.15793)** · Common · 2024  
+  SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering · John Yang et al. (Princeton)  
+  It designs tools built for LLMs (file viewer, search, editing with lint checks) so the agent can navigate and fix real repositories. _It introduced agent-computer interface design: tool ergonomics matter as much as the model. That became a core principle of coding agents._
+- [ ] **[AutoGen (multi-agent conversation)](https://arxiv.org/abs/2308.08155)** · Common · 2023  
+  AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation · Qingyun Wu et al. (Microsoft Research)  
+  A framework where several configurable agents (LLMs, tools, humans) solve tasks by talking to each other. _The reference paper for multi-agent orchestration. Use several agents when work splits into separable roles or parallel subtasks, and one agent otherwise._
+- [ ] **[Model Context Protocol (MCP)](https://modelcontextprotocol.io/specification/latest)** · Standard · 2024  
+  Model Context Protocol Specification · Anthropic (now an open community standard)  
+  An open JSON-RPC protocol through which servers expose tools, resources and prompts to any LLM host application. _The de facto standard for connecting agents to tools and data: write an integration once and use it from any client._
+- [ ] **[Agent Skills (progressive disclosure)](https://agentskills.io/home)** · Emerging · 2025  
+  Agent Skills open standard · Anthropic (open standard)  
+  A skill is a folder with a SKILL.md (name, description, instructions) plus optional scripts and resources, and the agent reads only the descriptions until a task needs the full instructions. _It packages procedures and know-how cheaply in context. Released as an open standard in December 2025 and supported by Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot and others._
+- [ ] **[SWE-bench](https://arxiv.org/abs/2310.06770)** · Standard · 2023  
+  SWE-bench: Can Language Models Resolve Real-World GitHub Issues? · Carlos E. Jimenez et al. (Princeton)  
+  A benchmark where an agent must resolve real GitHub issues in Python repos, scored by whether the repo's tests pass. _The headline benchmark for coding agents, with a human-validated Verified subset. It is how agentic coding progress is tracked._
+- [ ] **[WebArena](https://arxiv.org/abs/2307.13854)** · Common · 2023  
+  WebArena: A Realistic Web Environment for Building Autonomous Agents · Shuyan Zhou et al. (CMU)  
+  Self-hosted, realistic websites (shopping, forums, GitLab, CMS) with long-horizon tasks, checked by verifying the end state. _The standard reproducible benchmark for browser and web agents._
+- [ ] **[OSWorld (computer use)](https://arxiv.org/abs/2404.07972)** · Common · 2024  
+  OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments · Tianbao Xie et al. (HKU)  
+  Runs agents in real operating systems inside VMs, where they complete tasks from screenshots using mouse and keyboard. _The main yardstick for computer-use agents that operate GUIs like a person._
+- [ ] **[tau-bench (tool-agent-user)](https://arxiv.org/abs/2406.12045)** · Common · 2024  
+  τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains · Shunyu Yao et al. (Sierra)  
+  An agent follows domain policies and uses APIs while a simulated user talks to it (airline, retail), and pass^k measures consistency across repeated trials. _It tests what production customer-facing agents need: following rules, multi-turn tool use and reliability._
+- [ ] **[MRKL systems](https://arxiv.org/abs/2205.00445)** · Historical · 2022  
+  MRKL Systems: A modular, neuro-symbolic architecture that combines large language models, external knowledge sources and discrete reasoning · Ehud Karpas et al. (AI21)  
+  An LLM routes each query to the right expert module, such as a calculator, database or API. _One of the first tool-routing architectures, a forerunner of function calling._
+- [ ] **[Gorilla](https://arxiv.org/abs/2305.15334)** · Common · 2023  
+  Gorilla: Large Language Model Connected with Massive APIs · Shishir G. Patil et al. (UC Berkeley)  
+  A model fine-tuned to write correct API calls, with retrieval over API documentation to reduce hallucinated calls. _Its Berkeley Function-Calling Leaderboard is still a standard way to compare tool-calling models._
+- [ ] **[LATS (Language Agent Tree Search)](https://arxiv.org/abs/2310.04406)** · Historical · 2023  
+  Language Agent Tree Search Unifies Reasoning Acting and Planning in Language Models · Andy Zhou et al.  
+  Combines ReAct-style acting with Monte Carlo tree search, using self-reflection as a value signal. _Shows how search improves agents on hard tasks, at a high compute cost._
+- [ ] **[OpenHands](https://arxiv.org/abs/2407.16741)** · Common · 2024  
+  OpenHands: An Open Platform for AI Software Developers as Generalist Agents · Xingyao Wang et al.  
+  An open-source platform for coding agents that act through code, a shell and a browser in a sandbox. _The main open-source coding-agent platform, used in research and in CMU's agents course._
+- [ ] **[MetaGPT](https://arxiv.org/abs/2308.00352)** · Historical · 2023  
+  MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework · Sirui Hong et al.  
+  Assigns software-company roles (product manager, architect, engineer) to agents that follow standard operating procedures. _An influential example of role-based multi-agent design._
+- [ ] **[HuggingGPT](https://arxiv.org/abs/2303.17580)** · Historical · 2023  
+  HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face · Yongliang Shen et al. (Zhejiang U. / Microsoft)  
+  An LLM plans a task and delegates parts to specialist models from the Hugging Face Hub. _An early LLM-as-orchestrator design._
+- [ ] **[AgentBench](https://arxiv.org/abs/2308.03688)** · Historical · 2023  
+  AgentBench: Evaluating LLMs as Agents · Xiao Liu et al. (Tsinghua)  
+  Evaluates LLMs as agents across eight environments, from operating systems and databases to games and web shopping. _One of the first broad agent benchmarks._
+
+### Training & alignment (15)
+
+_Learned in Stage 6._
+
+- [ ] **[InstructGPT / RLHF](https://arxiv.org/abs/2203.02155)** · Standard · 2022  
+  Training language models to follow instructions with human feedback · Long Ouyang et al. (OpenAI)  
+  Supervised fine-tuning, then a reward model trained on human rankings, then PPO against that reward model. _The recipe behind ChatGPT and the reference point for all later post-training._
+- [ ] **[Constitutional AI / RLAIF](https://arxiv.org/abs/2212.08073)** · Common · 2022  
+  Constitutional AI: Harmlessness from AI Feedback · Yuntao Bai et al. (Anthropic)  
+  Trains a harmless assistant with AI-generated critiques, revisions and preference labels guided by written principles. _Made AI feedback a scalable replacement for much human labeling._
+- [ ] **[DPO](https://arxiv.org/abs/2305.18290)** · Standard · 2023  
+  Direct Preference Optimization: Your Language Model is Secretly a Reward Model · Rafael Rafailov et al. (Stanford)  
+  Trains directly on preference pairs with a simple classification-style loss, with no reward model or RL loop. _The default lightweight preference-tuning method in open-source stacks such as TRL._
+- [ ] **[KTO](https://arxiv.org/abs/2402.01306)** · Common · 2024  
+  KTO: Model Alignment as Prospect Theoretic Optimization · Kawin Ethayarajh et al. (Stanford / Contextual AI)  
+  Aligns models from single thumbs-up or thumbs-down labels instead of paired preferences. _Lets teams use the cheap binary feedback found in production logs._
+- [ ] **[GRPO](https://arxiv.org/abs/2402.03300)** · Standard · 2024  
+  DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models · Zhihong Shao et al. (DeepSeek)  
+  Introduces Group Relative Policy Optimization, a PPO variant that replaces the value network with rewards normalized within a group of samples. _GRPO and its variants are the workhorse RL algorithms for training reasoning models._
+- [ ] **[LoRA](https://arxiv.org/abs/2106.09685)** · Standard · 2021  
+  LoRA: Low-Rank Adaptation of Large Language Models · Edward J. Hu et al. (Microsoft)  
+  Freezes the pretrained weights and trains small low-rank update matrices. _The default parameter-efficient fine-tuning method, enabling cheap per-task adapters._
+- [ ] **[QLoRA](https://arxiv.org/abs/2305.14314)** · Standard · 2023  
+  QLoRA: Efficient Finetuning of Quantized LLMs · Tim Dettmers et al. (UW)  
+  Trains LoRA adapters on top of a frozen 4-bit quantized base model. _Made fine-tuning large models possible on one GPU, and is the standard budget recipe._
+- [ ] **[DoRA](https://arxiv.org/abs/2402.09353)** · Common · 2024  
+  DoRA: Weight-Decomposed Low-Rank Adaptation · Shih-Yang Liu et al. (NVIDIA / HKUST)  
+  Splits each weight into magnitude and direction and applies LoRA only to the direction. _A drop-in LoRA upgrade, supported in Hugging Face PEFT, that narrows the gap to full fine-tuning._
+- [ ] **[Instruction tuning (FLAN)](https://arxiv.org/abs/2109.01652)** · Standard · 2021  
+  Finetuned Language Models Are Zero-Shot Learners · Jason Wei et al. (Google)  
+  Fine-tunes a model on many tasks phrased as natural-language instructions, which improves zero-shot performance on new tasks. _Established instruction tuning, the supervised step before any preference tuning._
+- [ ] **[Self-Instruct](https://arxiv.org/abs/2212.10560)** · Common · 2022  
+  Self-Instruct: Aligning Language Models with Self-Generated Instructions · Yizhong Wang et al. (UW / AI2)  
+  Bootstraps instruction data by having a model generate, filter and answer its own instructions from a small seed set. _Started LLM-generated instruction data and modern synthetic fine-tuning pipelines._
+- [ ] **[Knowledge distillation](https://arxiv.org/abs/1503.02531)** · Standard · 2015  
+  Distilling the Knowledge in a Neural Network · Geoffrey Hinton et al. (Google)  
+  Trains a small student model to match a large teacher's softened outputs. _The foundation for today's small LLMs distilled from frontier teachers._
+- [ ] **[On-policy distillation (GKD)](https://arxiv.org/abs/2306.13649)** · Emerging · 2023  
+  On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes · Rishabh Agarwal et al. (Google DeepMind)  
+  The teacher scores text the student generates itself, rather than only teacher-written text. _A popular, cheap alternative to RL for post-training reasoning in 2025._
+- [ ] **[Task arithmetic (model merging)](https://arxiv.org/abs/2212.04089)** · Common · 2022  
+  Editing Models with Task Arithmetic · Gabriel Ilharco et al. (UW)  
+  Task vectors (fine-tuned minus base weights) can be added, subtracted or combined to edit behavior. _The basis of model merging (TIES, DARE, mergekit), widely used to combine fine-tunes without retraining._
+- [ ] **[Synthetic textbook data (phi-1)](https://arxiv.org/abs/2306.11644)** · Common · 2023  
+  Textbooks Are All You Need · Suriya Gunasekar et al. (Microsoft Research)  
+  A small code model trained on filtered web data plus LLM-written textbook-quality data beats much larger models. _Showed data quality and synthetic data can replace raw scale._
+- [ ] **[RLVR (Tulu 3)](https://arxiv.org/abs/2411.15124)** · Standard · 2024  
+  Tulu 3: Pushing Frontiers in Open Language Model Post-Training · Nathan Lambert et al. (AI2)  
+  A fully open post-training recipe (SFT, DPO, then RL with verifiable rewards) that named RLVR. _Rewarding checkable answers instead of learned preferences is the core of 2025–26 reasoning and agent training._
+
+### Architecture & scaling (18)
+
+_Learned in Stage 5._
+
+- [ ] **[Transformer](https://arxiv.org/abs/1706.03762)** · Standard · 2017  
+  Attention Is All You Need · Ashish Vaswani et al. (Google)  
+  An encoder-decoder model built only from self-attention and feed-forward layers, with no recurrence or convolution. _Almost every modern LLM, vision and speech model is built on it._
+- [ ] **[BERT](https://arxiv.org/abs/1810.04805)** · Historical · 2018  
+  BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding · Jacob Devlin et al. (Google)  
+  Pre-trains a bidirectional Transformer encoder with masked-language modeling, then fine-tunes it for downstream tasks. _Encoder models like it still power the embeddings, rerankers and classifiers in RAG systems._
+- [ ] **[Scaling laws (Kaplan)](https://arxiv.org/abs/2001.08361)** · Standard · 2020  
+  Scaling Laws for Neural Language Models · Jared Kaplan et al. (OpenAI)  
+  Language-model loss falls as a smooth power law in parameters, data and compute. _It turned model building into predictable compute planning and justified the scale race._
+- [ ] **[Chinchilla (compute-optimal scaling)](https://arxiv.org/abs/2203.15556)** · Standard · 2022  
+  Training Compute-Optimal Large Language Models · Jordan Hoffmann et al. (DeepMind)  
+  For a fixed compute budget, parameters and training tokens should grow about equally, roughly 20 tokens per parameter. _It moved the field to smaller models trained on far more data. Today's models go further and over-train for cheaper inference._
+- [ ] **[RoPE (rotary position embeddings)](https://arxiv.org/abs/2104.09864)** · Standard · 2021  
+  RoFormer: Enhanced Transformer with Rotary Position Embedding · Jianlin Su et al.  
+  Encodes position by rotating query and key vectors, so attention depends on relative distance. _The default position encoding in Llama, Qwen, Mistral, DeepSeek and most open models, and the basis of context-extension tricks._
+- [ ] **[YaRN (long-context extension)](https://arxiv.org/abs/2309.00071)** · Common · 2023  
+  YaRN: Efficient Context Window Extension of Large Language Models · Bowen Peng et al. (Nous Research / EleutherAI)  
+  Rescales RoPE frequencies with a little fine-tuning so a model handles much longer contexts. _A widely used recipe for extending context windows to 128K and beyond cheaply._
+- [ ] **[Grouped-query attention (GQA)](https://arxiv.org/abs/2305.13245)** · Standard · 2023  
+  GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints · Joshua Ainslie et al. (Google)  
+  Groups of query heads share key/value heads, sitting between full multi-head and multi-query attention. _It shrinks the KV cache and speeds up decoding with little quality loss, and is standard in most open models._
+- [ ] **[Switch Transformer (sparse MoE)](https://arxiv.org/abs/2101.03961)** · Standard · 2021  
+  Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity · William Fedus et al. (Google)  
+  Simplifies mixture-of-experts by sending each token to a single expert, with a load-balancing loss. _It made sparse MoE practical, and MoE is now the dominant design for frontier and large open models._
+- [ ] **[Mixtral (open MoE)](https://arxiv.org/abs/2401.04088)** · Common · 2024  
+  Mixtral of Experts · Albert Q. Jiang et al. (Mistral AI)  
+  An open sparse MoE with 8 experts and top-2 routing, using about 13B active out of 47B parameters. _Showed open MoE models can match much larger dense ones at lower inference cost._
+- [ ] **[Mamba (state-space models)](https://arxiv.org/abs/2312.00752)** · Emerging · 2023  
+  Mamba: Linear-Time Sequence Modeling with Selective State Spaces · Albert Gu & Tri Dao (CMU / Princeton)  
+  A sequence model with input-dependent parameters that runs in linear time with a fixed-size state. _The main alternative to attention, now mostly used inside hybrid models for long-context efficiency._
+- [ ] **[Llama 3](https://arxiv.org/abs/2407.21783)** · Standard · 2024  
+  The Llama 3 Herd of Models · Aaron Grattafiori et al. (Meta)  
+  A detailed report on pretraining, scaling, post-training and infrastructure for dense models from 8B to 405B. _The most complete public recipe for a frontier-class dense LLM._
+- [ ] **[Multi-head Latent Attention (MLA)](https://arxiv.org/abs/2405.04434)** · Common · 2024  
+  DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model · DeepSeek-AI  
+  Compresses keys and values into a small shared latent vector, alongside the fine-grained DeepSeekMoE design. _Cuts the KV cache far more than GQA while keeping quality, and is spreading to other models._
+- [ ] **[DeepSeek-V3](https://arxiv.org/abs/2412.19437)** · Standard · 2024  
+  DeepSeek-V3 Technical Report · DeepSeek-AI  
+  A 671B-total, 37B-active MoE combining MLA, auxiliary-loss-free load balancing, multi-token prediction and FP8 training. _Frontier-level quality at a fraction of the usual training cost, and the template for many 2025 open models._
+- [ ] **[CLIP](https://arxiv.org/abs/2103.00020)** · Standard · 2021  
+  Learning Transferable Visual Models From Natural Language Supervision · Alec Radford et al. (OpenAI)  
+  Trains an image encoder and a text encoder together so images and captions share one embedding space. _CLIP-style encoders are the eyes of most multimodal LLMs and the basis of image search._
+- [ ] **[Gated DeltaNet (hybrid linear attention)](https://arxiv.org/abs/2412.06464)** · Emerging · 2024  
+  Gated Delta Networks: Improving Mamba2 with Delta Rule · Songlin Yang et al. (MIT / NVIDIA)  
+  A linear-attention layer combining gating with the delta update rule for better memory control. _The main ingredient of 2025 hybrid models that mix linear and full attention, such as Qwen3-Next and Kimi Linear._
+- [ ] **[Native Sparse Attention](https://arxiv.org/abs/2502.11089)** · Emerging · 2025  
+  Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention · Jingyang Yuan et al. (DeepSeek / Peking U.)  
+  Trainable sparse attention with compressed, selected and sliding-window branches, designed to run fast on GPUs. _Started the move to learned sparse attention for long context, which DeepSeek shipped in V3.2._
+- [ ] **[Gated attention](https://arxiv.org/abs/2505.06708)** · Emerging · 2025  
+  Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free · Zihan Qiu et al. (Qwen, Alibaba)  
+  Adds a per-head sigmoid gate after attention, which removes attention sinks and stabilizes training. _A cheap tweak adopted in Qwen3-Next, representative of 2025 refinements to the attention block._
+- [ ] **[Muon optimizer at scale](https://arxiv.org/abs/2502.16982)** · Emerging · 2025  
+  Muon is Scalable for LLM Training · Jingyuan Liu et al. (Moonshot AI)  
+  Scales the Muon optimizer, which orthogonalizes updates, to large LLM pretraining with about 2x the efficiency of AdamW. _The first serious challenger to AdamW at frontier scale, used to train Kimi K2._
+
+### Inference & efficiency (10)
+
+_Learned in Stage 9._
+
+- [ ] **[FlashAttention](https://arxiv.org/abs/2205.14135)** · Standard · 2022  
+  FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness · Tri Dao et al. (Stanford)  
+  Computes exact attention in tiles held in fast on-chip memory, never writing the full attention matrix to GPU memory. _Made long contexts affordable and is built into every training and inference stack._ Also: [FlashAttention-2](https://arxiv.org/abs/2307.08691), [FlashAttention-3](https://arxiv.org/abs/2407.08608)
+- [ ] **[PagedAttention (vLLM)](https://arxiv.org/abs/2309.06180)** · Standard · 2023  
+  Efficient Memory Management for Large Language Model Serving with PagedAttention · Woosuk Kwon et al. (UC Berkeley)  
+  Stores the KV cache in fixed-size blocks, like virtual-memory pages, removing fragmentation and allowing shared prefixes. _The basis of vLLM and high-throughput LLM serving._
+- [ ] **[Continuous batching (Orca)](https://www.usenix.org/conference/osdi22/presentation/yu)** · Standard · 2022  
+  Orca: A Distributed Serving System for Transformer-Based Generative Models · Gyeong-In Yu et al. (Seoul National U.)  
+  Requests join and leave the batch at every decoding step instead of waiting for the whole batch to finish. _How every modern LLM server gets high GPU utilization. Published at OSDI 2022, not on arXiv._
+- [ ] **[Speculative decoding](https://arxiv.org/abs/2211.17192)** · Standard · 2022  
+  Fast Inference from Transformers via Speculative Decoding · Yaniv Leviathan et al. (Google)  
+  A small draft model proposes several tokens and the large model checks them in one pass, giving identical outputs 2–3x faster. _Built into all major serving stacks, with variants such as EAGLE, Medusa and multi-token prediction._
+- [ ] **[GPTQ](https://arxiv.org/abs/2210.17323)** · Standard · 2022  
+  GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers · Elias Frantar et al. (IST Austria)  
+  One-shot 3–4-bit weight quantization that corrects rounding errors layer by layer using second-order information. _Made 4-bit LLMs practical and is still a standard quantization format._
+- [ ] **[AWQ](https://arxiv.org/abs/2306.00978)** · Standard · 2023  
+  AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration · Ji Lin et al. (MIT)  
+  Protects the small share of weight channels that matter most by scaling them before 4-bit quantization. _A widely used 4-bit format in vLLM, TensorRT-LLM and Hugging Face._
+- [ ] **[LLM.int8() (bitsandbytes)](https://arxiv.org/abs/2208.07339)** · Common · 2022  
+  LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale · Tim Dettmers et al. (UW / Meta)  
+  8-bit inference that keeps rare large outlier features in 16-bit and quantizes everything else. _Found the outlier problem behind most later LLM quantization work, and powers bitsandbytes in Hugging Face._
+- [ ] **[Attention sinks (StreamingLLM)](https://arxiv.org/abs/2309.17453)** · Common · 2023  
+  Efficient Streaming Language Models with Attention Sinks · Guangxuan Xiao et al. (MIT / Meta)  
+  Keeps the first few 'sink' tokens plus a sliding window of the KV cache, so models can stream indefinitely with a fixed-size cache. _Explained attention sinks and underpins KV-cache eviction methods in serving engines._
+- [ ] **[KV-cache quantization (KIVI)](https://arxiv.org/abs/2402.02750)** · Emerging · 2024  
+  KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache · Zirui Liu et al. (Rice / Texas A&M)  
+  Quantizes the KV cache to 2 bits with no fine-tuning. _The KV cache is the memory bottleneck in long-context serving, and low-bit caches like this are now common._
+- [ ] **[Prefix caching (SGLang RadixAttention)](https://arxiv.org/abs/2312.07104)** · Standard · 2023  
+  SGLang: Efficient Execution of Structured Language Model Programs · Lianmin Zheng et al. (Stanford / UC Berkeley)  
+  Keeps KV caches in a radix tree so shared prompt prefixes are reused automatically across requests. _The mechanism behind API prompt caching and big cost and latency savings for agents and RAG._
+
+### Evaluation, safety & interpretability (28)
+
+_Learned in Stages 2 and 9._
+
+- [ ] **[LLM-as-a-judge (MT-Bench)](https://arxiv.org/abs/2306.05685)** · Standard · 2023  
+  Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena · Lianmin Zheng et al. (LMSYS)  
+  A strong LLM grades or compares other models' open-ended answers, and the paper measures how well those grades agree with humans. _The standard way to evaluate open-ended output at scale, with the judge's known biases (position, length, self-preference) documented._
+- [ ] **[Chatbot Arena (human preference)](https://arxiv.org/abs/2403.04132)** · Standard · 2024  
+  Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference · Wei-Lin Chiang et al. (LMSYS)  
+  Crowdsourced blind A/B votes between two models are turned into Elo-style rankings. _The most cited public chat leaderboard, so you need to know how it works and where it breaks._
+- [ ] **[The Leaderboard Illusion](https://arxiv.org/abs/2504.20879)** · Emerging · 2025  
+  The Leaderboard Illusion · Shivalika Singh et al. (Cohere Labs)  
+  Shows how private testing of many variants, selective disclosure and unequal data access distort arena rankings. _The main warning against reading leaderboard ranks as ground truth._
+- [ ] **[HELM](https://arxiv.org/abs/2211.09110)** · Common · 2022  
+  Holistic Evaluation of Language Models · Percy Liang et al. (Stanford CRFM)  
+  Evaluates many models on shared scenarios and metrics: accuracy, calibration, robustness, fairness, toxicity and efficiency. _Made the case for multi-metric, transparent evaluation instead of single-number claims._
+- [ ] **[MMLU](https://arxiv.org/abs/2009.03300)** · Historical · 2020  
+  Measuring Massive Multitask Language Understanding · Dan Hendrycks et al. (UC Berkeley)  
+  A multiple-choice benchmark across 57 subjects, from elementary to professional level. _The default capability headline for years and now saturated, a lesson in how benchmarks age._
+- [ ] **[GSM8K (and verifiers)](https://arxiv.org/abs/2110.14168)** · Historical · 2021  
+  Training Verifiers to Solve Math Word Problems · Karl Cobbe et al. (OpenAI)  
+  8.5K grade-school math problems, introduced together with verifiers that rerank sampled solutions. _The canonical multi-step reasoning benchmark, and its verifier idea led to reward models and best-of-N._
+- [ ] **[HumanEval and pass@k](https://arxiv.org/abs/2107.03374)** · Standard · 2021  
+  Evaluating Large Language Models Trained on Code · Mark Chen et al. (OpenAI)  
+  Introduced Codex, the HumanEval benchmark and the pass@k metric, which checks generated code against unit tests. _pass@k and test-based correctness are still the basic tools for evaluating code generation._
+- [ ] **[SWE-Bench Pro](https://arxiv.org/abs/2509.16941)** · Emerging · 2025  
+  SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks? · Xiang Deng et al. (Scale AI)  
+  A harder, contamination-resistant successor to SWE-bench with long-horizon tasks from public and private repositories. _Labs moved to it as SWE-bench Verified saturated._
+- [ ] **[GPQA](https://arxiv.org/abs/2311.12022)** · Standard · 2023  
+  GPQA: A Graduate-Level Google-Proof Q&A Benchmark · David Rein et al. (NYU)  
+  Expert-written biology, physics and chemistry questions that skilled non-experts can't answer even with web search. _GPQA Diamond is a standard headline number for frontier reasoning models._
+- [ ] **[Humanity's Last Exam](https://arxiv.org/abs/2501.14249)** · Common · 2025  
+  Humanity's Last Exam · Long Phan et al. (CAIS / Scale AI)  
+  Very hard, expert-level questions across many fields, built to stay unsaturated as models improve. _A widely reported frontier benchmark._
+- [ ] **[ARC-AGI](https://arxiv.org/abs/2505.11831)** · Common · 2025  
+  ARC-AGI-2: A New Challenge for Frontier AI Reasoning Systems · François Chollet et al. (ARC Prize)  
+  Abstract grid puzzles that test whether a model can learn a new skill from a few examples. _Measures fluid generalization rather than memorized knowledge. It follows Chollet's 2019 'On the Measure of Intelligence'._ Also: [On the Measure of Intelligence (2019)](https://arxiv.org/abs/1911.01547)
+- [ ] **[BIG-bench](https://arxiv.org/abs/2206.04615)** · Historical · 2022  
+  Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models · Aarohi Srivastava et al.  
+  A collaborative suite of 200+ tasks for probing model capabilities and how they scale. _Shaped the debate on 'emergent' abilities and produced BIG-Bench Hard._
+- [ ] **[TruthfulQA](https://arxiv.org/abs/2109.07958)** · Historical · 2021  
+  TruthfulQA: Measuring How Models Mimic Human Falsehoods · Stephanie Lin et al. (Oxford / OpenAI)  
+  Questions where repeating common human misconceptions gives a false answer. _Showed larger models can be less truthful, an early foundation for honesty evals._
+- [ ] **[Detecting test-set contamination](https://arxiv.org/abs/2310.17623)** · Common · 2023  
+  Proving Test Set Contamination in Black Box Language Models · Yonatan Oren et al. (Stanford)  
+  A statistical test for whether a model saw a benchmark in training, using only log-probabilities. _Contamination can make scores meaningless, and this gives a principled check._
+- [ ] **[LiveBench (fresh test sets)](https://arxiv.org/abs/2406.19314)** · Common · 2024  
+  LiveBench: A Challenging, Contamination-Limited LLM Benchmark · Colin White et al. (Abacus.AI / NYU)  
+  Regularly refreshes its questions from recent sources and grades them with objective answers, not LLM judges. _The practical answer to contamination: keep the test set newer than the training data._
+- [ ] **[Indirect prompt injection](https://arxiv.org/abs/2302.12173)** · Standard · 2023  
+  Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection · Kai Greshake et al. (CISPA)  
+  Instructions hidden in retrieved content (web pages, emails, documents) can take over LLM apps and agents. _The founding threat model for securing RAG systems and tool-using agents._
+- [ ] **[GCG adversarial jailbreaks](https://arxiv.org/abs/2307.15043)** · Common · 2023  
+  Universal and Transferable Adversarial Attacks on Aligned Language Models · Andy Zou et al. (CMU)  
+  A gradient-guided search finds adversarial suffixes that jailbreak aligned models and transfer to closed ones. _Showed safety training can be bypassed automatically, which drove robustness research._
+- [ ] **[Automated red teaming](https://arxiv.org/abs/2202.03286)** · Standard · 2022  
+  Red Teaming Language Models with Language Models · Ethan Perez et al. (DeepMind)  
+  One model generates test inputs that make a target model misbehave, and a classifier flags the failures. _The template for the automated red teaming labs run before release._
+- [ ] **[Human red teaming at scale](https://arxiv.org/abs/2209.07858)** · Common · 2022  
+  Red Teaming Language Models to Reduce Harms: Methods, Scaling Behaviors, and Lessons Learned · Deep Ganguli et al. (Anthropic)  
+  A study of manual red teaming across model sizes and safety methods, with a dataset of about 39K attacks. _The practical playbook and baseline data for human red-team programs._
+- [ ] **[Transformer circuits framework](https://transformer-circuits.pub/2021/framework/index.html)** · Common · 2021  
+  A Mathematical Framework for Transformer Circuits · Nelson Elhage et al. (Anthropic)  
+  Breaks small attention-only transformers into interpretable paths through the residual stream and identifies induction heads. _The vocabulary (residual stream, QK/OV circuits) mechanistic interpretability is built on._
+- [ ] **[Sparse autoencoders (Towards Monosemanticity)](https://transformer-circuits.pub/2023/monosemantic-features/index.html)** · Common · 2023  
+  Towards Monosemanticity: Decomposing Language Models With Dictionary Learning · Trenton Bricken et al. (Anthropic)  
+  Sparse autoencoders trained on activations recover interpretable features from neurons that each mix many concepts. _Made SAEs the main tool for finding features inside models._ Also: [Scaling Monosemanticity (2024)](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html)
+- [ ] **[Circuit tracing (On the Biology of an LLM)](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)** · Emerging · 2025  
+  On the Biology of a Large Language Model · Jack Lindsey et al. (Anthropic)  
+  Traces step-by-step computations such as planning and multi-hop reasoning inside a production model using attribution graphs. _Moves interpretability from lists of features to whole mechanisms._
+- [ ] **[Sycophancy](https://arxiv.org/abs/2310.13548)** · Common · 2023  
+  Towards Understanding Sycophancy in Language Models · Mrinank Sharma et al. (Anthropic)  
+  RLHF assistants consistently tell users what they want to hear, partly because of human preference data. _A common, measurable failure that matters for every assistant product._
+- [ ] **[Reward hacking and emergent misalignment](https://arxiv.org/abs/2511.18397)** · Emerging · 2025  
+  Natural Emergent Misalignment from Reward Hacking in Production RL · Monte MacDiarmid et al. (Anthropic)  
+  Models that learn to reward-hack in realistic RL coding environments generalize to broader misaligned behavior. _Reward hacking becomes a safety risk, not just a training nuisance, once RL is scaled up._
+- [ ] **[Alignment faking](https://arxiv.org/abs/2412.14093)** · Emerging · 2024  
+  Alignment faking in large language models · Ryan Greenblatt et al. (Anthropic / Redwood)  
+  A model can comply selectively during training to avoid being modified, while behaving differently when unmonitored. _Shows behavioral evals can be gamed by the model being evaluated._
+- [ ] **[METR task time horizons](https://arxiv.org/abs/2503.14499)** · Emerging · 2025  
+  Measuring AI Ability to Complete Long Software Tasks · Thomas Kwa et al. (METR)  
+  Measures how long a task (in human-expert time) agents can complete with 50% reliability, and finds it doubled about every 7 months. _The most cited single trend for agent capability._
+- [ ] **[GDPval (real work evals)](https://arxiv.org/abs/2510.04374)** · Emerging · 2025  
+  GDPval: Evaluating AI Model Performance on Real-World Economically Valuable Tasks · Tejal Patwardhan et al. (OpenAI)  
+  Industry experts grade model deliverables on real tasks from 44 occupations against human professional work. _Marks the shift from academic quizzes to measuring real work output._
+- [ ] **[Chain-of-thought monitoring](https://arxiv.org/abs/2507.11473)** · Emerging · 2025  
+  Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety · Tomek Korbak et al. (multi-lab)  
+  A cross-lab position paper arguing reasoning traces can be monitored for intent to misbehave, and that training pressure could destroy this. _Frames a key 2025–26 safety lever and the design choices that keep it usable._
 
 ## Certificates (only if you need the credential)
 
