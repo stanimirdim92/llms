@@ -1,28 +1,27 @@
-# AI Engineer Route
+# AI Map
 
-A learning roadmap built from every link in your list, the DeepLearning.AI catalogue, three extra repos and your browser bookmarks. Every link was opened and checked in October 2026.
+**One central place for AI.**
 
-Online version with progress tracking: https://claude.ai/artifact/5KRkq84PEj5zvbtbBnqmzj
+A curated route through the best free and paid material for becoming an AI engineer, from first concepts to shipping agents in production, plus the blogs and people worth following. Every link was opened and checked in October 2026.
+
+Interactive version with progress tracking: `AI Map.html` in this folder.
 
 ## How to read this
 
 - **Do these**: the main path. **Alternatives** cover the same ground, so pick at most one. **Optional** adds depth. **Reference** is for lookups.
-- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **343 h** of core material, roughly 8 months at 10 h/week.
-- **Full track** (also understand and train models) includes every stage: about **663 h**, roughly 15 months at 10 h/week.
-- Items with a different role per track say so in italics. `added` marks gap-fillers that weren't in your list, and `bookmark` marks items from your browser bookmarks.
-- In the online and HTML versions, click an item's circle to move it from Not started to In progress to Done. In this file, use `- [ ]` and `- [x]`, and add `🚧` after an item's title to mark it in progress.
+- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **338 h** of core material, roughly 8 months at 10 h/week.
+- **Full track** (also understand and train models) includes every stage: about **658 h**, roughly 15 months at 10 h/week.
+- Items with a different role per track say so in italics.
+- In the HTML version, click an item's circle to move it from Not started to In progress to Done. In this file, use `- [ ]` and `- [x]`, and add `🚧` after an item's title to mark it in progress.
 
 ## Stage 0: Orientation
 
-~23 h of core material (Full track).
+~16 h of core material (Full track).
 
-Get the vocabulary and a mental model of what LLMs are before you write code. You already finished AI For Everyone, so this stage is short.
+Get the vocabulary and a mental model of what LLMs are before you write code. This stage is short on purpose.
 
 ### Do these
 
-- [x] **[AI For Everyone](https://www.coursera.org/learn/ai-for-everyone/)**  
-  DeepLearning.AI · Andrew Ng · Course · ~7 h · Audit free  
-  Non-technical intro to what ML can do, AI projects and strategy. _You already completed this. It's from 2019, before generative AI._
 - [ ] **[Generative AI for Everyone](https://www.coursera.org/learn/generative-ai-for-everyone)**  
   DeepLearning.AI · Andrew Ng · Course · ~6 h · Audit free  
   How LLMs work and where they fail; prompting, RAG and fine-tuning at a concept level; the GenAI project lifecycle. _The natural sequel to AI For Everyone. Take this instead of the Google AI cert and the IBM GenAI article._
@@ -38,6 +37,9 @@ Get the vocabulary and a mental model of what LLMs are before you write code. Yo
 
 ### Optional depth
 
+- [ ] **[AI For Everyone](https://www.coursera.org/learn/ai-for-everyone/)**  
+  DeepLearning.AI · Andrew Ng · Course · ~7 h · Audit free  
+  Non-technical intro to what ML can do, AI projects and strategy. _From 2019, before generative AI. Take it if you're new to AI or manage AI projects. Otherwise go straight to Generative AI for Everyone._
 - [ ] **[What is generative AI?](https://research.ibm.com/blog/what-is-generative-AI)**  
   IBM Research · Article · ~0.5 h · Free  
   A history from VAEs to transformers, plus instruction tuning and RLHF. _From 2023, before agents and reasoning models. The 3Blue1Brown series covers this better._
@@ -69,9 +71,9 @@ Write idiomatic Python, including OOP, comprehensions, venv and packages, and ha
 - [ ] **[Python Programming MOOC](https://programming-23.mooc.fi/)**  
   University of Helsinki · Course · ~40 h · Free  
   14 parts from basics through OOP (your link was Part 9.3, Encapsulation), with auto-graded exercises. _Linked here at the course root. Skim the parts you know and do the OOP parts (8–10) properly._ Also: [Your original link (9.3)](https://programming-23.mooc.fi/part-9/3-encapsulation)
-- [ ] **[Essence of Linear Algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)** `added`  
+- [ ] **[Essence of Linear Algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)**  
   3Blue1Brown · Video series · ~4 h · Free  
-  Visual intuition for vectors, matrices, dot products and transforms, which is the math under every layer. _Added to cover the 'Mathematics for ML' item in your MISC notes._
+  Visual intuition for vectors, matrices, dot products and transforms, which is the math under every layer. _The fastest way to the linear algebra under every layer._
 
 ### Alternatives (pick at most one)
 
@@ -81,7 +83,7 @@ Write idiomatic Python, including OOP, comprehensions, venv and packages, and ha
 - [ ] **[Python for Data Science, AI & Development](https://www.coursera.org/learn/python-for-applied-data-science-ai)**  
   IBM · Course · ~25 h · Audit free  
   Python basics, pandas, NumPy, REST APIs and scraping in Jupyter. _Course 4 of the IBM GenAI cert. Only needed if you don't know Python yet._
-- [ ] **[Mathematics for Machine Learning](https://www.coursera.org/specializations/mathematics-machine-learning)** `added` _(Full track: alternative · Builder track: skip)_  
+- [ ] **[Mathematics for Machine Learning](https://www.coursera.org/specializations/mathematics-machine-learning)** _(Full track: alternative · Builder track: skip)_  
   Imperial College London · Specialization · ~60 h · Audit free  
   Linear algebra, multivariate calculus and PCA, aimed at ML. _Only needed on the Full track, if the math in Stages 4–6 feels shaky._
 
@@ -93,13 +95,13 @@ Write idiomatic Python, including OOP, comprehensions, venv and packages, and ha
 - [ ] **[Mathematics for Machine Learning and Data Science](https://www.deeplearning.ai/specializations/mathematics-for-machine-learning-and-data-science)** _(Full track: optional · Builder track: skip)_  
   DeepLearning.AI · Luis Serrano · Specialization · ~94 h · DLAI Pro  
   Linear algebra, calculus, probability and statistics, with Python labs. _Friendlier than the Imperial specialization, which is now listed as its alternative. Only needed if the math in Stages 4–6 feels shaky._
-- [ ] **[Automate the Boring Stuff with Python (3rd ed.)](https://automatetheboringstuff.com/)** `bookmark`  
+- [ ] **[Automate the Boring Stuff with Python (3rd ed.)](https://automatetheboringstuff.com/)**  
   Al Sweigart · Free book · ~20 h · Free  
-  Practical scripting: files, web scraping, spreadsheets and PDFs, scheduling, GUI automation. _Your bookmark pointed to the 2nd edition. The 3rd is current. Use it as a practical companion to the Helsinki MOOC._
-- [ ] **[Software Design by Example](https://third-bit.com/sdxpy/intro/)** `bookmark`  
+  Practical scripting: files, web scraping, spreadsheets and PDFs, scheduling, GUI automation. _The 3rd edition is current. Use it as a practical companion to the Helsinki MOOC._
+- [ ] **[Software Design by Example](https://third-bit.com/sdxpy/intro/)**  
   Greg Wilson · Free book · ~30 h · Free  
   Learn design by building small versions of real tools: an interpreter, a test runner, a database, a web server. _From 2024. Nothing else on the route teaches software design, so read it after the MOOC to write better Python._
-- [ ] **[Kaggle Learn](https://www.kaggle.com/learn)** `bookmark`  
+- [ ] **[Kaggle Learn](https://www.kaggle.com/learn)**  
   Kaggle · Micro-courses · ~8 h · Free  
   In-browser 3–5 hour courses: pandas, data cleaning, feature engineering, data viz, plus Google's self-paced GenAI and Agents intensives. _Do the pandas and feature-engineering ones before Stage 3. The ML and agent ones repeat what's on the route._
 
@@ -108,15 +110,18 @@ Write idiomatic Python, including OOP, comprehensions, venv and packages, and ha
 - [ ] **[free-programming-books: Python courses](https://github.com/EbookFoundation/free-programming-books/blob/main/courses/free-courses-en.md#python)**  
   EbookFoundation · Link list · Free  
   About 50 free Python courses, including Django, Flask and FastAPI. _A directory, not a path. Use it to find alternatives._
-- [ ] **[Comprehensive Python Cheatsheet](https://github.com/gto76/python-cheatsheet)** `bookmark`  
+- [ ] **[Comprehensive Python Cheatsheet](https://github.com/gto76/python-cheatsheet)**  
   gto76 · Reference · Free  
   The whole language on one page, and still maintained in 2026. _Keep it open while you code._
-- [ ] **[Hypermodern Python](https://blog.claudiojolowicz.com/posts/hypermodern-python-01-setup/)** `bookmark`  
+- [ ] **[Hypermodern Python](https://blog.claudiojolowicz.com/posts/hypermodern-python-01-setup/)**  
   Claudio Jolowicz · Article series · Free  
   A six-part guide to project setup, testing, linting, typing, docs and CI. _The ideas hold up, but the tools are from 2020. Use uv and ruff instead of Poetry, pyenv and flake8._
-- [ ] **[Python Design Patterns and wtfpython](https://python-patterns.guide/)** `bookmark`  
+- [ ] **[Python Design Patterns and wtfpython](https://python-patterns.guide/)**  
   Brandon Rhodes · Satwik Kansal · Reference · Free  
   Idiomatic patterns for Python, plus a catalogue of surprising language gotchas with explanations. _Good for depth, not required._ Also: [wtfpython](https://github.com/satwikkansal/wtfpython)
+- [ ] **[copier-astral](https://github.com/ritwiktiwari/copier-astral)**  
+  Ritwik Tiwari · Project template · Free  
+  Scaffolds a Python project with uv, ruff, ty, pytest, MkDocs, GitHub Actions and Docker. _The modern toolchain from the start, instead of setting it up by hand._
 
 **Build:** Write a script that pulls JSON from a public API, cleans it with pandas, and saves a chart and a CSV.
 
@@ -132,8 +137,8 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 
 - [ ] **[Building software on top of LLMs (PyCon 2025)](https://building-with-llms-pycon-2025.readthedocs.io/en/latest/)**  
   Simon Willison · Workshop · ~4 h · Free (API costs)  
-  Hands-on with the llm library: prompting from Python, text-to-SQL, structured extraction, embeddings/RAG, tool use and prompt injection. _The best practical first step on your list, and it takes about 3 hours._
-- [ ] **[Anthropic courses](https://github.com/anthropics/courses)** `added`  
+  Hands-on with the llm library: prompting from Python, text-to-SQL, structured extraction, embeddings/RAG, tool use and prompt injection. _The best practical first step on the map, and it takes about 3 hours._
+- [ ] **[Anthropic courses](https://github.com/anthropics/courses)**  
   Anthropic · Notebooks · ~8 h · Free (API costs)  
   Notebook courses on API fundamentals, prompt engineering, real-world prompting, prompt evaluations and tool use. _Added because it covers evals and tool use from a model provider's point of view._
 - [ ] **[Prompt_Engineering](https://github.com/NirDiamant/Prompt_Engineering)**  
@@ -145,6 +150,9 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 - [ ] **[Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/)**  
   Hamel Husain · Article · ~0.5 h · Free  
   Three levels of evals: assertion-style unit tests, human and LLM-judge review of logged traces, and A/B tests. Plus why reading your own data is the core habit. _Ng calls eval-driven development the skill that separates strong AI engineers. Start the habit here, not in Stage 9._
+- [ ] **[AI Engineering (book) and its companion repo](https://github.com/chiphuyen/aie-book)**  
+  Chip Huyen · O'Reilly · Book + notes · Book paid, notes free  
+  The standard book for this role: foundation models, evaluation, prompt engineering, RAG, agents, finetuning, dataset engineering, inference optimization and feedback loops. The repo has the table of contents, chapter summaries, study notes and resources. _It covers concepts rather than tools, so it ages well. Read the chapters alongside Stages 2 and 7–9. The chapter summaries are free even without the book._
 
 ### Optional depth
 
@@ -163,24 +171,27 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 - [ ] **[Getting Structured LLM Output](https://www.deeplearning.ai/courses/getting-structured-llm-output)**  
   DeepLearning.AI × DotTxt · Short course · ~1.5 h · Free to watch  
   Covers JSON modes, re-prompting and constrained decoding with Outlines. _Explains how structured generation works under the hood._
-- [ ] **[Safety system messages](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/system-message)** `bookmark`  
+- [ ] **[Safety system messages](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/system-message)**  
   Microsoft Learn · Docs · ~0.5 h · Free  
-  How to write, iterate on and test system prompts, with their safety techniques and limits. _A short, mostly vendor-neutral checklist. Your bookmark's URL has moved, and this is the new one._
+  How to write, iterate on and test system prompts, with their safety techniques and limits. _A short, mostly vendor-neutral checklist._
 
 ### Reference
 
-- [ ] **[DeepLearning.AI short courses](https://learn.deeplearning.ai/my/learnings)**  
+- [ ] **[DeepLearning.AI course catalogue](https://www.deeplearning.ai/courses/)**  
   DeepLearning.AI + partners · Course platform · ~8 h · Freemium  
-  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _Your dashboard. I went through the full catalogue of 131 items and placed the 25 worth taking in their stages. The rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._
+  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _The full catalogue has 131 items. The 25 worth taking are placed in their stages on this map, and the rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._
 - [ ] **[Prompt Engineering Guide](https://www.promptingguide.ai/)**  
   DAIR.AI · Docs · Free  
   A full catalogue of prompting techniques, agents, context engineering and risks, with papers. _Kept current (2026). Use it as a lookup, not to read cover to cover._
-- [ ] **[Artificial Analysis](https://artificialanalysis.ai/)** `bookmark`  
+- [ ] **[Artificial Analysis](https://artificialanalysis.ai/)**  
   Artificial Analysis · Leaderboard · Free  
   Independent comparison of models and API providers on intelligence, speed, latency and price. _Where to look when choosing a model for a project. Nothing else on the route covers this._
-- [ ] **[OpenAI Cookbook](https://github.com/openai/openai-cookbook)** `bookmark`  
+- [ ] **[OpenAI Cookbook](https://github.com/openai/openai-cookbook)**  
   OpenAI · Notebooks · Free (API costs)  
   Runnable examples for tool calling, structured outputs, embeddings, RAG, agents and evals. _The OpenAI counterpart to the Anthropic courses. Look things up here rather than working through it._
+- [ ] **[Claude Cookbooks](https://github.com/anthropics/claude-cookbooks)**  
+  Anthropic · Notebooks · Free (API costs)  
+  Official notebooks for tool use, RAG, extended thinking, multimodal, agent patterns, the Agent SDK, skills, observability and cost optimization. _The Claude counterpart to the OpenAI Cookbook, and very active. Look recipes up here as you need them._
 
 **Build:** Build a CLI that turns messy text (emails, invoices, logs) into validated JSON with Pydantic, and include an eval set of 20 examples.
 
@@ -229,17 +240,17 @@ Learn the classic ML loop: features, loss, gradient descent, overfitting, evalua
 
 - [ ] **[3 · Unsupervised Learning, Recommenders, RL](https://www.coursera.org/learn/unsupervised-learning-recommenders-reinforcement-learning)**  
   Andrew Ng · Course · ~28 h · Audit free  
-  Clustering, anomaly detection, collaborative filtering, deep Q-learning. _Your list marked this 'OTHER'. It's useful but not on the critical path._
+  Clustering, anomaly detection, collaborative filtering, deep Q-learning. _Useful, but not on the critical path._
 - [ ] **[ML From Scratch](https://www.python-engineer.com/courses/mlfromscratch/01_knn/)**  
   Python Engineer · Patrick Loeber · Video series · ~10 h · Free  
-  Implements KNN, regression, Naive Bayes, SVM, trees, PCA and K-Means in NumPy. _The site returned 503 when I checked. The code is mirrored at github.com/patrickloeber/MLfromscratch._ Also: [GitHub mirror](https://github.com/patrickloeber/MLfromscratch)
+  Implements KNN, regression, Naive Bayes, SVM, trees, PCA and K-Means in NumPy. _The site was intermittently unavailable in October 2026. The code is mirrored at github.com/patrickloeber/MLfromscratch._ Also: [GitHub mirror](https://github.com/patrickloeber/MLfromscratch)
 - [ ] **[CS50's Introduction to AI with Python](https://pll.harvard.edu/course/cs50s-introduction-artificial-intelligence-python)**  
   Harvard · Malan & Yu · Course · ~70 h · Free  
   Project-heavy classical AI: search, logic, probability, optimization, ML, RL, neural nets, NLP. _Covers search and logic, which none of the ML certs do. It's weak on LLMs._
 - [ ] **[Cynthia Rudin's channel](https://www.youtube.com/@cynthiarudinduke/videos)**  
   Duke · Cynthia Rudin · Talks · Free  
   Research talks on interpretable ML, plus lectures for her free textbook 'Intuition for the Algorithms of Machine Learning'. _For interpretability depth. It's not a course._
-- [ ] **[mlcourse.ai](https://mlcourse.ai/book/index.html)** `bookmark`  
+- [ ] **[mlcourse.ai](https://mlcourse.ai/book/index.html)**  
   Yury Kashnitsky · Course · ~40 h · Free  
   Ten topics of classic ML with assignments: trees, linear models, ensembles, gradient boosting, time series. _Only adds depth beyond Ng on boosting and time series._
 - [ ] **[Exploratory Data Analysis for Machine Learning](https://www.coursera.org/learn/ibm-exploratory-data-analysis-for-machine-learning)**  
@@ -275,16 +286,16 @@ Learn how neural networks actually train: backprop, optimizers, regularization, 
     Metrics, error analysis, data mismatch, transfer learning. _Short and useful even on the Builder track._
   - [ ] **[5 · Sequence Models](https://www.coursera.org/learn/nlp-sequence-models)**  
     Andrew Ng · Course · ~37 h · Audit free  
-    RNNs, LSTMs, word embeddings, attention, intro to transformers. _Your list marked this 'OTHER'. Keep it, because it is the bridge to Stage 5._
+    RNNs, LSTMs, word embeddings, attention, intro to transformers. _Don't skip it, because it is the bridge to Stage 5._
 - [ ] **[MIT 6.S191: Introduction to Deep Learning](https://introtodeeplearning.com/)**  
   MIT · Amini & Amini · Course · ~20 h · Free  
-  Fast bootcamp from fundamentals through generative models, RL and LLMs, with three code labs. _The 2026 edition is the most current deep learning course on your list._
+  Fast bootcamp from fundamentals through generative models, RL and LLMs, with three code labs. _The 2026 edition is the most current deep learning course on the map._
 
 ### Alternatives (pick at most one)
 
 - [ ] **[Practical Deep Learning for Coders](https://course.fast.ai/Lessons/lesson1.html)**  
   fast.ai · Jeremy Howard · Course · ~40 h · Free  
-  Top-down and code-first: train real models from lesson 1, then learn how they work. Part 2 builds Stable Diffusion. _A practical alternative to Ng's DL specialization. It's from 2022 and centred on the fastai library. Your separate YouTube playlist link is the same course._ Also: [YouTube playlist](https://www.youtube.com/playlist?list=PLfYUBJiXbdtSvpQjSnJJ_PmDQB_VyT5iU)
+  Top-down and code-first: train real models from lesson 1, then learn how they work. Part 2 builds Stable Diffusion. _A practical alternative to Ng's DL specialization. It's from 2022 and centred on the fastai library. The YouTube playlist is the same course._ Also: [YouTube playlist](https://www.youtube.com/playlist?list=PLfYUBJiXbdtSvpQjSnJJ_PmDQB_VyT5iU)
 - [ ] **[Convolutional Neural Networks in TensorFlow](https://www.coursera.org/learn/convolutional-neural-networks-tensorflow)**  
   DeepLearning.AI · Laurence Moroney · Course · ~17 h · Audit free  
   Real-world image data, augmentation, transfer learning and multiclass classification in TensorFlow and Keras. _Course 2 of the TensorFlow Developer certificate. More hands-on than Ng's CNN course, but in TensorFlow while the rest of the route uses PyTorch. Pick one._
@@ -303,10 +314,10 @@ Learn how neural networks actually train: backprop, optimizers, regularization, 
 - [ ] **[PyTorch for Deep Learning Professional Certificate](https://www.deeplearning.ai/specializations/pytorch-for-deep-learning-professional-certificate)**  
   DeepLearning.AI · Laurence Moroney · Certificate · ~88 h · DLAI Pro  
   Building, optimizing and deploying deep learning models in PyTorch. _Ng's DL specialization is TensorFlow/NumPy, so take selected modules from this if PyTorch still feels unfamiliar after the one-hour primer._
-- [ ] **[Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)** `bookmark`  
+- [ ] **[Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)**  
   Michael Nielsen · Free book · ~15 h · Free  
   Derives backprop and builds an MNIST classifier in NumPy, explaining every step. _Very clear on intuition. The code is dated (last updated 2019), and Karpathy's micrograd covers the same ground._
-- [ ] **[An overview of gradient descent optimization algorithms](https://www.ruder.io/optimizing-gradient-descent/)** `bookmark`  
+- [ ] **[An overview of gradient descent optimization algorithms](https://www.ruder.io/optimizing-gradient-descent/)**  
   Sebastian Ruder · Article · ~1 h · Free  
   Momentum, Adagrad, RMSprop and Adam compared side by side. _Still the clearest single read on optimizers. It predates AdamW._
 
@@ -315,7 +326,7 @@ Learn how neural networks actually train: backprop, optimizers, regularization, 
 - [ ] **[Dive into Deep Learning (D2L)](https://d2l.ai/index.html)**  
   Zhang, Lipton, Li, Smola · Book · Free  
   An interactive textbook where every section is a runnable notebook, from basics to transformers. _Use it as the textbook alongside whichever course you take._
-- [ ] **[Deep Learning (Goodfellow, Bengio, Courville)](https://www.deeplearningbook.org/)** `bookmark`  
+- [ ] **[Deep Learning (Goodfellow, Bengio, Courville)](https://www.deeplearningbook.org/)**  
   MIT Press · Textbook · Free online  
   A theory-heavy reference on DL math, regularization, optimization and classic architectures. _From 2016, with no transformers. Use it to look up theory, not to read through._
 
@@ -376,13 +387,13 @@ Build a GPT from scratch, then learn the Hugging Face stack that real work happe
 - [ ] **[Attention in Transformers: Concepts and Code in PyTorch](https://www.deeplearning.ai/courses/attention-in-transformers-concepts-and-code-in-pytorch)**  
   DeepLearning.AI · Josh Starmer · Short course · ~1.5 h · Free to watch  
   Derives self-attention, masked attention and multi-head attention, then codes them. _A gentle warm-up before Karpathy's 'Let's build GPT'._
-- [ ] **[LLM Visualization](https://bbycroft.net/llm)** `bookmark`  
+- [ ] **[LLM Visualization](https://bbycroft.net/llm)**  
   Brendan Bycroft · Interactive · ~1.5 h · Free  
   A 3D walk through every step of one token's inference in a small GPT, with GPT-2 and GPT-3 scale views. _Spend an hour on it between 3Blue1Brown and Karpathy. It works on the Builder track too._
-- [ ] **[Hands-On Large Language Models](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models)** `bookmark`  
+- [ ] **[Hands-On Large Language Models](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models)**  
   Jay Alammar & Maarten Grootendorst · Book + notebooks · ~20 h · Notebooks free, book paid  
   A very visual book: tokens, embeddings, transformer internals, classification, clustering, semantic search and fine-tuning. _Same authors as DeepLearning.AI's How Transformer LLMs Work. Its embedding and topic-modelling chapters are the parts the route lacks._
-- [ ] **[ViT and CLIP papers](https://arxiv.org/abs/2010.11929)** `bookmark`  
+- [ ] **[ViT and CLIP papers](https://arxiv.org/abs/2010.11929)**  
   Google · OpenAI · Papers · ~3 h · Free  
   Vision Transformer (2020) and CLIP (2021), the foundations of today's multimodal models and image embeddings. _Read them when you move into multimodal work._ Also: [CLIP paper](https://arxiv.org/abs/2103.00020)
 - [ ] **[Natural Language Processing in TensorFlow](https://www.coursera.org/learn/natural-language-processing-tensorflow)**  
@@ -391,7 +402,7 @@ Build a GPT from scratch, then learn the Hugging Face stack that real work happe
 
 ### Reference
 
-- [ ] **[LLM Architecture Gallery](https://sebastianraschka.com/llm-architecture-gallery/)** `bookmark`  
+- [ ] **[LLM Architecture Gallery](https://sebastianraschka.com/llm-architecture-gallery/)**  
   Sebastian Raschka · Interactive reference · Free  
   Diagrams and fact sheets for about 109 current open models, with a compare tool and memory calculator. _Updated October 2026. Use it after LLMs-from-scratch to see how real models differ from your GPT._
 
@@ -431,15 +442,15 @@ Adapt open models with LoRA/QLoRA, instruction tuning and preference optimizatio
 
 ### Reference
 
-- [ ] **[bitsandbytes installation docs](https://huggingface.co/docs/bitsandbytes/main/en/installation)** `added`  
+- [ ] **[bitsandbytes installation docs](https://huggingface.co/docs/bitsandbytes/main/en/installation)**  
   Hugging Face · Docs · Free  
-  The current install path is pip install bitsandbytes (Python 3.10+, PyTorch 2.4+). Prebuilt wheels cover CUDA 11.8–13, ROCm, CPU and Apple Silicon. _Replaces the cuda_install.sh script in your PACKAGES notes, which now returns 404._
+  The current install path is pip install bitsandbytes (Python 3.10+, PyTorch 2.4+). Prebuilt wheels cover CUDA 11.8–13, ROCm, CPU and Apple Silicon. _The old cuda_install.sh script from the original repo now returns 404._
 - [ ] **[deep-learning-pytorch-huggingface](https://github.com/philschmid/deep-learning-pytorch-huggingface)**  
   Philipp Schmid · Notebook cookbook · Free  
   Notebook recipes for fine-tuning, DPO, GRPO, quantization and FSDP/DeepSpeed training on the Hugging Face stack. _Not a course, and inactive since February 2025. Most notebooks pin old TRL/PEFT versions and old models (FLAN-T5, Llama 2, Falcon). Only the 2025 ones (fine-tune LLMs in 2025, DPO in 2025, mini-R1 GRPO) are worth running, and many need A100-class GPUs._
-- [ ] **[LLM Course (Labonne)](https://github.com/mlabonne/llm-course)** `bookmark`  
+- [ ] **[LLM Course (Labonne)](https://github.com/mlabonne/llm-course)**  
   Maxime Labonne · Roadmap + notebooks · Free  
-  A roadmap in three tracks (Fundamentals, Scientist, Engineer), plus Colab notebooks for fine-tuning, quantization and model merging. _Mostly links that overlap this route. Its notebooks are good practical references for Stage 6. You had it bookmarked twice (GitHub and the HF blog)._
+  A roadmap in three tracks (Fundamentals, Scientist, Engineer), plus Colab notebooks for fine-tuning, quantization and model merging. _Mostly links that overlap this route. Its notebooks are good practical references for Stage 6._
 
 **Build:** Fine-tune a small open model with QLoRA on a domain dataset, then show the improvement over the base model on a held-out eval.
 
@@ -465,7 +476,7 @@ Ground models in your own data: chunking, embeddings, vector databases, hybrid s
 - [ ] **[Production Agentic RAG Course (arXiv Paper Curator)](https://github.com/jamwithai/production-agentic-rag-course)**  
   Jam With AI · Project course · ~30 h · Free  
   Seven weeks building one real system: FastAPI, Postgres and OpenSearch with Airflow ingestion, then BM25, hybrid search with RRF, local-LLM RAG with Ollama, Langfuse tracing, Redis caching and finally LangGraph agentic RAG with a Telegram bot. _The best capstone on the route, and it carries into Stages 8 and 9. Each week is a notebook, a Substack post and a git tag. Needs Docker and 8 GB+ RAM. Expect some setup friction, since its fixes are community-driven and its last update was April 2026. Ships no RAG eval suite, so add RAGAS yourself._
-- [ ] **[Introducing Contextual Retrieval](https://www.anthropic.com/engineering/contextual-retrieval)** `bookmark`  
+- [ ] **[Introducing Contextual Retrieval](https://www.anthropic.com/engineering/contextual-retrieval)**  
   Anthropic · Article · ~0.5 h · Free  
   Prepend LLM-written context to each chunk before embedding and BM25. Failed retrievals drop 49%, or 67% with a reranker. _A widely cited, measured technique you can add to your Stage 7 project in an afternoon._
 
@@ -482,7 +493,7 @@ Ground models in your own data: chunking, embeddings, vector databases, hybrid s
 
 - [ ] **[Qdrant vector DB: installation and setup](https://blog.futuresmart.ai/comprehensive-guide-to-qdrant-vector-db-installation-and-setup)**  
   FutureSmart AI · Tutorial · ~1 h · Free  
-  Qdrant in Docker or in memory, collections, embeddings, filtered queries, web UI. _You starred this one. Check calls against the current Qdrant client, which renamed query to query_points. It's optional now because the Jam With AI project uses OpenSearch, so do this tutorial if you want Qdrant specifically._
+  Qdrant in Docker or in memory, collections, embeddings, filtered queries, web UI. _Check calls against the current Qdrant client, which renamed query to query_points. It's optional now because the Jam With AI project uses OpenSearch, so do this tutorial if you want Qdrant specifically._
 - [ ] **[bRAG-langchain](https://github.com/bRAGAI/bRAG-langchain/)**  
   bRAGAI · Notebooks · ~8 h · Free  
   Five notebooks: multi-query, routing, RAPTOR, ColBERT, fusion and reranking. _Follows 'RAG From Scratch' closely, so it's redundant if you did that._
@@ -498,20 +509,23 @@ Ground models in your own data: chunking, embeddings, vector databases, hybrid s
 - [ ] **[Knowledge Graphs for RAG](https://www.deeplearning.ai/courses/knowledge-graphs-rag)**  
   DeepLearning.AI × Neo4j · Short course · Free to watch  
   Build a knowledge graph and query it with Cypher to improve retrieval. _From 2024 and tied to Neo4j, but it's the only hands-on intro to Ng's 'knowledge graphs' representation choice on the route._
+- [ ] **[GraphRAG](https://github.com/microsoft/graphrag)**  
+  Microsoft Research · Library · Free  
+  Builds a knowledge graph and community summaries from your documents with an LLM, then answers global and local questions over them. _The reference implementation of graph RAG. It's now in maintenance mode, and indexing is expensive, so try it on a small corpus first._
 
 ### Reference
 
 - [ ] **[Emerging LLM App Stack](https://github.com/a16z-infra/llm-app-stack)**  
   a16z · Link list · ~1 h · Free  
-  Tools listed by layer: data pipelines, embeddings, vector DBs, orchestration, eval, hosting. _A good mental model, but the tool lists stopped in February 2024 and predate agents and MCP. You also bookmarked the companion article, which has the architecture diagram._ Also: [Companion article (bookmark)](https://a16z.com/emerging-architectures-for-llm-applications/)
-- [ ] **[Vector Database Comparison](https://superlinked.com/vector-db-comparison)** `bookmark`  
+  Tools listed by layer: data pipelines, embeddings, vector DBs, orchestration, eval, hosting. _A good mental model, but the tool lists stopped in February 2024 and predate agents and MCP. The companion article has the architecture diagram._ Also: [Companion article](https://a16z.com/emerging-architectures-for-llm-applications/)
+- [ ] **[Vector Database Comparison](https://superlinked.com/vector-db-comparison)**  
   Superlinked · Comparison table · Free  
   About 47 vector DBs compared on features, pricing, performance and integrations. _Maintained (August 2026). Use it when picking a store beyond Qdrant or OpenSearch._
-- [ ] **[sentence-transformers](https://github.com/huggingface/sentence-transformers)** `bookmark`  
+- [ ] **[sentence-transformers](https://github.com/huggingface/sentence-transformers)**  
   Hugging Face · Library · Free  
   The standard library for local embedding, retrieval and reranking models, and for fine-tuning them. _Moved from UKPLab to Hugging Face. Docs are at sbert.net. Read them as needed._
 
-**Build:** Build a question-answering bot over your own docs (for example, your setup_scripts repo) using Qdrant, with an evaluation set scored by RAGAS or similar.
+**Build:** Build a question-answering bot over your own docs (for example, a codebase you know well) using Qdrant, with an evaluation set scored by RAGAS or similar.
 
 **Move on when:** You can show measured retrieval precision before and after a reranker.
 
@@ -535,7 +549,7 @@ Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines
 - [ ] **[MCP: Build Rich-Context AI Apps with Anthropic](https://www.deeplearning.ai/courses/mcp-build-rich-context-ai-apps-with-anthropic)**  
   DeepLearning.AI × Anthropic · Short course · ~2 h · Free to watch  
   Build MCP servers and clients, connect them to Claude Desktop, and deploy a remote server. _Needed for the Stage 8 project._
-- [ ] **[CMU 11-768: AI Agents (Fall 2026)](https://www.cmu-agents.com/#/schedule)** `bookmark` _(Full track: core · Builder track: optional)_  
+- [ ] **[CMU 11-768: AI Agents (Fall 2026)](https://www.cmu-agents.com/#/schedule)** _(Full track: core · Builder track: optional)_  
   CMU · Graham Neubig & Daniel Fried · University course · ~40 h · Free materials  
   Build an agent harness from scratch on an open model, design multi-step evals, and train agents with SFT and RL. _The only item on the route that covers agent harness internals and RL for agents. The course is running now, so slides and videos are still being released. It's graduate level, so take it last in this stage._
 - [ ] **[Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)**  
@@ -577,18 +591,30 @@ Build tool-using and multi-step agents: the ReAct loop, LangGraph state machines
 - [ ] **[A2A: The Agent2Agent Protocol](https://www.deeplearning.ai/courses/a2a-the-agent2agent-protocol)**  
   DeepLearning.AI × Google Cloud & IBM · Short course · ~1.5 h · Free to watch  
   Make agents built on different frameworks interoperate. _MCP connects agents to tools, and A2A connects agents to each other._
-- [ ] **[Gemini Fullstack LangGraph Quickstart](https://github.com/google-gemini/gemini-fullstack-langgraph-quickstart)** `bookmark`  
+- [ ] **[Gemini Fullstack LangGraph Quickstart](https://github.com/google-gemini/gemini-fullstack-langgraph-quickstart)**  
   Google Gemini · Template · ~3 h · Free (API key)  
   React frontend plus LangGraph backend for a research agent that searches, reflects and cites. _A clean full-stack template for your Stage 8 project. Swap Gemini for any model._
-- [ ] **[AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)** `bookmark`  
+- [ ] **[AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners)**  
   Microsoft · Course (18 lessons) · ~15 h · Free  
-  Agent design patterns, MCP and A2A, context engineering, memory and agent security, on the Microsoft Agent Framework. _Mostly overlaps the HF Agents course. Its context-engineering and memory lessons are the useful extra. You bookmarked the Bulgarian translation, which is in the repo's translations folder._
-- [ ] **[ollama-playground](https://github.com/NarimanN2/ollama-playground)** `bookmark`  
+  Agent design patterns, MCP and A2A, context engineering, memory and agent security, on the Microsoft Agent Framework. _Mostly overlaps the HF Agents course. Its context-engineering and memory lessons are the useful extra. Translations, including Bulgarian, are in the repo's translations folder._
+- [ ] **[ollama-playground](https://github.com/NarimanN2/ollama-playground)**  
   Nariman N. · Projects · Free  
   Small local-model projects: PDF and hybrid RAG, MCP agents, multi-agent supervisor and swarm, voice, vision. _Project ideas that run entirely on your machine._
 - [ ] **[Building Coding Agents with Tool Execution](https://www.deeplearning.ai/courses/building-coding-agents-with-tool-execution)**  
   DeepLearning.AI · Short course · Free to watch  
   Agents that write and run code in sandboxed cloud environments. _Covers Ng's 'code versus LLM execution' and 'sandbox environments'._
+- [ ] **[text2sql-framework](https://github.com/Text2SqlAgent/text2sql-framework)**  
+  Text2SqlAgent · Library · Free  
+  An agent with a single execute_sql tool that explores the schema, tests queries and corrects itself, with no RAG or semantic layer. It also ships as an MCP server. _A small, readable case study in giving an agent one good tool. Its benchmark is self-reported on 20 questions._
+
+### Reference
+
+- [ ] **[Awesome LLM Apps](https://github.com/Shubhamsaboo/awesome-llm-apps)**  
+  Shubham Saboo · Example apps · Free  
+  100+ small runnable apps: starter and advanced agents, multi-agent teams, voice and MCP agents, RAG and memory apps. _Demo quality, not production patterns. Use it for project ideas, and GenAI_Agents for how things work._
+- [ ] **[Awesome LangGraph](https://github.com/vonzosten/awesome-LangGraph)**  
+  vonzosten · Link list · Free  
+  Index of the LangChain and LangGraph ecosystem: concepts, templates, tools, UIs and tutorials. _Only useful once you've chosen LangGraph._
 
 **Build:** Build a research agent with web search, a code tool and an MCP server you wrote, and add traces you can inspect.
 
@@ -607,13 +633,19 @@ Deploy, monitor and iterate: experiment tracking, model registry, orchestration,
   The ML project lifecycle: scoping, deployment patterns, drift, error analysis, data-centric AI. _Conceptual. Take it before MLOps Zoomcamp._
 - [ ] **[MLOps Zoomcamp](https://github.com/DataTalksClub/mlops-zoomcamp)**  
   DataTalks.Club · Course · ~60 h · Free  
-  MLflow tracking and registry, Prefect orchestration, batch, web and stream deployment, Evidently, Grafana monitoring, CI/CD, Terraform. _No 2026 cohort, so it's self-paced. Covers MLflow from your MISC notes. Kubeflow isn't covered anywhere on your list._
+  MLflow tracking and registry, Prefect orchestration, batch, web and stream deployment, Evidently, Grafana monitoring, CI/CD, Terraform. _No 2026 cohort, so it's self-paced. Covers MLflow. Kubeflow isn't covered anywhere on the map._
 - [ ] **[Agents Towards Production](https://github.com/NirDiamant/agents-towards-production)**  
   Nir Diamant · Notebooks · ~25 h · Free  
   Taking agents to production: memory, tool auth, guardrails, tracing, evaluation, Docker/GPU deployment. _Many tutorials are sponsored, so the stacks are vendor-specific. Learn the pattern and swap in the vendor you prefer._
 - [ ] **[Evaluating AI Agents](https://www.deeplearning.ai/courses/evaluating-ai-agents)**  
   DeepLearning.AI × Arize · Short course · ~3 h · Free to watch  
   Tracing, component and trajectory evals, LLM-as-judge, and experiment-driven iteration. _The best evals course in the catalogue. Its ideas apply from Stage 2 onward._
+
+### Alternatives (pick at most one)
+
+- [ ] **[LLM Engineer's Handbook](https://github.com/PacktPublishing/LLM-Engineers-Handbook)**  
+  Paul Iusztin & Maxime Labonne · Packt · Book + project · Code free, book paid  
+  Builds one end-to-end 'LLM Twin': crawling, feature pipelines, Qdrant RAG, SFT and DPO finetuning, and AWS SageMaker deployment with LLMOps. _The most complete feature/training/inference pipeline example. The code is frozen at 2024 tooling (Poetry, ZenML, Llama 3.1), so expect setup work. Pick it over the Jam With AI project if you want finetuning and AWS._
 
 ### Optional depth
 
@@ -625,7 +657,7 @@ Deploy, monitor and iterate: experiment tracking, model registry, orchestration,
   Workflow orchestration with Python DAGs. Airflow 3.x is current. _Learn it from the official tutorial, not the repo. Only needed for data and ML pipeline work._
 - [ ] **[DeepLearning.AI Data Engineering Professional Certificate](https://www.coursera.org/professional-certificates/data-engineering)**  
   DeepLearning.AI & AWS · Joe Reis · Certificate · ~106 h · Paid  
-  Pipelines on AWS: ingestion, storage, modelling, Airflow, Spark, SQL, IaC. _An adjacent skill, not AI. Covers the SQL from your MISC notes._
+  Pipelines on AWS: ingestion, storage, modelling, Airflow, Spark, SQL, IaC. _An adjacent skill, not AI, and a good way to learn SQL properly._
 - [ ] **[Foundations of AI and Machine Learning](https://www.coursera.org/learn/foundations-of-ai-and-machine-learning)**  
   Microsoft · Course · ~40 h · Audit free  
   AI/ML infrastructure: data pipelines, frameworks, deployment, versioning, on Azure. _Course 1 of the Microsoft AI & ML cert. Despite the title, it's about infrastructure._
@@ -641,24 +673,27 @@ Deploy, monitor and iterate: experiment tracking, model registry, orchestration,
 - [ ] **[Semantic Caching for AI Agents](https://www.deeplearning.ai/courses/semantic-caching-for-ai-agents)**  
   DeepLearning.AI × Redis · Short course · ~1.5 h · Free to watch  
   Cut latency and cost by caching responses by meaning. _A practical cost lever that nothing else on the route covers._
-- [ ] **[From MLOps to ML Systems with FTI Pipelines](https://www.hopsworks.ai/post/mlops-to-ml-systems-with-fti-pipelines)** `bookmark`  
+- [ ] **[From MLOps to ML Systems with FTI Pipelines](https://www.hopsworks.ai/post/mlops-to-ml-systems-with-fti-pipelines)**  
   Hopsworks · Jim Dowling · Article · ~0.5 h · Free  
   Split any ML system into feature, training and inference pipelines, a simple mental model for architecture. _Read it alongside MLOps Zoomcamp._
-- [ ] **[What is Inference?](https://theaiengineer.substack.com/p/what-is-inference)** `bookmark`  
+- [ ] **[What is Inference?](https://theaiengineer.substack.com/p/what-is-inference)**  
   Paolo Perrone · The AI Engineer · Article · ~0.3 h · Free  
   Prefill versus decode, the KV cache, why output tokens cost more, and PagedAttention. _From August 2026. A good primer before the vLLM course._
-- [ ] **[Made With ML](https://github.com/GokuMohandas/Made-With-ML)** `bookmark`  
+- [ ] **[Made With ML](https://github.com/GokuMohandas/Made-With-ML)**  
   Goku Mohandas · Course · ~30 h · Free  
   Take a PyTorch model to production with Ray, MLflow, pytest and GitHub Actions CI/CD. _Overlaps MLOps Zoomcamp. Its extras are Ray-based scaling and stronger software-engineering discipline._
-- [ ] **[Agent Starter Pack](https://github.com/GoogleCloudPlatform/agent-starter-pack)** `bookmark`  
+- [ ] **[Agent Starter Pack](https://github.com/GoogleCloudPlatform/agent-starter-pack)**  
   Google Cloud · Templates · Free (GCP billed)  
-  Production agent templates with CI/CD, evaluation and observability built in. _Only if you deploy on GCP. Your bookmark pointed at its old location in the generative-ai repo._
+  Production agent templates with CI/CD, evaluation and observability built in. _Only if you deploy on GCP. It used to live in Google's generative-ai repo._
 - [ ] **[Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications)**  
   DeepLearning.AI × Giskard · Short course · Free to watch  
   Find and evaluate vulnerabilities in LLM apps: prompt injection, data leaks, harmful outputs. _From 2024. Pair it with the lethal-trifecta article for Ng's 'security incident management'._
 - [ ] **[Governing AI Agents](https://www.deeplearning.ai/courses/governing-ai-agents)**  
   DeepLearning.AI · Short course · Free to watch  
   Build data governance into an agent's workflow so it handles data safely, securely and accurately. _Covers Ng's 'privacy, governance and compliance' item._
+- [ ] **[LangSmith Agent Lifecycle Workshop](https://github.com/langchain-ai/langsmith-agent-lifecycle-workshop)**  
+  LangChain · Workshop · Free  
+  Build a support agent in LangGraph, improve it with offline evals, then deploy it with online evals and a CI eval that blocks regressions. _A compact build-evaluate-deploy loop that bridges Stages 8 and 9. Worth it if LangGraph and LangSmith are your stack._
 
 ### Reference
 
@@ -678,16 +713,28 @@ Andrew Ng's AI Engineering Skills Map has four pillars. The stages above cover t
 
 ~2 h of core material (Full track).
 
-Ng's third pillar. Plan, then let agents execute, then verify. The skill is directing that loop: how much autonomy to give, how to manage context, and how to review what comes back. Your Claude Code harness already covers much of 'customizing the agent and environment', so focus on spec-first planning and reviewing.
+Ng's third pillar. Plan, then let agents execute, then verify. The skill is directing that loop: how much autonomy to give, how to manage context, and how to review what comes back. If you already customize your agent setup, focus on spec-first planning and on reviewing what comes back.
 
 #### Do these
 
 - [ ] **[Claude Code: A Highly Agentic Coding Assistant](https://www.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant)**  
   DeepLearning.AI × Anthropic · Short course · ~2 h · Free to watch  
-  Subagents, hooks, MCP and GitHub integration in a real agent harness. _Ng's 'customizing agent and environment' skills. Your Claude Code harness already goes beyond most of it, so skim for what you haven't set up._
+  Subagents, hooks, MCP and GitHub integration in a real agent harness. _Ng's 'customizing agent and environment' skills. If you already run a customized agent setup, skim for what you haven't set up._
 - [ ] **[Spec-Driven Development with Coding Agents](https://www.deeplearning.ai/courses/spec-driven-development-with-coding-agents)**  
   DeepLearning.AI · Short course · Free to watch  
   Write specs that give a coding agent the context to build intentional, maintainable software instead of vibe-coding. _From April 2026. It's Ng's 'planning' phase, the part most people skip._
+- [ ] **[Agent Skills (Anthropic)](https://github.com/anthropics/skills)**  
+  Anthropic · Spec + examples · Free  
+  The SKILL.md format spec, a template, and example skills, including the document skills and a Claude API skill. _Read the spec and template before any third-party skill pack. They all build on this format._
+- [ ] **[agent-skills](https://github.com/addyosmani/agent-skills)**  
+  Addy Osmani · Skill pack · Free  
+  25 engineering skills and 9 commands (/spec, /plan, /build, /test, /review, /ship) that encode a define-plan-build-verify-review-ship workflow for Claude Code, Codex, Gemini and others. _Spec-driven development you can install and take apart, and it has its own evals. Pair it with the Spec-Driven Development course._
+
+#### Alternatives (pick at most one)
+
+- [ ] **[gstack](https://github.com/garrytan/gstack)**  
+  Garry Tan · Claude Code setup · Free  
+  About 23 role-based slash commands (plan review, engineering manager, designer, QA with a real browser, security audit, ship and deploy) built as Markdown skills. _An example of a full role-based harness. It's opinionated and complex. Study it for ideas, and use agent-skills as the cleaner base._
 
 #### Optional depth
 
@@ -710,21 +757,30 @@ Ng's third pillar. Plan, then let agents execute, then verify. The skill is dire
 
 ### Track B: Software engineering fundamentals
 
-~0 h of core material (Full track).
+~2 h of core material (Full track).
 
-Ng's second pillar: full-stack apps, data management, architecture, security and reliability, and running in production. Agents write the code, but you still choose the tradeoffs. Your server and infrastructure work likely covers much of this, so use Part 3 as a checklist and only study the gaps.
+Ng's second pillar: full-stack apps, data management, architecture, security and reliability, and running in production. Agents write the code, but you still choose the tradeoffs. If you have backend or infrastructure experience, much of it will be familiar, so use Part 3 as a checklist and only study the gaps.
 
 #### Do these
 
 - [ ] **[Skills Map Part 3: Software Engineering Fundamentals](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-software-engineering-fundamentals)**  
   Andrew Ng · The Batch · Article (checklist) · ~0.3 h · Free  
-  Five areas: full-stack apps, managing data, system architecture, security and reliability, scaling and operating in production. _Read it as a checklist and mark what you already know. Your server work likely covers most of it._
+  Five areas: full-stack apps, managing data, system architecture, security and reliability, scaling and operating in production. _Read it as a checklist and mark what you already know._
+- [ ] **[Designing Data-Intensive Applications (2nd edition)](https://martin.kleppmann.com/2026/03/24/designing-data-intensive-applications-2e.html)**  
+  Martin Kleppmann & Chris Riccomini · O'Reilly · Book · Paid  
+  How data systems really work: data models, storage engines, replication, partitioning, transactions, consistency, batch and stream processing. _The 2nd edition came out in 2026. It's the deepest single read for Ng's 'managing data' and 'designing system architectures'. The linked repo has up-to-date links for every reference in the book._ Also: [References repo](https://github.com/ept/ddia2-references)
+- [ ] **[FastAPI Best Practices](https://github.com/zhanymkanov/fastapi-best-practices)**  
+  zhanymkanov · Guide · ~2 h · Free  
+  Production FastAPI conventions: project structure, async versus sync routes, Pydantic models, dependencies, background tasks versus queues, migrations and testing. _Most AI backends on this map are FastAPI, including the Jam With AI project. It also ships an AGENTS.md, so your coding agent can follow the same rules._
 
 #### Alternatives (pick at most one)
 
 - [ ] **[Algorithms for Searching, Sorting, and Indexing](https://www.coursera.org/learn/algorithms-searching-sorting-indexing)**  
   CU Boulder · Sriram Sankaranarayanan · Course · ~36 h · Coursera Plus  
   Sorting and searching with proofs and Big-O, heaps and priority queues, randomized quicksort, and hashing up to Bloom filters and count-min sketches, in Python. _Part of CU Boulder's data structures and algorithms specialization. It overlaps Princeton's Part I but is in Python, adds Bloom filters and count-min sketches, and the certificate needs Coursera Plus. Pick one._
+- [ ] **[System Design (Karan Pratap Singh)](https://github.com/karanpratapsingh/system-design)**  
+  Karan Pratap Singh · Guide · Free  
+  One linear guide from networking and DNS through databases, caching, CAP and PACELC, messaging, microservices and rate limiting to worked designs. _Covers the same ground as the System Design Primer but reads more like a course. Pick one._
 
 #### Optional depth
 
@@ -737,12 +793,21 @@ Ng's second pillar: full-stack apps, data management, architecture, security and
 - [ ] **[TOGAF 10 Foundation](https://www.coursera.org/learn/togaf-10-foundation)**  
   EDUCBA · Course · ~7 h · Coursera Plus  
   The TOGAF enterprise-architecture framework: BDAT domains, the ADM phases A to H, requirements management, architecture principles, governance and stakeholder management. _Not AI, but it's the shared language for architecture work in larger organizations, and it fits Ng's 'designing system architectures' and 'aligning stakeholders' skills. The publisher mass-produces courses, so treat this as a primer and use The Open Group's TOGAF Standard as the source if you go for the certification._
+- [ ] **[Build Your Own X](https://github.com/codecrafters-io/build-your-own-x)**  
+  CodeCrafters · Tutorial index · Free  
+  Tutorials for building your own database, Redis, Git, Docker, shell, web server or neural network from scratch, in many languages. _The best way to really understand a tool is to rebuild it. Pick one project that matches a gap from the Part 3 checklist._
 
 #### Reference
 
 - [ ] **[System Design Primer](https://github.com/donnemartin/system-design-primer)**  
   Donne Martin · Guide · Free  
   Scalability, CAP, caching, load balancing, SQL vs NoSQL, async and queues, with worked design cases. _About 373k stars. Use it only for the checklist items you're unsure of._
+- [ ] **[System Design 101](https://github.com/ByteByteGoHq/system-design-101)**  
+  ByteByteGo · Visual cheat sheets · Free  
+  Short visual explainers on APIs, databases, caching, microservices, cloud, DevOps and security. _Good for quick review. The content now lives on bytebytego.com, and the repo is its index._
+- [ ] **[Data Engineer Handbook](https://github.com/DataExpert-io/data-engineer-handbook)**  
+  DataExpert.io · Zach Wilson · Link hub + bootcamp · Free  
+  Books, courses, company blogs, newsletters and free beginner and intermediate bootcamp materials for data engineering. _Partly promotional. Use the books list and bootcamp folders if data pipelines are your gap._
 
 **Build:** Score yourself against the five areas in Part 3. For each weak item, write a one-paragraph design note on how your Stage 7 or Stage 8 project handles it.
 
@@ -775,12 +840,12 @@ Ng's fourth pillar: deciding what to build, not just how. This means product sen
 - [ ] **[AI Engineering From Scratch](https://github.com/rohitg00/ai-engineering-from-scratch)**  
   Rohit Ghumare · Curriculum · ~342 h · Free (MIT)  
   523 text-and-code lessons in 20 phases, from math to agents, MCP, production and safety. It's very current (2026) and updated daily. _Its phases map onto this route (P1→Stage 1, P2→3, P3→4, P7/P10→5, P10/P11→6, P11→7, P13–16→8, P17→9), but don't follow all 342 hours. It grew very fast and looks heavily AI-assisted, so quality varies by lesson. Use it to fill gaps (Agent Skills, coding agents, 2026 architectures) and as a second explanation, not as a replacement for Karpathy or Raschka._
-- [ ] **[Become a Machine Learning Engineer](https://www.maxmynter.com/pages/blog/become-mle)** `bookmark`  
+- [ ] **[Become a Machine Learning Engineer](https://www.maxmynter.com/pages/blog/become-mle)**  
   Max Mynter · Roadmap post · Free  
   A second-opinion roadmap for software engineers, which recommends mostly the same resources as this route. _Reassurance that the route is sensible, and nothing more._
-- [ ] **[Hugging Face Papers (formerly Papers with Code)](https://huggingface.co/papers/trending)** `bookmark`  
+- [ ] **[Hugging Face Papers (formerly Papers with Code)](https://huggingface.co/papers/trending)**  
   Hugging Face · Paper feed · Free  
-  Trending research papers with code links. _paperswithcode.com now redirects here, so update your bookmark._
+  Trending research papers with code links. _paperswithcode.com now redirects here._
 - [ ] **[learn-ai-engineering](https://github.com/ashishps1/learn-ai-engineering)**  
   Ashish Pratap Singh · Link list · Free  
   A curated list of free resources across math, ML, DL, LLMs, RAG, agents and MLOps. _Already includes many items on this route. Use it to find a second explanation for a topic._
@@ -804,6 +869,23 @@ Ng's fourth pillar: deciding what to build, not just how. This means product sen
   The role, skills and salary (about $138k median in the US). _Mostly marketing for Coursera programs._
 
 ## What to follow
+
+### Learning platforms
+
+Where the structured courses live.
+
+- **[DeepLearning.AI](https://www.deeplearning.ai/)**  
+  Andrew Ng · Learning platform · Freemium  
+  Andrew Ng's platform: short courses with OpenAI, Anthropic, Google, Hugging Face and others, longer programs such as Agentic AI and RAG, and The Batch newsletter. _About 25 of its 131 courses are placed on this map. Short courses are free to watch, and longer ones need DeepLearning.AI Pro._
+- **[Hugging Face Learn](https://huggingface.co/learn)**  
+  Hugging Face · Learning platform · Free  
+  Twelve free courses: LLMs, agents, context engineering, deep RL, computer vision, audio, diffusion, robotics, games and 3D, plus the Open-Source AI Cookbook. _The LLM and Agents courses are on the map (Stages 5 and 8). The others are worth knowing when you branch out._
+- [ ] **[Kaggle Learn](https://www.kaggle.com/learn)**  
+  Kaggle · Micro-courses · ~8 h · Free  
+  In-browser 3–5 hour courses: pandas, data cleaning, feature engineering, data viz, plus Google's self-paced GenAI and Agents intensives. _Do the pandas and feature-engineering ones before Stage 3. The ML and agent ones repeat what's on the route._
+- [ ] **[DeepLearning.AI course catalogue](https://www.deeplearning.ai/courses/)**  
+  DeepLearning.AI + partners · Course platform · ~8 h · Freemium  
+  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _The full catalogue has 131 items. The 25 worth taking are placed in their stages on this map, and the rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._
 
 ### News and digests
 
@@ -845,7 +927,7 @@ Deep dives that turn papers into understanding.
 
 - **[Ahead of AI](https://magazine.sebastianraschka.com/)**  
   Sebastian Raschka · Newsletter · Free (paid tier)  
-  Research roundups and deep dives on LLM architectures, training and reasoning models. _Written by the author of LLMs-from-scratch (Stage 5). It's the most readable way to follow LLM research._
+  Research roundups and deep dives on LLM architectures, training and reasoning models. _Written by the author of LLMs-from-scratch (Stage 5). It's the most readable way to follow LLM research. His own site also has shorter Quick Notes that aren't in the newsletter._ Also: [sebastianraschka.com/blog](https://sebastianraschka.com/blog/)
 - **[Lil'Log](https://lilianweng.github.io/)**  
   Lilian Weng · Blog · Free  
   Long, citation-heavy surveys: agents, hallucination, reward hacking, scaling laws, reasoning. _A few posts a year, each a definitive survey. Read them when you reach the matching stage._
@@ -868,7 +950,7 @@ Where new models, techniques and system cards are announced.
 
 - **[OpenAI Research](https://openai.com/news/research/)**  
   OpenAI · Lab blog · Free  
-  OpenAI's research announcements: model releases, system cards, safety and alignment work, benchmarks. _Read the system cards and evals sections when a model launches, because those tell you what changed for builders. The site blocks automated readers, so I confirmed it through search. The filterable index is at openai.com/research/index._ Also: [Research index](https://openai.com/research/index/)
+  OpenAI's research announcements: model releases, system cards, safety and alignment work, benchmarks. _Read the system cards and evals sections when a model launches, because those tell you what changed for builders. The filterable index is at openai.com/research/index._ Also: [Research index](https://openai.com/research/index/)
 - **[Google Research Blog](https://research.google/blog/)**  
   Google Research · Lab blog · Free  
   Research posts across ML, agents, privacy and security, health and geospatial AI, filterable by label. _Broad. Filter by the Machine Intelligence or Natural Language Processing labels to keep it relevant._
@@ -896,6 +978,9 @@ Where new models, techniques and system cards are announced.
 - **[Claude Blog](https://claude.com/blog)**  
   Anthropic · Product blog · Free  
   Claude product news, best practices for agents and automations, and customer case studies. _Product-side and practical. Engineering at Anthropic covers the internals._
+- **[LAION Blog](https://laion.ai/blog/)**  
+  LAION · Non-profit blog · Free  
+  Open datasets and models for multimodal research, from the non-profit behind LAION-5B. _Follow it for open multimodal data releases._
 
 ### Industry and impact
 
@@ -917,7 +1002,7 @@ Look things up here when stuck. Quality varies by author, so check dates.
   Step-by-step tutorials from ML fundamentals and statistics to transformers, RAG and fine-tuning. _Good for looking up 'how do I do X in code' in Stages 1–3. Now part of a media group, so newer posts vary in depth._
 - **[Towards Data Science](https://towardsdatascience.com/)**  
   TDS (independent since February 2025) · Publication · Free  
-  Applied ML, data science and LLM tutorials and case studies from many authors. _Many of your bookmarks came from here. It left Medium in 2025 and is now free to read. Quality depends on the author, so check dates and code against current docs._
+  Applied ML, data science and LLM tutorials and case studies from many authors. _It left Medium in 2025 and is now free to read. Quality depends on the author, so check dates and code against current docs._
 - **[KDnuggets](https://www.kdnuggets.com/)**  
   Guiding Tech Media · News and tutorials · Free  
   Data science, ML and LLM tutorials, cheat sheets and career comparisons. _Light, quick reads. Its cheat sheets are the most useful part._
@@ -954,16 +1039,16 @@ Landscapes, leaderboards and roadmaps. These items also appear in their stages.
   A map of open-source AI and data projects. _Useful for getting oriented, not for learning._
 - [ ] **[Emerging LLM App Stack](https://github.com/a16z-infra/llm-app-stack)**  
   a16z · Link list · ~1 h · Free  
-  Tools listed by layer: data pipelines, embeddings, vector DBs, orchestration, eval, hosting. _A good mental model, but the tool lists stopped in February 2024 and predate agents and MCP. You also bookmarked the companion article, which has the architecture diagram._ Also: [Companion article (bookmark)](https://a16z.com/emerging-architectures-for-llm-applications/)
-- [ ] **[Artificial Analysis](https://artificialanalysis.ai/)** `bookmark`  
+  Tools listed by layer: data pipelines, embeddings, vector DBs, orchestration, eval, hosting. _A good mental model, but the tool lists stopped in February 2024 and predate agents and MCP. The companion article has the architecture diagram._ Also: [Companion article](https://a16z.com/emerging-architectures-for-llm-applications/)
+- [ ] **[Artificial Analysis](https://artificialanalysis.ai/)**  
   Artificial Analysis · Leaderboard · Free  
   Independent comparison of models and API providers on intelligence, speed, latency and price. _Where to look when choosing a model for a project. Nothing else on the route covers this._
-- [ ] **[LLM Architecture Gallery](https://sebastianraschka.com/llm-architecture-gallery/)** `bookmark`  
+- [ ] **[LLM Architecture Gallery](https://sebastianraschka.com/llm-architecture-gallery/)**  
   Sebastian Raschka · Interactive reference · Free  
   Diagrams and fact sheets for about 109 current open models, with a compare tool and memory calculator. _Updated October 2026. Use it after LLMs-from-scratch to see how real models differ from your GPT._
-- [ ] **[Hugging Face Papers (formerly Papers with Code)](https://huggingface.co/papers/trending)** `bookmark`  
+- [ ] **[Hugging Face Papers (formerly Papers with Code)](https://huggingface.co/papers/trending)**  
   Hugging Face · Paper feed · Free  
-  Trending research papers with code links. _paperswithcode.com now redirects here, so update your bookmark._
+  Trending research papers with code links. _paperswithcode.com now redirects here._
 - [ ] **[best-of-ml-python](https://github.com/ml-tooling/best-of-ml-python)**  
   ml-tooling · Link list · Free  
   Ranked ML Python libraries by category. _Use it to compare libraries. Updates have slowed since March 2026._
@@ -992,10 +1077,14 @@ Checked and left off the route.
 
 | Link | What it is | Why skip |
 |---|---|---|
-| [Introduction to AI (Google AI Essentials, course 1)](https://www.coursera.org/learn/google-introduction-to-ai) | A 1.5-hour AI-literacy intro for using AI tools at work. | For end users, not builders. AI For Everyone, which you've done, covers it. |
-| [Applied AI (glossary)](https://www.cognizant.com/us/en/glossary/applied-ai) | A short marketing definition with no technical content. | It appeared twice in your list. |
+| [Introduction to AI (Google AI Essentials, course 1)](https://www.coursera.org/learn/google-introduction-to-ai) | A 1.5-hour AI-literacy intro for using AI tools at work. | For end users, not builders. AI For Everyone covers it. |
+| [LLM101n](https://github.com/karpathy/LLM101n) | A 17-chapter syllabus for 'Let's build a Storyteller'. | The course was never released and the repo is archived. Zero to Hero and LLMs-from-scratch cover the same syllabus with real content. |
+| [get-shit-done](https://github.com/gsd-build/get-shit-done) | Spec-driven development and context engineering for Claude Code. | Archived in June 2026. Development continues as open-gsd/gsd-core. |
+| [EnterpriseArchitecture](https://github.com/justinamiller/EnterpriseArchitecture) | A single README on enterprise-architecture layers, domains and maturity. | Unchanged since 2021 and lightly edited. The TOGAF course in Track B covers it properly. |
+| [llmops-python-package](https://github.com/callmesora/llmops-python-package) | An LLMOps package template with MLflow, Bedrock RAG, Docker and CI. | Stale since February 2025 and built on Poetry. MLOps Zoomcamp and the Jam With AI project cover this better. |
+| [Applied AI (glossary)](https://www.cognizant.com/us/en/glossary/applied-ai) | A short marketing definition with no technical content. | Marketing content with no technical depth. |
 | [Getting Started with LLMs](https://www.linkedin.com/pulse/getting-started-llms-guide-resources-opportunities-wendy-ran-wei/) | A link roundup from April 2023. | Outdated and superseded by learn-ai-engineering. |
-| [Introduction to Artificial Intelligence](https://www.coursera.org/learn/introduction-to-ai) | A non-technical overview of AI. | Repeats AI For Everyone, which you've done. |
+| [Introduction to Artificial Intelligence](https://www.coursera.org/learn/introduction-to-ai) | A non-technical overview of AI. | Repeats AI For Everyone. |
 | [Generative AI: Introduction and Applications](https://www.coursera.org/learn/generative-ai-introduction-and-applications) | A tour of GenAI tools. | No engineering content, and it will date quickly. |
 | [Intro to Deep Learning & Neural Networks with Keras](https://www.coursera.org/learn/introduction-to-deep-learning-with-keras) | Shallow Keras intro to NNs, CNNs and RNNs. | Much shallower than Ng's DL specialization, and it uses Keras while the rest of the route uses PyTorch. |
 | [ML with Scikit-learn, PyTorch & HF (specialization URL)](https://www.coursera.org/specializations/machine-learning-scikit-learn-pytorch-hugging-face) | Serves the same program page as the professional certificate. | A duplicate of the certificate listed in Stage 3. |
