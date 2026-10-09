@@ -4,7 +4,9 @@
 
 A curated route through the best free and paid material for becoming an AI engineer, from first concepts to shipping agents in production, plus the blogs and people worth following. Every link was opened and checked in October 2026.
 
-Interactive version with progress tracking: `AI Map.html` in this folder.
+Online version with progress tracking: https://claude.ai/artifact/5KRkq84PEj5zvbtbBnqmzj
+
+Offline copy: `AI Map.html` in this folder (progress saved in that browser only).
 
 ## How to read this
 
@@ -177,9 +179,9 @@ Ship useful things on top of hosted models early: prompting, structured output, 
 
 ### Reference
 
-- [ ] **[DeepLearning.AI course catalogue](https://www.deeplearning.ai/courses/)**  
+- [ ] **[DeepLearning.AI Learning Platform (My Learnings)](https://learn.deeplearning.ai/my/learnings)**  
   DeepLearning.AI + partners · Course platform · ~8 h · Freemium  
-  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _The full catalogue has 131 items. The 25 worth taking are placed in their stages on this map, and the rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._
+  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _Your own dashboard of courses in progress once you're signed in. The full catalogue has 131 items. The 25 worth taking are placed in their stages on this map, and the rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._ Also: [Course catalogue](https://www.deeplearning.ai/courses/)
 - [ ] **[Prompt Engineering Guide](https://www.promptingguide.ai/)**  
   DAIR.AI · Docs · Free  
   A full catalogue of prompting techniques, agents, context engineering and risks, with papers. _Kept current (2026). Use it as a lookup, not to read cover to cover._
@@ -883,9 +885,9 @@ Where the structured courses live.
 - [ ] **[Kaggle Learn](https://www.kaggle.com/learn)**  
   Kaggle · Micro-courses · ~8 h · Free  
   In-browser 3–5 hour courses: pandas, data cleaning, feature engineering, data viz, plus Google's self-paced GenAI and Agents intensives. _Do the pandas and feature-engineering ones before Stage 3. The ML and agent ones repeat what's on the route._
-- [ ] **[DeepLearning.AI course catalogue](https://www.deeplearning.ai/courses/)**  
+- [ ] **[DeepLearning.AI Learning Platform (My Learnings)](https://learn.deeplearning.ai/my/learnings)**  
   DeepLearning.AI + partners · Course platform · ~8 h · Freemium  
-  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _The full catalogue has 131 items. The 25 worth taking are placed in their stages on this map, and the rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._
+  1–2 hour hands-on courses on prompting, RAG, agents, evals and fine-tuning, made with OpenAI, Anthropic, LangChain, Hugging Face and others. _Your own dashboard of courses in progress once you're signed in. The full catalogue has 131 items. The 25 worth taking are placed in their stages on this map, and the rest are mostly thin partner showcases or superseded 2023–24 courses. Short courses are free to watch, while the longer courses and certificates need DeepLearning.AI Pro._ Also: [Course catalogue](https://www.deeplearning.ai/courses/)
 
 ### News and digests
 
