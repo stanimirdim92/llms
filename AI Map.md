@@ -848,6 +848,9 @@ Ng's fourth pillar: deciding what to build, not just how. This means product sen
 - [ ] **[Hugging Face Papers (formerly Papers with Code)](https://huggingface.co/papers/trending)**  
   Hugging Face · Paper feed · Free  
   Trending research papers with code links. _paperswithcode.com now redirects here._
+- [ ] **[The curator's GitHub stars](https://github.com/stanimirdim92?tab=stars)**  
+  stanimirdim92 · GitHub stars · Free  
+  Repos the map's curator follows: AI engineering courses and books, agent skills and harnesses, system design, Python and infrastructure lists. _About 20 of these 87 are placed in stages and tracks on this map. The rest are developer tools and lists outside its scope._
 - [ ] **[learn-ai-engineering](https://github.com/ashishps1/learn-ai-engineering)**  
   Ashish Pratap Singh · Link list · Free  
   A curated list of free resources across math, ML, DL, LLMs, RAG, agents and MLOps. _Already includes many items on this route. Use it to find a second explanation for a topic._
@@ -1025,6 +1028,29 @@ No longer updated, but the explanations are still the best there are.
 - **[colah's blog](https://colah.github.io/)**  
   Chris Olah · Blog (archive) · Free  
   'Understanding LSTM Networks', 'Neural Networks, Manifolds, and Topology' and the start of the circuits line of interpretability work. _Read 'Understanding LSTM Networks' alongside Ng's Sequence Models (Stage 4). His newer work is published through Anthropic Research._
+
+### Other blog lists
+
+The lists this section was built from, for anyone who wants to dig further.
+
+- **[The Ultimate AI Blog Guide: Who to Read and Why](https://aiconnections.substack.com/p/the-ultimate-ai-blog-guide-who-to)**  
+  David Mataciunas · AI Connections · Blog list · Free  
+  Ten individual blogs (Chip Huyen, Eugene Yan, Lilian Weng, Raschka, Willison, Karpathy, Lambert, Mollick, Gwern, Ruder) and seven company blogs, each with a one-line reason. _From May 2025. All but Gwern, Sakana and Sequoia are in the sections above._
+- **[16 blogs to follow if you're serious about AI/ML](https://www.linkedin.com/posts/stasbel_if-youre-serious-about-growing-in-aiml-share-7425204247463579649-FkI1/)**  
+  Stanislav Beliaev · LinkedIn · Blog list · Free  
+  Karpathy, Chip Huyen, Raschka, Eugene Yan, Philipp Schmid, Hamel Husain, Jason Liu, Interconnects, Deep (Learning) Focus, BAIR, the big labs, The Batch and Thinking Machines. The comments add Latent Space, Jay Alammar and company engineering blogs. _All 16 are in the sections above._
+- **[12 AI Blogs for Keeping Up With AI Trends](https://www.digitalocean.com/resources/articles/ai-blogs)**  
+  DigitalOcean · Blog list · Free  
+  Twelve blogs with a 'best suited for' line each, from research labs to tutorial sites and AI governance. _Updated December 2025. MarkTechPost, Towards AI, Holistic AI and DigitalOcean Community were left out above as aggregators or vendor content._
+- **[10 Great ML and AI Blogs to Follow](https://www.tableau.com/learn/articles/blogs-about-machine-learning-artificial-intelligence)**  
+  Tableau · Blog list · Free  
+  An older list: OpenAI, Machine Learning Mastery, BAIR, Distill, FastML, AI Trends, Google AI and others. _Dated. FastML and AI Trends are inactive, and Distill is in Classic archives above. The site blocks automated readers, so it was checked through search._
+- **[What are some good blogs to follow for AI/ML/DL/RL?](https://www.reddit.com/r/learnmachinelearning/comments/bgybcp/what_are_some_good_blogs_to_follow_for_aimldlrl/)**  
+  r/learnmachinelearning · Forum thread · Free  
+  A 2019 community thread of blog recommendations. _From 2019. Reddit couldn't be read automatically, so check the thread yourself. The recommendations that turned up elsewhere (Karpathy, colah, Distill, BAIR) are above._
+- **[awesome-llm-blogs](https://github.com/yuxiang-gao/awesome-llm-blogs)**  
+  yuxiang-gao · Link list · Free  
+  A personal list of LLM blogs (OpenAI, Hugging Face, LAION, DeepMind, Jay Alammar, Su Jianlin's Scientific Spaces in Chinese) plus topic lists. _Small and from 2023. Su Jianlin, the author of RoPE, is the one source not above, and it's in Chinese._
 
 ### Maps and trackers
 
