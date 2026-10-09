@@ -800,6 +800,171 @@ Ng's fourth pillar: deciding what to build, not just how. This means product sen
   Coursera · Career article · Free  
   The role, skills and salary (about $138k median in the US). _Mostly marketing for Coursera programs._
 
+## What to follow
+
+### News and digests
+
+Skim weekly to stay oriented.
+
+- **[The Batch](https://www.deeplearning.ai/the-batch/)**  
+  DeepLearning.AI · Andrew Ng · Newsletter · Free  
+  Weekly AI news with Andrew Ng's letter, where the AI Engineering Skills Map series ran. _A low-effort weekly way to stay oriented._
+- **[Latent Space](https://www.latent.space/)**  
+  swyx & Alessio Fanelli · Newsletter + podcast · Free (paid tier)  
+  The AI engineer's newsletter and podcast: interviews with people building agents, models and infrastructure at the labs and startups. _The newsletter that named the AI engineer role. Its AINews digest condenses a day of AI Twitter, Discord and Reddit._
+
+### Builders
+
+People who ship with models and write about what works.
+
+- **[Simon Willison's Weblog](https://simonwillison.net/)**  
+  Simon Willison · Blog · Free  
+  Near-daily notes on LLMs, tools, prompt injection and building with models, with links to everything he reads. _The best single feed for keeping current. The PyCon workshop (Stage 2) and the lethal trifecta (Stage 8) both come from here._
+- **[Hamel Husain](https://hamel.dev/)**  
+  Hamel Husain · Blog · Free  
+  Evals, error analysis, LLM-as-judge and fine-tuning, from a consultant who builds AI products. _The source for 'Your AI Product Needs Evals' (Stage 2). Read his other evals posts as your projects grow._
+- **[Eugene Yan](https://eugeneyan.com/writing/)**  
+  Eugene Yan · Blog · Free  
+  Applied ML and LLM systems: product evals, patterns for LLM systems, recommendation systems, working with AI. _Active in 2026. Strong on evals and on turning models into products (Track C)._
+- **[Chip Huyen](https://huyenchip.com/blog/)**  
+  Chip Huyen · Blog · Free  
+  Long essays on AI engineering: agents, building a GenAI platform, common pitfalls. _Posting has slowed (latest January 2025), but 'Agents' and 'Building a Generative AI Platform' are still among the best overviews._
+- **[Jason Liu](https://jxnl.co/writing/)**  
+  Jason Liu · Blog · Free  
+  Production RAG and retrieval, context engineering, coding agents, and the business side of shipping AI. _Creator of the instructor library for structured outputs (Stage 2). His RAG posts are direct and opinionated._
+- **[Philipp Schmid](https://www.philschmid.de/)**  
+  Philipp Schmid · Google DeepMind · Blog · Free  
+  Practical guides on agents, harness engineering, computer use, evals and the Gemini API. _Active in 2026. His old fine-tuning notebooks are in Stage 6, and the blog has moved on to agents._
+
+### Research explainers
+
+Deep dives that turn papers into understanding.
+
+- **[Ahead of AI](https://magazine.sebastianraschka.com/)**  
+  Sebastian Raschka · Newsletter · Free (paid tier)  
+  Research roundups and deep dives on LLM architectures, training and reasoning models. _Written by the author of LLMs-from-scratch (Stage 5). It's the most readable way to follow LLM research._
+- **[Lil'Log](https://lilianweng.github.io/)**  
+  Lilian Weng · Blog · Free  
+  Long, citation-heavy surveys: agents, hallucination, reward hacking, scaling laws, reasoning. _A few posts a year, each a definitive survey. Read them when you reach the matching stage._
+- **[Andrej Karpathy's blog](https://karpathy.github.io/)**  
+  Andrej Karpathy · Blog · Free  
+  Rare, landmark posts on neural networks, from 'The Unreasonable Effectiveness of RNNs' to 2026's 'microgpt'. _Pairs with his Zero to Hero series (Stage 5)._
+- **[Interconnects](https://www.interconnects.ai/)**  
+  Nathan Lambert · Newsletter · Free (paid tier)  
+  How frontier and open models are trained and released, especially post-training, RLHF and open-weight models. _Written by the author of the RLHF book. The best companion to Stage 6._
+- **[Deep (Learning) Focus](https://cameronrwolfe.substack.com/)**  
+  Cameron R. Wolfe · Newsletter · Free  
+  Long, careful explainers of the research behind modern LLMs: training, alignment, reasoning, evaluation. _Slower to read than Ahead of AI but more thorough._
+- **[Sebastian Ruder](https://www.ruder.io/)**  
+  Sebastian Ruder · Blog · Free  
+  NLP research, transfer learning, multilingual models, and his optimizer overview (Stage 4). _Research-leaning. Follow it if NLP is your focus._
+
+### Labs
+
+Where new models, techniques and system cards are announced.
+
+- **[OpenAI Research](https://openai.com/news/research/)**  
+  OpenAI · Lab blog · Free  
+  OpenAI's research announcements: model releases, system cards, safety and alignment work, benchmarks. _Read the system cards and evals sections when a model launches, because those tell you what changed for builders. The site blocks automated readers, so I confirmed it through search. The filterable index is at openai.com/research/index._ Also: [Research index](https://openai.com/research/index/)
+- **[Google Research Blog](https://research.google/blog/)**  
+  Google Research · Lab blog · Free  
+  Research posts across ML, agents, privacy and security, health and geospatial AI, filterable by label. _Broad. Filter by the Machine Intelligence or Natural Language Processing labels to keep it relevant._
+- **[Engineering at Anthropic](https://www.anthropic.com/engineering)**  
+  Anthropic · Lab blog · Free  
+  How Anthropic builds agents and harnesses: context engineering, evals, Claude Code internals, containment, long-running agents. _The most practical lab blog for an AI engineer. Two Stage 7 and 8 core reads come from here._
+- **[Hugging Face Blog](https://huggingface.co/blog)**  
+  Hugging Face · Community blog · Free  
+  Posts on open models, datasets, training and inference tooling, from Hugging Face and the community. _High volume and uneven. Sort by trending, and use it to keep up with open-weight models and the transformers, TRL and PEFT libraries._
+- **[Google DeepMind Blog](https://deepmind.google/blog/)**  
+  Google DeepMind · Lab blog · Free  
+  Gemini model launches, research on reasoning and agents, and science applications. _Model announcements here link to technical reports, which are what to read._
+- **[Anthropic Research](https://www.anthropic.com/research)**  
+  Anthropic · Lab blog · Free  
+  Interpretability, alignment, frontier red-team and economic-impact research. _Research rather than engineering. Engineering at Anthropic (above) is the practical one._
+- **[AI at Meta Blog](https://ai.meta.com/blog/)**  
+  Meta · Lab blog · Free  
+  Open-weight model releases, research and applied AI from Meta. _Follow it for open-model releases._
+- **[Connectionism](https://thinkingmachines.ai/blog/)**  
+  Thinking Machines Lab · Lab blog · Free  
+  Rare, very technical posts: LoRA Without Regret, On-Policy Distillation, Defeating Nondeterminism in LLM Inference. _Few posts, each excellent. 'LoRA Without Regret' belongs next to Stage 6._
+- **[BAIR Blog](https://bair.berkeley.edu/blog/)**  
+  UC Berkeley AI Research · Academic blog · Free  
+  Accessible write-ups of Berkeley research before it reaches the mainstream. _Academic and broad, so skim the headlines._
+- **[Claude Blog](https://claude.com/blog)**  
+  Anthropic · Product blog · Free  
+  Claude product news, best practices for agents and automations, and customer case studies. _Product-side and practical. Engineering at Anthropic covers the internals._
+
+### Industry and impact
+
+Where the market and the workplace are heading.
+
+- **[One Useful Thing](https://www.oneusefulthing.org/)**  
+  Ethan Mollick · Newsletter · Free  
+  How AI changes work, education and organizations, from a Wharton professor who tests every model. _Useful for Track C: explaining AI to non-engineers._
+- **[a16z AI](https://a16z.com/ai/)**  
+  Andreessen Horowitz · VC blog · Free  
+  Market maps, AI infrastructure analysis and AI-native startup trends. _An investor's view, so read it for where the market is going, not for technique. The LLM app stack (Stage 7) came from here._
+
+### Tutorial sites
+
+Look things up here when stuck. Quality varies by author, so check dates.
+
+- **[Machine Learning Mastery](https://machinelearningmastery.com/)**  
+  Jason Brownlee · Guiding Tech Media · Tutorial site · Free (paid ebooks)  
+  Step-by-step tutorials from ML fundamentals and statistics to transformers, RAG and fine-tuning. _Good for looking up 'how do I do X in code' in Stages 1–3. Now part of a media group, so newer posts vary in depth._
+- **[Towards Data Science](https://towardsdatascience.com/)**  
+  TDS (independent since February 2025) · Publication · Free  
+  Applied ML, data science and LLM tutorials and case studies from many authors. _Many of your bookmarks came from here. It left Medium in 2025 and is now free to read. Quality depends on the author, so check dates and code against current docs._
+- **[KDnuggets](https://www.kdnuggets.com/)**  
+  Guiding Tech Media · News and tutorials · Free  
+  Data science, ML and LLM tutorials, cheat sheets and career comparisons. _Light, quick reads. Its cheat sheets are the most useful part._
+- **[Analytics Vidhya](https://www.analyticsvidhya.com/blog/)**  
+  Analytics Vidhya · Tutorial site · Free (paid programs)  
+  High-volume GenAI, RAG, agents and ML tutorials, plus interview prep. _Uneven and promotes its own paid programs. Use it as a search result, not a feed._
+
+### Classic archives
+
+No longer updated, but the explanations are still the best there are.
+
+- **[Jay Alammar](https://jalammar.github.io/)**  
+  Jay Alammar · Blog (archive) · Free  
+  The visual explainers: The Illustrated Transformer, The Illustrated Word2vec, How GPT-3 Works. _Frozen, since new posts go to his Substack, but the illustrated posts are classics. The same author wrote Hands-On LLMs (Stage 5)._
+- **[Distill](https://distill.pub/)**  
+  Distill · Journal (archive) · Free  
+  Peer-reviewed, interactive explanations of ML research: feature visualization, attention, graph neural networks. _On hiatus since July 2021, but the articles are still among the clearest explanations written._
+- **[colah's blog](https://colah.github.io/)**  
+  Chris Olah · Blog (archive) · Free  
+  'Understanding LSTM Networks', 'Neural Networks, Manifolds, and Topology' and the start of the circuits line of interpretability work. _Read 'Understanding LSTM Networks' alongside Ng's Sequence Models (Stage 4). His newer work is published through Anthropic Research._
+
+### Maps and trackers
+
+Landscapes, leaderboards and roadmaps. These items also appear in their stages.
+
+- [ ] **[The AI Engineering Skills Map](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map)**  
+  Andrew Ng · The Batch · Article series · ~1 h · Free  
+  Ng's map of the AI engineer's job, built from 10,000+ job postings. It has four pillars: building and deploying AI apps, software fundamentals, using coding agents, and shaping the build. _Use it as the rubric for this route. Parts 3 and 5 are linked from side tracks B and C below._ Also: [Part 2: AI applications](https://www.deeplearning.ai/the-batch/he-ai-engineering-skills-map-in-detail-building-and-deploying-ai-applications), [Part 4: Coding agents](https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-using-coding-agents)
+- [ ] **[AI Engineer Roadmap](https://roadmap.sh/ai-engineer)**  
+  roadmap.sh · Roadmap · Free  
+  An interactive topic map for applied AI engineers, with links per node. _Use it as a checklist against this route._
+- [ ] **[LF AI & Data Landscape](https://landscape.lfai.foundation/)**  
+  Linux Foundation · Ecosystem map · Free  
+  A map of open-source AI and data projects. _Useful for getting oriented, not for learning._
+- [ ] **[Emerging LLM App Stack](https://github.com/a16z-infra/llm-app-stack)**  
+  a16z · Link list · ~1 h · Free  
+  Tools listed by layer: data pipelines, embeddings, vector DBs, orchestration, eval, hosting. _A good mental model, but the tool lists stopped in February 2024 and predate agents and MCP. You also bookmarked the companion article, which has the architecture diagram._ Also: [Companion article (bookmark)](https://a16z.com/emerging-architectures-for-llm-applications/)
+- [ ] **[Artificial Analysis](https://artificialanalysis.ai/)** `bookmark`  
+  Artificial Analysis · Leaderboard · Free  
+  Independent comparison of models and API providers on intelligence, speed, latency and price. _Where to look when choosing a model for a project. Nothing else on the route covers this._
+- [ ] **[LLM Architecture Gallery](https://sebastianraschka.com/llm-architecture-gallery/)** `bookmark`  
+  Sebastian Raschka · Interactive reference · Free  
+  Diagrams and fact sheets for about 109 current open models, with a compare tool and memory calculator. _Updated October 2026. Use it after LLMs-from-scratch to see how real models differ from your GPT._
+- [ ] **[Hugging Face Papers (formerly Papers with Code)](https://huggingface.co/papers/trending)** `bookmark`  
+  Hugging Face · Paper feed · Free  
+  Trending research papers with code links. _paperswithcode.com now redirects here, so update your bookmark._
+- [ ] **[best-of-ml-python](https://github.com/ml-tooling/best-of-ml-python)**  
+  ml-tooling · Link list · Free  
+  Ranked ML Python libraries by category. _Use it to compare libraries. Updates have slowed since March 2026._
+
 ## Certificates (only if you need the credential)
 
 - [ ] **[IBM Generative AI Engineering Professional Certificate](https://www.coursera.org/professional-certificates/ibm-generative-ai-engineering)**  

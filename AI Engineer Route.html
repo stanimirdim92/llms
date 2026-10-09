@@ -94,7 +94,7 @@ select,input[type=search]{font:inherit;color:var(--ink);background:var(--surface
 .links{display:flex;gap:10px;flex-wrap:wrap;font-size:.84rem;margin-top:4px}
 .chip{font:500 .7rem var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:5px;white-space:nowrap}
 .chip.core{background:var(--core-soft);color:var(--core)}
-.chip.alt,.chip.opt,.chip.ref{background:var(--route-soft);color:var(--route)}
+.chip.alt,.chip.opt,.chip.ref,.chip.blog{background:var(--route-soft);color:var(--route)}
 .chip.skip{background:var(--skip-soft);color:var(--skip)}
 .chip.done{background:var(--ok-soft);color:var(--ok)}
 .chip.doing{background:var(--core-soft);color:var(--core)}
@@ -162,6 +162,7 @@ footer{color:var(--muted);font-size:.84rem;border-top:1px solid var(--line);padd
     <button role="tab" id="tab-route" data-view="route" aria-selected="true">Route</button>
     <button role="tab" id="tab-library" data-view="library" aria-selected="false">Library by topic</button>
     <button role="tab" id="tab-skip" data-view="skip" aria-selected="false">Skip list</button>
+    <button role="tab" id="tab-blogs" data-view="blogs" aria-selected="false">Follow</button>
     <button role="tab" id="tab-certs" data-view="certs" aria-selected="false">Certificates</button>
   </nav>
 
@@ -420,6 +421,41 @@ const R=[
 {id:"A15a",s:"A",r:"opt",parent:"A15",cat:"Coding agents",t:"1 · Introduction to Generative AI for Software Development",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.coursera.org/learn/introduction-to-generative-ai-for-software-development",ty:"Course",h:9,c:"Audit free",sum:"How LLMs work for code, prompting an LLM as a pair programmer, and using it to write, refactor and debug code."},
 {id:"A15b",s:"A",r:"opt",parent:"A15",cat:"Coding agents",t:"2 · Team Software Engineering with AI",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.coursera.org/learn/team-software-engineering-with-ai",ty:"Course",h:13,c:"Audit free",sum:"Using LLMs for testing, debugging, documentation and dependency management.",note:"Closest to Ng's 'reviewing the work' skill."},
 {id:"A15c",s:"A",r:"opt",parent:"A15",cat:"Coding agents",t:"3 · AI-Powered Software and System Design",p:"DeepLearning.AI · Laurence Moroney",u:"https://www.coursera.org/learn/ai-powered-software-and-system-design",ty:"Course",h:12,c:"Audit free",sum:"Using LLMs for software design: data serialization and storage choices, database design, and design patterns.",note:"Also counts toward Track B, since it covers design tradeoffs."},
+
+/* Blogs to follow (r:"blog"; grp splits lab research from engineering practice) */
+{id:"W1",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"OpenAI Research",p:"OpenAI",u:"https://openai.com/news/research/",ty:"Lab blog",c:"Free",sum:"OpenAI's research announcements: model releases, system cards, safety and alignment work, benchmarks.",note:"Read the system cards and evals sections when a model launches, because those tell you what changed for builders. The site blocks automated readers, so I confirmed it through search. The filterable index is at openai.com/research/index.",links:[["Research index","https://openai.com/research/index/"]]},
+{id:"W2",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Google Research Blog",p:"Google Research",u:"https://research.google/blog/",ty:"Lab blog",c:"Free",sum:"Research posts across ML, agents, privacy and security, health and geospatial AI, filterable by label.",note:"Broad. Filter by the Machine Intelligence or Natural Language Processing labels to keep it relevant."},
+{id:"W3",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Engineering at Anthropic",p:"Anthropic",u:"https://www.anthropic.com/engineering",ty:"Lab blog",c:"Free",sum:"How Anthropic builds agents and harnesses: context engineering, evals, Claude Code internals, containment, long-running agents.",note:"The most practical lab blog for an AI engineer. Two Stage 7 and 8 core reads come from here."},
+{id:"W4",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Hugging Face Blog",p:"Hugging Face",u:"https://huggingface.co/blog",ty:"Community blog",c:"Free",sum:"Posts on open models, datasets, training and inference tooling, from Hugging Face and the community.",note:"High volume and uneven. Sort by trending, and use it to keep up with open-weight models and the transformers, TRL and PEFT libraries."},
+{id:"W5",s:null,r:"blog",grp:"eng",cat:"Blogs and newsletters",t:"Simon Willison's Weblog",p:"Simon Willison",u:"https://simonwillison.net/",ty:"Blog",c:"Free",sum:"Near-daily notes on LLMs, tools, prompt injection and building with models, with links to everything he reads.",note:"The best single feed for keeping current. The PyCon workshop (Stage 2) and the lethal trifecta (Stage 8) both come from here."},
+{id:"W6",s:null,r:"blog",grp:"eng",cat:"Blogs and newsletters",t:"Hamel Husain",p:"Hamel Husain",u:"https://hamel.dev/",ty:"Blog",c:"Free",sum:"Evals, error analysis, LLM-as-judge and fine-tuning, from a consultant who builds AI products.",note:"The source for 'Your AI Product Needs Evals' (Stage 2). Read his other evals posts as your projects grow."},
+{id:"W7",s:null,r:"blog",grp:"eng",cat:"Blogs and newsletters",t:"Eugene Yan",p:"Eugene Yan",u:"https://eugeneyan.com/writing/",ty:"Blog",c:"Free",sum:"Applied ML and LLM systems: product evals, patterns for LLM systems, recommendation systems, working with AI.",note:"Active in 2026. Strong on evals and on turning models into products (Track C)."},
+{id:"W8",s:null,r:"blog",grp:"explain",cat:"Blogs and newsletters",t:"Ahead of AI",p:"Sebastian Raschka",u:"https://magazine.sebastianraschka.com/",ty:"Newsletter",c:"Free (paid tier)",sum:"Research roundups and deep dives on LLM architectures, training and reasoning models.",note:"Written by the author of LLMs-from-scratch (Stage 5). It's the most readable way to follow LLM research."},
+{id:"W9",s:null,r:"blog",grp:"explain",cat:"Blogs and newsletters",t:"Lil'Log",p:"Lilian Weng",u:"https://lilianweng.github.io/",ty:"Blog",c:"Free",sum:"Long, citation-heavy surveys: agents, hallucination, reward hacking, scaling laws, reasoning.",note:"A few posts a year, each a definitive survey. Read them when you reach the matching stage."},
+{id:"W10",s:null,r:"blog",grp:"eng",cat:"Blogs and newsletters",t:"Chip Huyen",p:"Chip Huyen",u:"https://huyenchip.com/blog/",ty:"Blog",c:"Free",sum:"Long essays on AI engineering: agents, building a GenAI platform, common pitfalls.",note:"Posting has slowed (latest January 2025), but 'Agents' and 'Building a Generative AI Platform' are still among the best overviews."},
+{id:"W11",s:null,r:"blog",grp:"news",cat:"Blogs and newsletters",t:"The Batch",p:"DeepLearning.AI · Andrew Ng",u:"https://www.deeplearning.ai/the-batch/",ty:"Newsletter",c:"Free",sum:"Weekly AI news with Andrew Ng's letter, where the AI Engineering Skills Map series ran.",note:"A low-effort weekly way to stay oriented."},
+{id:"W12",s:null,r:"blog",grp:"news",cat:"Blogs and newsletters",t:"Latent Space",p:"swyx & Alessio Fanelli",u:"https://www.latent.space/",ty:"Newsletter + podcast",c:"Free (paid tier)",sum:"The AI engineer's newsletter and podcast: interviews with people building agents, models and infrastructure at the labs and startups.",note:"The newsletter that named the AI engineer role. Its AINews digest condenses a day of AI Twitter, Discord and Reddit."},
+{id:"W13",s:null,r:"blog",grp:"eng",cat:"Blogs and newsletters",t:"Jason Liu",p:"Jason Liu",u:"https://jxnl.co/writing/",ty:"Blog",c:"Free",sum:"Production RAG and retrieval, context engineering, coding agents, and the business side of shipping AI.",note:"Creator of the instructor library for structured outputs (Stage 2). His RAG posts are direct and opinionated."},
+{id:"W14",s:null,r:"blog",grp:"eng",cat:"Blogs and newsletters",t:"Philipp Schmid",p:"Philipp Schmid · Google DeepMind",u:"https://www.philschmid.de/",ty:"Blog",c:"Free",sum:"Practical guides on agents, harness engineering, computer use, evals and the Gemini API.",note:"Active in 2026. His old fine-tuning notebooks are in Stage 6, and the blog has moved on to agents."},
+{id:"W15",s:null,r:"blog",grp:"explain",cat:"Blogs and newsletters",t:"Andrej Karpathy's blog",p:"Andrej Karpathy",u:"https://karpathy.github.io/",ty:"Blog",c:"Free",sum:"Rare, landmark posts on neural networks, from 'The Unreasonable Effectiveness of RNNs' to 2026's 'microgpt'.",note:"Pairs with his Zero to Hero series (Stage 5)."},
+{id:"W16",s:null,r:"blog",grp:"explain",cat:"Blogs and newsletters",t:"Interconnects",p:"Nathan Lambert",u:"https://www.interconnects.ai/",ty:"Newsletter",c:"Free (paid tier)",sum:"How frontier and open models are trained and released, especially post-training, RLHF and open-weight models.",note:"Written by the author of the RLHF book. The best companion to Stage 6."},
+{id:"W17",s:null,r:"blog",grp:"explain",cat:"Blogs and newsletters",t:"Deep (Learning) Focus",p:"Cameron R. Wolfe",u:"https://cameronrwolfe.substack.com/",ty:"Newsletter",c:"Free",sum:"Long, careful explainers of the research behind modern LLMs: training, alignment, reasoning, evaluation.",note:"Slower to read than Ahead of AI but more thorough."},
+{id:"W18",s:null,r:"blog",grp:"archive",cat:"Blogs and newsletters",t:"Jay Alammar",p:"Jay Alammar",u:"https://jalammar.github.io/",ty:"Blog (archive)",c:"Free",sum:"The visual explainers: The Illustrated Transformer, The Illustrated Word2vec, How GPT-3 Works.",note:"Frozen, since new posts go to his Substack, but the illustrated posts are classics. The same author wrote Hands-On LLMs (Stage 5)."},
+{id:"W19",s:null,r:"blog",grp:"explain",cat:"Blogs and newsletters",t:"Sebastian Ruder",p:"Sebastian Ruder",u:"https://www.ruder.io/",ty:"Blog",c:"Free",sum:"NLP research, transfer learning, multilingual models, and his optimizer overview (Stage 4).",note:"Research-leaning. Follow it if NLP is your focus."},
+{id:"W20",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Google DeepMind Blog",p:"Google DeepMind",u:"https://deepmind.google/blog/",ty:"Lab blog",c:"Free",sum:"Gemini model launches, research on reasoning and agents, and science applications.",note:"Model announcements here link to technical reports, which are what to read."},
+{id:"W21",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Anthropic Research",p:"Anthropic",u:"https://www.anthropic.com/research",ty:"Lab blog",c:"Free",sum:"Interpretability, alignment, frontier red-team and economic-impact research.",note:"Research rather than engineering. Engineering at Anthropic (above) is the practical one."},
+{id:"W22",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"AI at Meta Blog",p:"Meta",u:"https://ai.meta.com/blog/",ty:"Lab blog",c:"Free",sum:"Open-weight model releases, research and applied AI from Meta.",note:"Follow it for open-model releases."},
+{id:"W23",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Connectionism",p:"Thinking Machines Lab",u:"https://thinkingmachines.ai/blog/",ty:"Lab blog",c:"Free",sum:"Rare, very technical posts: LoRA Without Regret, On-Policy Distillation, Defeating Nondeterminism in LLM Inference.",note:"Few posts, each excellent. 'LoRA Without Regret' belongs next to Stage 6."},
+{id:"W24",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"BAIR Blog",p:"UC Berkeley AI Research",u:"https://bair.berkeley.edu/blog/",ty:"Academic blog",c:"Free",sum:"Accessible write-ups of Berkeley research before it reaches the mainstream.",note:"Academic and broad, so skim the headlines."},
+{id:"W25",s:null,r:"blog",grp:"industry",cat:"Blogs and newsletters",t:"One Useful Thing",p:"Ethan Mollick",u:"https://www.oneusefulthing.org/",ty:"Newsletter",c:"Free",sum:"How AI changes work, education and organizations, from a Wharton professor who tests every model.",note:"Useful for Track C: explaining AI to non-engineers."},
+{id:"W26",s:null,r:"blog",grp:"industry",cat:"Blogs and newsletters",t:"a16z AI",p:"Andreessen Horowitz",u:"https://a16z.com/ai/",ty:"VC blog",c:"Free",sum:"Market maps, AI infrastructure analysis and AI-native startup trends.",note:"An investor's view, so read it for where the market is going, not for technique. The LLM app stack (Stage 7) came from here."},
+{id:"W27",s:null,r:"blog",grp:"lab",cat:"Blogs and newsletters",t:"Claude Blog",p:"Anthropic",u:"https://claude.com/blog",ty:"Product blog",c:"Free",sum:"Claude product news, best practices for agents and automations, and customer case studies.",note:"Product-side and practical. Engineering at Anthropic covers the internals."},
+{id:"W28",s:null,r:"blog",grp:"tutorials",cat:"Blogs and newsletters",t:"Machine Learning Mastery",p:"Jason Brownlee · Guiding Tech Media",u:"https://machinelearningmastery.com/",ty:"Tutorial site",c:"Free (paid ebooks)",sum:"Step-by-step tutorials from ML fundamentals and statistics to transformers, RAG and fine-tuning.",note:"Good for looking up 'how do I do X in code' in Stages 1–3. Now part of a media group, so newer posts vary in depth."},
+{id:"W29",s:null,r:"blog",grp:"tutorials",cat:"Blogs and newsletters",t:"Towards Data Science",p:"TDS (independent since February 2025)",u:"https://towardsdatascience.com/",ty:"Publication",c:"Free",sum:"Applied ML, data science and LLM tutorials and case studies from many authors.",note:"Many of your bookmarks came from here. It left Medium in 2025 and is now free to read. Quality depends on the author, so check dates and code against current docs."},
+{id:"W30",s:null,r:"blog",grp:"tutorials",cat:"Blogs and newsletters",t:"KDnuggets",p:"Guiding Tech Media",u:"https://www.kdnuggets.com/",ty:"News and tutorials",c:"Free",sum:"Data science, ML and LLM tutorials, cheat sheets and career comparisons.",note:"Light, quick reads. Its cheat sheets are the most useful part."},
+{id:"W31",s:null,r:"blog",grp:"tutorials",cat:"Blogs and newsletters",t:"Analytics Vidhya",p:"Analytics Vidhya",u:"https://www.analyticsvidhya.com/blog/",ty:"Tutorial site",c:"Free (paid programs)",sum:"High-volume GenAI, RAG, agents and ML tutorials, plus interview prep.",note:"Uneven and promotes its own paid programs. Use it as a search result, not a feed."},
+{id:"W32",s:null,r:"blog",grp:"archive",cat:"Blogs and newsletters",t:"Distill",p:"Distill",u:"https://distill.pub/",ty:"Journal (archive)",c:"Free",sum:"Peer-reviewed, interactive explanations of ML research: feature visualization, attention, graph neural networks.",note:"On hiatus since July 2021, but the articles are still among the clearest explanations written."},
+{id:"W33",s:null,r:"blog",grp:"archive",cat:"Blogs and newsletters",t:"colah's blog",p:"Chris Olah",u:"https://colah.github.io/",ty:"Blog (archive)",c:"Free",sum:"'Understanding LSTM Networks', 'Neural Networks, Manifolds, and Topology' and the start of the circuits line of interpretability work.",note:"Read 'Understanding LSTM Networks' alongside Ng's Sequence Models (Stage 4). His newer work is published through Anthropic Research."},
 /* Certificates shelf (s:null) */
 {id:"D1",s:null,r:"cert",cat:"Certificates",t:"IBM Generative AI Engineering Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ibm-generative-ai-engineering",ty:"Certificate · 16 courses",h:150,c:"Paid cert, courses audit free",sum:"From AI basics through Python, Flask, ML and Keras to transformers, LoRA, RLHF/DPO and RAG with LangChain.",note:"Its useful courses already sit in Stages 2, 5, 6 and 7. Courses 1–2 are skipped and 4, 7, 8 and 9 repeat Ng. Pay for the certificate only if you need the credential."},
 {id:"E3",s:null,r:"cert",cat:"Certificates",t:"IBM AI Engineering Professional Certificate",p:"IBM",u:"https://www.coursera.org/professional-certificates/ai-engineer",ty:"Certificate · 13 courses",h:160,c:"Paid",sum:"ML in sklearn, DL in Keras and PyTorch, transformers, fine-tuning, RAG and agents with LangChain.",note:"Overlaps the IBM GenAI cert heavily and teaches both Keras and PyTorch. Don't take both IBM certs."},
@@ -457,11 +493,11 @@ const R=[
 {id:"F14",s:null,r:"skip",cat:"Not learning material",t:"Luma Dream Machine",p:"Luma Labs",u:"https://lumalabs.ai/dream-machine?ref=FutureTools.io",ty:"Product",sum:"Commercial video and image generation, now sold as 'Luma Agents'.",note:"A product, and it duplicates Kling."}
 ];
 
-const ROLE_LABEL={core:"Core",alt:"Alternative",opt:"Optional",ref:"Reference",skip:"Skip",cert:"Certificate"};
+const ROLE_LABEL={core:"Core",alt:"Alternative",opt:"Optional",ref:"Reference",skip:"Skip",cert:"Certificate",blog:"Blog"};
 /* progress status, separate from an item's role: "" = not started */
 const ST_NEXT={"":"doing",doing:"done",done:""};
 const ST_LABEL={"":"Not started",doing:"In progress",done:"Done"};
-const CAT_ORDER=["Concepts","Python and data","Math","Prompting and LLM apps","ML foundations","Deep learning","Transformers and LLMs","Fine-tuning","RAG","Agents","Production and MLOps","Coding agents","Software fundamentals","Shaping the build","Certificates","Reference lists","Not learning material"];
+const CAT_ORDER=["Concepts","Python and data","Math","Prompting and LLM apps","ML foundations","Deep learning","Transformers and LLMs","Fine-tuning","RAG","Agents","Production and MLOps","Coding agents","Software fundamentals","Shaping the build","Certificates","Blogs and newsletters","Reference lists","Not learning material"];
 const byId=Object.fromEntries(R.map(x=>[x.id,x]));
 
 /* ---------- state ---------- */
@@ -519,7 +555,7 @@ function weeks(h){return Math.max(1,Math.round(h/state.pace))}
 function fmtW(w){return w===1?"1 week":w+" weeks"}
 
 function resHTML(x,opts={}){
-  const r=role(x), umbrella=R.some(c=>c.parent===x.id), track=!(r==="skip"||umbrella);
+  const r=role(x), umbrella=R.some(c=>c.parent===x.id), track=!(r==="skip"||r==="blog"||umbrella);
   const s=track?st(x.id):"", nx=ST_NEXT[s];
   const cb=track?`<button type="button" class="st st-${s||"todo"}" data-st="${x.id}" title="${ST_LABEL[s]}. Click to mark ${ST_LABEL[nx].toLowerCase()}." aria-label="${esc(x.t)}: ${ST_LABEL[s]}. Mark ${ST_LABEL[nx].toLowerCase()}"></button>`:`<span aria-hidden="true"></span>`;
   const extra=(x.links||[]).map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`).join("");
@@ -596,6 +632,23 @@ function skipView(){
   ${xs.map(x=>`<tr><td><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a><div class="sub">${esc(x.p)}</div></td><td>${esc(x.sum)}</td><td>${esc(x.note)}</td></tr>`).join("")}
   </tbody></table></div>`;
 }
+/* sections of the Follow tab; "maps" reuses items that live elsewhere on the route */
+const FOLLOW=[
+ ["news","News and digests","Skim weekly to stay oriented."],
+ ["eng","Builders","People who ship with models and write about what works."],
+ ["explain","Research explainers","Deep dives that turn papers into understanding."],
+ ["lab","Labs","Where new models, techniques and system cards are announced."],
+ ["industry","Industry and impact","Where the market and the workplace are heading."],
+ ["tutorials","Tutorial sites","Look things up here when stuck. Quality varies by author, so check dates."],
+ ["archive","Classic archives","No longer updated, but the explanations are still the best there are."],
+ ["maps","Maps and trackers","Landscapes, leaderboards and roadmaps. These items also appear in their stages.",["N1","C16","F6","F8","K7","K15","K31","F9"]]
+];
+function blogsView(){
+  const nav=FOLLOW.map(([k,h])=>`<a href="#follow-${k}">${esc(h)}</a>`).join(" · ");
+  return `<p class="lede">What to read and follow alongside the route. Skim weekly and go deep only when a post matches your current stage.</p><p class="sub">${nav}</p>`+
+   FOLLOW.map(([k,h,d,ids])=>{const xs=ids?ids.map(i=>byId[i]):R.filter(x=>x.r==="blog"&&x.grp===k);
+     return `<section class="cat" id="follow-${k}"><h2>${esc(h)} <span>${xs.length}</span></h2><p class="sub">${esc(d)}</p>${xs.map(x=>resHTML(x,{flat:true,stage:true})).join("")}</section>`}).join("");
+}
 function certsView(){
   const xs=R.filter(x=>x.r==="cert");
   return `<p class="lede">You don't need any of these to learn the material, since the route already includes their best courses individually and most can be audited for free. Pay for one only if a credential matters for your job search. If you do, the IBM Generative AI Engineering certificate lines up best with this route.</p>
@@ -619,7 +672,7 @@ function render(){
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.view===state.view)));
   const v=document.getElementById("view");
   const focusQ=document.activeElement?.id==="lib-q";
-  v.innerHTML=state.view==="route"?routeView():state.view==="library"?libraryView():state.view==="skip"?skipView():certsView();
+  v.innerHTML=state.view==="route"?routeView():state.view==="library"?libraryView():state.view==="skip"?skipView():state.view==="blogs"?blogsView():certsView();
   if(focusQ){const i=document.getElementById("lib-q");i.focus();i.setSelectionRange(i.value.length,i.value.length)}
 }
 
@@ -638,7 +691,7 @@ document.addEventListener("change",e=>{
   if(t.id==="pace"){state.pace=+t.value;saveLocal();queueRemote();render()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="lib-q"){q=e.target.value;render()}});
-const h0=location.hash.replace("#","");if(["route","library","skip","certs"].includes(h0))state.view=h0;
+const h0=location.hash.replace("#","");if(["route","library","skip","blogs","certs"].includes(h0))state.view=h0;
 render();
 </script>
 
