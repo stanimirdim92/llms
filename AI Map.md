@@ -523,6 +523,18 @@ Ground models in your own data: chunking, embeddings, vector databases, hybrid s
 - [ ] **[Vector Database Comparison](https://superlinked.com/vector-db-comparison)**  
   Superlinked · Comparison table · Free  
   About 47 vector DBs compared on features, pricing, performance and integrations. _Maintained (August 2026). Use it when picking a store beyond Qdrant or OpenSearch._
+- [ ] **[pgvector](https://github.com/pgvector/pgvector)**  
+  Andrew Kane · open source · Docs · Free  
+  Open-source vector similarity search inside Postgres: HNSW and IVFFlat indexes, exact and approximate search. _The default when your app already runs on PostgreSQL: SQL, joins, filters and vectors in one place._
+- [ ] **[Pinecone Learn](https://www.pinecone.io/learn/)**  
+  Pinecone · Article series · Free  
+  Free guides on vector databases, indexing algorithms, hybrid search, reranking and RAG. _Good teaching material even if you never use Pinecone, the managed option when you want no infrastructure to run._
+- [ ] **[Weaviate Academy](https://academy.weaviate.io/)**  
+  Weaviate · Course · Free  
+  Short free courses on vector search, hybrid (keyword + semantic) search and building RAG with Weaviate. _Weaviate's strength is hybrid search built in._
+- [ ] **[Milvus documentation](https://milvus.io/docs/overview.md)**  
+  Zilliz · Milvus · Docs · Free  
+  Docs for the open-source distributed vector database: architecture, index types, scaling and deployment. _Reach for it when the workload is very large and needs distributed vector search._
 - [ ] **[sentence-transformers](https://github.com/huggingface/sentence-transformers)**  
   Hugging Face · Library · Free  
   The standard library for local embedding, retrieval and reranking models, and for fine-tuning them. _Moved from UKPLab to Hugging Face. Docs are at sbert.net. Read them as needed._
