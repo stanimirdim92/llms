@@ -380,6 +380,28 @@ ids; RapidOCR cache-location verification.
 
 Newest first.
 
+### 2026-10-10 — hybrid retrieval (BM25 + dense) behind `HYBRID_SEARCH`; pgvector written down
+
+- **Built, off by default:** `app/retrieval/bm25.py` (in-process BM25 term weights, Qdrant applies
+  IDF), a sibling sparse-only collection `<collection>_bm25`, dual writes and deletes through
+  `QdrantStore._collections()`, RRF fusion of each half's top-k, sparse half failing open.
+  `scripts/backfill_bm25.py` builds the sparse copy from the dense collection with the same point
+  ids -- no re-ingest, no new versions, so the registry fixture and cassettes stay valid.
+- **Verified:** Qdrant's in-memory engine does sparse search with the IDF modifier and applies
+  our nested payload filters to it (probe, then `tests/unit/test_hybrid_retrieval.py`, 11 checks,
+  run through a scratch runner rather than pytest per the standing directive -- all pass).
+  Mutation: dropping the sparse filter turns the tenant and version checks red. The replay gate
+  with the flag off still exits 0 with identical scores. **Not verified:** a real Qdrant server
+  (none reachable here), and whether hybrid *helps* -- that is the eval run below.
+- **To measure it:** `HYBRID_SEARCH=true uv run python scripts/backfill_bm25.py`, then
+  `HYBRID_SEARCH=true AGGREGATE_ANSWERING=true uv run python scripts/run_eval.py --judges` and
+  compare recall@5 / nDCG@5 against `baseline_scores.json` (recall@5 0.875 overall, 0.857 prose).
+  A live run, not `--record`: recording would overwrite the committed cassettes.
+- **pgvector** is now in `TECHNICAL_DECISIONS.md` as considered-and-not-taken (one-transaction
+  publish vs. tenant-aware storage at 10k tenants); it had never been written down.
+- New failure contract in `.claude/rules/ingestion-and-retrieval.md`: with the flag on, every write
+  reaches both collections and the sparse search reuses `_build_filter`.
+
 ### 2026-10-06 — dependency bumps: Redis 8.10.2, Qdrant 1.19 (server and client), uv_build floor
 
 - **Redis 8.10.0 -> 8.10.2** (`484eac8`): 8.10.1 and 8.10.2 are both SECURITY releases (read from the

@@ -44,9 +44,6 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
   from two threat models; worth an explicit opt-out flag (default on while this stays
   single-tenant-dev, revisit the default once monetization means a real customer's documents
   are behind it) rather than picking one side now.
-- **Hybrid search (BM25 + dense).** *(M)* Exact identifiers, model numbers, and chemical
-  formulae are where pure dense retrieval is weakest, and this corpus is full of them. Qdrant
-  supports sparse vectors natively. Measure first.
 - **"Tiered retrieval" is partly already here, under other names.** *(idea: a cheap lexical
   pre-filter tier, M, needs the 100k-document scale to matter)* Two tiers already exist and
   are worth recognising as the same pattern: Epic 2 Phase 2.0's intent router skips retrieval

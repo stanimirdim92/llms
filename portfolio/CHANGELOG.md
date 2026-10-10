@@ -13,6 +13,16 @@ Reasoning, measurements and what we got wrong are deliberately *not* here; they 
 
 ## [Unreleased]
 
+### 2026-10-10
+
+#### Added
+
+- **`HYBRID_SEARCH`** (default off): retrieval fuses BM25 keyword search with the existing vector
+  search, so exact identifiers (dataset, model and version names, numbers) are found even when
+  embeddings miss them. Enabling it creates a second Qdrant collection, `<QDRANT_COLLECTION>_bm25`.
+  Documents ingested before enabling it need **`scripts/backfill_bm25.py`** once; new uploads
+  are indexed automatically.
+
 ### 2026-09-29
 
 #### Added

@@ -95,6 +95,16 @@ cross-cutting contracts (`CLAUDE.md` § Never, § The tenant boundary) still app
 
 ## Failure contracts
 
+- **With `HYBRID_SEARCH`, Qdrant is two collections and every write must reach both.** The BM25
+  copy (`<collection>_bm25`) carries the same point ids and payload as the dense one, so upsert,
+  `delete_superseded` and `delete_document` all go through `QdrantStore._collections()`. A new
+  write path that touches only `self._store` leaves sparse points the hybrid search still returns
+  -- a deleted document answering questions. **And the sparse search must use the same
+  `_build_filter` result as the dense one**, never a looser filter: it is a second read of tenant
+  data. `tests/unit/test_hybrid_retrieval.py` pins the filter (removing it from the sparse query
+  turned the tenant and version tests red, 2026-10-10) and pruning reaching the sparse copy;
+  `delete_document` has no production caller yet and no test of its sparse half.
+
 - **Qdrant point IDs must be an unsigned integer or a UUID.** Chroma accepted
   arbitrary strings; Qdrant rejects a `chunk_id` with a 400. Hence the uuid5
   derivation above. `chunk_id` itself stays in the payload metadata -- citations

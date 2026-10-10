@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     # #2 and #3 (app/generation/query_rewrite.py): each adds a Haiku call per factual question.
     query_expansion: bool = Field(default=False)
     query_decomposition: bool = Field(default=False)
+    # BM25 sparse search fused (RRF) with the dense search (app/retrieval/bm25.py). Turning it on
+    # also writes a sparse copy of every ingested chunk; existing documents need
+    # `scripts/backfill_bm25.py` first, or the sparse half finds nothing for them.
+    hybrid_search: bool = Field(default=False)
     # Epic 2 Phase 2.4. Off, `aggregate` questions keep today's "not supported yet" refusal;
     # on, they get the corpus-level answer (app/generation/corpus_answer_service.py).
     aggregate_answering: bool = Field(default=False)

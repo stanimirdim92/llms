@@ -75,6 +75,31 @@ which cost real debugging time:
 **No native async client.** `asimilarity_search` is `VectorStore`'s thread-pool shim and
 `upsert` is synchronous, same as Chroma. The gain from Qdrant is Qdrant, not async.
 
+**Considered and not taken: pgvector** (written down 2026-10-10; it was never recorded at the
+time, and "you already run Postgres" makes it the obvious question). Its real advantage here is
+not convenience but **one transaction**: "Postgres decides what is searchable" is today an
+invariant spanning two stores -- insert a generation's points, flip the registry row, prune -- and
+with vectors in Postgres the publish would be a single commit, with the version filter a join.
+Qdrant was kept for what the tenant boundary needs at the stated scale (10k tenants x 10
+documents): `is_tenant=True` storage, so a tenant-filtered search reads that tenant's vectors
+contiguously instead of filtering an HNSW graph built over everyone's, and the payload filter
+applied inside the search rather than as a post-filter that can return fewer than `k`. Revisit if
+the scale target drops, or if the two-store publish ever loses data despite the versioning.
+
+**Hybrid (BM25 + dense) without changing stores** (2026-10-10, behind `HYBRID_SEARCH`, off).
+Weaviate is the usual "hybrid" answer; Qdrant has sparse vectors with a server-side IDF modifier,
+so hybrid needed no new store. Two choices worth knowing:
+- **A sibling sparse-only collection (`<collection>_bm25`), not a second vector on this one.**
+  Adding a named vector means recreating a live collection; a sibling is built and backfilled
+  beside it. It holds no dense vector, so hybrid adds no Voyage cost per chunk, and with the flag
+  off nothing reads or writes it -- the recorded eval cassettes stay valid.
+- **Sparse vectors computed in-process (`app/retrieval/bm25.py`), not by `fastembed`.** Tokenising
+  and counting is deterministic work (root rule 5); fastembed would add onnxruntime and a Hugging
+  Face download at first use, which is a cassette miss in CI. Qdrant's own server-side BM25
+  inference (`Document`) is marked "work in progress, unimplemented" in the v1.19.1 API spec.
+- Fusion is RRF in our code over each half's top-k, since a cosine similarity and a BM25 sum are
+  on unrelated scales. The sparse half fails open to dense-only; the dense half still raises.
+
 ## Re-ingestion: versioned generations, published by one row (2026-08-06)
 
 **Decision.** Each ingest mints an `ingestion_version`, hashes it into every point id, and inserts

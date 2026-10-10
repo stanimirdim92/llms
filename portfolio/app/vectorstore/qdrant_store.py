@@ -5,6 +5,7 @@ Epic 3's agent imports this module directly rather than constructing a second st
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from typing import TYPE_CHECKING
 
@@ -18,11 +19,15 @@ from qdrant_client.models import (
     KeywordIndexParams,
     MatchAny,
     MatchValue,
+    Modifier,
     PayloadSchemaType,
+    PointStruct,
+    SparseVectorParams,
 )
 
 from app.config import get_settings
 from app.embeddings.voyage import get_embeddings
+from app.retrieval.bm25 import document_vector, query_vector
 
 if TYPE_CHECKING:
     from qdrant_client import QdrantClient
@@ -222,6 +227,56 @@ def _build_filter(
     return Filter(must=must)
 
 
+SPARSE_VECTOR = "bm25"
+RRF_K = 60
+"""Reciprocal Rank Fusion's damping constant, the value from the original RRF paper and Qdrant's
+own default. Ranks, not scores, are fused: a cosine similarity and a BM25 sum are on unrelated
+scales, so adding them would let whichever happens to run larger decide every ranking."""
+
+
+def sparse_collection_name(collection_name: str) -> str:
+    """The BM25 copy of a collection. **A separate collection, not a second vector on this one**:
+    adding a named vector to a live collection means recreating it, while a sibling can be built
+    and backfilled beside a collection that keeps serving. It holds no dense vector, so hybrid
+    costs no second Voyage embedding per chunk.
+    """
+    return f"{collection_name}_{SPARSE_VECTOR}"
+
+
+def _ensure_sparse_collection(client: QdrantClient, name: str) -> None:
+    if client.collection_exists(name):
+        return
+    try:
+        client.create_collection(
+            name,
+            vectors_config={},
+            # IDF is applied by Qdrant at query time from the collection's statistics, which is
+            # what keeps a document vector valid as the corpus grows -- see `app/retrieval/bm25.py`.
+            sparse_vectors_config={SPARSE_VECTOR: SparseVectorParams(modifier=Modifier.IDF)},
+        )
+    except Exception:
+        # The api and the worker start together and both get here; the loser of that race sees
+        # "already exists", which is the state it wanted. Anything else is re-raised.
+        if not client.collection_exists(name):
+            raise
+
+
+def _fuse(dense: list[Document], sparse: list[Document], top_k: int) -> list[Document]:
+    """Reciprocal Rank Fusion of two ranked lists, keyed on `chunk_id`.
+
+    `chunk_id` alone is a safe key only because both lists come from the same filter, which admits
+    exactly one live version per document; two generations of one chunk can never both be here.
+    """
+    scores: dict[str, float] = {}
+    documents: dict[str, Document] = {}
+    for ranked in (dense, sparse):
+        for rank, document in enumerate(ranked):
+            key = document.metadata.get("chunk_id") or document.page_content
+            scores[key] = scores.get(key, 0.0) + 1.0 / (RRF_K + rank + 1)
+            documents.setdefault(key, document)
+    return [documents[key] for key in sorted(scores, key=lambda k: scores[k], reverse=True)[:top_k]]
+
+
 class QdrantStore:
     def __init__(self, url: str | None = None, collection_name: str | None = None) -> None:
         settings = get_settings()
@@ -237,6 +292,19 @@ class QdrantStore:
             collection_name=collection_name or settings.qdrant_collection,
         )
         _ensure_payload_indexes(self._store.client, self._store.collection_name)
+        self._sparse_name: str | None = None
+        if settings.hybrid_search:
+            self._sparse_name = sparse_collection_name(self._store.collection_name)
+            _ensure_sparse_collection(self._store.client, self._sparse_name)
+            # The same indexes, `is_tenant` included: the sparse search carries the same tenant
+            # filter and needs the same storage layout to stay fast at 10k tenants.
+            _ensure_payload_indexes(self._store.client, self._sparse_name)
+
+    def _collections(self) -> list[str]:
+        """Every collection a write must reach. A delete that skipped the sparse copy would leave
+        points the hybrid search still returns.
+        """
+        return [self._store.collection_name, *([self._sparse_name] if self._sparse_name else [])]
 
     def delete_document(self, doc_id: str, tenant_id: str) -> None:
         """Remove every point belonging to `doc_id` within one tenant, whatever its chunk ids were.
@@ -252,17 +320,18 @@ class QdrantStore:
         `delete_superseded`, which keeps the active one. No production caller today; it exists for
         the planned delete endpoint (`docs/EPIC_4_PLAN.md` 5.5).
         """
-        self._store.client.delete(
-            collection_name=self._store.collection_name,
-            points_selector=FilterSelector(
-                filter=Filter(
-                    must=[
-                        FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id)),
-                        FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id)),
-                    ]
-                )
-            ),
-        )
+        for collection in self._collections():
+            self._store.client.delete(
+                collection_name=collection,
+                points_selector=FilterSelector(
+                    filter=Filter(
+                        must=[
+                            FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id)),
+                            FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id)),
+                        ]
+                    )
+                ),
+            )
 
     def delete_superseded(self, doc_id: str, tenant_id: str, keep_version: str) -> None:
         """Drop every generation of `doc_id` except `keep_version`.
@@ -281,19 +350,24 @@ class QdrantStore:
         serving reads, so the tenant condition is ANDed in for the same reason `delete_document`
         carries it -- a write that can erase data gets at least the guard a read has.
         """
-        result = self._store.client.delete(
-            collection_name=self._store.collection_name,
-            points_selector=FilterSelector(
-                filter=Filter(
-                    must=[
-                        FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id)),
-                        FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id)),
-                    ],
-                    must_not=[FieldCondition(key="metadata.ingestion_version", match=MatchValue(value=keep_version))],
-                )
-            ),
+        selector = FilterSelector(
+            filter=Filter(
+                must=[
+                    FieldCondition(key="metadata.doc_id", match=MatchValue(value=doc_id)),
+                    FieldCondition(key="metadata.tenant_id", match=MatchValue(value=tenant_id)),
+                ],
+                must_not=[FieldCondition(key="metadata.ingestion_version", match=MatchValue(value=keep_version))],
+            )
         )
-        log.info("qdrant.superseded_pruned", doc_id=doc_id, keep_version=keep_version, status=str(result.status))
+        for collection in self._collections():
+            result = self._store.client.delete(collection_name=collection, points_selector=selector)
+            log.info(
+                "qdrant.superseded_pruned",
+                collection=collection,
+                doc_id=doc_id,
+                keep_version=keep_version,
+                status=str(result.status),
+            )
 
     def upsert(self, chunks: list[Chunk], ingestion_version: str) -> None:
         """Insert one generation of a document's points, deleting **nothing**.
@@ -328,7 +402,43 @@ class QdrantStore:
             raise ValueError(msg)
 
         documents = [_to_document(chunk, ingestion_version) for chunk in chunks]
-        self._store.add_documents(documents, ids=[_point_id(chunk.chunk_id, ingestion_version) for chunk in chunks])
+        ids = [_point_id(chunk.chunk_id, ingestion_version) for chunk in chunks]
+        self._store.add_documents(documents, ids=ids)
+        if self._sparse_name:
+            # Same point ids and the same payload as the dense copy, so `_build_filter`, the
+            # version flip and both deletes treat the two collections identically. Written after
+            # the dense copy and before the caller's flip: if this fails, the ingest fails and the
+            # previous generation keeps serving, as for any other failed insert.
+            self.upsert_sparse(documents, ids)
+
+    def upsert_sparse(self, documents: list[Document], ids: list[str]) -> None:
+        """Write BM25 vectors for already-built documents. Also `scripts/backfill_bm25.py`'s path."""
+        if not self._sparse_name or not documents:
+            return
+        self._store.client.upsert(
+            self._sparse_name,
+            points=[
+                PointStruct(
+                    id=point_id,
+                    vector={SPARSE_VECTOR: document_vector(document.page_content)},
+                    payload={"page_content": document.page_content, "metadata": document.metadata},
+                )
+                for point_id, document in zip(ids, documents, strict=True)
+            ],
+        )
+
+    def _sparse_search(self, query: str, top_k: int, where: Filter) -> list[Document]:
+        vector = query_vector(query)
+        if not vector.indices or not self._sparse_name:
+            return []  # a question of nothing but stopwords has no terms to match
+        hits = self._store.client.query_points(
+            self._sparse_name, query=vector, using=SPARSE_VECTOR, query_filter=where, limit=top_k, with_payload=True
+        ).points
+        return [
+            Document(page_content=hit.payload.get("page_content", ""), metadata=hit.payload.get("metadata") or {})
+            for hit in hits
+            if hit.payload
+        ]
 
     def get_document_chunks(self, doc_id: str, tenant_id: str, versions: list[str]) -> list[Document]:
         """Every chunk of one document's permitted generation(s), in true document reading order.
@@ -404,13 +514,25 @@ class QdrantStore:
         # call's signature consistent with the rest of the already-async /ask chain.
         where = _build_filter(chunk_types, tenant_id, doc_ids, versions)
         try:
-            return await self._store.asimilarity_search(query, k=top_k, filter=where)
+            dense = await self._store.asimilarity_search(query, k=top_k, filter=where)
         except Exception as exc:
             # An embedding/Qdrant outage, not a query bug -- there's no honest fallback for a
             # failed search, so surface it as a distinct, catchable error rather than an opaque
             # 500 or a retry into a compounding outage.
             log.warning("retrieval.unavailable", tenant_id=tenant_id, error=str(exc))
             raise RetrievalUnavailableError(str(exc)) from exc
+        if not self._sparse_name:
+            return dense
+        try:
+            # The *same* `where`: the sparse half is a second read of tenant data and gets the
+            # identical security boundary, not a looser one.
+            sparse = await asyncio.to_thread(self._sparse_search, query, top_k, where)
+        except Exception as exc:  # noqa: BLE001 -- the sparse half is an enhancement; see below
+            # Fail open to dense-only (root rule 9). Unlike the dense search, a failed sparse
+            # search has an honest fallback: the answer path as it was before hybrid existed.
+            log.warning("retrieval.sparse_unavailable", tenant_id=tenant_id, error=str(exc))
+            return dense
+        return _fuse(dense, sparse, top_k)
 
     # There is deliberately no `as_retriever()`. One existed, returning
     # `self._store.as_retriever(search_kwargs={"k": top_k})` -- no tenant filter, no doc
