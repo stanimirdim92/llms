@@ -11,14 +11,14 @@ Offline copy: `AI Map.html` in this folder (progress saved in that browser only)
 ## How to read this
 
 - **Do these**: the main path. **Alternatives** cover the same ground, so pick at most one. **Optional** adds depth. **Reference** is for lookups.
-- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **338 h** of core material, roughly 8 months at 10 h/week.
-- **Full track** (also understand and train models) includes every stage: about **658 h**, roughly 15 months at 10 h/week.
+- **Builder track** (ship LLM apps, RAG and agents) skips Stages 4–6 and uses a lighter ML foundation: about **353 h** of core material, roughly 8 months at 10 h/week.
+- **Full track** (also understand and train models) includes every stage: about **673 h**, roughly 16 months at 10 h/week.
 - Items with a different role per track say so in italics.
 - In the HTML version, click an item's circle to move it from Not started to In progress to Done. In this file, use `- [ ]` and `- [x]`, and add `🚧` after an item's title to mark it in progress.
 
 ## Stage 0: Orientation
 
-~16 h of core material (Full track).
+~31 h of core material (Full track).
 
 Get the vocabulary and a mental model of what LLMs are before you write code. This stage is short on purpose.
 
@@ -30,6 +30,9 @@ Get the vocabulary and a mental model of what LLMs are before you write code. Th
 - [ ] **[Neural networks series](https://www.youtube.com/watch?v=aircAruvnKk&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)**  
   3Blue1Brown · Video series · ~4 h · Free  
   Animated explanations of gradient descent, backprop, transformers, attention and how LLMs store facts. _The best intuition builder on the list. Chapters 5–7 (2024) cover transformers._
+- [ ] **[Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)**  
+  Michael Nielsen · Free book · ~15 h · Free  
+  Derives backprop and builds an MNIST classifier in NumPy, explaining every step. _Read it alongside the 3Blue1Brown series: the videos give the picture, the book gives the math and code. Very clear on intuition. The code is dated (last updated 2019); Karpathy's micrograd covers the same ground later._
 - [ ] **[Karpathy: Intro to LLMs and Deep Dive into LLMs](https://www.youtube.com/@AndrejKarpathy/videos)**  
   Andrej Karpathy · Talks · ~5 h · Free  
   Non-coding talks on how ChatGPT-style models are pretrained, fine-tuned and used. Start with the 1-hour 'Intro to Large Language Models', then the 3.5-hour 'Deep Dive into LLMs like ChatGPT' (2025). _The same channel hosts Zero to Hero, which is in Stage 5._
@@ -316,9 +319,6 @@ Learn how neural networks actually train: backprop, optimizers, regularization, 
 - [ ] **[PyTorch for Deep Learning Professional Certificate](https://www.deeplearning.ai/specializations/pytorch-for-deep-learning-professional-certificate)**  
   DeepLearning.AI · Laurence Moroney · Certificate · ~88 h · DLAI Pro  
   Building, optimizing and deploying deep learning models in PyTorch. _Ng's DL specialization is TensorFlow/NumPy, so take selected modules from this if PyTorch still feels unfamiliar after the one-hour primer._
-- [ ] **[Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)**  
-  Michael Nielsen · Free book · ~15 h · Free  
-  Derives backprop and builds an MNIST classifier in NumPy, explaining every step. _Very clear on intuition. The code is dated (last updated 2019), and Karpathy's micrograd covers the same ground._
 - [ ] **[An overview of gradient descent optimization algorithms](https://www.ruder.io/optimizing-gradient-descent/)**  
   Sebastian Ruder · Article · ~1 h · Free  
   Momentum, Adagrad, RMSprop and Adam compared side by side. _Still the clearest single read on optimizers. It predates AdamW._
