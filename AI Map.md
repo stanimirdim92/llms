@@ -453,6 +453,9 @@ Adapt open models with LoRA/QLoRA, instruction tuning and preference optimizatio
 - [ ] **[LLM Course (Labonne)](https://github.com/mlabonne/llm-course)**  
   Maxime Labonne · Roadmap + notebooks · Free  
   A roadmap in three tracks (Fundamentals, Scientist, Engineer), plus Colab notebooks for fine-tuning, quantization and model merging. _Mostly links that overlap this route. Its notebooks are good practical references for Stage 6._
+- [ ] **[Fine-Tuning Agentic AI: A Practical Guide](https://machinelearningmastery.com/fine-tuning-agentic-ai-a-practical-guide/)**  
+  Machine Learning Mastery · Shittu Olumide · Article · Free  
+  Fine-tuning an agent as four levers: a validated tool-calling SFT dataset, QLoRA, runtime settings (temperature, retries) and DPO, with a ship-or-hold check for regressions. _Good framing: fine-tune for tool-call format and behaviour, not for knowledge. The code is small validators and a simulation with no real training run, and its 4-bit loading uses an older API (use BitsAndBytesConfig). Read it before your Stage 6 project, then do the real run with the HF course or Labonne's notebooks._
 
 **Build:** Fine-tune a small open model with QLoRA on a domain dataset, then show the improvement over the base model on a held-out eval.
 
