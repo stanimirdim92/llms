@@ -67,7 +67,7 @@ services:
     # So a Dependabot bump of this image is half a change: bump the client in the same commit.
     # v1.19 removed the legacy `/points/search`, `/recommend` and `/discover` endpoints; this
     # project only queries through `/points/query` (langchain-qdrant's `query_points`).
-    image: qdrant/qdrant:v1.19.1
+    image: qdrant/qdrant:v1.20.0
     restart: unless-stopped
     ports:
       # Loopback only. `- "6333:6333"` binds 0.0.0.0 on the host, and Docker inserts its
