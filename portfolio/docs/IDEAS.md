@@ -297,6 +297,9 @@ entries exist mainly so nobody spends an afternoon re-deriving why they were dro
 
 ## Product surface
 
+- **Publish the Epic 5 digest as a Substack or blog draft.** *(M)* Parked out of `docs/EPIC_5_PLAN.md`
+  5.5, where it was "optional". Substack has no public posting API, so this means a blog with one
+  (or an email-to-post address) and a second delivery target to keep idempotent.
 - **`DELETE /v1/documents/{doc_id}`.** *(S)* Currently the only way to remove a document is by
   hand in both Qdrant and Postgres — which the user has already had to do once.
 - **Streaming `/ask`.** *(M)* 11s to first token is a long silence. Anthropic streams; the

@@ -180,6 +180,9 @@ looks wrong, say so once and proceed.
   `QUERY_EXPANSION`, `QUERY_DECOMPOSITION`. **None of them has been measured**, and each ships
   (default flipped) only when `scripts/run_eval.py --judges` with it on beats the baseline.
 - **Epic 3** — the curation agent with human-in-the-loop.
+- **Epic 5** — the newsletter digest agent (Gmail → ranked, cited, human-approved digest). Planned
+  2026-11-15 in `docs/EPIC_5_PLAN.md`; plan only, no code. It recommends building it *before*
+  Epic 3, which reverses the epic's stated dependency and needs the user's agreement.
 - **Epic 4 Phase 4** — observability. **Latency p95 comes from LangSmith** (user, 2026-09-24),
   so there is no in-app latency check; faithfulness alerting needs Epic 2's scores.
 - **Epic 4 Phases 5.2–5.9** — user accounts, conversations, document delete, streaming `/ask`.
@@ -368,6 +371,12 @@ more discussion.
     answers them. Relabelling changes the baseline's routing cell; leaving them as they are means
     2.4 can't move their scores.
 
+13. **Epic 5's four open questions** -- retention vs. the scale budget, what happens to an
+    unapproved digest, whose mailbox (Google's 7-day Testing-mode refresh tokens and the CASA
+    assessment for `gmail.readonly`), and whether a classification cassette can be committed. All
+    four are in `docs/EPIC_5_PLAN.md` § Open questions, each naming the phase it blocks. Kept there
+    rather than copied here so the two lists can't drift.
+
 ## Deferred, not dropped
 
 Recorded so they stay visible: backups; a stuck-job sweeper (`updated_at` makes a dead worker's
@@ -379,6 +388,34 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-11-15 — Epic 5 (newsletter digest agent) planned; no code
+
+The user supplied Epic 5 as a requirement and chose **plan only**, **a Gmail connector per tenant**,
+and **per-connector OAuth refresh tokens**. Written to `docs/EPIC_5_PLAN.md`, with the original text
+kept verbatim at the bottom. Checked before it went in (root rule 13), by resolving the locked wheels
+rather than from memory:
+
+- **LangGraph 1.2.10 (locked) has `interrupt(value: Any)`, with no `response_schema`.** Typed resume
+  needs ≥1.2.12; the latest on PyPI is 1.2.22. Agrees with `EPIC_3_PLAN.md`.
+- **`AsyncPostgresSaver.setup()` (checkpoint-postgres 3.1.1) runs `CREATE INDEX CONCURRENTLY`**, which
+  can't run inside `init_db`'s transaction-scoped advisory lock. Its four tables also need excluding
+  in `migrations/env.py`'s `include_object`, or autogenerate will drop them the way it once tried
+  to drop procrastinate's.
+- **procrastinate 3.9.0 has `@app.periodic(cron=...)`**, deduped by a unique
+  `(task_name, periodic_id, defer_timestamp)`. So the daily trigger needs no new scheduler.
+- **Absent from `uv.lock`:** `trafilatura`, `cryptography`, all `google-*` packages. Present:
+  `tenacity` 9.1.4, `beautifulsoup4` 4.15.0, `jinja2` 3.1.6, `httpx` 0.28.1.
+- **Google (developers.google.com/identity/protocols/oauth2, read 2026-11-15):** a Testing-status
+  project gets "a refresh token expiring in 7 days". `gmail.readonly` is a restricted scope;
+  secondary sources say a public app needs verification plus a yearly CASA assessment. **Not
+  verified:** that an unverified *production*-status app for ≤100 users avoids the 7-day expiry.
+  The plan marks this as unverified.
+
+Places where the epic as written would have been built wrong: PostgresSaver as the dedupe store (it
+records execution, not processed ids), a fixed 24h window (loses a failed day), UTM-stripping on
+click-tracker URLs (dedupes nothing), unguarded fetches of email-supplied URLs (SSRF onto the compose
+network), and ~11k articles a year per connector against a 10-documents-per-tenant scale target.
 
 ### 2026-10-10 — hybrid retrieval (BM25 + dense) behind `HYBRID_SEARCH`; pgvector written down
 
