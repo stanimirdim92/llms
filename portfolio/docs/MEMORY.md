@@ -377,6 +377,11 @@ more discussion.
     four are in `docs/EPIC_5_PLAN.md` § Open questions, each naming the phase it blocks. Kept there
     rather than copied here so the two lists can't drift.
 
+14. **Streamlit Home and key scopes (found 2026-11-15).** Home uses `resolve_tenant`, which drops
+    scopes, so any valid key can upload, view and ask there regardless of its scopes. `CLAUDE.md` §
+    The tenant boundary *requires* `resolve_tenant` in Home, so the fix (`resolve_principal` +
+    per-section `has_scope`) changes a failure contract -- the user's call.
+
 ## Deferred, not dropped
 
 Recorded so they stay visible: backups; a stuck-job sweeper (`updated_at` makes a dead worker's
@@ -388,6 +393,45 @@ ids; RapidOCR cache-location verification.
 ## Session log
 
 Newest first.
+
+### 2026-11-15 (later) — deep review of the whole project; CI found red since at least 2026-10-02
+
+Review only, no code changed. Seven read-only agents, one fixed question each (tenant isolation, input
+and AI security, failure semantics, correctness, test gaps, doc drift, build/CI), briefed with this
+project's agent files plus checklists from the user's `stanimirdim92/harness` repo. Full report with
+evidence went to the user. **Measured or reproduced by me, not taken from the agents:**
+
+- **CI on `main` has failed on all six most recent pushes** (back to `20d19ca`, 2026-10-02): unit tests,
+  dependency CVEs (multidict 6.7.1, transformers 5.8.1, urllib3 2.7.0), and the smoke job's worker-log
+  step (likely a race: it greps 11 s after start with no retry). Because the unit job fails, the skip
+  assertion and `alembic check` steps behind it have not run since.
+- **Suite, local, real Postgres 16 + Redis, `--extra dev --extra eval`: 541 passed, 5 failed, 0 skipped;
+  4-7 fail depending on seed.** Deterministic: two `test_qdrant_filtering` tests use `QdrantStore.__new__`
+  without the `_sparse_name` that `e89182b` added; `test_eval_gate`'s last assertion expects `table` before
+  `all` from a `sorted()` loop; four golden pairs (q009 q025 q033 q034) cite figure chunks whose sha256
+  changed in `20d19ca`. Order-dependent: `cache_logger_on_first_use=True` in `app/logs.py` makes
+  `capture_logs` miss events once another test has configured structlog (seed 6 reproduces).
+- **Re-staging a published document unpublishes it** (reproduced: `list_active_versions` `{doc: v1}` ->
+  `{}`). `_upsert` overwrites `ingestion_version`/`chunk_count`/`status` on conflict; Streamlit's Home
+  stages on every rerun before its already-ingested guard, so the first interaction after an upload
+  unpublishes the document.
+- **`chunker.py`'s TableItem skip never fires** with the locked docling-core: chunk `doc_items` come back
+  as `DocItem` with `label=TABLE`, so every table is also indexed as a flattened text chunk (ran the real
+  HybridChunker). The correctness agent's claim that prose next to a table is *dropped* was wrong -- the
+  opposite holds.
+- Read at source and confirmed: Streamlit Home enforces no scopes (and keeps a revoked key's tenant);
+  `create_key` lets a short-lived key mint a never-expiring one; no `ChatAnthropic` call has a timeout
+  (langchain passes `timeout=None`, which the SDK treats as unbounded); `ask.py`'s intent `match` has no
+  default; the RLS suite is missing from CI's skip loop; worker exception text is stored as
+  `error_message`; a bare `.csv` in a question is treated as a filename.
+
+Agent findings not verified at source (concurrent-ingest prune race, stalled jobs after a deploy,
+non-atomic parse cache, figure-count cost amplification, markdown image exfiltration in Streamlit, and
+the rest) are in the report as leads, deliberately not recorded here as fact.
+
+Rule-6 conflict noted, not resolved: the harness repo's agents are role-named (`code-reviewer`,
+`security-auditor`), which `../CLAUDE.md` § Delegating rejects; its checklists were used as rubrics
+under task-shaped briefs instead.
 
 ### 2026-11-15 — Epic 5 (newsletter digest agent) planned; no code
 
