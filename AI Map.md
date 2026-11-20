@@ -383,6 +383,10 @@ Build a GPT from scratch, then learn the Hugging Face stack that real work happe
 - [ ] **[LLMs from Scratch: Base Model to PPO RLHF](https://www.youtube.com/watch?v=p3sij8QzONQ)**  
   freeCodeCamp · Video · ~6 h · Free  
   Six hours of pure PyTorch: train a tiny LLM, add MoE, then SFT, reward modelling and RLHF with PPO. _Not the same as Raschka's book. Watch it after Karpathy or Raschka, because it covers the RLHF they skip._
+- [ ] **[CME295: Transformers & Large Language Models](https://cme295.stanford.edu/syllabus/)**  
+  Stanford · Afshine & Shervine Amidi · Lecture series · ~16 h · Free  
+  Recorded Stanford lectures, about 1¾ hours each: transformers and attention, LLM architecture (MoE, GQA, RoPE), training (SFT, LoRA, RLHF, DPO), RL with LLMs (PPO, GRPO), LLM systems (KV cache, speculative decoding, Flash Attention) and agents (tool calling, MCP, memory, coding agents). _The Autumn 2026 edition and the most current lecture course on the map. Lectures 1–6 are online. Evaluation, diffusion LLMs and trending topics are being posted after each lecture until December. It is theory only, so pair it with Karpathy or Raschka for code._  
+  [Lecture 1 video (Transformers)](https://www.youtube.com/watch?v=114i2Kz-LZA) · [YouTube playlist](https://www.youtube.com/playlist?list=PLakGfbKCei80)
 - [ ] **[Transformers in Practice](https://www.deeplearning.ai/courses/transformers-in-practice)**  
   DeepLearning.AI × AMD · Sharon Zhou · Course · ~11 h · DLAI Pro  
   How to reason about and debug transformer behaviour, and how to make deployment decisions. _New in May 2026. Take it after Karpathy and Raschka to connect internals to engineering choices._
